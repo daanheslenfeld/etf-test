@@ -288,11 +288,46 @@ const ETFPortal = () => {
     }
   };
 
-useEffect(() => {
-  setEtfs(SAMPLE_ETFS);
-  setFilteredEtfs(SAMPLE_ETFS);
-}, []);
-
+  useEffect(() => {
+    const loadETFData = async () => {
+      try {
+        if (window.etfDatabase && window.etfDatabase.length > 0) {
+          setEtfs(window.etfDatabase);
+          setFilteredEtfs(window.etfDatabase);
+          return;
+        }
+        
+        setLoading(true);
+        const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs');
+        
+        const response = await window.fs.readFile('ETF_overzicht_met_subcategorie.xlsx');
+        const workbook = XLSX.read(response);
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        
+        const headers = rawData[0];
+        const etfRows = rawData.slice(2).filter(row => row[2] && row[3]);
+        
+        const structuredETFs = etfRows.map(row => {
+          const etf = {};
+          headers.forEach((header, index) => {
+            etf[header] = row[index] || null;
+          });
+          return etf;
+        });
+        
+        if (structuredETFs.length > 0) {
+          setEtfs(structuredETFs);
+          setFilteredEtfs(structuredETFs);
+        }
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    
+    loadETFData();
+  }, []);
 
   useEffect(() => {
     let filtered = [...etfs];
@@ -1526,12 +1561,12 @@ useEffect(() => {
   };
 
   const PurchasePage = () => {
-    const [step, setStep] = useState(selectedProfile && investmentDetails.riskProfile ? 2 : 1);
+    const [step, setStep] = useState(1);
     const [showGoalCustom, setShowGoalCustom] = useState(false);
     const [showHorizonCustom, setShowHorizonCustom] = useState(false);
     const [showAmountCustom, setShowAmountCustom] = useState(false);
     
-    // If profile already selected, pre-fill the risk profile
+    // Pre-fill the risk profile if already selected, but still show step 1
     useState(() => {
       if (selectedProfile && !investmentDetails.riskProfile) {
         setInvestmentDetails(prev => ({
@@ -1619,6 +1654,8 @@ useEffect(() => {
     const [holdingsView, setHoldingsView] = useState('top10');
     const [currentMonth, setCurrentMonth] = useState(0);
     const [staticPerformanceData, setStaticPerformanceData] = useState(null);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [animationSpeed, setAnimationSpeed] = useState(1000); // milliseconds per month
     const metrics = calculatePortfolioMetrics();
     
     const horizon = parseInt(investmentDetails.horizon) || 10;
@@ -1944,20 +1981,75 @@ useEffect(() => {
         )}
         
         {showRebalance && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full p-8">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
+            <div className="bg-white rounded-2xl max-w-2xl w-full p-8" onClick={(e) => e.stopPropagation()}>
               <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren</h2>
-              <p className="text-gray-600 mb-6">Door te balanceren worden alle wegingen weer teruggezet naar de oorspronkelijke verdeling.</p>
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h3 className="font-bold mb-3">Benodigde Transacties:</h3>
-                <div className="space-y-2 text-sm">
-                  {portfolio.slice(0, 3).map((etf, idx) => (<div key={idx} className="flex justify-between"><span>{etf.naam}</span><span className="font-medium">{Math.random() > 0.5 ? 'Koop' : 'Verkoop'} {formatEuro(Math.random() * 500)}</span></div>))}
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <button onClick={() => { alert('Portfolio succesvol gebalanceerd!'); setShowRebalance(false); }} className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Transacties Uitvoeren</button>
-                <button onClick={() => setShowRebalance(false)} className="flex-1 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium">Annuleren</button>
-              </div>
+              <p className="text-gray-600 mb-6">
+                Door te balanceren worden alle wegingen aangepast naar de oorspronkelijke verdeling van je gekozen risicoprofiel: 
+                <span className="font-bold text-indigo-600"> {selectedProfile ? premadePortfolios[selectedProfile].name : 'Aangepast'}</span>
+              </p>
+              
+              {selectedProfile ? (
+                <>
+                  <div className="bg-indigo-50 rounded-xl p-4 mb-6 border border-indigo-200">
+                    <h3 className="font-bold mb-3">Doelverdeling:</h3>
+                    <div className="space-y-2 text-sm">
+                      {Object.entries(premadePortfolios[selectedProfile].allocation).map(([cat, pct]) => (
+                        <div key={cat} className="flex justify-between">
+                          <span>{cat}</span>
+                          <span className="font-medium">{pct}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                    <h3 className="font-bold mb-3">Huidige verdeling:</h3>
+                    <div className="space-y-2 text-sm">
+                      {Object.entries(metrics.categories).map(([cat, value]) => (
+                        <div key={cat} className="flex justify-between">
+                          <span>{cat}</span>
+                          <span className="font-medium">{value.toFixed(1)}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => { 
+                        const rebalanced = recalculateWeights(portfolio, selectedProfile);
+                        setPortfolio(rebalanced);
+                        alert('Portfolio succesvol gebalanceerd naar ' + premadePortfolios[selectedProfile].name + ' profiel!'); 
+                        setShowRebalance(false); 
+                      }} 
+                      className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg font-semibold transition-all"
+                    >
+                      Balanceren naar {premadePortfolios[selectedProfile].name}
+                    </button>
+                    <button 
+                      onClick={() => setShowRebalance(false)} 
+                      className="flex-1 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-all"
+                    >
+                      Annuleren
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                    <p className="text-sm text-yellow-800">
+                      Geen risicoprofiel geselecteerd. Balanceren is alleen mogelijk als je een profiel hebt gekozen tijdens het samenstellen.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setShowRebalance(false)} 
+                    className="w-full py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium"
+                  >
+                    Sluiten
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
