@@ -1,392 +1,1208 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, Search, User, DollarSign, PieChart, BarChart3, Settings, X, Globe, Leaf, ArrowRight, ArrowLeft, Home, LogOut, Activity, Target, Zap, MapPin, AlertTriangle, CheckCircle, Calculator } from 'lucide-react';
-import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, AreaChart, Area } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
-const ETFInvestmentPlatform = () => {
-  // Main navigation state
-  const [currentPage, setCurrentPage] = useState('homepage');
+// Sample ETF data
+const SAMPLE_ETFS = [
+  {
+    categorie: "Aandelen",
+    subcategorie: "Verenigde Staten",
+    naam: "iShares Core S&P 500 UCITS ETF USD (Acc)",
+    isin: "IE00B5BMR087",
+    "fund ccy": "USD",
+    "fund size (in m €)": "107487",
+    "ter p.a.": "0.07%",
+    ytd: "-1.41%",
+    "2024": "32.62%",
+    "2023": "21.54%",
+    "2022": "-13.30%",
+    "2021": "39.07%",
+    "volatility 1y": "20.03%",
+    "volatility 3y": "17.84%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "505",
+    replication: "Full replication",
+    "inception date": "19.05.10"
+  },
+  {
+    categorie: "Aandelen",
+    subcategorie: "Wereldwijd",
+    naam: "iShares Core MSCI World UCITS ETF USD (Acc)",
+    isin: "IE00B4L5Y983",
+    "fund ccy": "USD",
+    "fund size (in m €)": "99778",
+    "ter p.a.": "0.20%",
+    ytd: "1.46%",
+    "2024": "26.24%",
+    "2023": "19.55%",
+    "2022": "-12.96%",
+    "2021": "32.10%",
+    "volatility 1y": "16.24%",
+    "volatility 3y": "14.88%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "1326",
+    replication: "Optimized",
+    "inception date": "25.09.09"
+  },
+  {
+    categorie: "Aandelen",
+    subcategorie: "Verenigde Staten",
+    naam: "Vanguard S&P 500 UCITS ETF (USD) Distributing",
+    isin: "IE00B3XXRP09",
+    "fund ccy": "USD",
+    "fund size (in m €)": "41289",
+    "ter p.a.": "0.07%",
+    ytd: "-1.42%",
+    "2024": "32.62%",
+    "2023": "21.54%",
+    "2022": "-13.29%",
+    "2021": "39.08%",
+    "volatility 1y": "20.76%",
+    "volatility 3y": "18.13%",
+    distribution: "Distributing",
+    sustainability: "No",
+    holdings: "503",
+    replication: "Full replication",
+    "inception date": "22.05.12"
+  },
+  {
+    categorie: "Aandelen",
+    subcategorie: "Opkomende markten",
+    naam: "iShares Core MSCI Emerging Markets IMI UCITS ETF (Acc)",
+    isin: "IE00BKM4GZ66",
+    "fund ccy": "USD",
+    "fund size (in m €)": "23513",
+    "ter p.a.": "0.18%",
+    ytd: "6.72%",
+    "2024": "14.04%",
+    "2023": "7.69%",
+    "2022": "-14.16%",
+    "2021": "7.29%",
+    "volatility 1y": "15.14%",
+    "volatility 3y": "13.78%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "3045",
+    replication: "Optimized",
+    "inception date": "07.04.14"
+  },
+  {
+    categorie: "Obligaties",
+    subcategorie: "Wereldwijd",
+    naam: "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
+    isin: "IE00BDBRDM35",
+    "fund ccy": "EUR",
+    "fund size (in m €)": "8456",
+    "ter p.a.": "0.10%",
+    ytd: "2.15%",
+    "2024": "5.23%",
+    "2023": "3.87%",
+    "2022": "-12.45%",
+    "2021": "1.23%",
+    "volatility 1y": "5.67%",
+    "volatility 3y": "8.92%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "9876",
+    replication: "Optimized",
+    "inception date": "14.10.15"
+  },
+  {
+    categorie: "Obligaties",
+    subcategorie: "Europa",
+    naam: "iShares Core Euro Government Bond UCITS ETF (Dist)",
+    isin: "IE00B4WXJJ64",
+    "fund ccy": "EUR",
+    "fund size (in m €)": "6234",
+    "ter p.a.": "0.09%",
+    ytd: "3.42%",
+    "2024": "6.78%",
+    "2023": "5.12%",
+    "2022": "-18.23%",
+    "2021": "-2.34%",
+    "volatility 1y": "6.23%",
+    "volatility 3y": "9.45%",
+    distribution: "Distributing",
+    sustainability: "No",
+    holdings: "456",
+    replication: "Full replication",
+    "inception date": "10.09.09"
+  },
+  {
+    categorie: "Aandelen",
+    subcategorie: "Europa",
+    naam: "iShares STOXX Europe 600 UCITS ETF (DE)",
+    isin: "DE0002635307",
+    "fund ccy": "EUR",
+    "fund size (in m €)": "12567",
+    "ter p.a.": "0.20%",
+    ytd: "4.56%",
+    "2024": "18.34%",
+    "2023": "14.23%",
+    "2022": "-8.67%",
+    "2021": "24.56%",
+    "volatility 1y": "14.56%",
+    "volatility 3y": "16.23%",
+    distribution: "Distributing",
+    sustainability: "No",
+    holdings: "600",
+    replication: "Full replication",
+    "inception date": "20.02.04"
+  },
+  {
+    categorie: "Aandelen",
+    subcategorie: "Technology",
+    naam: "iShares S&P 500 Information Technology Sector UCITS ETF",
+    isin: "IE00B3WJKG14",
+    "fund ccy": "USD",
+    "fund size (in m €)": "8934",
+    "ter p.a.": "0.15%",
+    ytd: "8.23%",
+    "2024": "45.67%",
+    "2023": "48.23%",
+    "2022": "-25.34%",
+    "2021": "34.56%",
+    "volatility 1y": "24.56%",
+    "volatility 3y": "26.78%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "78",
+    replication: "Full replication",
+    "inception date": "15.10.09"
+  },
+  {
+    categorie: "Commodities",
+    subcategorie: "Goud",
+    naam: "iShares Physical Gold ETC",
+    isin: "IE00B4ND3602",
+    "fund ccy": "USD",
+    "fund size (in m €)": "15678",
+    "ter p.a.": "0.12%",
+    ytd: "12.34%",
+    "2024": "18.45%",
+    "2023": "13.12%",
+    "2022": "-0.34%",
+    "2021": "-3.45%",
+    "volatility 1y": "12.34%",
+    "volatility 3y": "14.56%",
+    distribution: "Accumulating",
+    sustainability: "No",
+    holdings: "1",
+    replication: "Physical",
+    "inception date": "09.12.11"
+  },
+  {
+    categorie: "Vastgoed",
+    subcategorie: "Wereldwijd",
+    naam: "iShares Developed Markets Property Yield UCITS ETF",
+    isin: "IE00B1FZS350",
+    "fund ccy": "USD",
+    "fund size (in m €)": "3456",
+    "ter p.a.": "0.59%",
+    ytd: "5.67%",
+    "2024": "12.34%",
+    "2023": "-8.45%",
+    "2022": "-22.34%",
+    "2021": "28.67%",
+    "volatility 1y": "18.45%",
+    "volatility 3y": "22.34%",
+    distribution: "Distributing",
+    sustainability: "No",
+    holdings: "345",
+    replication: "Optimized",
+    "inception date": "13.10.06"
+  }
+];
+
+const ETFPortal = () => {
+  const [currentPage, setCurrentPage] = useState('landing');
   const [user, setUser] = useState(null);
-  const [showETFDetail, setShowETFDetail] = useState(null);
-  
-  // Logout function
-  const handleLogout = () => {
-    setUser(null);
-    setCurrentPage('homepage');
-    setOnboardingStep(1);
-    setOnboardingData({
-      portfolioChoice: '',
-      riskProfile: '',
-      horizon: '',
-      investmentAmount: '',
-      modelTheme: ''
+  const [etfs, setEtfs] = useState(SAMPLE_ETFS);
+  const [filteredEtfs, setFilteredEtfs] = useState(SAMPLE_ETFS);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    category: '',
+    subcategory: '',
+    currency: '',
+    distribution: '',
+    search: ''
+  });
+  const [selectedETF, setSelectedETF] = useState(null);
+  const [portfolio, setPortfolio] = useState([]);
+  const [portfolioType, setPortfolioType] = useState(null);
+  const [investmentDetails, setInvestmentDetails] = useState({
+    goal: '',
+    goalCustom: '',
+    horizon: '',
+    horizonCustom: '',
+    amount: '',
+    amountCustom: '',
+    riskProfile: ''
+  });
+  const [portfolioValue, setPortfolioValue] = useState(10000);
+  const [monthlyContribution] = useState(500);
+  const [showEditPortfolio, setShowEditPortfolio] = useState(false);
+  const [editablePortfolio, setEditablePortfolio] = useState([]);
+  const [customBuildStep, setCustomBuildStep] = useState('profile'); // 'profile', 'categories', 'selectETFs'
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoriesCompleted, setCategoriesCompleted] = useState({});
+
+  const premadePortfolios = {
+    'bonds100': { 
+      name: '100% Obligaties', 
+      allocation: { 'Obligaties': 100 },
+      expectedReturn: 0.025, // 2.5%
+      stdDev: 0.05 // 5%
+    },
+    'defensive': { 
+      name: 'Defensief', 
+      allocation: { 'Aandelen': 30, 'Obligaties': 65, 'Commodities': 5 },
+      expectedReturn: 0.035, // 3.5%
+      stdDev: 0.08 // 8%
+    },
+    'neutral': { 
+      name: 'Neutraal', 
+      allocation: { 'Aandelen': 55, 'Obligaties': 40, 'Commodities': 5 },
+      expectedReturn: 0.05, // 5%
+      stdDev: 0.11 // 11%
+    },
+    'offensive': { 
+      name: 'Offensief', 
+      allocation: { 'Aandelen': 72.5, 'Obligaties': 20, 'Commodities': 7.5 },
+      expectedReturn: 0.06, // 6%
+      stdDev: 0.13 // 13%
+    },
+    'veryOffensive': { 
+      name: 'Zeer Offensief', 
+      allocation: { 'Aandelen': 82.5, 'Obligaties': 10, 'Commodities': 7.5 },
+      expectedReturn: 0.07, // 7%
+      stdDev: 0.15 // 15%
+    },
+    'stocks100': { 
+      name: '100% Aandelen', 
+      allocation: { 'Aandelen': 90, 'Commodities': 10 },
+      expectedReturn: 0.08, // 8%
+      stdDev: 0.16 // 16%
+    }
+  };
+
+  useEffect(() => {
+    const loadETFData = async () => {
+      try {
+        if (window.etfDatabase && window.etfDatabase.length > 0) {
+          setEtfs(window.etfDatabase);
+          setFilteredEtfs(window.etfDatabase);
+          return;
+        }
+        
+        setLoading(true);
+        const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs');
+        
+        const response = await window.fs.readFile('ETF_overzicht_met_subcategorie.xlsx');
+        const workbook = XLSX.read(response);
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        
+        const headers = rawData[0];
+        const etfRows = rawData.slice(2).filter(row => row[2] && row[3]);
+        
+        const structuredETFs = etfRows.map(row => {
+          const etf = {};
+          headers.forEach((header, index) => {
+            etf[header] = row[index] || null;
+          });
+          return etf;
+        });
+        
+        if (structuredETFs.length > 0) {
+          setEtfs(structuredETFs);
+          setFilteredEtfs(structuredETFs);
+        }
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    
+    loadETFData();
+  }, []);
+
+  useEffect(() => {
+    let filtered = [...etfs];
+    
+    if (filters.category) {
+      filtered = filtered.filter(etf => etf.categorie === filters.category);
+    }
+    if (filters.subcategory) {
+      filtered = filtered.filter(etf => etf.subcategorie === filters.subcategory);
+    }
+    if (filters.currency) {
+      filtered = filtered.filter(etf => etf['fund ccy'] === filters.currency);
+    }
+    if (filters.distribution) {
+      filtered = filtered.filter(etf => etf.distribution === filters.distribution);
+    }
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(etf => 
+        etf.naam?.toLowerCase().includes(searchLower) ||
+        etf.isin?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    setFilteredEtfs(filtered);
+  }, [filters, etfs]);
+
+  const handleLogin = (email, password) => {
+    setUser({ email, name: email.split('@')[0] });
+    setCurrentPage('etfDatabase');
+  };
+
+  const handleRegister = (name, email, password) => {
+    setUser({ email, name });
+    setCurrentPage('etfDatabase');
+  };
+
+  const recalculateWeights = (portfolioToCalculate, profile) => {
+    if (!profile) return portfolioToCalculate;
+    
+    const config = premadePortfolios[profile];
+    const allocation = config.allocation;
+    
+    // Group ETFs by category
+    const byCategory = {};
+    portfolioToCalculate.forEach(etf => {
+      const cat = etf.categorie;
+      if (!byCategory[cat]) byCategory[cat] = [];
+      byCategory[cat].push(etf);
+    });
+    
+    // Calculate weights
+    const updatedPortfolio = [];
+    Object.entries(byCategory).forEach(([category, etfs]) => {
+      const categoryAllocation = allocation[category] || 0;
+      const weightPerETF = categoryAllocation / etfs.length;
+      
+      etfs.forEach(etf => {
+        updatedPortfolio.push({ ...etf, weight: weightPerETF });
+      });
+    });
+    
+    return updatedPortfolio;
+  };
+
+  const addToPortfolio = (etf, weight = 10) => {
+    setPortfolio(prev => {
+      const existing = prev.find(p => p.isin === etf.isin);
+      if (existing) {
+        return prev; // Don't add duplicates
+      }
+      const newPortfolio = [...prev, { ...etf, weight }];
+      
+      // Recalculate weights if we have a selected profile
+      if (selectedProfile) {
+        return recalculateWeights(newPortfolio, selectedProfile);
+      }
+      return newPortfolio;
     });
   };
-  
-  // Currency formatting
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('nl-NL', {
-      style: 'currency',
+
+  const createPremadePortfolio = (type) => {
+    const config = premadePortfolios[type];
+    const selectedETFs = [];
+    
+    Object.entries(config.allocation).forEach(([category, percentage]) => {
+      let categoryETFs = etfs.filter(e => e.categorie === category);
+      
+      categoryETFs.sort((a, b) => {
+        const sizeA = parseFloat(String(a['fund size (in m €)'] || '0').replace(',', ''));
+        const sizeB = parseFloat(String(b['fund size (in m €)'] || '0').replace(',', ''));
+        return sizeB - sizeA;
+      });
+      
+      const topETFs = categoryETFs.slice(0, Math.min(3, categoryETFs.length));
+      if (topETFs.length > 0) {
+        const weightPerETF = percentage / topETFs.length;
+        topETFs.forEach(etf => {
+          selectedETFs.push({ ...etf, weight: weightPerETF });
+        });
+      }
+    });
+    
+    if (selectedETFs.length > 0) {
+      setPortfolio(selectedETFs);
+      setCurrentPage('portfolioOverview');
+    }
+  };
+
+  const calculatePortfolioMetrics = () => {
+    if (!portfolio || portfolio.length === 0) {
+      return { avgTER: 0, totalWeight: 0, categories: {}, backtestReturn: 0 };
+    }
+    
+    const totalWeight = portfolio.reduce((sum, p) => sum + (p.weight || 0), 0);
+    
+    const avgTER = portfolio.reduce((sum, p) => {
+      const terStr = String(p['ter p.a.'] || '0%').replace('%', '').trim();
+      const ter = parseFloat(terStr) || 0;
+      return sum + (ter * (p.weight || 0) / (totalWeight || 1));
+    }, 0);
+    
+    const categories = {};
+    portfolio.forEach(p => {
+      const cat = p.categorie || 'Other';
+      categories[cat] = (categories[cat] || 0) + (p.weight || 0);
+    });
+    
+    const backtestReturn = portfolio.reduce((sum, p) => {
+      const returnStr = String(p['2024'] || '0%').replace('%', '').trim();
+      const return2024 = parseFloat(returnStr) || 0;
+      return sum + (return2024 * (p.weight || 0) / (totalWeight || 1));
+    }, 0);
+    
+    return { avgTER, totalWeight, categories, backtestReturn };
+  };
+
+  const safeParseFloat = (value) => {
+    if (value === null || value === undefined) return 0;
+    const str = String(value).replace('%', '').trim();
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('nl-NL').format(num);
+  };
+
+  const formatEuro = (value) => {
+    return new Intl.NumberFormat('nl-NL', { 
+      style: 'currency', 
       currency: 'EUR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(amount);
-  };
-  
-  // Onboarding state
-  const [onboardingStep, setOnboardingStep] = useState(1);
-  const [onboardingData, setOnboardingData] = useState({
-    portfolioChoice: '',
-    riskProfile: '',
-    horizon: '',
-    investmentAmount: '',
-    modelTheme: ''
-  });
-  
-  // ETF data and portfolio state
-  const [etfs, setEtfs] = useState([]);
-  const [selectedPortfolioType, setSelectedPortfolioType] = useState('model');
-  const [customPortfolio, setCustomPortfolio] = useState({});
-  
-  // UI state
-  const [filters, setFilters] = useState({
-    category: 'alle',
-    region: 'alle',
-    provider: 'alle',
-    esg: false,
-    minSize: 0,
-    maxTER: 2,
-    search: '',
-    currency: 'alle',
-    dividend: false
-  });
-
-  // Risk profiles data
-  const riskProfiles = {
-    defensief: {
-      name: 'Defensief',
-      description: 'Kapitaalbehoud staat voorop, beperkt risico',
-      maxLoss: '5-10%',
-      timeHorizon: '1-3 jaar'
-    },
-    neutraal: {
-      name: 'Neutraal', 
-      description: 'Gebalanceerd tussen risico en rendement',
-      maxLoss: '10-20%',
-      timeHorizon: '3-7 jaar'
-    },
-    offensief: {
-      name: 'Offensief',
-      description: 'Hogere rendementen, meer volatiliteit accepteren',
-      maxLoss: '20-30%', 
-      timeHorizon: '5-10 jaar'
-    },
-    zeerOffensief: {
-      name: 'Zeer Offensief',
-      description: 'Maximaal rendement, hoge risicotolerantie',
-      maxLoss: '30%+',
-      timeHorizon: '10+ jaar'
-    }
+    }).format(value);
   };
 
-  // Model portfolio themes
-  const modelPortfolioThemes = {
-    wereldwijd: {
-      name: 'Wereldwijd Gespreid',
-      description: 'Breed gespreide wereldwijde portfolio voor optimale diversificatie',
-      icon: Globe,
-      color: 'bg-slate-600',
-      expectedReturn: { neutraal: 6.1, defensief: 4.2, offensief: 7.8, zeerOffensief: 9.5 },
-      volatility: { neutraal: 12.3, defensief: 8.5, offensief: 16.2, zeerOffensief: 22.1 }
-    },
-    dividend: {
-      name: 'Hoog Dividend',
-      description: 'Focus op dividend betalende aandelen voor regelmatige inkomsten',
-      icon: DollarSign,
-      color: 'bg-slate-700',
-      expectedReturn: { neutraal: 5.5, defensief: 3.8, offensief: 7.2, zeerOffensief: 8.8 },
-      volatility: { neutraal: 11.5, defensief: 7.8, offensief: 15.1, zeerOffensief: 20.5 }
-    },
-    technologie: {
-      name: 'Technologie Focus',
-      description: 'Zwaartepunt op innovatieve technologie bedrijven',
-      icon: Zap,
-      color: 'bg-slate-800',
-      expectedReturn: { neutraal: 7.8, defensief: 5.2, offensief: 10.1, zeerOffensief: 12.5 },
-      volatility: { neutraal: 18.5, defensief: 12.1, offensief: 24.8, zeerOffensief: 32.1 }
-    }
-  };
-
-  // ETF categories
-  const etfCategories = {
-    aandelen: { name: 'Aandelen', subcategories: ['Europa', 'Nederland', 'Verenigde Staten', 'Japan', 'China', 'Opkomende markten', 'Wereldwijd'] },
-    obligaties: { name: 'Obligaties', subcategories: ['Euro obligaties', 'VS obligaties', 'Wereldwijde obligaties'] },
-    sectoren: { name: 'Sectoren', subcategories: ['Technologie', 'Gezondheidszorg', 'Financieel', 'Energie', 'Vastgoed'] },
-    grondstoffen: { name: 'Grondstoffen', subcategories: ['Goud', 'Olie', 'Landbouw', 'Edelmetalen'] },
-    alle: { name: 'Alle categorieën', subcategories: [] }
-  };
-
-  // Model portfolios
-  const modelPortfolios = {
-    balanced: {
-      name: 'Neutraal',
-      description: 'Gebalanceerd risico en rendement',
-      expectedReturn: 6.1,
-      allocations: {
-        'Vanguard FTSE Developed World UCITS ETF': 50,
-        'iShares Core Euro Government Bond UCITS ETF': 25,
-        'Xtrackers MSCI Emerging Markets UCITS ETF': 15,
-        'Vanguard EUR Corporate Bond UCITS ETF': 10
-      }
-    }
-  };
-
-  // Generate ETF data
-  useEffect(() => {
-    const generateETFs = () => {
-      const providers = ['Vanguard', 'iShares', 'SPDR', 'Xtrackers', 'Amundi'];
-      const currencies = ['EUR', 'USD', 'GBP'];
-      
-      const realisticETFs = [
-        { name: 'Vanguard FTSE Developed World UCITS ETF', category: 'aandelen', subcategory: 'Wereldwijd', provider: 'Vanguard', ter: 0.12, aum: 12500, expectedReturn: 7.2, esg: false },
-        { name: 'iShares Core MSCI World UCITS ETF', category: 'aandelen', subcategory: 'Wereldwijd', provider: 'iShares', ter: 0.20, aum: 25000, expectedReturn: 7.1, esg: false },
-        { name: 'Vanguard S&P 500 UCITS ETF', category: 'aandelen', subcategory: 'Verenigde Staten', provider: 'Vanguard', ter: 0.07, aum: 25000, expectedReturn: 8.2, esg: false },
-        { name: 'iShares Core Euro Government Bond UCITS ETF', category: 'obligaties', subcategory: 'Euro obligaties', provider: 'iShares', ter: 0.09, aum: 8500, expectedReturn: 2.1, esg: false },
-        { name: 'Vanguard EUR Corporate Bond UCITS ETF', category: 'obligaties', subcategory: 'Euro obligaties', provider: 'Vanguard', ter: 0.09, aum: 2200, expectedReturn: 2.8, esg: false },
-        { name: 'Xtrackers MSCI Emerging Markets UCITS ETF', category: 'aandelen', subcategory: 'Opkomende markten', provider: 'Xtrackers', ter: 0.19, aum: 3200, expectedReturn: 8.3, esg: false },
-        { name: 'iShares MSCI World ESG Screened UCITS ETF', category: 'aandelen', subcategory: 'Wereldwijd', provider: 'iShares', ter: 0.20, aum: 5500, expectedReturn: 6.8, esg: true }
-      ];
-
-      const etfData = [];
-      
-      realisticETFs.forEach((baseEtf, index) => {
-        const etf = {
-          ...baseEtf,
-          id: `ETF${index.toString().padStart(3, '0')}`,
-          isin: 'IE' + Math.random().toString(36).substr(2, 10).toUpperCase(),
-          riskScore: Math.max(1, Math.min(6, Math.ceil((baseEtf.expectedReturn - 2) / 1.5))),
-          currency: currencies[Math.floor(Math.random() * currencies.length)],
-          price: (Math.random() * 300 + 25).toFixed(2),
-          change1d: ((Math.random() - 0.5) * 4).toFixed(2),
-          change1y: ((Math.random() - 0.5) * 40).toFixed(2),
-          dividend: Math.random() > 0.7 ? (Math.random() * 4).toFixed(2) : '0.00',
-          holdings: generateHoldings(),
-          performance: generatePerformanceData()
-        };
-        etfData.push(etf);
-      });
-
-      // Generate additional ETFs
-      for (let i = etfData.length; i < 100; i++) {
-        const categoryKeys = Object.keys(etfCategories).filter(key => key !== 'alle');
-        const category = categoryKeys[Math.floor(Math.random() * categoryKeys.length)];
-        const subcategories = etfCategories[category].subcategories;
-        const subcategory = subcategories[Math.floor(Math.random() * subcategories.length)];
-        const provider = providers[Math.floor(Math.random() * providers.length)];
-        
-        const baseReturn = category === 'aandelen' ? 7 : category === 'obligaties' ? 3 : 5;
-        const expectedReturn = baseReturn + (Math.random() - 0.5) * 4;
-        
-        etfData.push({
-          id: `ETF${i.toString().padStart(3, '0')}`,
-          name: `${provider} ${subcategory} UCITS ETF`,
-          isin: 'IE' + Math.random().toString(36).substr(2, 10).toUpperCase(),
-          category,
-          subcategory,
-          provider,
-          ter: (Math.random() * 1.2 + 0.05).toFixed(2),
-          aum: Math.floor(Math.random() * 15000 + 50),
-          expectedReturn: expectedReturn.toFixed(1),
-          riskScore: Math.max(1, Math.min(6, Math.ceil((expectedReturn - 2) / 1.5))),
-          currency: currencies[Math.floor(Math.random() * currencies.length)],
-          esg: Math.random() > 0.8,
-          price: (Math.random() * 400 + 15).toFixed(2),
-          change1d: ((Math.random() - 0.5) * 6).toFixed(2),
-          change1y: ((Math.random() - 0.5) * 60).toFixed(2),
-          dividend: Math.random() > 0.7 ? (Math.random() * 5).toFixed(2) : '0.00',
-          holdings: generateHoldings(),
-          performance: generatePerformanceData()
-        });
-      }
-      
-      return etfData.sort((a, b) => a.name.localeCompare(b.name));
-    };
-
-    const generateHoldings = () => {
-      const companies = ['Apple Inc.', 'Microsoft Corp.', 'Amazon.com Inc.', 'Alphabet Inc.', 'Tesla Inc.', 'NVIDIA Corp.'];
-      return companies.slice(0, 5).map((company, index) => ({
-        name: company,
-        weight: (Math.random() * 5 + 1).toFixed(2),
-        sector: 'Technology'
-      }));
-    };
-
-    const generatePerformanceData = () => {
-      const data = [];
-      let value = 100;
-      for (let i = 0; i < 30; i++) {
-        value += (Math.random() - 0.48) * 1.5;
-        data.push({
-          date: new Date(Date.now() - (30 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          value: parseFloat(value.toFixed(2))
-        });
-      }
-      return data;
-    };
-
-    setEtfs(generateETFs());
-  }, []);
-
-  // Enhanced filtering
-  const filteredETFs = useMemo(() => {
-    return etfs.filter(etf => {
-      if (filters.category !== 'alle' && etf.category !== filters.category) return false;
-      if (filters.region !== 'alle' && etf.subcategory !== filters.region) return false;
-      if (filters.provider !== 'alle' && etf.provider !== filters.provider) return false;
-      if (filters.currency !== 'alle' && etf.currency !== filters.currency) return false;
-      if (filters.esg && !etf.esg) return false;
-      if (filters.dividend && parseFloat(etf.dividend) === 0) return false;
-      if (etf.aum < filters.minSize) return false;
-      if (parseFloat(etf.ter) > filters.maxTER) return false;
-      if (filters.search && !etf.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
-      return true;
-    });
-  }, [etfs, filters]);
-
-  // Get current portfolio
-  const getCurrentPortfolio = () => {
-    if (selectedPortfolioType === 'model') {
-      const modelData = modelPortfolios.balanced;
-      const portfolio = {};
-      Object.entries(modelData.allocations).forEach(([etfName, weight]) => {
-        const etf = etfs.find(e => e.name === etfName);
-        if (etf) {
-          portfolio[etf.isin] = { etf, weight };
-        }
-      });
-      return portfolio;
-    }
-    return customPortfolio;
-  };
-
-  // Calculate portfolio metrics
-  const getPortfolioMetrics = () => {
-    const portfolio = getCurrentPortfolio();
-    const etfList = Object.values(portfolio);
+  const generateHoldings = () => {
+    const stockHoldings = [
+      { name: 'Apple Inc.', weight: 4.2, region: 'Verenigde Staten' },
+      { name: 'Microsoft Corp.', weight: 3.8, region: 'Verenigde Staten' },
+      { name: 'NVIDIA Corp.', weight: 3.5, region: 'Verenigde Staten' },
+      { name: 'Amazon.com Inc.', weight: 2.9, region: 'Verenigde Staten' },
+      { name: 'Meta Platforms Inc.', weight: 2.1, region: 'Verenigde Staten' },
+      { name: 'Alphabet Inc. Class A', weight: 2.0, region: 'Verenigde Staten' },
+      { name: 'Tesla Inc.', weight: 1.8, region: 'Verenigde Staten' },
+      { name: 'Broadcom Inc.', weight: 1.5, region: 'Verenigde Staten' },
+      { name: 'ASML Holding NV', weight: 1.4, region: 'Europa' },
+      { name: 'Taiwan Semiconductor', weight: 1.3, region: 'Azië' },
+      { name: 'JPMorgan Chase & Co.', weight: 1.2, region: 'Verenigde Staten' },
+      { name: 'Johnson & Johnson', weight: 1.1, region: 'Verenigde Staten' },
+      { name: 'Visa Inc.', weight: 1.0, region: 'Verenigde Staten' },
+      { name: 'Procter & Gamble', weight: 0.9, region: 'Verenigde Staten' },
+      { name: 'Mastercard Inc.', weight: 0.9, region: 'Verenigde Staten' },
+      { name: 'Nestlé SA', weight: 0.8, region: 'Europa' },
+      { name: 'Home Depot Inc.', weight: 0.8, region: 'Verenigde Staten' },
+      { name: 'Bank of America', weight: 0.7, region: 'Verenigde Staten' },
+      { name: 'AbbVie Inc.', weight: 0.7, region: 'Verenigde Staten' },
+      { name: 'Coca-Cola Company', weight: 0.7, region: 'Verenigde Staten' }
+    ];
     
-    if (etfList.length === 0) {
-      return { expectedReturn: 0, totalTER: 0, avgRiskScore: 0, esgScore: 0, totalWeight: 0 };
-    }
-
-    const totalWeight = etfList.reduce((sum, item) => sum + item.weight, 0);
-    const expectedReturn = etfList.reduce((sum, item) => sum + (parseFloat(item.etf.expectedReturn) * item.weight / totalWeight), 0);
-    const totalTER = etfList.reduce((sum, item) => sum + (parseFloat(item.etf.ter) * item.weight / totalWeight), 0);
-    const avgRiskScore = etfList.reduce((sum, item) => sum + (item.etf.riskScore * item.weight / totalWeight), 0);
-    const esgScore = etfList.reduce((sum, item) => sum + ((item.etf.esg ? 100 : 0) * item.weight / totalWeight), 0);
-
+    const moreHoldings = Array.from({length: 80}, (_, i) => ({
+      name: `Bedrijf ${i + 21}`,
+      weight: Math.max(0.1, 0.7 - (i * 0.007)),
+      region: ['Verenigde Staten', 'Europa', 'Azië', 'Opkomende Markten'][i % 4]
+    }));
+    
+    const bondHoldings = [
+      { name: 'US Treasury 10Y', weight: 3.5, region: 'Verenigde Staten', maturity: '10 jaar', coupon: '4.2%' },
+      { name: 'German Bund 10Y', weight: 2.8, region: 'Europa', maturity: '10 jaar', coupon: '2.5%' },
+      { name: 'US Treasury 5Y', weight: 2.3, region: 'Verenigde Staten', maturity: '5 jaar', coupon: '4.0%' },
+      { name: 'French OAT 10Y', weight: 1.9, region: 'Europa', maturity: '10 jaar', coupon: '3.1%' },
+      { name: 'UK Gilt 10Y', weight: 1.7, region: 'Europa', maturity: '10 jaar', coupon: '4.5%' },
+      { name: 'Italian BTP 10Y', weight: 1.5, region: 'Europa', maturity: '10 jaar', coupon: '4.8%' },
+      { name: 'US Treasury 2Y', weight: 1.4, region: 'Verenigde Staten', maturity: '2 jaar', coupon: '4.8%' },
+      { name: 'Spanish Bonos 10Y', weight: 1.2, region: 'Europa', maturity: '10 jaar', coupon: '3.5%' },
+      { name: 'Japanese JGB 10Y', weight: 1.1, region: 'Azië', maturity: '10 jaar', coupon: '0.7%' },
+      { name: 'Dutch DSL 10Y', weight: 1.0, region: 'Europa', maturity: '10 jaar', coupon: '2.8%' }
+    ];
+    
+    const moreBonds = Array.from({length: 90}, (_, i) => ({
+      name: `Obligatie ${i + 11}`,
+      weight: Math.max(0.05, 1.0 - (i * 0.01)),
+      region: ['Verenigde Staten', 'Europa', 'Azië'][i % 3],
+      maturity: ['2 jaar', '5 jaar', '10 jaar', '30 jaar'][i % 4],
+      coupon: `${(Math.random() * 4 + 1).toFixed(1)}%`
+    }));
+    
+    const hasStocks = portfolio.some(etf => etf.categorie === 'Aandelen');
+    const hasBonds = portfolio.some(etf => etf.categorie === 'Obligaties');
+    
     return {
-      expectedReturn: expectedReturn.toFixed(1),
-      totalTER: totalTER.toFixed(2),
-      avgRiskScore: avgRiskScore.toFixed(1),
-      esgScore: esgScore.toFixed(0),
-      totalWeight: totalWeight.toFixed(1)
+      stocks: hasStocks ? [...stockHoldings, ...moreHoldings] : [],
+      bonds: hasBonds ? [...bondHoldings, ...moreBonds] : []
     };
   };
 
-  // Add ETF to portfolio
-  const addETFToPortfolio = (etf) => {
-    setCustomPortfolio(prev => ({
-      ...prev,
-      [etf.isin]: { etf, weight: 10 }
-    }));
-    alert(`${etf.name} toegevoegd aan portfolio`);
-  };
+  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
 
-  // ETF Detail Modal
-  const ETFDetailModal = ({ etf, onClose }) => {
-    if (!etf) return null;
-
+  const EditPortfolioModal = ({ onClose }) => {
+    const [tempPortfolio, setTempPortfolio] = useState([...portfolio]);
+    
+    const updateWeight = (isin, newWeight) => {
+      setTempPortfolio(prev => prev.map(etf => 
+        etf.isin === isin ? {...etf, weight: parseFloat(newWeight) || 0} : etf
+      ));
+    };
+    
+    const removeETF = (isin) => {
+      setTempPortfolio(prev => prev.filter(etf => etf.isin !== isin));
+    };
+    
+    const saveChanges = () => {
+      const totalWeight = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
+      if (Math.abs(totalWeight - 100) > 0.1) {
+        alert(`Let op: Totale weging is ${totalWeight.toFixed(1)}%. Dit moet 100% zijn.`);
+        return;
+      }
+      setPortfolio(tempPortfolio);
+      onClose();
+    };
+    
+    const normalizeWeights = () => {
+      const total = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
+      if (total > 0) {
+        setTempPortfolio(prev => prev.map(etf => ({
+          ...etf,
+          weight: (etf.weight / total) * 100
+        })));
+      }
+    };
+    
+    const totalWeight = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
+    
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[70vh] overflow-hidden">
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">{etf.name}</h2>
-                <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                  <span>ISIN: {etf.isin}</span>
-                  <span>{etf.provider}</span>
-                  <span>TER: {etf.ter}%</span>
-                  {etf.esg && <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">ESG</span>}
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Portfolio Aanpassen</h2>
+              <p className="text-sm text-gray-600 mt-1">Wijzig de wegingen van je ETF's</p>
+            </div>
+            <button onClick={onClose} className="text-2xl text-gray-500 hover:text-gray-700">×</button>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-sm text-gray-600">Totale Weging:</span>
+                  <span className={`ml-2 text-xl font-bold ${Math.abs(totalWeight - 100) < 0.1 ? 'text-green-600' : 'text-red-600'}`}>
+                    {totalWeight.toFixed(1)}%
+                  </span>
                 </div>
+                <button
+                  onClick={normalizeWeights}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                >
+                  Normaliseer naar 100%
+                </button>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X className="h-5 w-5" />
+            </div>
+            
+            <div className="space-y-3">
+              {tempPortfolio.map((etf, idx) => (
+                <div key={idx} className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{etf.naam}</div>
+                      <div className="text-xs text-gray-600">{etf.categorie} • {etf.isin}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={etf.weight || 0}
+                          onChange={(e) => updateWeight(etf.isin, e.target.value)}
+                          className="w-20 px-3 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-blue-500 text-right"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                        />
+                        <span className="text-sm font-medium">%</span>
+                      </div>
+                      <button
+                        onClick={() => removeETF(etf.isin)}
+                        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                      >
+                        Verwijder
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {tempPortfolio.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                Je portfolio is leeg. Voeg ETF's toe vanaf de ETF Database pagina.
+              </div>
+            )}
+            
+            <div className="flex gap-4 pt-4 border-t">
+              <button
+                onClick={() => setCurrentPage('etfDatabase')}
+                className="flex-1 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium"
+              >
+                + ETF Toevoegen
+              </button>
+              <button
+                onClick={saveChanges}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Wijzigingen Opslaan
+              </button>
+              <button
+                onClick={onClose}
+                className="flex-1 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+              >
+                Annuleren
               </button>
             </div>
           </div>
+        </div>
+        
+        {showEditPortfolio && <EditPortfolioModal onClose={() => setShowEditPortfolio(false)} />}
+      </div>
+    );
+  };
 
-          <div className="p-4 overflow-y-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  const LandingPage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
+      <nav className="bg-white/95 backdrop-blur-sm shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
+          <div className="space-x-4">
+            <button 
+              onClick={() => setCurrentPage('login')}
+              className="px-6 py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium"
+            >
+              Inloggen
+            </button>
+            <button 
+              onClick={() => setCurrentPage('register')}
+              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium"
+            >
+              Open een rekening →
+            </button>
+          </div>
+        </div>
+      </nav>
+      
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="grid grid-cols-2 gap-12 items-center">
+          <div className="text-white">
+            <h1 className="text-6xl font-bold mb-6 leading-tight">
+              Bouw je eigen ETF portfolio
+            </h1>
+            <p className="text-xl mb-8 opacity-90 leading-relaxed">
+              Investeer slim in ETF's met ons gebruiksvriendelijke platform. 
+              Begin vandaag nog met beleggen tegen lage kosten.
+            </p>
+            <button 
+              onClick={() => setCurrentPage('register')}
+              className="px-8 py-4 bg-white text-indigo-600 rounded-full text-lg hover:shadow-2xl transition-all font-bold"
+            >
+              Open je rekening →
+            </button>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-white border border-white/20 shadow-2xl">
+            <h3 className="text-2xl font-bold mb-4">
+              Start met beleggen
+            </h3>
+            <p className="opacity-90 leading-relaxed">
+              Ontdek onze database met {etfs.length} ETF's en stel je eigen portfolio samen 
+              of kies uit onze vooraf samengestelde strategieën.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <button onClick={() => setCurrentPage('landing')} className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              ETF PORTAL
+            </button>
+          </div>
+        </nav>
+        
+        <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welkom terug</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Gebruikersnaam</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                placeholder="Email"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                placeholder="Password"
+              />
+            </div>
+            
+            <button
+              onClick={() => handleLogin(email, password)}
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+            >
+              Inloggen
+            </button>
+          </div>
+          
+          <p className="text-center mt-6 text-sm text-gray-600">
+            Geen account?{' '}
+            <button onClick={() => setCurrentPage('register')} className="text-indigo-600 hover:underline font-semibold">
+              Registreer hier
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const RegisterPage = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <button onClick={() => setCurrentPage('landing')} className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              ETF PORTAL
+            </button>
+          </div>
+        </nav>
+        
+        <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Naam</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              />
+            </div>
+            
+            <button
+              onClick={() => handleRegister(name, email, password)}
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+            >
+              Account aanmaken
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ETFDatabasePage = () => {
+    const categories = [...new Set(etfs.map(e => e.categorie).filter(Boolean))];
+    const subcategories = [...new Set(etfs.map(e => e.subcategorie).filter(Boolean))];
+    const currencies = [...new Set(etfs.map(e => e['fund ccy']).filter(Boolean))];
+    
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-2xl font-bold mb-4">ETF data laden...</div>
+            <div className="text-gray-600">Even geduld aub</div>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+                ETF Database
+              </button>
+              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+                Portfolio Samenstellen
+              </button>
+              {portfolio.length > 0 && (
+                <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+                  Mijn Portfolio ({portfolio.length})
+                </button>
+              )}
+              <div className="text-sm px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold">{user?.name}</div>
+            </div>
+          </div>
+        </nav>
+        
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">ETF Database</h1>
+          
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+            <div className="grid grid-cols-5 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Zoek op naam of ISIN..."
+                value={filters.search}
+                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                className="col-span-2 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              />
+              
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters({...filters, category: e.target.value})}
+                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                <option value="">Alle Categorieën</option>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              
+              <select
+                value={filters.subcategory}
+                onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
+                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                <option value="">Alle Subcategorieën</option>
+                {subcategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+              </select>
+              
+              <select
+                value={filters.currency}
+                onChange={(e) => setFilters({...filters, currency: e.target.value})}
+                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                <option value="">Alle Valuta's</option>
+                {currencies.map(curr => <option key={curr} value={curr}>{curr}</option>)}
+              </select>
+            </div>
+            
+            <div className="text-sm text-gray-600">
+              Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-orange-600">(Sample data - upload Excel voor volledige database)</span>}
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div className="overflow-x-auto max-h-[600px]">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-indigo-50 to-purple-50 sticky top-0">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Naam</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ISIN</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Categorie</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">TER</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">YTD</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">2024</th>
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actie</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredEtfs.map((etf, idx) => (
+                    <tr key={idx} className="hover:bg-indigo-50/50 transition-colors">
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => setSelectedETF(etf)}
+                          className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline"
+                        >
+                          {etf.naam}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{etf.isin}</td>
+                      <td className="px-4 py-3 text-sm">{etf.categorie}</td>
+                      <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {etf.ytd}
+                      </td>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {etf['2024']}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => addToPortfolio(etf)}
+                          className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                        >
+                          + Portfolio
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const getTopHoldingsForETF = (etf) => {
+    const subcategory = etf.subcategorie || '';
+    const category = etf.categorie || '';
+    
+    // Generate appropriate holdings based on ETF type
+    if (category === 'Aandelen') {
+      if (subcategory.includes('Verenigde Staten') || subcategory.includes('S&P 500')) {
+        return [
+          { name: 'Apple Inc.', weight: 7.2, sector: 'Technology' },
+          { name: 'Microsoft Corp.', weight: 6.8, sector: 'Technology' },
+          { name: 'NVIDIA Corp.', weight: 5.9, sector: 'Technology' },
+          { name: 'Amazon.com Inc.', weight: 3.8, sector: 'Consumer Discretionary' },
+          { name: 'Meta Platforms Inc.', weight: 2.5, sector: 'Technology' },
+          { name: 'Alphabet Inc. Class A', weight: 2.3, sector: 'Technology' },
+          { name: 'Berkshire Hathaway', weight: 1.9, sector: 'Financials' },
+          { name: 'Tesla Inc.', weight: 1.8, sector: 'Consumer Discretionary' },
+          { name: 'Broadcom Inc.', weight: 1.7, sector: 'Technology' },
+          { name: 'JPMorgan Chase & Co.', weight: 1.5, sector: 'Financials' }
+        ];
+      } else if (subcategory.includes('Wereldwijd') || subcategory.includes('World')) {
+        return [
+          { name: 'Apple Inc.', weight: 4.8, sector: 'Technology' },
+          { name: 'Microsoft Corp.', weight: 4.2, sector: 'Technology' },
+          { name: 'NVIDIA Corp.', weight: 3.5, sector: 'Technology' },
+          { name: 'Amazon.com Inc.', weight: 2.4, sector: 'Consumer Discretionary' },
+          { name: 'Meta Platforms Inc.', weight: 1.8, sector: 'Technology' },
+          { name: 'Alphabet Inc.', weight: 1.7, sector: 'Technology' },
+          { name: 'Tesla Inc.', weight: 1.3, sector: 'Consumer Discretionary' },
+          { name: 'ASML Holding NV', weight: 1.2, sector: 'Technology' },
+          { name: 'Nestlé SA', weight: 1.1, sector: 'Consumer Staples' },
+          { name: 'JPMorgan Chase', weight: 1.0, sector: 'Financials' }
+        ];
+      } else if (subcategory.includes('Europa')) {
+        return [
+          { name: 'ASML Holding NV', weight: 5.2, sector: 'Technology' },
+          { name: 'Nestlé SA', weight: 4.8, sector: 'Consumer Staples' },
+          { name: 'LVMH Moët Hennessy', weight: 3.9, sector: 'Consumer Discretionary' },
+          { name: 'Novo Nordisk A/S', weight: 3.6, sector: 'Healthcare' },
+          { name: 'SAP SE', weight: 2.8, sector: 'Technology' },
+          { name: 'Roche Holding AG', weight: 2.5, sector: 'Healthcare' },
+          { name: 'Shell plc', weight: 2.3, sector: 'Energy' },
+          { name: 'AstraZeneca PLC', weight: 2.1, sector: 'Healthcare' },
+          { name: 'Siemens AG', weight: 1.9, sector: 'Industrials' },
+          { name: 'TotalEnergies SE', weight: 1.8, sector: 'Energy' }
+        ];
+      } else if (subcategory.includes('Technology')) {
+        return [
+          { name: 'Apple Inc.', weight: 21.5, sector: 'Technology Hardware' },
+          { name: 'Microsoft Corp.', weight: 20.2, sector: 'Software' },
+          { name: 'NVIDIA Corp.', weight: 18.8, sector: 'Semiconductors' },
+          { name: 'Broadcom Inc.', weight: 5.4, sector: 'Semiconductors' },
+          { name: 'Oracle Corp.', weight: 4.2, sector: 'Software' },
+          { name: 'Salesforce Inc.', weight: 3.8, sector: 'Software' },
+          { name: 'Adobe Inc.', weight: 3.5, sector: 'Software' },
+          { name: 'Cisco Systems', weight: 3.1, sector: 'Networking' },
+          { name: 'Advanced Micro Devices', weight: 2.9, sector: 'Semiconductors' },
+          { name: 'Qualcomm Inc.', weight: 2.6, sector: 'Semiconductors' }
+        ];
+      } else if (subcategory.includes('Opkomende')) {
+        return [
+          { name: 'Taiwan Semiconductor', weight: 8.7, sector: 'Technology' },
+          { name: 'Tencent Holdings', weight: 4.5, sector: 'Technology' },
+          { name: 'Samsung Electronics', weight: 4.2, sector: 'Technology' },
+          { name: 'Alibaba Group', weight: 2.8, sector: 'Consumer Discretionary' },
+          { name: 'Meituan', weight: 1.9, sector: 'Consumer Discretionary' },
+          { name: 'Reliance Industries', weight: 1.7, sector: 'Energy' },
+          { name: 'HDFC Bank', weight: 1.5, sector: 'Financials' },
+          { name: 'Infosys Ltd.', weight: 1.4, sector: 'Technology' },
+          { name: 'China Construction Bank', weight: 1.3, sector: 'Financials' },
+          { name: 'Vale SA', weight: 1.2, sector: 'Materials' }
+        ];
+      }
+    } else if (category === 'Obligaties') {
+      if (subcategory.includes('Europa')) {
+        return [
+          { name: 'German Bund 10Y', weight: 18.5, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'French OAT 10Y', weight: 15.2, maturity: '10 jaar', rating: 'AA' },
+          { name: 'Italian BTP 10Y', weight: 12.8, maturity: '10 jaar', rating: 'BBB' },
+          { name: 'Spanish Bonos 10Y', weight: 10.3, maturity: '10 jaar', rating: 'A' },
+          { name: 'Dutch DSL 10Y', weight: 8.7, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'Belgian OLO 10Y', weight: 6.5, maturity: '10 jaar', rating: 'AA' },
+          { name: 'Austrian Bund 10Y', weight: 5.2, maturity: '10 jaar', rating: 'AA+' },
+          { name: 'Finnish Govt Bond 10Y', weight: 4.8, maturity: '10 jaar', rating: 'AA+' },
+          { name: 'Portuguese OT 10Y', weight: 4.2, maturity: '10 jaar', rating: 'BBB+' },
+          { name: 'Irish Govt Bond 10Y', weight: 3.8, maturity: '10 jaar', rating: 'AA-' }
+        ];
+      } else {
+        return [
+          { name: 'US Treasury 10Y', weight: 15.8, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'US Treasury 5Y', weight: 12.3, maturity: '5 jaar', rating: 'AAA' },
+          { name: 'German Bund 10Y', weight: 9.7, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'UK Gilt 10Y', weight: 8.2, maturity: '10 jaar', rating: 'AA' },
+          { name: 'Japanese JGB 10Y', weight: 7.5, maturity: '10 jaar', rating: 'A+' },
+          { name: 'French OAT 10Y', weight: 6.8, maturity: '10 jaar', rating: 'AA' },
+          { name: 'Canadian Govt 10Y', weight: 5.9, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'Australian Govt 10Y', weight: 5.2, maturity: '10 jaar', rating: 'AAA' },
+          { name: 'US Treasury 2Y', weight: 4.6, maturity: '2 jaar', rating: 'AAA' },
+          { name: 'Swiss Govt 10Y', weight: 4.0, maturity: '10 jaar', rating: 'AAA' }
+        ];
+      }
+    } else if (category === 'Commodities') {
+      return [
+        { name: 'Physical Gold Holdings', weight: 100, type: 'Precious Metal' }
+      ];
+    } else if (category === 'Vastgoed') {
+      return [
+        { name: 'Prologis Inc.', weight: 8.5, sector: 'Industrial REITs' },
+        { name: 'American Tower Corp.', weight: 6.2, sector: 'Telecom REITs' },
+        { name: 'Equinix Inc.', weight: 5.8, sector: 'Data Center REITs' },
+        { name: 'Public Storage', weight: 4.9, sector: 'Storage REITs' },
+        { name: 'Welltower Inc.', weight: 4.3, sector: 'Healthcare REITs' },
+        { name: 'Simon Property Group', weight: 4.1, sector: 'Retail REITs' },
+        { name: 'Realty Income Corp.', weight: 3.8, sector: 'Retail REITs' },
+        { name: 'Digital Realty Trust', weight: 3.6, sector: 'Data Center REITs' },
+        { name: 'AvalonBay Communities', weight: 3.4, sector: 'Residential REITs' },
+        { name: 'Equity Residential', weight: 3.2, sector: 'Residential REITs' }
+      ];
+    }
+    
+    return [];
+  };
+
+  const ETFDetailModal = ({ etf, onClose }) => {
+    if (!etf) return null;
+    
+    const historicalData = [
+      { year: '2021', return: safeParseFloat(etf['2021']) },
+      { year: '2022', return: safeParseFloat(etf['2022']) },
+      { year: '2023', return: safeParseFloat(etf['2023']) },
+      { year: '2024', return: safeParseFloat(etf['2024']) }
+    ];
+    
+    const topHoldings = getTopHoldingsForETF(etf);
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="sticky top-0 bg-white border-b px-3 py-2 flex justify-between items-center z-10 gap-2">
+            <h2 className="text-base font-bold truncate">{etf.naam}</h2>
+            <button onClick={onClose} className="text-4xl text-gray-500 hover:text-gray-700 flex-shrink-0 leading-none -mt-2">×</button>
+          </div>
+          
+          <div className="p-3 space-y-3">
+            <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <h3 className="font-semibold mb-3">Performance</h3>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={etf.performance}>
-                      <Area type="monotone" dataKey="value" stroke="#475569" fill="#475569" fillOpacity={0.3} />
-                      <Tooltip formatter={(value) => [`€${value}`, 'Koers']} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                <div className="font-semibold mb-1">Basis Info</div>
+                <div className="space-y-0.5">
+                  <div className="flex justify-between"><span className="text-gray-600">ISIN:</span><span>{etf.isin}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">Categorie:</span><span>{etf.categorie}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">TER:</span><span className="text-blue-600 font-medium">{etf['ter p.a.']}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">YTD:</span><span className={safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}>{etf.ytd}</span></div>
                 </div>
               </div>
               
               <div>
-                <h3 className="font-semibold mb-3">Belangrijke Gegevens</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Fondsvermogen:</span>
-                    <span>€{etf.aum}M</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Verwacht Rendement:</span>
-                    <span className="text-green-600">{etf.expectedReturn}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Risicoscore:</span>
-                    <span>{etf.riskScore}/6</span>
-                  </div>
+                <div className="font-semibold mb-1">Details</div>
+                <div className="space-y-0.5">
+                  <div className="flex justify-between"><span className="text-gray-600">Fund Size:</span><span>€{etf['fund size (in m €)']}M</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">Vol 1Y:</span><span>{etf['volatility 1y']}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">Holdings:</span><span>{etf.holdings}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">Uitkering:</span><span>{etf.distribution}</span></div>
                 </div>
               </div>
             </div>
-
-            <div className="mt-4">
-              <h3 className="font-semibold mb-3">Top Holdings</h3>
-              <div className="space-y-2">
-                {etf.holdings.slice(0, 5).map((holding, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span>{holding.name}</span>
-                    <span>{holding.weight}%</span>
-                  </div>
-                ))}
-              </div>
+            
+            <div>
+              <div className="font-semibold mb-1 text-xs">Historisch Rendement</div>
+              <ResponsiveContainer width="100%" height={140}>
+                <BarChart data={historicalData}>
+                  <XAxis dataKey="year" tick={{fontSize: 10}} />
+                  <YAxis tick={{fontSize: 10}} />
+                  <Tooltip />
+                  <Bar dataKey="return" fill="#0088FE" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-          </div>
-
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex gap-3">
+            
+            {topHoldings.length > 0 && (
+              <div>
+                <div className="font-semibold mb-1 text-xs">Top 10 Holdings</div>
+                <div className="text-xs space-y-0.5 max-h-32 overflow-y-auto border rounded p-2">
+                  {topHoldings.map((holding, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1 border-b last:border-0">
+                      <div className="flex items-start gap-2 flex-1 min-w-0">
+                        <span className="text-gray-500 flex-shrink-0">{idx + 1}.</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">{holding.name}</div>
+                          <div className="text-gray-600 text-[10px]">
+                            {holding.sector || holding.rating || holding.type || '-'}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="font-medium ml-2 flex-shrink-0">{holding.weight.toFixed(1)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="flex gap-2 pt-1">
               <button
-                onClick={onClose}
-                className="flex-1 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-              >
-                Sluiten
-              </button>
-              <button 
                 onClick={() => {
-                  addETFToPortfolio(etf);
+                  addToPortfolio(etf);
                   onClose();
                 }}
-                className="flex-1 bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+                className="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium"
               >
-                Voeg toe aan Portfolio
+                + Portfolio
+              </button>
+              <button
+                onClick={onClose}
+                className="flex-1 py-2 border-2 border-gray-300 rounded hover:bg-gray-50 text-xs font-medium"
+              >
+                Sluiten
               </button>
             </div>
           </div>
@@ -395,1366 +1211,810 @@ const ETFInvestmentPlatform = () => {
     );
   };
 
-  // Onboarding Component
-  const OnboardingWizard = () => {
-    const handleNext = () => {
-      if (onboardingStep === 5 && onboardingData.portfolioChoice === 'model') {
-        setOnboardingStep(6);
-      } else if ((onboardingStep === 5 && onboardingData.portfolioChoice === 'custom') || onboardingStep === 6) {
-        setOnboardingStep(7);
-      } else {
-        setOnboardingStep(prev => prev + 1);
-      }
+  const PortfolioBuilderPage = () => {
+    // Get required categories based on selected profile
+    const getRequiredCategories = () => {
+      if (!selectedProfile) return [];
+      const config = premadePortfolios[selectedProfile];
+      return Object.keys(config.allocation);
     };
-
-    const handleBack = () => setOnboardingStep(prev => prev - 1);
-
-    const calculateProjections = () => {
-      const amount = parseFloat(onboardingData.investmentAmount) || 10000;
-      const years = parseFloat(onboardingData.horizon) || 10;
-      let expectedReturn = 6.0;
-      
-      if (onboardingData.portfolioChoice === 'model' && onboardingData.modelTheme) {
-        const theme = modelPortfolioThemes[onboardingData.modelTheme];
-        if (theme?.expectedReturn[onboardingData.riskProfile]) {
-          expectedReturn = theme.expectedReturn[onboardingData.riskProfile];
-        }
-      }
-
-      return [
-        { scenario: 'pessimistic', name: 'Pessimistisch', returnRate: expectedReturn - 2, finalValue: amount * Math.pow(1 + (expectedReturn - 2) / 100, years) },
-        { scenario: 'expected', name: 'Verwacht', returnRate: expectedReturn, finalValue: amount * Math.pow(1 + expectedReturn / 100, years) },
-        { scenario: 'optimistic', name: 'Optimistisch', returnRate: expectedReturn + 2, finalValue: amount * Math.pow(1 + (expectedReturn + 2) / 100, years) }
-      ].map(proj => ({ ...proj, totalReturn: proj.finalValue - amount }));
-    };
-
-    const renderStep = () => {
-      switch (onboardingStep) {
-        case 1:
-          return (
-            <div className="text-center space-y-6">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto">
-                <User className="h-10 w-10 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welkom bij ETF Portal Pro, {user?.name}!</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">We gaan samen jouw ideale beleggingsportefeuille samenstellen.</p>
+    
+    const requiredCategories = getRequiredCategories();
+    const allCategoriesCompleted = requiredCategories.every(cat => categoriesCompleted[cat]);
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">ETF Database</button>
+              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-indigo-600 font-semibold">Portfolio Samenstellen</button>
+              {portfolio.length > 0 && <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Mijn Portfolio ({portfolio.length})</button>}
+              <div className="text-sm px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold">{user?.name}</div>
             </div>
-          );
-
-        case 2:
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Hoe wil je beleggen?</h2>
-                <p className="text-lg text-gray-600">Kies hoe je jouw portefeuille wilt samenstellen</p>
+          </div>
+        </nav>
+        
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <h1 className="text-4xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Kies je beleggingsstrategie</h1>
+          <p className="text-center text-gray-600 mb-12">Stel zelf een portfolio samen of kies een van onze vooraf samengestelde portfolio's</p>
+          
+          <div className="grid grid-cols-2 gap-8 mb-12">
+            <button onClick={() => { 
+              setPortfolioType('custom'); 
+              setCustomBuildStep('profile');
+              setSelectedProfile(null);
+              setSelectedCategory(null);
+              setCategoriesCompleted({});
+              setPortfolio([]);
+            }} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all border border-gray-100">
+              <div className="text-5xl mb-4">🎯</div>
+              <h3 className="text-2xl font-bold mb-2">Zelf Samenstellen</h3>
+              <p className="text-gray-600">Kies een profiel en selecteer je eigen ETF's per categorie</p>
+            </button>
+            
+            <button onClick={() => setPortfolioType('premade')} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all border border-gray-100">
+              <div className="text-5xl mb-4">📊</div>
+              <h3 className="text-2xl font-bold mb-2">Vooraf Samengesteld</h3>
+              <p className="text-gray-600">Kies een portfolio op basis van risicoprofiel</p>
+            </button>
+          </div>
+          
+          {portfolioType === 'custom' && customBuildStep === 'profile' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Stap 1: Kies je risicoprofiel</h2>
+              <div className="grid grid-cols-3 gap-6">
+                {Object.entries(premadePortfolios).map(([key, config]) => (
+                  <button 
+                    key={key} 
+                    onClick={() => {
+                      setSelectedProfile(key);
+                      setCustomBuildStep('categories');
+                    }} 
+                    className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300"
+                  >
+                    <h4 className="font-bold text-lg mb-2">{config.name}</h4>
+                    <div className="text-sm text-gray-600 mb-3">
+                      {Object.entries(config.allocation).map(([cat, pct]) => (
+                        <div key={cat}>{cat}: {pct}%</div>
+                      ))}
+                    </div>
+                    <div className="text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                  </button>
+                ))}
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                <button
-                  onClick={() => setOnboardingData(prev => ({ ...prev, portfolioChoice: 'model' }))}
-                  className={`p-8 rounded-2xl border-2 transition-all text-left ${
-                    onboardingData.portfolioChoice === 'model' ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
-                  }`}
+            </div>
+          )}
+          
+          {portfolioType === 'custom' && customBuildStep === 'categories' && selectedProfile && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold">Stap 2: Vul categorieën</h2>
+                  <p className="text-gray-600">Geselecteerd profiel: {premadePortfolios[selectedProfile].name}</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setCustomBuildStep('profile');
+                    setSelectedProfile(null);
+                    setCategoriesCompleted({});
+                    setPortfolio([]);
+                  }}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-slate-600 p-3 rounded-lg">
-                      <Target className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-xl font-semibold">Modelportefeuille</h3>
-                  </div>
-                  <p className="text-gray-600 mb-4">Kies uit professioneel samengestelde portefeuilles.</p>
-                  <div className="text-sm text-slate-600 font-medium">Aanbevolen voor beginners</div>
-                </button>
-
-                <button
-                  onClick={() => setOnboardingData(prev => ({ ...prev, portfolioChoice: 'custom' }))}
-                  className={`p-8 rounded-2xl border-2 transition-all text-left ${
-                    onboardingData.portfolioChoice === 'custom' ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-stone-600 p-3 rounded-lg">
-                      <Settings className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-xl font-semibold">Zelf samenstellen</h3>
-                  </div>
-                  <p className="text-gray-600 mb-4">Stel zelf je portefeuille samen door ETFs te kiezen.</p>
-                  <div className="text-sm text-stone-600 font-medium">Voor ervaren beleggers</div>
+                  ← Profiel wijzigen
                 </button>
               </div>
-            </div>
-          );
-
-        case 3:
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Wat is je risicoprofiel?</h2>
-                <p className="text-lg text-gray-600">Hoeveel risico kun en wil je nemen?</p>
-              </div>
               
-              <div className="space-y-4 max-w-4xl mx-auto">
-                {Object.entries(riskProfiles).map(([key, profile]) => (
-                  <button
-                    key={key}
-                    onClick={() => setOnboardingData(prev => ({ ...prev, riskProfile: key }))}
-                    className={`w-full p-6 rounded-xl border-2 transition-all text-left ${
-                      onboardingData.riskProfile === key ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">{profile.name}</h3>
-                        <p className="text-gray-600 mb-2">{profile.description}</p>
-                        <div className="flex gap-4 text-sm text-gray-500">
-                          <span>Max verlies: {profile.maxLoss}</span>
-                          <span>Horizon: {profile.timeHorizon}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-
-        case 4:
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Wat is je beleggingshorizon?</h2>
-                <p className="text-lg text-gray-600">Hoelang wil je je geld beleggen?</p>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                {[
-                  { value: '3', label: '3 jaar' },
-                  { value: '5', label: '5 jaar' },
-                  { value: '10', label: '10 jaar' },
-                  { value: '20', label: '20+ jaar' }
-                ].map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => setOnboardingData(prev => ({ ...prev, horizon: option.value }))}
-                    className={`p-6 rounded-xl border-2 transition-all text-center ${
-                      onboardingData.horizon === option.value ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="text-2xl font-bold text-gray-900 mb-2">{option.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-
-        case 5:
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Hoeveel wil je beleggen?</h2>
-                <p className="text-lg text-gray-600">Wat is je initiële beleggingsbedrag?</p>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                {[
-                  { value: '5000', label: formatCurrency(5000) },
-                  { value: '10000', label: formatCurrency(10000) },
-                  { value: '25000', label: formatCurrency(25000) },
-                  { value: '50000', label: formatCurrency(50000) }
-                ].map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => setOnboardingData(prev => ({ ...prev, investmentAmount: option.value }))}
-                    className={`p-6 rounded-xl border-2 transition-all text-center ${
-                      onboardingData.investmentAmount === option.value ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="text-xl font-bold text-gray-900">{option.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          );
-
-        case 6:
-          return (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Kies je beleggingsthema</h2>
-                <p className="text-lg text-gray-600">Welk thema past het beste bij jouw voorkeuren?</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {Object.entries(modelPortfolioThemes).map(([key, theme]) => {
-                  const IconComponent = theme.icon;
-                  const expectedReturn = theme.expectedReturn[onboardingData.riskProfile] || 6;
+              <div className="grid grid-cols-3 gap-6 mb-8">
+                {requiredCategories.map(category => {
+                  const isCompleted = categoriesCompleted[category];
+                  const allocation = premadePortfolios[selectedProfile].allocation[category];
                   
                   return (
                     <button
-                      key={key}
-                      onClick={() => setOnboardingData(prev => ({ ...prev, modelTheme: key }))}
-                      className={`p-6 rounded-2xl border-2 transition-all text-left ${
-                        onboardingData.modelTheme === key ? 'border-slate-500 bg-slate-50' : 'border-gray-200 hover:border-gray-300'
+                      key={category}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setCustomBuildStep('selectETFs');
+                      }}
+                      className={`p-6 rounded-2xl shadow-lg transition-all border-2 text-left ${
+                        isCompleted 
+                          ? 'bg-green-50 border-green-500' 
+                          : 'bg-white border-gray-200 hover:border-indigo-400'
                       }`}
                     >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className={`${theme.color} p-3 rounded-lg`}>
-                          <IconComponent className="h-6 w-6 text-white" />
-                        </div>
-                        <h3 className="text-lg font-semibold">{theme.name}</h3>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-lg">{category}</h3>
+                        {isCompleted && <span className="text-2xl">✓</span>}
                       </div>
-                      <p className="text-gray-600 text-sm mb-4">{theme.description}</p>
-                      <div className="text-xs">
-                        <div className="flex justify-between">
-                          <span>Verwacht rendement:</span>
-                          <span className="font-semibold text-green-600">{expectedReturn}%</span>
-                        </div>
-                      </div>
+                      <p className="text-sm text-gray-600">Allocatie: {allocation}%</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {isCompleted ? 'Voltooid - Klik om aan te passen' : 'Klik om ETF\'s te selecteren'}
+                      </p>
                     </button>
                   );
                 })}
               </div>
-            </div>
-          );
-
-        case 7:
-          const projections = calculateProjections();
-          const amount = parseFloat(onboardingData.investmentAmount) || 10000;
-          const years = parseFloat(onboardingData.horizon) || 10;
-          const selectedETFs = Object.entries(modelPortfolios.balanced.allocations).map(([etfName, weight]) => {
-            const etf = etfs.find(e => e.name === etfName);
-            return etf ? { etf, weight } : null;
-          }).filter(Boolean);
-          
-          return (
-            <div className="space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Jouw persoonlijke beleggingsvoorstel</h2>
-                <p className="text-lg text-gray-600">Op basis van jouw antwoorden hebben we het volgende voorstel voor je samengesteld</p>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-5xl mx-auto">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">Portfolio Overzicht</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-600">{formatCurrency(amount)}</div>
-                    <div className="text-gray-600">Initiële inleg</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-600">{years} jaar</div>
-                    <div className="text-gray-600">Beleggingshorizon</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-600">
-                      {onboardingData.portfolioChoice === 'model' ? modelPortfolioThemes[onboardingData.modelTheme]?.name : 'Aangepast'}
-                    </div>
-                    <div className="text-gray-600">Portfolio type</div>
-                  </div>
-                </div>
-
-                {selectedETFs.length > 0 && (
-                  <div className="mb-8">
-                    <h4 className="font-semibold text-gray-900 mb-4">Geselecteerde ETFs</h4>
-                    <div className="space-y-3">
-                      {selectedETFs.map(({ etf, weight }) => (
-                        <div key={etf.isin} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                          <div className="flex-1">
-                            <h5 className="font-medium text-gray-900">{etf.name}</h5>
-                            <p className="text-sm text-gray-600">{etf.provider} • TER: {etf.ter}% • {etf.subcategory}</p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-lg font-bold text-slate-600">{weight}%</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                  {projections.map(projection => (
-                    <div key={projection.scenario} className={`border-2 rounded-xl p-6 text-center ${
-                      projection.scenario === 'expected' ? 'border-slate-500 bg-slate-50' : 'border-gray-200'
-                    }`}>
-                      <h4 className="font-semibold text-gray-900 mb-2">{projection.name}</h4>
-                      <div className="text-2xl font-bold text-gray-900 mb-2">
-                        {formatCurrency(projection.finalValue)}
-                      </div>
-                      <div className={`text-sm ${projection.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {projection.totalReturn >= 0 ? '+' : ''}{formatCurrency(projection.totalReturn)} rendement
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {projection.returnRate.toFixed(1)}% per jaar
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mb-8">
-                  <h4 className="font-semibold text-gray-900 mb-4">Verwachte waardeontwikkeling (alle scenario's)</h4>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={(() => {
-                        const data = [];
-                        for (let year = 0; year <= years; year++) {
-                          const dataPoint = { year };
-                          projections.forEach(proj => {
-                            const value = amount * Math.pow(1 + proj.returnRate / 100, year);
-                            dataPoint[proj.scenario] = Math.round(value);
-                          });
-                          data.push(dataPoint);
-                        }
-                        return data;
-                      })()}>
-                        <XAxis dataKey="year" />
-                        <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <Tooltip formatter={(value, name) => [formatCurrency(value), name]} />
-                        <Line type="monotone" dataKey="pessimistic" stroke="#EF4444" strokeDasharray="5 5" name="Pessimistisch" />
-                        <Line type="monotone" dataKey="expected" stroke="#475569" strokeWidth={3} name="Verwacht" />
-                        <Line type="monotone" dataKey="optimistic" stroke="#10B981" strokeDasharray="5 5" name="Optimistisch" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-gray-600 mb-6">Ben je tevreden met dit voorstel? Dan kunnen we starten met beleggen!</p>
-              </div>
-            </div>
-          );
-
-        default:
-          return null;
-      }
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
-        <header className="bg-white shadow-sm sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">ETF Portal Pro</h1>
-                  <p className="text-xs text-gray-600">Portfolio Wizard</p>
-                </div>
-              </div>
               
-              <div className="text-sm text-gray-600">
-                Stap {onboardingStep} van 7
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="mb-12">
-            <div className="w-full bg-gray-200 rounded-full h-2 max-w-2xl mx-auto">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 h-2 rounded-full transition-all duration-300" style={{ width: `${(onboardingStep / 7) * 100}%` }}></div>
-            </div>
-          </div>
-
-          <div className="max-w-6xl mx-auto">{renderStep()}</div>
-
-          <div className="flex justify-between items-center max-w-6xl mx-auto mt-12">
-            <button
-              onClick={handleBack}
-              disabled={onboardingStep === 1}
-              className="flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Vorige
-            </button>
-            
-            {onboardingStep === 7 ? (
-              <button
-                onClick={() => setCurrentPage('platform')}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all duration-200 font-medium"
-              >
-                Start Beleggen
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            ) : (
-              <button
-                onClick={handleNext}
-                disabled={
-                  (onboardingStep === 2 && !onboardingData.portfolioChoice) ||
-                  (onboardingStep === 3 && !onboardingData.riskProfile) ||
-                  (onboardingStep === 4 && !onboardingData.horizon) ||
-                  (onboardingStep === 5 && !onboardingData.investmentAmount) ||
-                  (onboardingStep === 6 && !onboardingData.modelTheme)
-                }
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Volgende
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Login Page
-  const LoginPage = () => {
-    const [loginForm, setLoginForm] = useState({ email: '', password: '', isRegistering: false, name: '' });
-
-    const handleLogin = () => {
-      if (loginForm.isRegistering) {
-        if (loginForm.name && loginForm.email && loginForm.password) {
-          setUser({ name: loginForm.name, email: loginForm.email });
-          setCurrentPage('onboarding');
-          setOnboardingStep(1);
-        } else {
-          alert('Vul alle velden in');
-        }
-      } else {
-        if (loginForm.email && loginForm.password) {
-          setUser({ name: loginForm.email.split('@')[0], email: loginForm.email });
-          setCurrentPage('onboarding');
-          setOnboardingStep(1);
-        } else {
-          alert('Vul email en wachtwoord in');
-        }
-      }
-    };
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">ETF Portal Pro</h1>
-                <p className="text-sm text-gray-600">Professioneel ETF beleggen</p>
-              </div>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {loginForm.isRegistering ? 'Account aanmaken' : 'Inloggen'}
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {loginForm.isRegistering && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Naam</label>
-                <input
-                  type="text"
-                  value={loginForm.name}
-                  onChange={(e) => setLoginForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-                  placeholder="Je volledige naam"
-                />
-              </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={loginForm.email}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-                placeholder="je@email.com"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Wachtwoord</label>
-              <input
-                type="password"
-                value={loginForm.password}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
-                placeholder="Wachtwoord"
-              />
-            </div>
-
-            <button
-              onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-slate-600 to-slate-700 text-white py-2 px-4 rounded-lg font-medium hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
-            >
-              {loginForm.isRegistering ? 'Registreren' : 'Inloggen'}
-            </button>
-
-            <div className="text-center">
-              <button
-                onClick={() => setLoginForm(prev => ({ ...prev, isRegistering: !prev.isRegistering }))}
-                className="text-slate-600 hover:text-slate-700 text-sm"
-              >
-                {loginForm.isRegistering ? 'Al een account? Inloggen' : 'Geen account? Registreren'}
-              </button>
-            </div>
-
-            <div className="text-center">
-              <button
-                onClick={() => {
-                  setUser({ name: 'Demo Gebruiker', email: 'demo@example.com' });
-                  setCurrentPage('platform');
-                }}
-                className="text-gray-600 hover:text-gray-700 text-sm"
-              >
-                Of probeer de demo
-              </button>
-            </div>
-
-            <div className="text-center">
-              <button
-                onClick={() => setCurrentPage('homepage')}
-                className="text-gray-500 hover:text-gray-600 text-sm"
-              >
-                ← Terug naar homepage
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Homepage
-  const Homepage = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                <TrendingUp className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">ETF Portal Pro</h1>
-                <p className="text-sm text-gray-600">Professioneel ETF beleggen</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {user ? (
-                <>
-                  <span className="text-sm text-gray-600">Welkom, {user.name}</span>
+              {allCategoriesCompleted && (
+                <div className="text-center">
                   <button
-                    onClick={() => setCurrentPage('platform')}
-                    className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-6 py-2 rounded-lg font-medium hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
+                    onClick={() => setCurrentPage('portfolioOverview')}
+                    className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:shadow-lg transition-all font-bold text-lg"
                   >
-                    Naar Platform
-                  </button>
-                </>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => setCurrentPage('login')}
-                    className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Inloggen
-                  </button>
-                  <button
-                    onClick={() => {
-                      setUser({ name: 'Demo Gebruiker', email: 'demo@example.com' });
-                      setCurrentPage('platform');
-                    }}
-                    className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-6 py-2 rounded-lg font-medium hover:from-slate-700 hover:to-slate-800 transition-all duration-200"
-                  >
-                    Start Demo
+                    Ga naar Portfolio Overzicht →
                   </button>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </header>
-
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Professioneel
-            <span className="block bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent">
-              ETF Portfolio Beheer
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Bouw diversified portfolios met 100+ ETFs. Kies uit model portfolios of creëer je eigen samenstelling 
-            met professionele tools en real-time marktdata.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <button
-              onClick={() => user ? setCurrentPage('platform') : setCurrentPage('login')}
-              className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-slate-700 hover:to-slate-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              {user ? 'Naar Platform' : 'Start nu gratis'}
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-600">100+</div>
-              <div className="text-gray-600">ETFs Beschikbaar</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-600">€0</div>
-              <div className="text-gray-600">Minimum Investering</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-600">3</div>
-              <div className="text-gray-600">Model Portfolios</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-600">24/7</div>
-              <div className="text-gray-600">Platform Beschikbaar</div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-
-  // ETF Browser Component
-  const ETFBrowser = () => (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                <Search className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">ETF Browser</h1>
-                <p className="text-xs text-gray-600">Ontdek {etfs.length} ETFs</p>
-              </div>
-            </div>
-            
-            <button
-              onClick={() => setCurrentPage('platform')}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              ← Terug naar Platform
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Enhanced Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Filters</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categorie</label>
-              <select
-                value={filters.category}
-                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
-              >
-                {Object.entries(etfCategories).map(([key, category]) => (
-                  <option key={key} value={key}>{category.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-              <select
-                value={filters.provider}
-                onChange={(e) => setFilters(prev => ({ ...prev, provider: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
-              >
-                <option value="alle">Alle providers</option>
-                <option value="Vanguard">Vanguard</option>
-                <option value="iShares">iShares</option>
-                <option value="SPDR">SPDR</option>
-                <option value="Xtrackers">Xtrackers</option>
-                <option value="Amundi">Amundi</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Valuta</label>
-              <select
-                value={filters.currency}
-                onChange={(e) => setFilters(prev => ({ ...prev, currency: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
-              >
-                <option value="alle">Alle valuta's</option>
-                <option value="EUR">EUR</option>
-                <option value="USD">USD</option>
-                <option value="GBP">GBP</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Zoeken</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  placeholder="Zoek ETF..."
-                  className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-sm"
-                />
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={filters.esg}
-                  onChange={(e) => setFilters(prev => ({ ...prev, esg: e.target.checked }))}
-                  className="rounded border-gray-300 text-slate-600 focus:ring-slate-500"
-                />
-                <span className="ml-2 text-sm text-gray-700 flex items-center gap-1">
-                  <Leaf className="h-4 w-4 text-green-600" />
-                  ESG Only
-                </span>
-              </label>
-            </div>
-            <span className="text-sm text-gray-600">{filteredETFs.length} ETFs gevonden</span>
-          </div>
-        </div>
-
-        {/* ETF List */}
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">ETF Overzicht</h2>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left p-4 font-medium text-gray-700">ETF</th>
-                  <th className="text-right p-4 font-medium text-gray-700">Koers</th>
-                  <th className="text-right p-4 font-medium text-gray-700">1D</th>
-                  <th className="text-right p-4 font-medium text-gray-700">1J</th>
-                  <th className="text-right p-4 font-medium text-gray-700">TER</th>
-                  <th className="text-center p-4 font-medium text-gray-700">ESG</th>
-                  <th className="text-center p-4 font-medium text-gray-700">Actie</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredETFs.slice(0, 20).map(etf => (
-                  <tr key={etf.id} className="border-t hover:bg-gray-50">
-                    <td className="p-4">
-                      <div>
-                        <button
-                          onClick={() => setShowETFDetail(etf)}
-                          className="font-medium text-slate-600 hover:text-slate-800 text-left"
-                        >
-                          {etf.name}
-                        </button>
-                        <p className="text-sm text-gray-600">{etf.provider} • {etf.subcategory}</p>
-                      </div>
-                    </td>
-                    <td className="p-4 text-right font-semibold">€{etf.price}</td>
-                    <td className={`p-4 text-right font-semibold ${parseFloat(etf.change1d) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {parseFloat(etf.change1d) >= 0 ? '+' : ''}{etf.change1d}%
-                    </td>
-                    <td className={`p-4 text-right font-semibold ${parseFloat(etf.change1y) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {parseFloat(etf.change1y) >= 0 ? '+' : ''}{etf.change1y}%
-                    </td>
-                    <td className="p-4 text-right">{etf.ter}%</td>
-                    <td className="p-4 text-center">
-                      {etf.esg && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                          <Leaf className="h-3 w-3 mr-1" />
-                          ESG
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => addETFToPortfolio(etf)}
-                        className="px-3 py-1 bg-slate-600 text-white text-xs rounded hover:bg-slate-700 transition-colors"
-                      >
-                        + Portfolio
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Portfolio Analysis Component
-  const PortfolioAnalysis = () => {
-    const currentPortfolio = getCurrentPortfolio();
-    const metrics = getPortfolioMetrics();
-
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                  <PieChart className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">Portfolio Analyse</h1>
-                  <p className="text-xs text-gray-600">Analyseer je portfolio</p>
-                </div>
-              </div>
-              
-              <button
-                onClick={() => setCurrentPage('platform')}
-                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                ← Terug naar Platform
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          {Object.keys(currentPortfolio).length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-              <PieChart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Geen portfolio ingesteld</h3>
-              <p className="text-gray-600 mb-4">Stel eerst je portfolio in via de onboarding</p>
-              <button
-                onClick={() => setCurrentPage('onboarding')}
-                className="bg-slate-600 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                Start Onboarding
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Portfolio Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl shadow-sm p-4">
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">Verwacht Rendement</h3>
-                  <div className="text-2xl font-bold text-green-600">{metrics.expectedReturn}%</div>
-                </div>
-                
-                <div className="bg-white rounded-xl shadow-sm p-4">
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">Gemiddelde TER</h3>
-                  <div className="text-2xl font-bold text-gray-900">{metrics.totalTER}%</div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-4">
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">Risicoscore</h3>
-                  <div className="text-2xl font-bold text-orange-600">{metrics.avgRiskScore}/6</div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm p-4">
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">ESG Score</h3>
-                  <div className="text-2xl font-bold text-emerald-600">{metrics.esgScore}%</div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Portfolio Holdings */}
-                <div className="bg-white rounded-xl shadow-sm">
-                  <div className="p-4 border-b border-gray-200">
-                    <h2 className="text-xl font-bold text-gray-900">Portfolio ETFs</h2>
-                  </div>
-                  
-                  <div className="p-4">
-                    <div className="space-y-3">
-                      {Object.values(currentPortfolio).map(({ etf, weight }) => (
-                        <div key={etf.isin} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex-1">
-                            <button
-                              onClick={() => setShowETFDetail(etf)}
-                              className="font-medium text-slate-600 hover:text-slate-800 text-left"
-                            >
-                              {etf.name}
-                            </button>
-                            <p className="text-sm text-gray-600">{etf.provider} • TER: {etf.ter}%</p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-lg font-bold text-gray-900">{weight}%</div>
-                            <div className="text-sm text-gray-600">Allocatie</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Geographic Distribution */}
-                <div className="bg-white rounded-xl shadow-sm">
-                  <div className="p-4 border-b border-gray-200">
-                    <h2 className="text-xl font-bold text-gray-900">Geografische Spreiding</h2>
-                  </div>
-                  <div className="p-4">
-                    <div className="space-y-3">
-                      {['Verenigde Staten', 'Europa', 'Japan', 'China', 'Overige'].map((region, index) => {
-                        const weight = [45, 25, 15, 10, 5][index];
-                        return (
-                          <div key={region} className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <MapPin className="h-4 w-4 text-slate-600" />
-                              <span className="text-sm font-medium">{region}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-20 bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-slate-600 h-2 rounded-full"
-                                  style={{ width: `${(weight / 50) * 100}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm font-semibold w-12 text-right">{weight}%</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           )}
-        </div>
-      </div>
-    );
-  };
-
-  // Portfolio Simulation Component
-  const PortfolioSimulation = () => {
-    const [showAlert, setShowAlert] = useState(null);
-    const portfolioMetrics = getPortfolioMetrics();
-    const currentPortfolio = getCurrentPortfolio();
-    const amount = parseFloat(onboardingData.investmentAmount) || 25000;
-    const years = parseFloat(onboardingData.horizon) || 10;
-
-    const calculateEnhancedSimulation = () => {
-      const expectedReturn = parseFloat(portfolioMetrics.expectedReturn) || 6.0;
-      
-      const scenarios = [
-        { name: 'Pessimistisch', return: expectedReturn - 3, color: '#EF4444' },
-        { name: 'Verwacht', return: expectedReturn, color: '#475569' },
-        { name: 'Optimistisch', return: expectedReturn + 3, color: '#10B981' }
-      ];
-
-      return scenarios.map(scenario => {
-        const data = [];
-        let value = amount;
-        
-        for (let year = 0; year <= years; year++) {
-          if (year > 0) {
-            const randomFactor = 1 + (Math.random() - 0.5) * 0.4;
-            const yearlyReturn = (scenario.return / 100) * randomFactor;
-            value = value * (1 + yearlyReturn);
-          }
           
-          data.push({
-            year,
-            value: Math.round(value)
-          });
-        }
-        
-        const finalValue = data[data.length - 1].value;
-        const totalReturn = finalValue - amount;
-        
-        // Check for significant deviations for expected scenario
-        if (scenario.name === 'Verwacht') {
-          const deviation = (finalValue - (amount * Math.pow(1 + expectedReturn/100, years))) / (amount * Math.pow(1 + expectedReturn/100, years));
-          if (Math.abs(deviation) > 0.25) {
-            setShowAlert({
-              type: deviation > 0 ? 'success' : 'warning',
-              message: deviation > 0 ? 
-                'Portfolio presteert beter dan verwacht!' : 
-                'Portfolio presteert slechter dan verwacht. Overweeg portfolio aanpassing.',
-              action: 'Bekijk Portfolio'
-            });
-          }
-        }
-        
-        return { ...scenario, finalValue, totalReturn, data };
-      });
-    };
-
-    const simulations = calculateEnhancedSimulation();
-
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                  <Calculator className="h-6 w-6 text-white" />
-                </div>
+          {portfolioType === 'custom' && customBuildStep === 'selectETFs' && selectedCategory && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Portfolio Simulatie</h1>
-                  <p className="text-xs text-gray-600">Projecteer je beleggingen</p>
+                  <h2 className="text-2xl font-bold">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
+                  <p className="text-gray-600">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
                 </div>
-              </div>
-              
-              <button
-                onClick={() => setCurrentPage('platform')}
-                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                ← Terug naar Platform
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          {/* Alert */}
-          {showAlert && (
-            <div className={`mb-6 p-4 rounded-lg border-l-4 ${
-              showAlert.type === 'success' ? 'bg-green-50 border-green-400' : 'bg-yellow-50 border-yellow-400'
-            }`}>
-              <div className="flex items-center">
-                {showAlert.type === 'success' ? 
-                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" /> :
-                  <AlertTriangle className="h-5 w-5 text-yellow-400 mr-3" />
-                }
-                <p className={`text-sm font-medium ${
-                  showAlert.type === 'success' ? 'text-green-800' : 'text-yellow-800'
-                }`}>
-                  {showAlert.message}
-                </p>
                 <button 
-                  onClick={() => setCurrentPage('portfolio-analysis')}
-                  className={`ml-auto text-sm underline ${
-                    showAlert.type === 'success' ? 'text-green-600' : 'text-yellow-600'
-                  }`}
+                  onClick={() => {
+                    setCustomBuildStep('categories');
+                    setSelectedCategory(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
-                  {showAlert.action}
+                  ← Terug naar categorieën
                 </button>
               </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Portfolio Info */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Portfolio Informatie</h2>
               
-              <div className="space-y-4">
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 mb-3">Basis Parameters</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Startbedrag:</span>
-                      <span className="font-semibold">{formatCurrency(amount)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Horizon:</span>
-                      <span className="font-semibold">{years} jaar</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 mb-3">Portfolio Kenmerken</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Verwacht rendement:</span>
-                      <span className="font-semibold text-green-600">{portfolioMetrics.expectedReturn}%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Risicoscore:</span>
-                      <span className="font-semibold">{portfolioMetrics.avgRiskScore}/6</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Totale kosten:</span>
-                      <span className="font-semibold">{portfolioMetrics.totalTER}%</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Portfolio ETFs */}
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 mb-3">Portfolio ETFs</h3>
-                  <div className="space-y-2">
-                    {Object.values(currentPortfolio).slice(0, 3).map(({ etf, weight }) => (
-                      <div key={etf.isin} className="flex justify-between items-center">
-                        <button
-                          onClick={() => setShowETFDetail(etf)}
-                          className="text-xs text-slate-600 hover:text-slate-800 truncate max-w-32"
-                        >
-                          {etf.name.split(' ').slice(0, 3).join(' ')}
-                        </button>
-                        <span className="text-xs font-semibold">{weight}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Results */}
-            <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {simulations.map(sim => (
-                  <div key={sim.name} className={`bg-white rounded-xl shadow-sm p-4 text-center ${
-                    sim.name === 'Verwacht' ? 'ring-2 ring-slate-500' : ''
-                  }`}>
-                    <h3 className="font-semibold text-gray-900 mb-2">{sim.name}</h3>
-                    <div className="text-2xl font-bold text-gray-900 mb-1">
-                      {formatCurrency(sim.finalValue)}
-                    </div>
-                    <div className={`text-sm ${sim.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {sim.totalReturn >= 0 ? '+' : ''}{formatCurrency(sim.totalReturn)} rendement
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {sim.return.toFixed(1)}% per jaar
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Enhanced Growth Chart */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Gesimuleerde Portfolio Groei</h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={simulations[1].data}>
-                      <XAxis dataKey="year" />
-                      <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <Tooltip formatter={(value, name) => [formatCurrency(value), name]} />
-                      
-                      {simulations.map(sim => (
-                        <Line
-                          key={sim.name}
-                          type="monotone"
-                          data={sim.data}
-                          dataKey="value"
-                          stroke={sim.color}
-                          strokeWidth={sim.name === 'Verwacht' ? 3 : 2}
-                          strokeDasharray={sim.name !== 'Verwacht' ? "5 5" : "0"}
-                          name={sim.name}
-                        />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Main Platform Interface
-  const PlatformInterface = () => (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 p-2 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">ETF Portal Pro</h1>
-                <p className="text-xs text-gray-600">ETF Platform</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">Welkom, {user?.name}</span>
-              
-              <button
-                onClick={() => setCurrentPage('homepage')}
-                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <Home className="h-4 w-4" />
-                Home
-              </button>
-              
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-2 text-red-600 hover:text-red-800 transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                Uitloggen
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Split Dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Portfolio Dashboard */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Mijn Portfolio</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Portfolio Type</p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {onboardingData.portfolioChoice === 'model' ? 'Model Portfolio' : 'Aangepast'}
-                    </p>
-                  </div>
-                  <Target className="h-6 w-6 text-slate-600" />
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Risicoprofiel</p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {onboardingData.riskProfile ? riskProfiles[onboardingData.riskProfile]?.name : 'Niet ingesteld'}
-                    </p>
-                  </div>
-                  <BarChart3 className="h-6 w-6 text-slate-600" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Beleggingsbedrag</p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {onboardingData.investmentAmount ? formatCurrency(parseInt(onboardingData.investmentAmount)) : 'Niet ingesteld'}
-                    </p>
-                  </div>
-                  <DollarSign className="h-6 w-6 text-slate-600" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Horizon</p>
-                    <p className="text-lg font-bold text-gray-900">
-                      {onboardingData.horizon ? `${onboardingData.horizon} jaar` : 'Niet ingesteld'}
-                    </p>
-                  </div>
-                  <Activity className="h-6 w-6 text-slate-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Portfolio ETFs */}
-            <div className="bg-white rounded-xl shadow-sm mb-4">
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Mijn ETFs</h3>
-              </div>
-              <div className="p-4">
-                {Object.keys(getCurrentPortfolio()).length === 0 ? (
-                  <p className="text-gray-600">Geen ETFs geselecteerd. Start de onboarding om je portfolio in te stellen.</p>
+              <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                <h3 className="font-semibold mb-4">Huidige selectie voor {selectedCategory}</h3>
+                {portfolio.filter(etf => etf.categorie === selectedCategory).length === 0 ? (
+                  <p className="text-gray-500 text-sm">Nog geen ETF's geselecteerd</p>
                 ) : (
                   <div className="space-y-2">
-                    {Object.values(getCurrentPortfolio()).map(({ etf, weight }) => (
-                      <div key={etf.isin} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    {portfolio.filter(etf => etf.categorie === selectedCategory).map((etf, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span className="text-sm font-medium">{etf.naam}</span>
                         <button
-                          onClick={() => setShowETFDetail(etf)}
-                          className="font-medium text-slate-600 hover:text-slate-800 text-left text-sm"
+                          onClick={() => {
+                            setPortfolio(prev => prev.filter(p => p.isin !== etf.isin));
+                          }}
+                          className="text-red-600 hover:text-red-800 text-sm"
                         >
-                          {etf.name}
+                          Verwijder
                         </button>
-                        <span className="text-sm font-semibold text-gray-900">{weight}%</span>
                       </div>
                     ))}
                   </div>
                 )}
+                
+                <button
+                  onClick={() => {
+                    setCategoriesCompleted(prev => ({ ...prev, [selectedCategory]: true }));
+                    setCustomBuildStep('categories');
+                    setSelectedCategory(null);
+                  }}
+                  className="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+                >
+                  Klaar met {selectedCategory} →
+                </button>
+              </div>
+              
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50">
+                  <h3 className="font-bold">Beschikbare {selectedCategory} ETF's</h3>
+                </div>
+                <div className="overflow-x-auto max-h-[500px]">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Naam</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">ISIN</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold">TER</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold">YTD</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold">Actie</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {etfs.filter(etf => etf.categorie === selectedCategory).map((etf, idx) => {
+                        const isAdded = portfolio.some(p => p.isin === etf.isin);
+                        return (
+                          <tr key={idx} className="hover:bg-indigo-50/50 transition-colors">
+                            <td className="px-4 py-3">
+                              <button
+                                onClick={() => setSelectedETF(etf)}
+                                className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline"
+                              >
+                                {etf.naam}
+                              </button>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">{etf.isin}</td>
+                            <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                            <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {etf.ytd}
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              {isAdded ? (
+                                <span className="text-xs text-green-600 font-medium">✓ Toegevoegd</span>
+                              ) : (
+                                <button
+                                  onClick={() => addToPortfolio(etf, 10)}
+                                  className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                                >
+                                  + Toevoegen
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
+          )}
+          
+          {portfolioType === 'premade' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Risicoprofielen</h2>
+              <div className="grid grid-cols-3 gap-6">
+                {Object.entries(premadePortfolios).map(([key, config]) => (
+                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300">
+                    <h4 className="font-bold text-lg mb-2">{config.name}</h4>
+                    <div className="text-sm text-gray-600 mb-2">
+                      {Object.entries(config.allocation).map(([cat, pct]) => <div key={cat}>{cat}: {pct}%</div>)}
+                    </div>
+                    <div className="text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const PortfolioOverviewPage = () => {
+    const metrics = calculatePortfolioMetrics();
+    const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
+    
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-blue-600">ETF Database</button>
+              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-700 hover:text-blue-600">Portfolio Samenstellen</button>
+              <button onClick={() => setCurrentPage('portfolioOverview')} className="text-blue-600 font-medium">Portfolio Overzicht</button>
+              <div className="text-sm text-gray-600">{user?.name}</div>
+            </div>
           </div>
-
-          {/* Platform Dashboard */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Platform Tools</h2>
-            
-            <div className="space-y-4">
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <Search className="h-6 w-6 text-slate-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">ETF Browser</h3>
-                </div>
-                <p className="text-gray-600 mb-3 text-sm">
-                  Ontdek meer dan {etfs.length} ETFs uit onze uitgebreide database.
-                </p>
-                <button 
-                  onClick={() => setCurrentPage('etf-browser')}
-                  className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm"
-                >
-                  Browse ETFs
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <PieChart className="h-6 w-6 text-slate-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Portfolio Analyse</h3>
-                </div>
-                <p className="text-gray-600 mb-3 text-sm">
-                  Analyseer je huidige portfolio allocatie en geografische spreiding.
-                </p>
-                <button 
-                  onClick={() => setCurrentPage('portfolio-analysis')}
-                  className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm"
-                >
-                  Analyseer Portfolio
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <Calculator className="h-6 w-6 text-slate-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Portfolio Simulatie</h3>
-                </div>
-                <p className="text-gray-600 mb-3 text-sm">
-                  Simuleer verschillende scenario's met realistische volatiliteit.
-                </p>
-                <button 
-                  onClick={() => setCurrentPage('portfolio-simulation')}
-                  className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors text-sm"
-                >
-                  Start Simulatie
-                </button>
-              </div>
+        </nav>
+        
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Portfolio Overzicht</h1>
+            <div className="flex gap-3">
+              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">Portfolio Aankopen →</button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Totale TER</div><div className="text-2xl font-bold text-blue-600">{metrics.avgTER.toFixed(2)}%</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-2xl font-bold">{portfolio.length}</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Backtested Return 2024</div><div className={`text-2xl font-bold ${metrics.backtestReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>{metrics.backtestReturn.toFixed(2)}%</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Risico Profiel</div><div className="text-2xl font-bold text-gray-800">Neutraal</div></div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 className="font-bold text-lg mb-4">Asset Allocatie</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                  {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="font-bold text-lg mb-4">Alle Holdings</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium">Categorie</th>
+                    <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
+                    <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
+                    <th className="px-4 py-2 text-right text-sm font-medium">Return 2024</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {portfolio.map((etf, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm">{etf.naam}</td>
+                      <td className="px-4 py-3 text-sm">{etf.categorie}</td>
+                      <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
+                      <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                      <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf['2024']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
-  // Main render
-  return (
-    <div className="font-sans relative">
-      {currentPage === 'homepage' && <Homepage />}
-      {currentPage === 'login' && <LoginPage />}
-      {currentPage === 'onboarding' && user && <OnboardingWizard />}
-      {currentPage === 'platform' && user && <PlatformInterface />}
-      {currentPage === 'etf-browser' && user && <ETFBrowser />}
-      {currentPage === 'portfolio-analysis' && user && <PortfolioAnalysis />}
-      {currentPage === 'portfolio-simulation' && user && <PortfolioSimulation />}
+  const PurchasePage = () => {
+    const [step, setStep] = useState(selectedProfile && investmentDetails.riskProfile ? 2 : 1);
+    const [showGoalCustom, setShowGoalCustom] = useState(false);
+    const [showHorizonCustom, setShowHorizonCustom] = useState(false);
+    const [showAmountCustom, setShowAmountCustom] = useState(false);
+    
+    // If profile already selected, pre-fill the risk profile
+    useState(() => {
+      if (selectedProfile && !investmentDetails.riskProfile) {
+        setInvestmentDetails(prev => ({
+          ...prev,
+          riskProfile: premadePortfolios[selectedProfile].name
+        }));
+      }
+    }, []);
+    
+    const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.riskProfile;
+    
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm border-b"><div className="max-w-7xl mx-auto px-4 py-4"><div className="text-2xl font-bold text-blue-600">ETF PORTAL</div></div></nav>
+        <div className="max-w-3xl mx-auto px-4 py-12">
+          <h1 className="text-3xl font-bold mb-8 text-center">Upgrade naar Betaald Account</h1>
+          {step === 1 && (
+            <div className="bg-white rounded-lg shadow-lg p-8 space-y-8">
+              <div>
+                <label className="block text-lg font-bold mb-4">Doelstelling</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Vermogensopbouw</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Pensioen</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Inkomsten</button>
+                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                </div>
+                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600" />}
+              </div>
+              
+              <div>
+                <label className="block text-lg font-bold mb-4">Beleggingshorizon</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>5 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>10 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>20 jaar</button>
+                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                </div>
+                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600" />}
+              </div>
+              
+              <div>
+                <label className="block text-lg font-bold mb-4">Te Beleggen Vermogen</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 10.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 25.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 50.000</button>
+                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                </div>
+                {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 text-lg" />}
+              </div>
+              
+              <div>
+                <label className="block text-lg font-bold mb-4">Risicoprofiel</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(premadePortfolios).map(([key, config]) => (
+                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>
+                      <div>{config.name}</div>
+                      <div className="text-xs text-gray-600 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg disabled:bg-gray-300 disabled:cursor-not-allowed">Volgende Stap →</button>
+            </div>
+          )}
+          {step === 2 && (
+            <div className="bg-white rounded-lg shadow-lg p-8 space-y-6 text-center">
+              <div className="text-6xl mb-4">💳</div>
+              <h2 className="text-2xl font-bold">Stort je beginbedrag</h2>
+              <p className="text-gray-600">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
+              <div className="bg-blue-50 p-6 rounded-lg"><div className="text-4xl font-bold text-blue-600 mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-600">Te storten bedrag</div></div>
+              <button onClick={() => { setPortfolioValue(parseFloat(investmentDetails.amount) || 10000); setCurrentPage('dashboard'); }} className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">Betalen met iDEAL →</button>
+              <button onClick={() => setStep(1)} className="text-gray-600 hover:text-gray-800">← Terug</button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const DashboardPage = () => {
+    const [showRebalance, setShowRebalance] = useState(false);
+    const [showHoldings, setShowHoldings] = useState(false);
+    const [holdingsView, setHoldingsView] = useState('top10');
+    const [currentMonth, setCurrentMonth] = useState(0);
+    const [staticPerformanceData, setStaticPerformanceData] = useState(null);
+    const metrics = calculatePortfolioMetrics();
+    
+    const horizon = parseInt(investmentDetails.horizon) || 10;
+    const initialValue = parseFloat(investmentDetails.amount) || 10000;
+    const months = horizon * 12;
+    
+    // Get portfolio configuration
+    const selectedPortfolioKey = Object.keys(premadePortfolios).find(
+      key => premadePortfolios[key].name === investmentDetails.riskProfile
+    );
+    const portfolioConfig = premadePortfolios[selectedPortfolioKey] || premadePortfolios['neutral'];
+    const avgReturn = portfolioConfig.expectedReturn;
+    const stdDev = portfolioConfig.stdDev;
+    
+    // Helper function for Box-Muller transform to generate normal distribution
+    const generateNormalRandom = (mean, stdDev) => {
+      const u1 = Math.random();
+      const u2 = Math.random();
+      const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      return mean + stdDev * z0;
+    };
+    
+    // Monte Carlo simulation
+    const runMonteCarloSimulation = (scenarios = 200) => {
+      const allSimulations = [];
       
-      {/* ETF Detail Modal */}
-      {showETFDetail && (
-        <ETFDetailModal 
-          etf={showETFDetail} 
-          onClose={() => setShowETFDetail(null)} 
-        />
-      )}
+      for (let sim = 0; sim < scenarios; sim++) {
+        let value = initialValue;
+        const simulation = [value];
+        
+        for (let month = 1; month <= months; month++) {
+          // Add monthly contribution
+          value += monthlyContribution;
+          
+          // Generate monthly return using normal distribution
+          const monthlyReturn = generateNormalRandom(avgReturn / 12, stdDev / Math.sqrt(12));
+          value = value * (1 + monthlyReturn);
+          
+          simulation.push(value);
+        }
+        allSimulations.push(simulation);
+      }
+      
+      // Calculate percentiles for each month
+      const performanceData = [];
+      for (let month = 0; month <= months; month++) {
+        const monthValues = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
+        
+        const date = new Date();
+        date.setMonth(date.getMonth() + month);
+        
+        // Use 10th percentile for poor, median for expected, 90th percentile for good
+        performanceData.push({
+          date: date.toLocaleDateString('nl-NL', { month: 'short', year: '2-digit' }),
+          poor: monthValues[Math.floor(scenarios * 0.10)],
+          expected: monthValues[Math.floor(scenarios * 0.50)],
+          good: monthValues[Math.floor(scenarios * 0.90)],
+          // Portfolio will be revealed progressively
+          portfolioValue: monthValues[Math.floor(scenarios * 0.50)]
+        });
+      }
+      
+      return performanceData;
+    };
+    
+    // Generate static data once when component mounts
+    useEffect(() => {
+      const generatedData = runMonteCarloSimulation(1000);
+      setStaticPerformanceData(generatedData);
+      setCurrentMonth(0);
+    }, []);
+    
+    // Animate month by month - 1 second per month
+    useEffect(() => {
+      if (staticPerformanceData && currentMonth < months) {
+        const timer = setTimeout(() => {
+          setCurrentMonth(prev => prev + 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }, [currentMonth, months, staticPerformanceData]);
+    
+    if (!staticPerformanceData) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-2xl font-bold mb-4">Dashboard laden...</div>
+            <div className="text-gray-600">Monte Carlo simulatie wordt berekend...</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Create display data with growing portfolio line
+    const performanceData = staticPerformanceData.map((point, i) => ({
+      ...point,
+      portfolio: i <= currentMonth ? point.portfolioValue : null
+    }));
+    
+    // Calculate current portfolio value based on animation progress
+    const animatedPortfolioValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
+    const totalReturn = ((animatedPortfolioValue - initialValue) / initialValue * 100).toFixed(2);
+    const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
+    
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('dashboard')} className="text-blue-600 font-medium">Dashboard</button>
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-blue-600">ETF Database</button>
+              <div className="text-sm text-gray-600">{user?.name}</div>
+            </div>
+          </div>
+        </nav>
+        
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Mijn Dashboard</h1>
+            <div className="flex gap-3">
+              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Portfolio Balanceren</button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Totale Waarde</div><div className="text-3xl font-bold">{formatEuro(animatedPortfolioValue)}</div><div className={`text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Inleg</div><div className="text-3xl font-bold">{formatEuro(initialValue)}</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Winst/Verlies</div><div className={`text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-600' : 'text-red-600'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
+            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-3xl font-bold">{portfolio.length}</div></div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 className="font-bold text-lg mb-2">Waardeontwikkeling ({horizon} jaar horizon)</h3>
+            <div className="text-sm text-gray-600 mb-4">
+              Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
+            </div>
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={performanceData}>
+                <XAxis 
+                  dataKey="date" 
+                  interval={Math.floor(months / 10)}
+                />
+                <YAxis 
+                  tickFormatter={(value) => formatEuro(value)}
+                  label={{ value: 'Portofolio Waarde', angle: -90, position: 'insideLeft' }}
+                  domain={[
+                    (dataMin) => Math.floor(dataMin * 0.9 / 1000) * 1000,
+                    (dataMax) => Math.ceil(dataMax * 1.1 / 1000) * 1000
+                  ]}
+                />
+                <Tooltip 
+                  formatter={(value) => [formatEuro(value), '']}
+                  labelFormatter={(label) => `Datum: ${label}`}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey={() => initialValue} 
+                  stroke="#999" 
+                  strokeWidth={1} 
+                  strokeDasharray="3 3" 
+                  dot={false}
+                  name="Startwaarde"
+                />
+                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name="Slecht Scenario (P10)" dot={false} />
+                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name="Jouw Portfolio (Median)" dot={false} connectNulls />
+                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name="Verwacht Scenario (Median)" dot={false} opacity={0.3} />
+                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name="Goed Scenario (P90)" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="mt-4 text-sm text-gray-600 text-center">
+              Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="font-bold text-lg mb-4">Asset Allocatie</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip /><Legend /></PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="font-bold text-lg mb-4">Portfolio Metrices</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center"><span className="text-gray-600">Gemiddelde TER:</span><span className="font-bold text-blue-600">{metrics.avgTER.toFixed(2)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-600">Verwacht Rendement:</span><span className="font-bold text-green-600">{(avgReturn * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-600">Risico (Std Dev):</span><span className="font-bold text-orange-600">{(stdDev * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-600">Aantal Holdings:</span><span className="font-bold">{portfolio.reduce((sum, p) => sum + parseInt(p.holdings || 0), 0)}</span></div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="font-bold text-lg mb-4">Portfolio Holdings</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-sm font-medium">ETF</th><th className="px-4 py-2 text-right text-sm font-medium">Weging</th><th className="px-4 py-2 text-right text-sm font-medium">Waarde</th><th className="px-4 py-2 text-right text-sm font-medium">Return</th></tr></thead>
+                <tbody className="divide-y">
+                  {portfolio.map((etf, idx) => {
+                    const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
+                    return (
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td className="px-4 py-3"><button onClick={() => setSelectedETF(etf)} className="text-blue-600 hover:underline text-left">{etf.naam}</button></td>
+                        <td className="px-4 py-3 text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
+                        <td className="px-4 py-3 text-right">{formatEuro(etfValue)}</td>
+                        <td className={`px-4 py-3 text-right ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        {showHoldings && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+            <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+                <h2 className="text-2xl font-bold">Portfolio Holdings</h2>
+                <button onClick={() => setShowHoldings(false)} className="text-3xl text-gray-500 hover:text-gray-700 leading-none">×</button>
+              </div>
+              
+              <div className="p-6">
+                <div className="flex gap-4 mb-6">
+                  <button
+                    onClick={() => setHoldingsView('top10')}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  >
+                    Top 10
+                  </button>
+                  <button
+                    onClick={() => setHoldingsView('top100')}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  >
+                    Top 100
+                  </button>
+                </div>
+                
+                {(() => {
+                  const holdings = generateHoldings();
+                  const limit = holdingsView === 'top10' ? 10 : 100;
+                  
+                  return (
+                    <div className="space-y-8">
+                      {holdings.stocks.length > 0 && (
+                        <div>
+                          <h3 className="text-xl font-bold mb-4">Aandelen</h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Regio</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium">Weging</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y">
+                                {holdings.stocks.slice(0, limit).map((holding, idx) => (
+                                  <tr key={idx} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium">{holding.weight.toFixed(2)}%</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {holdings.bonds.length > 0 && (
+                        <div>
+                          <h3 className="text-xl font-bold mb-4">Obligaties</h3>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Regio</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Looptijd</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium">Coupon</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium">Weging</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y">
+                                {holdings.bonds.slice(0, limit).map((holding, idx) => (
+                                  <tr key={idx} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm">{holding.maturity}</td>
+                                    <td className="px-4 py-3 text-sm">{holding.coupon}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium">{holding.weight.toFixed(2)}%</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+                
+                <div className="mt-6">
+                  <button
+                    onClick={() => setShowHoldings(false)}
+                    className="w-full py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+                  >
+                    Sluiten
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {showRebalance && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full p-8">
+              <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren</h2>
+              <p className="text-gray-600 mb-6">Door te balanceren worden alle wegingen weer teruggezet naar de oorspronkelijke verdeling.</p>
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 className="font-bold mb-3">Benodigde Transacties:</h3>
+                <div className="space-y-2 text-sm">
+                  {portfolio.slice(0, 3).map((etf, idx) => (<div key={idx} className="flex justify-between"><span>{etf.naam}</span><span className="font-medium">{Math.random() > 0.5 ? 'Koop' : 'Verkoop'} {formatEuro(Math.random() * 500)}</span></div>))}
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <button onClick={() => { alert('Portfolio succesvol gebalanceerd!'); setShowRebalance(false); }} className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Transacties Uitvoeren</button>
+                <button onClick={() => setShowRebalance(false)} className="flex-1 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium">Annuleren</button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {showEditPortfolio && <EditPortfolioModal onClose={() => setShowEditPortfolio(false)} />}
+      </div>
+    );
+  };
+
+  return (
+    <div className="font-sans">
+      {currentPage === 'landing' && <LandingPage />}
+      {currentPage === 'login' && <LoginPage />}
+      {currentPage === 'register' && <RegisterPage />}
+      {currentPage === 'etfDatabase' && <ETFDatabasePage />}
+      {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
+      {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
+      {currentPage === 'purchase' && <PurchasePage />}
+      {currentPage === 'dashboard' && <DashboardPage />}
+      {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
     </div>
   );
 };
 
-export default ETFInvestmentPlatform;
+export default ETFPortal;
