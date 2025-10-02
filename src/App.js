@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
-import { read, utils } from 'xlsx';
+//import { read, utils } from 'xlsx';
 
 // Sample ETF data
 const SAMPLE_ETFS = [
@@ -289,43 +289,16 @@ const ETFPortal = () => {
     }
   };
 
-  useEffect(() => {
-    const loadETFData = async () => {
-      try {
-        if (window.etfDatabase && window.etfDatabase.length > 0) {
-          setEtfs(window.etfDatabase);
-          setFilteredEtfs(window.etfDatabase);
-          return;
-        }
-        
-        setLoading(true);
-        const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs');
-        
-        const response = await window.fs.readFile('ETF_overzicht_met_subcategorie.xlsx');
-        const workbook = XLSX.read(response);
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rawData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-        
-        const headers = rawData[0];
-        const etfRows = rawData.slice(2).filter(row => row[2] && row[3]);
-        
-        const structuredETFs = etfRows.map(row => {
-          const etf = {};
-          headers.forEach((header, index) => {
-            etf[header] = row[index] || null;
-          });
-          return etf;
-        });
-        
-        if (structuredETFs.length > 0) {
-          setEtfs(structuredETFs);
-          setFilteredEtfs(structuredETFs);
-        }
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  setLoading(true);
+  // Temporary: skip Excel, use the sample list
+  setEtfs(SAMPLE_ETFS);
+  setFilteredEtfs(SAMPLE_ETFS);
+  setLoading(false);
+}, []);
+
+  loadETFData();
+}, []);
     
     loadETFData();
   }, []);
