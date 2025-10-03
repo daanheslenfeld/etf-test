@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
 // Sample ETF data
@@ -238,62 +238,101 @@ const ETFPortal = () => {
     horizonCustom: '',
     amount: '',
     amountCustom: '',
+    monthlyContribution: '500',
+    monthlyContributionCustom: '',
     riskProfile: ''
   });
   const [portfolioValue, setPortfolioValue] = useState(10000);
-  const [monthlyContribution] = useState(500);
   const [showEditPortfolio, setShowEditPortfolio] = useState(false);
-  const [editablePortfolio, setEditablePortfolio] = useState([]);
   const [customBuildStep, setCustomBuildStep] = useState('profile'); // 'profile', 'categories', 'selectETFs'
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoriesCompleted, setCategoriesCompleted] = useState({});
 
   const premadePortfolios = {
-    'bonds100': { 
-      name: '100% Obligaties', 
+    'bonds100': {
+      name: '100% Obligaties',
       allocation: { 'Obligaties': 100 },
       expectedReturn: 0.025, // 2.5%
       stdDev: 0.05 // 5%
     },
-    'defensive': { 
-      name: 'Defensief', 
-      allocation: { 'Aandelen': 30, 'Obligaties': 65, 'Commodities': 5 },
+    'defensive': {
+      name: 'Defensief',
+      allocation: { 'Aandelen': 25, 'Obligaties': 60, 'Commodities': 5, 'Vastgoed': 5, 'Money market': 5 },
       expectedReturn: 0.035, // 3.5%
       stdDev: 0.08 // 8%
     },
-    'neutral': { 
-      name: 'Neutraal', 
-      allocation: { 'Aandelen': 55, 'Obligaties': 40, 'Commodities': 5 },
+    'neutral': {
+      name: 'Neutraal',
+      allocation: { 'Aandelen': 50, 'Obligaties': 35, 'Commodities': 5, 'Vastgoed': 5, 'Money market': 5 },
       expectedReturn: 0.05, // 5%
       stdDev: 0.11 // 11%
     },
-    'offensive': { 
-      name: 'Offensief', 
-      allocation: { 'Aandelen': 72.5, 'Obligaties': 20, 'Commodities': 7.5 },
+    'offensive': {
+      name: 'Offensief',
+      allocation: { 'Aandelen': 65, 'Obligaties': 20, 'Commodities': 7.5, 'Vastgoed': 5, 'Money market': 2.5 },
       expectedReturn: 0.06, // 6%
       stdDev: 0.13 // 13%
     },
-    'veryOffensive': { 
-      name: 'Zeer Offensief', 
-      allocation: { 'Aandelen': 82.5, 'Obligaties': 10, 'Commodities': 7.5 },
+    'veryOffensive': {
+      name: 'Zeer Offensief',
+      allocation: { 'Aandelen': 75, 'Obligaties': 10, 'Commodities': 10, 'Vastgoed': 5 },
       expectedReturn: 0.07, // 7%
       stdDev: 0.15 // 15%
     },
-    'stocks100': { 
-      name: '100% Aandelen', 
-      allocation: { 'Aandelen': 90, 'Commodities': 10 },
+    'stocks100': {
+      name: '100% Aandelen',
+      allocation: { 'Aandelen': 85, 'Commodities': 10, 'Vastgoed': 5 },
       expectedReturn: 0.08, // 8%
       stdDev: 0.16 // 16%
+    },
+    'free': {
+      name: 'Vrije Portefeuille',
+      allocation: {}, // No fixed allocation - user chooses freely
+      expectedReturn: 0.06, // 6% estimated
+      stdDev: 0.12 // 12% estimated
     }
   };
 
 useEffect(() => {
-  setLoading(true);
-  // Temporary: skip Excel, use the sample list
-  setEtfs(SAMPLE_ETFS);
-  setFilteredEtfs(SAMPLE_ETFS);
-  setLoading(false);
+  const loadETFs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/ETF_overzicht_met_subcategorie.xlsx');
+      const arrayBuffer = await response.arrayBuffer();
+      const data = new Uint8Array(arrayBuffer);
+
+      // Dynamically import xlsx
+      const XLSX = await import('xlsx');
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      if (jsonData && jsonData.length > 0) {
+        // Filter out empty rows (rows without naam or isin)
+        const validETFs = jsonData.filter(etf =>
+          etf.naam && etf.naam.trim() !== '' &&
+          etf.isin && etf.isin.trim() !== ''
+        );
+        console.log(`Loaded ${validETFs.length} valid ETFs from Excel (filtered from ${jsonData.length} rows)`);
+        setEtfs(validETFs);
+        setFilteredEtfs(validETFs);
+      } else {
+        console.warn('Excel file is empty, using sample data');
+        setEtfs(SAMPLE_ETFS);
+        setFilteredEtfs(SAMPLE_ETFS);
+      }
+    } catch (error) {
+      console.error('Error loading Excel file:', error);
+      console.log('Using sample ETF data as fallback');
+      setEtfs(SAMPLE_ETFS);
+      setFilteredEtfs(SAMPLE_ETFS);
+    }
+    setLoading(false);
+  };
+
+  loadETFs();
 }, []);
 
    useEffect(() => {
@@ -324,20 +363,20 @@ useEffect(() => {
 
   const handleLogin = (email, password) => {
     setUser({ email, name: email.split('@')[0] });
-    setCurrentPage('etfDatabase');
+    setCurrentPage('mainDashboard');
   };
 
   const handleRegister = (name, email, password) => {
     setUser({ email, name });
-    setCurrentPage('etfDatabase');
+    setCurrentPage('mainDashboard');
   };
 
   const recalculateWeights = (portfolioToCalculate, profile) => {
     if (!profile) return portfolioToCalculate;
-    
+
     const config = premadePortfolios[profile];
     const allocation = config.allocation;
-    
+
     // Group ETFs by category
     const byCategory = {};
     portfolioToCalculate.forEach(etf => {
@@ -345,18 +384,33 @@ useEffect(() => {
       if (!byCategory[cat]) byCategory[cat] = [];
       byCategory[cat].push(etf);
     });
-    
-    // Calculate weights
+
+    // For free portfolio, distribute equally across all categories
+    if (profile === 'free' || Object.keys(allocation).length === 0) {
+      const numCategories = Object.keys(byCategory).length;
+      const weightPerCategory = 100 / numCategories;
+
+      const updatedPortfolio = [];
+      Object.entries(byCategory).forEach(([category, etfs]) => {
+        const weightPerETF = weightPerCategory / etfs.length;
+        etfs.forEach(etf => {
+          updatedPortfolio.push({ ...etf, weight: weightPerETF });
+        });
+      });
+      return updatedPortfolio;
+    }
+
+    // Calculate weights for fixed allocation profiles
     const updatedPortfolio = [];
     Object.entries(byCategory).forEach(([category, etfs]) => {
       const categoryAllocation = allocation[category] || 0;
       const weightPerETF = categoryAllocation / etfs.length;
-      
+
       etfs.forEach(etf => {
         updatedPortfolio.push({ ...etf, weight: weightPerETF });
       });
     });
-    
+
     return updatedPortfolio;
   };
 
@@ -516,27 +570,48 @@ useEffect(() => {
 
   const EditPortfolioModal = ({ onClose }) => {
     const [tempPortfolio, setTempPortfolio] = useState([...portfolio]);
-    
+
     const updateWeight = (isin, newWeight) => {
-      setTempPortfolio(prev => prev.map(etf => 
+      setTempPortfolio(prev => prev.map(etf =>
         etf.isin === isin ? {...etf, weight: parseFloat(newWeight) || 0} : etf
       ));
     };
-    
+
     const removeETF = (isin) => {
       setTempPortfolio(prev => prev.filter(etf => etf.isin !== isin));
     };
-    
+
     const saveChanges = () => {
       const totalWeight = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
       if (Math.abs(totalWeight - 100) > 0.1) {
         alert(`Let op: Totale weging is ${totalWeight.toFixed(1)}%. Dit moet 100% zijn.`);
         return;
       }
+
+      // Check if weights are within profile constraints
+      if (selectedProfile && selectedProfile !== 'free') {
+        const profileConfig = premadePortfolios[selectedProfile];
+        const categoryWeights = {};
+
+        tempPortfolio.forEach(etf => {
+          const cat = etf.categorie;
+          categoryWeights[cat] = (categoryWeights[cat] || 0) + etf.weight;
+        });
+
+        // Validate category weights match profile allocation
+        for (const [category, weight] of Object.entries(categoryWeights)) {
+          const targetWeight = profileConfig.allocation[category] || 0;
+          if (Math.abs(weight - targetWeight) > 0.5) {
+            alert(`Weging voor ${category} moet ${targetWeight}% zijn (nu ${weight.toFixed(1)}%). Dit komt niet overeen met je gekozen profiel.`);
+            return;
+          }
+        }
+      }
+
       setPortfolio(tempPortfolio);
       onClose();
     };
-    
+
     const normalizeWeights = () => {
       const total = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
       if (total > 0) {
@@ -546,8 +621,15 @@ useEffect(() => {
         })));
       }
     };
-    
+
     const totalWeight = tempPortfolio.reduce((sum, etf) => sum + (etf.weight || 0), 0);
+
+    // Calculate category weights
+    const categoryWeights = {};
+    tempPortfolio.forEach(etf => {
+      const cat = etf.categorie;
+      categoryWeights[cat] = (categoryWeights[cat] || 0) + (etf.weight || 0);
+    });
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -561,7 +643,7 @@ useEffect(() => {
           </div>
           
           <div className="p-6 space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
               <div className="flex justify-between items-center">
                 <div>
                   <span className="text-sm text-gray-600">Totale Weging:</span>
@@ -576,6 +658,30 @@ useEffect(() => {
                   Normaliseer naar 100%
                 </button>
               </div>
+
+              {selectedProfile && selectedProfile !== 'free' && (
+                <div className="border-t pt-3">
+                  <div className="text-sm font-medium mb-2">Doelverdeling per categorie ({premadePortfolios[selectedProfile].name}):</div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {Object.entries(premadePortfolios[selectedProfile].allocation).map(([cat, target]) => {
+                      const current = categoryWeights[cat] || 0;
+                      const isValid = Math.abs(current - target) < 0.5;
+                      return (
+                        <div key={cat} className={`flex justify-between p-2 rounded ${isValid ? 'bg-green-100' : 'bg-red-100'}`}>
+                          <span>{cat}:</span>
+                          <span className="font-medium">
+                            {current.toFixed(1)}% / {target}%
+                            {isValid ? ' ✓' : ' ✗'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Je kunt alleen wegingen binnen dezelfde categorie aanpassen. De totale weging per categorie moet gelijk blijven aan het profiel.
+                  </p>
+                </div>
+              )}
             </div>
             
             <div className="space-y-3">
@@ -644,6 +750,87 @@ useEffect(() => {
       </div>
     );
   };
+
+  const MainDashboard = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+          <div className="flex items-center gap-6">
+            <button onClick={() => setCurrentPage('mainDashboard')} className="text-blue-600 font-medium">Home</button>
+            <div className="text-sm text-gray-600">Welkom, {user?.name}!</div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-5xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welkom, {user?.name}!
+          </h1>
+          <p className="text-xl text-gray-600">
+            Wat wil je vandaag doen?
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <button
+            onClick={() => setCurrentPage('etfDatabase')}
+            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500"
+          >
+            <div className="text-5xl mb-4">📊</div>
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">ETF Database</h3>
+            <p className="text-gray-600">
+              Ontdek en filter alle beschikbare ETF's. Voeg ze toe aan je portfolio.
+            </p>
+          </button>
+
+          <button
+            onClick={() => {
+              setPortfolio([]);
+              setSelectedProfile(null);
+              setPortfolioType('custom');
+              setCurrentPage('portfolioBuilder');
+            }}
+            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-purple-500"
+          >
+            <div className="text-5xl mb-4">🔧</div>
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">Zelf Portefeuille Samenstellen</h3>
+            <p className="text-gray-600">
+              Bouw stap voor stap je eigen portfolio op basis van een risicoprofiel.
+            </p>
+          </button>
+
+          <button
+            onClick={() => {
+              setPortfolioType('premade');
+              setCurrentPage('portfolioBuilder');
+            }}
+            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-green-500"
+          >
+            <div className="text-5xl mb-4">✨</div>
+            <h3 className="text-2xl font-bold mb-3 text-gray-800">Vooraf Samengestelde Portefeuille</h3>
+            <p className="text-gray-600">
+              Kies uit onze kant-en-klare portfolio's gebaseerd op risicoprofielen.
+            </p>
+          </button>
+        </div>
+
+        {portfolio.length > 0 && (
+          <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold mb-4">Je Huidige Portfolio</h2>
+            <p className="text-gray-600 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
+            <button
+              onClick={() => setCurrentPage('portfolioOverview')}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Bekijk Portfolio
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   const LandingPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
@@ -1179,6 +1366,12 @@ useEffect(() => {
   };
 
   const PortfolioBuilderPage = () => {
+    const [categoryFilters, setCategoryFilters] = React.useState({
+      subcategorie: '',
+      currency: '',
+      distribution: ''
+    });
+
     // Get required categories based on selected profile
     const getRequiredCategories = () => {
       if (!selectedProfile) return [];
@@ -1286,6 +1479,7 @@ useEffect(() => {
                       onClick={() => {
                         setSelectedCategory(category);
                         setCustomBuildStep('selectETFs');
+                        setCategoryFilters({ subcategorie: '', currency: '', distribution: '' });
                       }}
                       className={`p-6 rounded-2xl shadow-lg transition-all border-2 text-left ${
                         isCompleted 
@@ -1326,10 +1520,11 @@ useEffect(() => {
                   <h2 className="text-2xl font-bold">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
                   <p className="text-gray-600">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     setCustomBuildStep('categories');
                     setSelectedCategory(null);
+                    setCategoryFilters({ subcategorie: '', currency: '', distribution: '' });
                   }}
                   className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
@@ -1371,6 +1566,116 @@ useEffect(() => {
                 </button>
               </div>
               
+              {/* Filter Buttons */}
+              {(() => {
+                const allCategoryETFs = etfs.filter(etf => etf.categorie === selectedCategory);
+                const subcategories = [...new Set(allCategoryETFs.map(e => e.subcategorie))].filter(Boolean).sort();
+                const currencies = [...new Set(allCategoryETFs.map(e => e['fund ccy']))].filter(Boolean).sort();
+                const distributions = [...new Set(allCategoryETFs.map(e => e.distribution))].filter(Boolean).sort();
+
+                return (
+                  <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                    <h3 className="font-bold mb-4">Filters</h3>
+
+                    {/* Subcategorie Filter */}
+                    {subcategories.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-sm mb-2">Subcategorie</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setCategoryFilters({...categoryFilters, subcategorie: ''})}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                              !categoryFilters.subcategorie
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            Alle
+                          </button>
+                          {subcategories.map(sub => (
+                            <button
+                              key={sub}
+                              onClick={() => setCategoryFilters({...categoryFilters, subcategorie: sub})}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                categoryFilters.subcategorie === sub
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {sub}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Currency Filter */}
+                    {currencies.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-sm mb-2">Valuta</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setCategoryFilters({...categoryFilters, currency: ''})}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                              !categoryFilters.currency
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            Alle
+                          </button>
+                          {currencies.map(curr => (
+                            <button
+                              key={curr}
+                              onClick={() => setCategoryFilters({...categoryFilters, currency: curr})}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                categoryFilters.currency === curr
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {curr}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Distribution Filter */}
+                    {distributions.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2">Distributie</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setCategoryFilters({...categoryFilters, distribution: ''})}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                              !categoryFilters.distribution
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            Alle
+                          </button>
+                          {distributions.map(dist => (
+                            <button
+                              key={dist}
+                              onClick={() => setCategoryFilters({...categoryFilters, distribution: dist})}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                categoryFilters.distribution === dist
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {dist}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                 <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50">
                   <h3 className="font-bold">Beschikbare {selectedCategory} ETF's</h3>
@@ -1387,7 +1692,13 @@ useEffect(() => {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {etfs.filter(etf => etf.categorie === selectedCategory).map((etf, idx) => {
+                      {etfs.filter(etf => {
+                        if (etf.categorie !== selectedCategory) return false;
+                        if (categoryFilters.subcategorie && etf.subcategorie !== categoryFilters.subcategorie) return false;
+                        if (categoryFilters.currency && etf['fund ccy'] !== categoryFilters.currency) return false;
+                        if (categoryFilters.distribution && etf.distribution !== categoryFilters.distribution) return false;
+                        return true;
+                      }).map((etf, idx) => {
                         const isAdded = portfolio.some(p => p.isin === etf.isin);
                         return (
                           <tr key={idx} className="hover:bg-indigo-50/50 transition-colors">
@@ -1471,6 +1782,22 @@ useEffect(() => {
             <h1 className="text-3xl font-bold">Portfolio Overzicht</h1>
             <div className="flex gap-3">
               <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium">Portfolio Aanpassen</button>
+              <button
+                onClick={() => {
+                  // Set demo investment details for fictive portfolio
+                  setInvestmentDetails({
+                    goal: 'Demo',
+                    horizon: '10',
+                    amount: '10000',
+                    riskProfile: selectedProfile ? premadePortfolios[selectedProfile]?.name || 'Neutraal' : 'Neutraal'
+                  });
+                  setPortfolioValue(10000);
+                  setCurrentPage('dashboard');
+                }}
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+              >
+                Fictieve Portfolio Behouden
+              </button>
               <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">Portfolio Aankopen →</button>
             </div>
           </div>
@@ -1527,11 +1854,406 @@ useEffect(() => {
     );
   };
 
+  const CustomPortfolioBuilder = () => {
+    const [localFilters, setLocalFilters] = React.useState({
+      subcategorie: '',
+      currency: '',
+      distribution: ''
+    });
+
+    const renderProfileSelection = () => {
+      const profiles = [
+        { key: 'bonds100', name: '100% Obligaties', icon: '🛡️', desc: 'Zeer laag risico, stabiele inkomsten' },
+        { key: 'defensive', name: 'Defensief', icon: '🏰', desc: 'Gediversifieerd met focus op obligaties en vastgoed' },
+        { key: 'neutral', name: 'Neutraal', icon: '⚖️', desc: 'Gebalanceerde mix van aandelen, obligaties en vastgoed' },
+        { key: 'offensive', name: 'Offensief', icon: '🚀', desc: 'Focus op aandelen met commodities en vastgoed' },
+        { key: 'veryOffensive', name: 'Zeer Offensief', icon: '💎', desc: 'Maximale groei met aandelen, commodities en vastgoed' },
+        { key: 'stocks100', name: '100% Aandelen', icon: '📈', desc: 'Volledig gefocust op aandelengr oei met vastgoed' },
+        { key: 'free', name: 'Vrije Portefeuille', icon: '✨', desc: 'Kies zelf alle categorieën inclusief crypto' }
+      ];
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-blue-600">
+                ← Terug naar Dashboard
+              </button>
+            </div>
+          </nav>
+
+          <div className="max-w-6xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold text-center mb-4">Kies je Risicoprofiel</h1>
+            <p className="text-center text-gray-600 mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {profiles.map(profile => (
+                <button
+                  key={profile.key}
+                  onClick={() => {
+                    setSelectedProfile(profile.key);
+                    setCategoriesCompleted({});
+                    setPortfolio([]);
+                    setCustomBuildStep('categories');
+                  }}
+                  className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500 text-left"
+                >
+                  <div className="text-5xl mb-4">{profile.icon}</div>
+                  <h3 className="text-2xl font-bold mb-2 text-gray-800">{profile.name}</h3>
+                  <p className="text-gray-600 text-sm">{profile.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderCategorySelection = () => {
+      if (!selectedProfile) {
+        setCustomBuildStep('profile');
+        return null;
+      }
+
+      const profileConfig = premadePortfolios[selectedProfile];
+      let availableCategories = [];
+
+      if (selectedProfile === 'bonds100') {
+        availableCategories = ['Obligaties'];
+      } else if (selectedProfile === 'stocks100') {
+        availableCategories = ['Aandelen'];
+      } else if (selectedProfile === 'free') {
+        availableCategories = ['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto ETF'];
+      } else {
+        availableCategories = Object.keys(profileConfig.allocation);
+      }
+
+      const categoryIcons = {
+        'Aandelen': '📈',
+        'Obligaties': '📊',
+        'Commodities': '⚡',
+        'Vastgoed': '🏢',
+        'Money market': '💰',
+        'Money Market': '💰',
+        'Crypto ETF': '₿',
+        'Crypto': '₿'
+      };
+
+      // For free portfolio, at least one category must be completed
+      // For other profiles, all categories must be completed
+      const allCategoriesCompleted = selectedProfile === 'free'
+        ? Object.keys(categoriesCompleted).some(cat => categoriesCompleted[cat])
+        : availableCategories.every(cat => categoriesCompleted[cat]);
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+              <button onClick={() => setCustomBuildStep('profile')} className="text-gray-700 hover:text-blue-600">
+                ← Terug naar Profiel Selectie
+              </button>
+            </div>
+          </nav>
+
+          <div className="max-w-6xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold text-center mb-4">Selecteer Beleggingscategorieën</h1>
+            <p className="text-center text-gray-600 mb-4">Profiel: <span className="font-bold text-blue-600">{profileConfig.name}</span></p>
+            <p className="text-center text-gray-600 mb-12">
+              {selectedProfile === 'free'
+                ? 'Klik op categorieën om ETF\'s te selecteren (kies minimaal 1 categorie)'
+                : 'Klik op een categorie om ETF\'s te selecteren (minimaal 1 per categorie)'}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {availableCategories.map(category => {
+                const isCompleted = categoriesCompleted[category];
+                const allocation = profileConfig.allocation?.[category] || 0;
+
+                return (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setCustomBuildStep('selectETFs');
+                      setLocalFilters({ subcategorie: '', currency: '', distribution: '' });
+                    }}
+                    className={`rounded-2xl shadow-lg p-8 transition-all transform hover:scale-105 border-2 text-left ${
+                      isCompleted
+                        ? 'bg-green-50 border-green-500'
+                        : 'bg-white border-transparent hover:border-blue-500'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-5xl">{categoryIcons[category] || '📦'}</div>
+                      {isCompleted && <div className="text-3xl">✅</div>}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2 text-gray-800">{category}</h3>
+                    {allocation > 0 && <p className="text-gray-600">Weging: {allocation}%</p>}
+                    {isCompleted && (
+                      <p className="text-green-600 text-sm mt-2">
+                        {portfolio.filter(p => p.categorie === category).length} ETF(s) geselecteerd
+                      </p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {allCategoriesCompleted && (
+              <div className="text-center">
+                <button
+                  onClick={() => setCurrentPage('portfolioOverview')}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-lg font-bold hover:shadow-2xl transition-all"
+                >
+                  Ga naar Portfolio Overzicht →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const renderETFSelection = () => {
+      if (!selectedCategory) {
+        setCustomBuildStep('categories');
+        return null;
+      }
+
+      // Get all ETFs in this category for filter options
+      const allCategoryETFs = etfs.filter(etf => etf.categorie === selectedCategory);
+      const subcategories = [...new Set(allCategoryETFs.map(e => e.subcategorie))].filter(Boolean).sort();
+      const currencies = [...new Set(allCategoryETFs.map(e => e['fund ccy']))].filter(Boolean).sort();
+      const distributions = [...new Set(allCategoryETFs.map(e => e.distribution))].filter(Boolean).sort();
+
+      // Apply filters
+      const categoryETFs = allCategoryETFs.filter(etf => {
+        if (localFilters.subcategorie && etf.subcategorie !== localFilters.subcategorie) return false;
+        if (localFilters.currency && etf['fund ccy'] !== localFilters.currency) return false;
+        if (localFilters.distribution && etf.distribution !== localFilters.distribution) return false;
+        return true;
+      });
+
+      const selectedInCategory = portfolio.filter(p => p.categorie === selectedCategory);
+
+      const handleETFToggle = (etf) => {
+        const isSelected = selectedInCategory.some(p => p.isin === etf.isin);
+
+        if (isSelected) {
+          // Remove from portfolio
+          setPortfolio(prev => {
+            const updated = prev.filter(p => p.isin !== etf.isin);
+            return recalculateWeights(updated, selectedProfile);
+          });
+        } else {
+          // Add to portfolio
+          addToPortfolio(etf);
+        }
+      };
+
+      const handleContinue = () => {
+        if (selectedInCategory.length > 0) {
+          setCategoriesCompleted(prev => ({ ...prev, [selectedCategory]: true }));
+          setSelectedCategory(null);
+          setCustomBuildStep('categories');
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+              <button onClick={() => {
+                setSelectedCategory(null);
+                setCustomBuildStep('categories');
+                setLocalFilters({ subcategorie: '', currency: '', distribution: '' });
+              }} className="text-gray-700 hover:text-blue-600">
+                ← Terug naar Categorieën
+              </button>
+            </div>
+          </nav>
+
+          <div className="max-w-7xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold text-center mb-4">Selecteer ETF's voor {selectedCategory}</h1>
+            <p className="text-center text-gray-600 mb-8">
+              {selectedInCategory.length} ETF(s) geselecteerd (minimaal 1 vereist) • {categoryETFs.length} ETF(s) gevonden
+            </p>
+
+            {/* Filter Buttons */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              {/* Subcategorie Filter */}
+              {subcategories.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold text-lg mb-3">Subcategorie</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setLocalFilters({...localFilters, subcategorie: ''})}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        !localFilters.subcategorie
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Alle
+                    </button>
+                    {subcategories.map(sub => (
+                      <button
+                        key={sub}
+                        onClick={() => setLocalFilters({...localFilters, subcategorie: sub})}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          localFilters.subcategorie === sub
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Currency Filter */}
+              {currencies.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold text-lg mb-3">Valuta</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setLocalFilters({...localFilters, currency: ''})}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        !localFilters.currency
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Alle
+                    </button>
+                    {currencies.map(curr => (
+                      <button
+                        key={curr}
+                        onClick={() => setLocalFilters({...localFilters, currency: curr})}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          localFilters.currency === curr
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {curr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Distribution Filter */}
+              {distributions.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-lg mb-3">Distributie</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setLocalFilters({...localFilters, distribution: ''})}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        !localFilters.distribution
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Alle
+                    </button>
+                    {distributions.map(dist => (
+                      <button
+                        key={dist}
+                        onClick={() => setLocalFilters({...localFilters, distribution: dist})}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          localFilters.distribution === dist
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {dist}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 mb-8">
+              {categoryETFs.map(etf => {
+                const isSelected = selectedInCategory.some(p => p.isin === etf.isin);
+
+                return (
+                  <button
+                    key={etf.isin}
+                    onClick={() => handleETFToggle(etf)}
+                    className={`bg-white rounded-xl shadow p-6 transition-all text-left border-2 ${
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-transparent hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg mb-2">{etf.naam}</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">ISIN:</span>
+                            <div className="font-medium">{etf.isin}</div>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">TER:</span>
+                            <div className="font-medium">{etf['ter p.a.']}</div>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Grootte:</span>
+                            <div className="font-medium">€{formatNumber(etf['fund size (in m €)'])}M</div>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">2024:</span>
+                            <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {etf['2024']}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        {isSelected && <div className="text-3xl">✅</div>}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedInCategory.length > 0 && (
+              <div className="text-center">
+                <button
+                  onClick={handleContinue}
+                  className="px-8 py-4 bg-blue-600 text-white rounded-xl text-lg font-bold hover:bg-blue-700 transition-all"
+                >
+                  Bevestig Selectie →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    if (customBuildStep === 'profile') return renderProfileSelection();
+    if (customBuildStep === 'categories') return renderCategorySelection();
+    if (customBuildStep === 'selectETFs') return renderETFSelection();
+  };
+
   const PurchasePage = () => {
     const [step, setStep] = useState(1);
     const [showGoalCustom, setShowGoalCustom] = useState(false);
     const [showHorizonCustom, setShowHorizonCustom] = useState(false);
     const [showAmountCustom, setShowAmountCustom] = useState(false);
+    const [showMonthlyCustom, setShowMonthlyCustom] = useState(false);
     
     // Pre-fill the risk profile if already selected, but still show step 1
     useState(() => {
@@ -1543,7 +2265,7 @@ useEffect(() => {
       }
     }, []);
     
-    const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.riskProfile;
+    const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
     
     return (
       <div className="min-h-screen bg-gray-50">
@@ -1584,7 +2306,18 @@ useEffect(() => {
                 </div>
                 {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 text-lg" />}
               </div>
-              
+
+              <div>
+                <label className="block text-lg font-bold mb-4">Maandelijkse Storting</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 100</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 250</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 500</button>
+                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                </div>
+                {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 text-lg" />}
+              </div>
+
               <div>
                 <label className="block text-lg font-bold mb-4">Risicoprofiel</label>
                 <div className="grid grid-cols-2 gap-3">
@@ -1622,13 +2355,13 @@ useEffect(() => {
     const [currentMonth, setCurrentMonth] = useState(0);
     const [staticPerformanceData, setStaticPerformanceData] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [animationSpeed, setAnimationSpeed] = useState(1000); // milliseconds per month
     const metrics = calculatePortfolioMetrics();
-    
+
     const horizon = parseInt(investmentDetails.horizon) || 10;
     const initialValue = parseFloat(investmentDetails.amount) || 10000;
+    const monthlyContribution = parseFloat(investmentDetails.monthlyContribution) || 500;
     const months = horizon * 12;
-    
+
     // Get portfolio configuration
     const selectedPortfolioKey = Object.keys(premadePortfolios).find(
       key => premadePortfolios[key].name === investmentDetails.riskProfile
@@ -1636,44 +2369,44 @@ useEffect(() => {
     const portfolioConfig = premadePortfolios[selectedPortfolioKey] || premadePortfolios['neutral'];
     const avgReturn = portfolioConfig.expectedReturn;
     const stdDev = portfolioConfig.stdDev;
-    
+
     // Helper function for Box-Muller transform to generate normal distribution
-    const generateNormalRandom = (mean, stdDev) => {
+    const generateNormalRandom = useCallback((mean, stdDev) => {
       const u1 = Math.random();
       const u2 = Math.random();
       const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
       return mean + stdDev * z0;
-    };
-    
+    }, []);
+
     // Monte Carlo simulation
-    const runMonteCarloSimulation = (scenarios = 200) => {
+    const runMonteCarloSimulation = useCallback((scenarios = 200) => {
       const allSimulations = [];
-      
+
       for (let sim = 0; sim < scenarios; sim++) {
         let value = initialValue;
         const simulation = [value];
-        
+
         for (let month = 1; month <= months; month++) {
           // Add monthly contribution
           value += monthlyContribution;
-          
+
           // Generate monthly return using normal distribution
           const monthlyReturn = generateNormalRandom(avgReturn / 12, stdDev / Math.sqrt(12));
           value = value * (1 + monthlyReturn);
-          
+
           simulation.push(value);
         }
         allSimulations.push(simulation);
       }
-      
+
       // Calculate percentiles for each month
       const performanceData = [];
       for (let month = 0; month <= months; month++) {
         const monthValues = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
-        
+
         const date = new Date();
         date.setMonth(date.getMonth() + month);
-        
+
         // Use 10th percentile for poor, median for expected, 90th percentile for good
         performanceData.push({
           date: date.toLocaleDateString('nl-NL', { month: 'short', year: '2-digit' }),
@@ -1684,27 +2417,67 @@ useEffect(() => {
           portfolioValue: monthValues[Math.floor(scenarios * 0.50)]
         });
       }
-      
+
       return performanceData;
-    };
-    
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialValue, months, avgReturn, stdDev, generateNormalRandom]);
+
     // Generate static data once when component mounts
     useEffect(() => {
-      const generatedData = runMonteCarloSimulation(1000);
-      setStaticPerformanceData(generatedData);
-      setCurrentMonth(0);
-    }, []);
-    
+      if (portfolio && portfolio.length > 0) {
+        const generatedData = runMonteCarloSimulation(1000);
+        setStaticPerformanceData(generatedData);
+        setCurrentMonth(0);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [runMonteCarloSimulation]);
+
     // Animate month by month - 1 second per month
     useEffect(() => {
-      if (staticPerformanceData && currentMonth < months) {
+      if (isAnimating && staticPerformanceData && currentMonth < months) {
         const timer = setTimeout(() => {
           setCurrentMonth(prev => prev + 1);
         }, 1000);
         return () => clearTimeout(timer);
       }
-    }, [currentMonth, months, staticPerformanceData]);
+    }, [isAnimating, currentMonth, months, staticPerformanceData]);
+
+    const toggleAnimation = () => {
+      if (currentMonth >= months) {
+        // Restart from beginning
+        setCurrentMonth(0);
+        setIsAnimating(true);
+      } else {
+        setIsAnimating(!isAnimating);
+      }
+    };
+
+    const resetSimulation = () => {
+      setCurrentMonth(0);
+      setIsAnimating(true);
+    };
     
+    // Check if portfolio is empty
+    if (!portfolio || portfolio.length === 0) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center bg-white rounded-2xl shadow-lg p-12 max-w-md">
+            <div className="text-6xl mb-6">📊</div>
+            <h2 className="text-2xl font-bold mb-4">Geen Portfolio</h2>
+            <p className="text-gray-600 mb-6">
+              Je hebt nog geen portfolio samengesteld. Ga terug om een portfolio te maken.
+            </p>
+            <button
+              onClick={() => setCurrentPage('mainDashboard')}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Terug naar Dashboard
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     if (!staticPerformanceData) {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -1757,9 +2530,34 @@ useEffect(() => {
           </div>
           
           <div className="bg-white rounded-lg shadow p-6 mb-8">
-            <h3 className="font-bold text-lg mb-2">Waardeontwikkeling ({horizon} jaar horizon)</h3>
-            <div className="text-sm text-gray-600 mb-4">
-              Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="font-bold text-lg mb-2">Waardeontwikkeling ({horizon} jaar horizon)</h3>
+                <div className="text-sm text-gray-600">
+                  Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={toggleAnimation}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    isAnimating
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
+                >
+                  {isAnimating ? '⏸ Pauzeer' : currentMonth >= months ? '🔄 Herstarten' : '▶ Start'}
+                </button>
+                <button
+                  onClick={resetSimulation}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition"
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 mb-4">
+              Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
             </div>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={performanceData}>
@@ -1810,10 +2608,10 @@ useEffect(() => {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="font-bold text-lg mb-4">Portfolio Metrices</h3>
               <div className="space-y-4">
+                <div className="flex justify-between items-center"><span className="text-gray-600">Aantal Holdings:</span><span className="font-bold text-purple-600">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || 0), 0).toLocaleString('nl-NL')}</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-600">Gemiddelde TER:</span><span className="font-bold text-blue-600">{metrics.avgTER.toFixed(2)}%</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-600">Verwacht Rendement:</span><span className="font-bold text-green-600">{(avgReturn * 100).toFixed(1)}%</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-600">Risico (Std Dev):</span><span className="font-bold text-orange-600">{(stdDev * 100).toFixed(1)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-600">Aantal Holdings:</span><span className="font-bold">{portfolio.reduce((sum, p) => sum + parseInt(p.holdings || 0), 0)}</span></div>
               </div>
             </div>
           </div>
@@ -2031,7 +2829,9 @@ useEffect(() => {
       {currentPage === 'landing' && <LandingPage />}
       {currentPage === 'login' && <LoginPage />}
       {currentPage === 'register' && <RegisterPage />}
+      {currentPage === 'mainDashboard' && <MainDashboard />}
       {currentPage === 'etfDatabase' && <ETFDatabasePage />}
+      {currentPage === 'customPortfolioBuilder' && <CustomPortfolioBuilder />}
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
