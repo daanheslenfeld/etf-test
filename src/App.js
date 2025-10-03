@@ -763,24 +763,24 @@ useEffect(() => {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:py-16">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Welkom, {user?.name}!
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-base md:text-xl text-gray-600">
             Wat wil je vandaag doen?
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
           <button
             onClick={() => setCurrentPage('etfDatabase')}
-            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500"
+            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500"
           >
-            <div className="text-5xl mb-4">📊</div>
-            <h3 className="text-2xl font-bold mb-3 text-gray-800">ETF Database</h3>
-            <p className="text-gray-600">
+            <div className="text-4xl md:text-5xl mb-3 md:mb-4">📊</div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">ETF Database</h3>
+            <p className="text-sm md:text-base text-gray-600">
               Ontdek en filter alle beschikbare ETF's. Voeg ze toe aan je portfolio.
             </p>
           </button>
@@ -792,11 +792,11 @@ useEffect(() => {
               setPortfolioType('custom');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-purple-500"
+            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-purple-500"
           >
-            <div className="text-5xl mb-4">🔧</div>
-            <h3 className="text-2xl font-bold mb-3 text-gray-800">Zelf Portefeuille Samenstellen</h3>
-            <p className="text-gray-600">
+            <div className="text-4xl md:text-5xl mb-3 md:mb-4">🔧</div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">Zelf Portefeuille Samenstellen</h3>
+            <p className="text-sm md:text-base text-gray-600">
               Bouw stap voor stap je eigen portfolio op basis van een risicoprofiel.
             </p>
           </button>
@@ -806,23 +806,23 @@ useEffect(() => {
               setPortfolioType('premade');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-green-500"
+            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-green-500"
           >
-            <div className="text-5xl mb-4">✨</div>
-            <h3 className="text-2xl font-bold mb-3 text-gray-800">Vooraf Samengestelde Portefeuille</h3>
-            <p className="text-gray-600">
+            <div className="text-4xl md:text-5xl mb-3 md:mb-4">✨</div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">Vooraf Samengestelde Portefeuille</h3>
+            <p className="text-sm md:text-base text-gray-600">
               Kies uit onze kant-en-klare portfolio's gebaseerd op risicoprofielen.
             </p>
           </button>
         </div>
 
         {portfolio.length > 0 && (
-          <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-4">Je Huidige Portfolio</h2>
-            <p className="text-gray-600 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
+          <div className="mt-8 md:mt-12 bg-white rounded-2xl shadow-lg p-6 md:p-8">
+            <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Je Huidige Portfolio</h2>
+            <p className="text-sm md:text-base text-gray-600 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
               onClick={() => setCurrentPage('portfolioOverview')}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
             >
               Bekijk Portfolio
             </button>
@@ -836,48 +836,49 @@ useEffect(() => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
       <nav className="bg-white/95 backdrop-blur-sm shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
-          <div className="space-x-4">
-            <button 
+          <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
+          <div className="flex gap-2 md:gap-4">
+            <button
               onClick={() => setCurrentPage('login')}
-              className="px-6 py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium"
+              className="px-3 md:px-6 py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium text-sm md:text-base"
             >
               Inloggen
             </button>
-            <button 
+            <button
               onClick={() => setCurrentPage('register')}
-              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium"
+              className="px-3 md:px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium text-sm md:text-base"
             >
-              Open een rekening →
+              <span className="hidden md:inline">Open een rekening →</span>
+              <span className="md:hidden">Registreer</span>
             </button>
           </div>
         </div>
       </nav>
-      
-      <div className="max-w-7xl mx-auto px-4 py-20">
-        <div className="grid grid-cols-2 gap-12 items-center">
-          <div className="text-white">
-            <h1 className="text-6xl font-bold mb-6 leading-tight">
+
+      <div className="max-w-7xl mx-auto px-4 py-10 md:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="text-white text-center lg:text-left">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
               Bouw je eigen ETF portfolio
             </h1>
-            <p className="text-xl mb-8 opacity-90 leading-relaxed">
-              Investeer slim in ETF's met ons gebruiksvriendelijke platform. 
+            <p className="text-base md:text-xl mb-6 md:mb-8 opacity-90 leading-relaxed">
+              Investeer slim in ETF's met ons gebruiksvriendelijke platform.
               Begin vandaag nog met beleggen tegen lage kosten.
             </p>
-            <button 
+            <button
               onClick={() => setCurrentPage('register')}
-              className="px-8 py-4 bg-white text-indigo-600 rounded-full text-lg hover:shadow-2xl transition-all font-bold"
+              className="px-6 md:px-8 py-3 md:py-4 bg-white text-indigo-600 rounded-full text-base md:text-lg hover:shadow-2xl transition-all font-bold w-full md:w-auto"
             >
               Open je rekening →
             </button>
           </div>
-          
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-white border border-white/20 shadow-2xl">
-            <h3 className="text-2xl font-bold mb-4">
+
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 text-white border border-white/20 shadow-2xl">
+            <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
               Start met beleggen
             </h3>
-            <p className="opacity-90 leading-relaxed">
-              Ontdek onze database met {etfs.length} ETF's en stel je eigen portfolio samen 
+            <p className="opacity-90 leading-relaxed text-sm md:text-base">
+              Ontdek onze database met {etfs.length} ETF's en stel je eigen portfolio samen
               of kies uit onze vooraf samengestelde strategieën.
             </p>
           </div>
@@ -2522,11 +2523,11 @@ useEffect(() => {
             </div>
           </div>
           
-          <div className="grid grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Totale Waarde</div><div className="text-3xl font-bold">{formatEuro(animatedPortfolioValue)}</div><div className={`text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Inleg</div><div className="text-3xl font-bold">{formatEuro(initialValue)}</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Winst/Verlies</div><div className={`text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-600' : 'text-red-600'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-3xl font-bold">{portfolio.length}</div></div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Inleg</div><div className="text-xl md:text-3xl font-bold">{formatEuro(initialValue)}</div></div>
+            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-600' : 'text-red-600'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
+            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold">{portfolio.length}</div></div>
           </div>
           
           <div className="bg-white rounded-lg shadow p-6 mb-8">
@@ -2598,10 +2599,10 @@ useEffect(() => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="font-bold text-lg mb-4">Asset Allocatie</h3>
-              <ResponsiveContainer width="100%" height={250}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div className="bg-white rounded-lg shadow p-4 md:p-6">
+              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">Asset Allocatie</h3>
+              <ResponsiveContainer width="100%" height={200}>
                 <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip /><Legend /></PieChart>
               </ResponsiveContainer>
             </div>
