@@ -543,16 +543,19 @@ useEffect(() => {
 
   // Redirect to correct page on mount if user is logged in
   useEffect(() => {
-    if (user) {
-      if (user.role === 'accountmanager' && currentPage === 'landing') {
-        setCurrentPage('customerDatabase');
-      } else if (user.role === 'customer' && currentPage === 'landing') {
-        setCurrentPage('mainDashboard');
+    if (user && user.role) {
+      if (user.role === 'accountmanager') {
+        if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
+          setCurrentPage('customerDatabase');
+        }
+      } else if (user.role === 'customer') {
+        if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
+          setCurrentPage('mainDashboard');
+        }
       }
     }
-    // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   const handleLogin = (email, password) => {
     // Check if accountmanager login
@@ -985,6 +988,15 @@ useEffect(() => {
               <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[80px] sm:max-w-none">
                 {user?.name?.split(' ')[0]}
               </div>
+              <button
+                onClick={() => {
+                  setUser(null);
+                  setCurrentPage('landing');
+                }}
+                className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
+              >
+                Uitloggen
+              </button>
             </div>
           </div>
         </div>
@@ -3200,19 +3212,6 @@ useEffect(() => {
 
   const CustomerDatabasePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-
-    // Auto-load customers from localStorage when page loads
-    useEffect(() => {
-      const saved = localStorage.getItem('customers');
-      if (saved) {
-        const parsedCustomers = JSON.parse(saved);
-        // Only update if different to avoid infinite loop
-        if (JSON.stringify(parsedCustomers) !== JSON.stringify(customers)) {
-          setCustomers(parsedCustomers);
-        }
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const filteredCustomers = customers.filter(customer => {
       const search = searchTerm.toLowerCase();
