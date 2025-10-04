@@ -3201,6 +3201,19 @@ useEffect(() => {
   const CustomerDatabasePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Auto-load customers from localStorage when page loads
+    useEffect(() => {
+      const saved = localStorage.getItem('customers');
+      if (saved) {
+        const parsedCustomers = JSON.parse(saved);
+        // Only update if different to avoid infinite loop
+        if (JSON.stringify(parsedCustomers) !== JSON.stringify(customers)) {
+          setCustomers(parsedCustomers);
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const filteredCustomers = customers.filter(customer => {
       const search = searchTerm.toLowerCase();
       return (
