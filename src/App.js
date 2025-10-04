@@ -1022,51 +1022,50 @@ useEffect(() => {
   const LandingPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
       <nav className="bg-white/95 backdrop-blur-sm shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
-            <div className="text-xs md:text-sm text-gray-600 italic">Niet sparen maar beleggen</div>
+            <div className="text-base sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+            <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 italic whitespace-nowrap">Niet sparen maar beleggen</div>
           </div>
-          <div className="flex gap-2 md:gap-4">
+          <div className="flex gap-2 sm:gap-3 md:gap-4">
             <button
               onClick={() => setCurrentPage('login')}
-              className="px-3 md:px-6 py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium text-sm md:text-base"
+              className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium text-xs sm:text-sm md:text-base whitespace-nowrap"
             >
-              Inloggen
+              Login
             </button>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-3 md:px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium text-sm md:text-base"
+              className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium text-xs sm:text-sm md:text-base whitespace-nowrap"
             >
-              <span className="hidden md:inline">Open een rekening →</span>
-              <span className="md:hidden">Registreer</span>
+              Start
             </button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
           <div className="text-white text-center lg:text-left">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight px-2">
               Beheer nu je eigen vermogen
             </h1>
-            <p className="text-base md:text-xl mb-6 md:mb-8 opacity-90 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-xl mb-4 sm:mb-6 md:mb-8 opacity-90 leading-relaxed px-2">
               Investeer je geld over de hele wereld met een paar klikken. Eenvoudig, transparant en tegen lage kosten.
             </p>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-6 md:px-8 py-3 md:py-4 bg-white text-indigo-600 rounded-full text-base md:text-lg hover:shadow-2xl transition-all font-bold w-full md:w-auto"
+              className="px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 bg-white text-indigo-600 rounded-full text-sm sm:text-base md:text-lg hover:shadow-2xl transition-all font-bold w-full sm:w-auto"
             >
               Begin met beleggen →
             </button>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 text-white border border-white/20 shadow-2xl">
-            <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 text-white border border-white/20 shadow-2xl">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4">
               Wereldwijd gespreid beleggen
             </h3>
-            <p className="opacity-90 leading-relaxed text-sm md:text-base">
+            <p className="opacity-90 leading-relaxed text-xs sm:text-sm md:text-base">
               Toegang tot {etfs.length} ETF's. Stel je eigen portfolio samen of kies uit onze professioneel samengestelde strategieën.
             </p>
           </div>
@@ -1078,57 +1077,59 @@ useEffect(() => {
   const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <button onClick={() => setCurrentPage('landing')} className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              ETF PORTAL
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <button onClick={() => setCurrentPage('landing')} className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Hucha
             </button>
           </div>
         </nav>
-        
-        <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welkom terug</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Gebruikersnaam</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                placeholder="Email"
-              />
+
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welkom terug</h2>
+
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  placeholder="Email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Wachtwoord</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  placeholder="Wachtwoord"
+                />
+              </div>
+
+              <button
+                onClick={() => handleLogin(email, password)}
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+              >
+                Inloggen
+              </button>
             </div>
-            
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                placeholder="Password"
-              />
-            </div>
-            
-            <button
-              onClick={() => handleLogin(email, password)}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
-            >
-              Inloggen
-            </button>
+
+            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
+              Geen account?{' '}
+              <button onClick={() => setCurrentPage('register')} className="text-indigo-600 hover:underline font-semibold">
+                Registreer hier
+              </button>
+            </p>
           </div>
-          
-          <p className="text-center mt-6 text-sm text-gray-600">
-            Geen account?{' '}
-            <button onClick={() => setCurrentPage('register')} className="text-indigo-600 hover:underline font-semibold">
-              Registreer hier
-            </button>
-          </p>
         </div>
       </div>
     );
@@ -1151,103 +1152,104 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-8">
         <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <button onClick={() => setCurrentPage('landing')} className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              ETF PORTAL
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <button onClick={() => setCurrentPage('landing')} className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Hucha
             </button>
           </div>
         </nav>
 
-        <div className="max-w-md mx-auto mt-12 mb-12 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
-          <p className="text-sm text-gray-600 mb-6">Vul uw gegevens in om te registreren</p>
+        <div className="max-w-md mx-auto mt-6 sm:mt-8 md:mt-12 mb-8 px-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
+            <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Volledige Naam *</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Jan Jansen"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Volledige Naam *</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jan Jansen"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Adres *</label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Straatnaam 123"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Adres *</label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Straatnaam 123"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Woonplaats *</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Amsterdam"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Woonplaats *</label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Amsterdam"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Telefoonnummer *</label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+31 6 12345678"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Telefoonnummer *</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+31 6 12345678"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Email *</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jan@voorbeeld.nl"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Email *</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="jan@voorbeeld.nl"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord *</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimaal 8 tekens"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Wachtwoord *</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minimaal 8 tekens"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
 
-            <button
-              onClick={handleSubmit}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold mt-6"
-            >
-              Account aanmaken
-            </button>
+              <button
+                onClick={handleSubmit}
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+              >
+                Account aanmaken
+              </button>
 
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Heeft u al een account?{' '}
-              <button onClick={() => setCurrentPage('login')} className="text-indigo-600 font-semibold hover:underline">
-                Log in
+              <p className="text-center text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4">
+                Heeft u al een account?{' '}
+                <button onClick={() => setCurrentPage('login')} className="text-indigo-600 font-semibold hover:underline">
+                  Log in
               </button>
             </p>
           </div>
