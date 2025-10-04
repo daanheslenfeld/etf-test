@@ -937,34 +937,38 @@ useEffect(() => {
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
-          <div className="flex items-center gap-6">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="text-blue-600 font-medium">Home</button>
-            <div className="text-sm text-gray-600">Welkom, {user?.name}!</div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex justify-between items-center">
+            <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">Hucha</div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-blue-600 font-medium text-sm sm:text-base">Home</button>
+              <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[80px] sm:max-w-none">
+                {user?.name?.split(' ')[0]}
+              </div>
+            </div>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-4 py-8 md:py-16">
-        <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Welkom, {user?.name}!
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-16">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welkom, {user?.name?.split(' ')[0]}!
           </h1>
-          <p className="text-base md:text-xl text-gray-600">
+          <p className="text-sm sm:text-base md:text-xl text-gray-600">
             Wat wil je vandaag doen?
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-8">
           <button
             onClick={() => setCurrentPage('etfDatabase')}
-            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-blue-500 text-left"
           >
-            <div className="text-4xl md:text-5xl mb-3 md:mb-4">📊</div>
-            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">ETF Database</h3>
-            <p className="text-sm md:text-base text-gray-600">
-              Ontdek en filter alle beschikbare ETF's. Voeg ze toe aan je portfolio.
+            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">📊</div>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">ETF Database</h3>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+              Ontdek en filter alle beschikbare ETF's
             </p>
           </button>
 
@@ -975,12 +979,12 @@ useEffect(() => {
               setPortfolioType('custom');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-purple-500"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-purple-500 text-left"
           >
-            <div className="text-4xl md:text-5xl mb-3 md:mb-4">🔧</div>
-            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">Zelf Portefeuille Samenstellen</h3>
-            <p className="text-sm md:text-base text-gray-600">
-              Bouw stap voor stap je eigen portfolio op basis van een risicoprofiel.
+            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">🔧</div>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">Zelf Samenstellen</h3>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+              Bouw je eigen portfolio stap voor stap
             </p>
           </button>
 
@@ -989,23 +993,23 @@ useEffect(() => {
               setPortfolioType('premade');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-2xl shadow-lg p-6 md:p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-green-500"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-green-500 text-left"
           >
-            <div className="text-4xl md:text-5xl mb-3 md:mb-4">✨</div>
-            <h3 className="text-xl md:text-2xl font-bold mb-2 md:mb-3 text-gray-800">Vooraf Samengestelde Portefeuille</h3>
-            <p className="text-sm md:text-base text-gray-600">
-              Kies uit onze kant-en-klare portfolio's gebaseerd op risicoprofielen.
+            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">✨</div>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">Vooraf Samengesteld</h3>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+              Kies uit onze kant-en-klare portfolio's
             </p>
           </button>
         </div>
 
         {portfolio.length > 0 && (
-          <div className="mt-8 md:mt-12 bg-white rounded-2xl shadow-lg p-6 md:p-8">
-            <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Je Huidige Portfolio</h2>
-            <p className="text-sm md:text-base text-gray-600 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
+          <div className="mt-6 sm:mt-8 md:mt-12 bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4">Je Huidige Portfolio</h2>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600 mb-3 sm:mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
               onClick={() => setCurrentPage('portfolioOverview')}
-              className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              className="w-full md:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm sm:text-base"
             >
               Bekijk Portfolio
             </button>
@@ -1271,60 +1275,61 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
-            <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                ETF Database
-              </button>
-              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                Portfolio Samenstellen
-              </button>
-              {portfolio.length > 0 && (
-                <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
-                  Mijn Portfolio ({portfolio.length})
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <div className="flex justify-between items-center">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
+                  Home
                 </button>
-              )}
-              <div className="text-sm px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold">{user?.name}</div>
+                {portfolio.length > 0 && (
+                  <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
+                    Portfolio ({portfolio.length})
+                  </button>
+                )}
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">
+                  {user?.name?.split(' ')[0]}
+                </div>
+              </div>
             </div>
           </div>
         </nav>
-        
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">ETF Database</h1>
-          
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-            <div className="grid grid-cols-5 gap-4 mb-4">
+
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">ETF Database</h1>
+
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4">
               <input
                 type="text"
                 placeholder="Zoek op naam of ISIN..."
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
-                className="col-span-2 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="sm:col-span-2 px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
               />
-              
+
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({...filters, category: e.target.value})}
-                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
               >
                 <option value="">Alle Categorieën</option>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
-              
+
               <select
                 value={filters.subcategory}
                 onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
-                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
               >
                 <option value="">Alle Subcategorieën</option>
                 {subcategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
               </select>
-              
+
               <select
                 value={filters.currency}
                 onChange={(e) => setFilters({...filters, currency: e.target.value})}
-                className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
               >
                 <option value="">Alle Valuta's</option>
                 {currencies.map(curr => <option key={curr} value={curr}>{curr}</option>)}
@@ -1336,7 +1341,34 @@ useEffect(() => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          {/* Mobile view - Cards */}
+          <div className="block md:hidden space-y-3">
+            {filteredEtfs.map((etf, idx) => (
+              <div key={idx} className="bg-white rounded-lg shadow p-3 border border-gray-100">
+                <button
+                  onClick={() => setSelectedETF(etf)}
+                  className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline text-sm w-full mb-2"
+                >
+                  {etf.naam}
+                </button>
+                <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                  <div><span className="text-gray-500">ISIN:</span> <span className="font-medium">{etf.isin}</span></div>
+                  <div><span className="text-gray-500">Cat:</span> <span className="font-medium">{etf.categorie}</span></div>
+                  <div><span className="text-gray-500">TER:</span> <span className="font-medium">{etf['ter p.a.']}</span></div>
+                  <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</span></div>
+                </div>
+                <button
+                  onClick={() => addToPortfolio(etf)}
+                  className="w-full px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                >
+                  + Toevoegen aan Portfolio
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop view - Table */}
+          <div className="hidden md:block bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full">
                 <thead className="bg-gradient-to-r from-indigo-50 to-purple-50 sticky top-0">
@@ -1631,63 +1663,64 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
-            <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">ETF Database</button>
-              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-indigo-600 font-semibold">Portfolio Samenstellen</button>
-              {portfolio.length > 0 && <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Mijn Portfolio ({portfolio.length})</button>}
-              <div className="text-sm px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold">{user?.name}</div>
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <div className="flex justify-between items-center">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
+                {portfolio.length > 0 && <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
+              </div>
             </div>
           </div>
         </nav>
-        
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Kies je beleggingsstrategie</h1>
-          <p className="text-center text-gray-600 mb-12">Stel zelf een portfolio samen of kies een van onze vooraf samengestelde portfolio's</p>
-          
-          <div className="grid grid-cols-2 gap-8 mb-12">
-            <button onClick={() => { 
-              setPortfolioType('custom'); 
+
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Kies je beleggingsstrategie</h1>
+          <p className="text-center text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12">
+            <button onClick={() => {
+              setPortfolioType('custom');
               setCustomBuildStep('profile');
               setSelectedProfile(null);
               setSelectedCategory(null);
               setCategoriesCompleted({});
               setPortfolio([]);
-            }} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all border border-gray-100">
-              <div className="text-5xl mb-4">🎯</div>
-              <h3 className="text-2xl font-bold mb-2">Zelf Samenstellen</h3>
-              <p className="text-gray-600">Kies een profiel en selecteer je eigen ETF's per categorie</p>
+            }} className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-100 text-left">
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🎯</div>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Zelf Samenstellen</h3>
+              <p className="text-sm sm:text-base text-gray-600">Kies een profiel en selecteer je eigen ETF's per categorie</p>
             </button>
-            
-            <button onClick={() => setPortfolioType('premade')} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all border border-gray-100">
-              <div className="text-5xl mb-4">📊</div>
-              <h3 className="text-2xl font-bold mb-2">Vooraf Samengesteld</h3>
-              <p className="text-gray-600">Kies een portfolio op basis van risicoprofiel</p>
+
+            <button onClick={() => setPortfolioType('premade')} className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-100 text-left">
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📊</div>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Vooraf Samengesteld</h3>
+              <p className="text-sm sm:text-base text-gray-600">Kies een portfolio op basis van risicoprofiel</p>
             </button>
           </div>
           
           {portfolioType === 'custom' && customBuildStep === 'profile' && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Stap 1: Kies je risicoprofiel</h2>
-              <div className="grid grid-cols-3 gap-6">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Stap 1: Kies je risicoprofiel</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => (
-                  <button 
-                    key={key} 
+                  <button
+                    key={key}
                     onClick={() => {
                       setSelectedProfile(key);
                       setCustomBuildStep('categories');
-                    }} 
-                    className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300"
+                    }}
+                    className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300"
                   >
-                    <h4 className="font-bold text-lg mb-2">{config.name}</h4>
-                    <div className="text-sm text-gray-600 mb-3">
+                    <h4 className="font-bold text-base sm:text-lg mb-2">{config.name}</h4>
+                    <div className="text-xs sm:text-sm text-gray-600 mb-3">
                       {Object.entries(config.allocation).map(([cat, pct]) => (
                         <div key={cat}>{cat}: {pct}%</div>
                       ))}
                     </div>
-                    <div className="text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                    <div className="text-xs sm:text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                   </button>
                 ))}
               </div>
