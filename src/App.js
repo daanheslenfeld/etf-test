@@ -218,6 +218,159 @@ const SAMPLE_ETFS = [
 const ETFPortal = () => {
   const [currentPage, setCurrentPage] = useState('landing');
   const [user, setUser] = useState(null);
+  const [customers, setCustomers] = useState([
+    {
+      id: 1,
+      name: 'Jan Pietersen',
+      email: 'jan.pietersen@email.nl',
+      password: 'demo123',
+      address: 'Hoofdstraat 45',
+      city: 'Amsterdam',
+      phone: '+31 6 12345678',
+      registeredAt: '2024-01-15T10:30:00.000Z',
+      investmentDetails: {
+        goal: 'Vermogensopbouw',
+        horizon: '20',
+        amount: '50000',
+        monthlyContribution: '500',
+        riskProfile: 'Offensief'
+      },
+      portfolio: [
+        { naam: 'iShares Core MSCI World UCITS ETF', isin: 'IE00B4L5Y983', categorie: 'Aandelen', weight: 50, 'ter p.a.': '0.20%' },
+        { naam: 'Xtrackers MSCI Emerging Markets UCITS ETF', isin: 'IE00BTJRMP35', categorie: 'Aandelen', weight: 15, 'ter p.a.': '0.18%' },
+        { naam: 'iShares Core Euro Corporate Bond UCITS ETF', isin: 'IE00B3F81R35', categorie: 'Obligaties', weight: 20, 'ter p.a.': '0.20%' },
+        { naam: 'iShares Physical Gold ETC', isin: 'IE00B579F325', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.25%' },
+        { naam: 'iShares Developed Markets Property Yield UCITS ETF', isin: 'IE00B1FZS350', categorie: 'Vastgoed', weight: 5, 'ter p.a.': '0.59%' }
+      ],
+      transactions: [
+        { date: '2024-01-15', type: 'Storting', amount: 50000, description: 'Initiele storting' },
+        { date: '2024-02-01', type: 'Storting', amount: 500, description: 'Maandelijkse storting' },
+        { date: '2024-03-01', type: 'Storting', amount: 500, description: 'Maandelijkse storting' },
+        { date: '2024-04-01', type: 'Storting', amount: 500, description: 'Maandelijkse storting' },
+        { date: '2024-05-01', type: 'Storting', amount: 500, description: 'Maandelijkse storting' }
+      ],
+      portfolioValue: 52450,
+      totalReturn: 4.9
+    },
+    {
+      id: 2,
+      name: 'Sophie van der Berg',
+      email: 'sophie.vandenberg@email.nl',
+      password: 'demo123',
+      address: 'Kerkstraat 12',
+      city: 'Rotterdam',
+      phone: '+31 6 23456789',
+      registeredAt: '2024-02-20T14:15:00.000Z',
+      investmentDetails: {
+        goal: 'Pensioen',
+        horizon: '30',
+        amount: '100000',
+        monthlyContribution: '1000',
+        riskProfile: 'Neutraal'
+      },
+      portfolio: [
+        { naam: 'Vanguard FTSE All-World UCITS ETF', isin: 'IE00B3RBWM25', categorie: 'Aandelen', weight: 40, 'ter p.a.': '0.22%' },
+        { naam: 'iShares Core Euro Government Bond UCITS ETF', isin: 'IE00B4WXJJ64', categorie: 'Obligaties', weight: 40, 'ter p.a.': '0.09%' },
+        { naam: 'iShares Global Infrastructure UCITS ETF', isin: 'IE00B1FZS467', categorie: 'Vastgoed', weight: 10, 'ter p.a.': '0.65%' },
+        { naam: 'Invesco Physical Gold ETC', isin: 'IE00B579F325', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.12%' }
+      ],
+      transactions: [
+        { date: '2024-02-20', type: 'Storting', amount: 100000, description: 'Initiële storting' },
+        { date: '2024-03-01', type: 'Storting', amount: 1000, description: 'Maandelijkse storting' },
+        { date: '2024-04-01', type: 'Storting', amount: 1000, description: 'Maandelijkse storting' },
+        { date: '2024-05-01', type: 'Storting', amount: 1000, description: 'Maandelijkse storting' }
+      ],
+      portfolioValue: 103780,
+      totalReturn: 3.78
+    },
+    {
+      id: 3,
+      name: 'Thomas de Vries',
+      email: 'thomas.devries@email.nl',
+      password: 'demo123',
+      address: 'Molenlaan 88',
+      city: 'Utrecht',
+      phone: '+31 6 34567890',
+      registeredAt: '2024-03-10T09:45:00.000Z',
+      investmentDetails: {
+        goal: 'Vermogensopbouw',
+        horizon: '10',
+        amount: '25000',
+        monthlyContribution: '250',
+        riskProfile: 'Zeer Offensief'
+      },
+      portfolio: [
+        { naam: 'iShares MSCI World UCITS ETF', isin: 'IE00B0M62Q58', categorie: 'Aandelen', weight: 70, 'ter p.a.': '0.20%' },
+        { naam: 'Xtrackers MSCI Emerging Markets UCITS ETF', isin: 'IE00BTJRMP35', categorie: 'Aandelen', weight: 20, 'ter p.a.': '0.18%' },
+        { naam: 'Wisdomtree Physical Gold', isin: 'JE00B1VS3770', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.39%' }
+      ],
+      transactions: [
+        { date: '2024-03-10', type: 'Storting', amount: 25000, description: 'Initiële storting' },
+        { date: '2024-04-01', type: 'Storting', amount: 250, description: 'Maandelijkse storting' },
+        { date: '2024-05-01', type: 'Storting', amount: 250, description: 'Maandelijkse storting' }
+      ],
+      portfolioValue: 26890,
+      totalReturn: 7.12
+    },
+    {
+      id: 4,
+      name: 'Emma Jansen',
+      email: 'emma.jansen@email.nl',
+      password: 'demo123',
+      address: 'Parkweg 23',
+      city: 'Den Haag',
+      phone: '+31 6 45678901',
+      registeredAt: '2024-04-05T16:20:00.000Z',
+      investmentDetails: {
+        goal: 'Inkomsten',
+        horizon: '15',
+        amount: '75000',
+        monthlyContribution: '750',
+        riskProfile: 'Defensief'
+      },
+      portfolio: [
+        { naam: 'iShares Core Euro Government Bond UCITS ETF', isin: 'IE00B4WXJJ64', categorie: 'Obligaties', weight: 60, 'ter p.a.': '0.09%' },
+        { naam: 'Vanguard FTSE All-World UCITS ETF', isin: 'IE00B3RBWM25', categorie: 'Aandelen', weight: 20, 'ter p.a.': '0.22%' },
+        { naam: 'iShares Developed Markets Property Yield UCITS ETF', isin: 'IE00B1FZS350', categorie: 'Vastgoed', weight: 15, 'ter p.a.': '0.59%' },
+        { naam: 'Lyxor Euro Government Bond 1-3Y UCITS ETF', isin: 'LU1287023342', categorie: 'Money market', weight: 5, 'ter p.a.': '0.17%' }
+      ],
+      transactions: [
+        { date: '2024-04-05', type: 'Storting', amount: 75000, description: 'Initiële storting' },
+        { date: '2024-05-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' }
+      ],
+      portfolioValue: 76320,
+      totalReturn: 1.74
+    },
+    {
+      id: 5,
+      name: 'Lars Bakker',
+      email: 'lars.bakker@email.nl',
+      password: 'demo123',
+      address: 'Dorpsstraat 156',
+      city: 'Eindhoven',
+      phone: '+31 6 56789012',
+      registeredAt: '2024-05-12T11:00:00.000Z',
+      investmentDetails: {
+        goal: 'Vermogensopbouw',
+        horizon: '25',
+        amount: '150000',
+        monthlyContribution: '2000',
+        riskProfile: 'Neutraal'
+      },
+      portfolio: [
+        { naam: 'iShares Core MSCI World UCITS ETF', isin: 'IE00B4L5Y983', categorie: 'Aandelen', weight: 45, 'ter p.a.': '0.20%' },
+        { naam: 'iShares Core Euro Corporate Bond UCITS ETF', isin: 'IE00B3F81R35', categorie: 'Obligaties', weight: 35, 'ter p.a.': '0.20%' },
+        { naam: 'iShares Global Infrastructure UCITS ETF', isin: 'IE00B1FZS467', categorie: 'Vastgoed', weight: 10, 'ter p.a.': '0.65%' },
+        { naam: 'iShares Physical Gold ETC', isin: 'IE00B579F325', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.25%' }
+      ],
+      transactions: [
+        { date: '2024-05-12', type: 'Storting', amount: 150000, description: 'Initiële storting' }
+      ],
+      portfolioValue: 150450,
+      totalReturn: 0.30
+    }
+  ]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [etfs, setEtfs] = useState(SAMPLE_ETFS);
   const [filteredEtfs, setFilteredEtfs] = useState(SAMPLE_ETFS);
   const [loading, setLoading] = useState(false);
@@ -362,12 +515,41 @@ useEffect(() => {
   }, [filters, etfs]);
 
   const handleLogin = (email, password) => {
-    setUser({ email, name: email.split('@')[0] });
-    setCurrentPage('mainDashboard');
+    // Check if accountmanager login
+    if (email === 'admin@etfportal.nl' && password === 'admin123') {
+      setUser({ email, name: 'Account Manager', role: 'accountmanager' });
+      setCurrentPage('customerDatabase');
+      return;
+    }
+
+    // Regular user login
+    const customer = customers.find(c => c.email === email);
+    if (customer) {
+      setUser({ ...customer, role: 'customer' });
+      setCurrentPage('mainDashboard');
+    } else {
+      setUser({ email, name: email.split('@')[0], role: 'customer' });
+      setCurrentPage('mainDashboard');
+    }
   };
 
-  const handleRegister = (name, email, password) => {
-    setUser({ email, name });
+  const handleRegister = (name, email, password, address, city, phone) => {
+    const newCustomer = {
+      id: Date.now(),
+      name,
+      email,
+      password,
+      address,
+      city,
+      phone,
+      registeredAt: new Date().toISOString(),
+      portfolio: [],
+      investmentDetails: {},
+      role: 'customer'
+    };
+
+    setCustomers(prev => [...prev, newCustomer]);
+    setUser({ ...newCustomer });
     setCurrentPage('mainDashboard');
   };
 
@@ -433,16 +615,16 @@ useEffect(() => {
   const createPremadePortfolio = (type) => {
     const config = premadePortfolios[type];
     const selectedETFs = [];
-    
+
     Object.entries(config.allocation).forEach(([category, percentage]) => {
       let categoryETFs = etfs.filter(e => e.categorie === category);
-      
+
       categoryETFs.sort((a, b) => {
         const sizeA = parseFloat(String(a['fund size (in m €)'] || '0').replace(',', ''));
         const sizeB = parseFloat(String(b['fund size (in m €)'] || '0').replace(',', ''));
         return sizeB - sizeA;
       });
-      
+
       const topETFs = categoryETFs.slice(0, Math.min(3, categoryETFs.length));
       if (topETFs.length > 0) {
         const weightPerETF = percentage / topETFs.length;
@@ -451,9 +633,10 @@ useEffect(() => {
         });
       }
     });
-    
+
     if (selectedETFs.length > 0) {
       setPortfolio(selectedETFs);
+      setSelectedProfile(type); // Store the selected profile type
       setCurrentPage('portfolioOverview');
     }
   };
@@ -632,8 +815,8 @@ useEffect(() => {
     });
     
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
           <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">Portfolio Aanpassen</h2>
@@ -836,7 +1019,10 @@ useEffect(() => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
       <nav className="bg-white/95 backdrop-blur-sm shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">ETF PORTAL</div>
+          <div className="flex flex-col">
+            <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+            <div className="text-xs md:text-sm text-gray-600 italic">Niet sparen maar beleggen</div>
+          </div>
           <div className="flex gap-2 md:gap-4">
             <button
               onClick={() => setCurrentPage('login')}
@@ -859,27 +1045,25 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="text-white text-center lg:text-left">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
-              Bouw je eigen ETF portfolio
+              Beheer nu je eigen vermogen
             </h1>
             <p className="text-base md:text-xl mb-6 md:mb-8 opacity-90 leading-relaxed">
-              Investeer slim in ETF's met ons gebruiksvriendelijke platform.
-              Begin vandaag nog met beleggen tegen lage kosten.
+              Investeer je geld over de hele wereld met een paar klikken. Eenvoudig, transparant en tegen lage kosten.
             </p>
             <button
               onClick={() => setCurrentPage('register')}
               className="px-6 md:px-8 py-3 md:py-4 bg-white text-indigo-600 rounded-full text-base md:text-lg hover:shadow-2xl transition-all font-bold w-full md:w-auto"
             >
-              Open je rekening →
+              Begin met beleggen →
             </button>
           </div>
 
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 text-white border border-white/20 shadow-2xl">
             <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
-              Start met beleggen
+              Wereldwijd gespreid beleggen
             </h3>
             <p className="opacity-90 leading-relaxed text-sm md:text-base">
-              Ontdek onze database met {etfs.length} ETF's en stel je eigen portfolio samen
-              of kies uit onze vooraf samengestelde strategieën.
+              Toegang tot {etfs.length} ETF's. Stel je eigen portfolio samen of kies uit onze professioneel samengestelde strategieën.
             </p>
           </div>
         </div>
@@ -948,9 +1132,20 @@ useEffect(() => {
 
   const RegisterPage = () => {
     const [name, setName] = useState('');
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
+    const handleSubmit = () => {
+      if (!name || !address || !city || !phone || !email || !password) {
+        alert('Vul alstublieft alle velden in');
+        return;
+      }
+      handleRegister(name, email, password, address, city, phone);
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <nav className="bg-white shadow-sm border-b">
@@ -960,47 +1155,97 @@ useEffect(() => {
             </button>
           </div>
         </nav>
-        
-        <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
-          
+
+        <div className="max-w-md mx-auto mt-12 mb-12 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
+          <p className="text-sm text-gray-600 mb-6">Vul uw gegevens in om te registreren</p>
+
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Naam</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Volledige Naam *</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="Jan Jansen"
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Email</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Adres *</label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Straatnaam 123"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Woonplaats *</label>
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Amsterdam"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Telefoonnummer *</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+31 6 12345678"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Email *</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="jan@voorbeeld.nl"
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Wachtwoord *</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimaal 8 tekens"
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                required
               />
             </div>
-            
+
             <button
-              onClick={() => handleRegister(name, email, password)}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+              onClick={handleSubmit}
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold mt-6"
             >
               Account aanmaken
             </button>
+
+            <p className="text-center text-sm text-gray-600 mt-4">
+              Heeft u al een account?{' '}
+              <button onClick={() => setCurrentPage('login')} className="text-indigo-600 font-semibold hover:underline">
+                Log in
+              </button>
+            </p>
           </div>
         </div>
       </div>
@@ -1825,32 +2070,53 @@ useEffect(() => {
           
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="font-bold text-lg mb-4">Alle Holdings</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium">Categorie</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium">Return 2024</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {portfolio.map((etf, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm">{etf.naam}</td>
-                      <td className="px-4 py-3 text-sm">{etf.categorie}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
-                      <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
-                      <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf['2024']}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-6">
+              {Object.entries(
+                portfolio.reduce((acc, etf) => {
+                  const category = etf.categorie || 'Overig';
+                  if (!acc[category]) acc[category] = [];
+                  acc[category].push(etf);
+                  return acc;
+                }, {})
+              ).map(([category, etfs]) => (
+                <div key={category} className="border rounded-lg overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold text-lg text-gray-800">{category}</h4>
+                      <span className="text-sm font-medium text-gray-600">
+                        {etfs.reduce((sum, e) => sum + (e.weight || 0), 0).toFixed(1)}% van portfolio
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">Return 2024</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {etfs.map((etf, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50">
+                            <td className="px-4 py-3 text-sm">{etf.naam}</td>
+                            <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                            <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf['2024']}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
+
+        {showEditPortfolio && <EditPortfolioModal onClose={() => setShowEditPortfolio(false)} />}
       </div>
     );
   };
@@ -2257,14 +2523,15 @@ useEffect(() => {
     const [showMonthlyCustom, setShowMonthlyCustom] = useState(false);
     
     // Pre-fill the risk profile if already selected, but still show step 1
-    useState(() => {
-      if (selectedProfile && !investmentDetails.riskProfile) {
+    useEffect(() => {
+      if (selectedProfile && premadePortfolios[selectedProfile] && !investmentDetails.riskProfile) {
         setInvestmentDetails(prev => ({
           ...prev,
           riskProfile: premadePortfolios[selectedProfile].name
         }));
       }
-    }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedProfile]);
     
     const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
     
@@ -2425,13 +2692,13 @@ useEffect(() => {
 
     // Generate static data once when component mounts
     useEffect(() => {
-      if (portfolio && portfolio.length > 0) {
+      if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
         const generatedData = runMonteCarloSimulation(1000);
         setStaticPerformanceData(generatedData);
         setCurrentMonth(0);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [runMonteCarloSimulation]);
+    }, [portfolio]);
 
     // Animate month by month - 1 second per month
     useEffect(() => {
@@ -2440,6 +2707,9 @@ useEffect(() => {
           setCurrentMonth(prev => prev + 1);
         }, 1000);
         return () => clearTimeout(timer);
+      } else if (isAnimating && currentMonth >= months) {
+        // Stop animation when we reach the end
+        setIsAnimating(false);
       }
     }, [isAnimating, currentMonth, months, staticPerformanceData]);
 
@@ -2489,13 +2759,13 @@ useEffect(() => {
         </div>
       );
     }
-    
+
     // Create display data with growing portfolio line
     const performanceData = staticPerformanceData.map((point, i) => ({
       ...point,
       portfolio: i <= currentMonth ? point.portfolioValue : null
     }));
-    
+
     // Calculate current portfolio value based on animation progress
     const animatedPortfolioValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
     const totalReturn = ((animatedPortfolioValue - initialValue) / initialValue * 100).toFixed(2);
@@ -2619,23 +2889,51 @@ useEffect(() => {
           
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="font-bold text-lg mb-4">Portfolio Holdings</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50"><tr><th className="px-4 py-2 text-left text-sm font-medium">ETF</th><th className="px-4 py-2 text-right text-sm font-medium">Weging</th><th className="px-4 py-2 text-right text-sm font-medium">Waarde</th><th className="px-4 py-2 text-right text-sm font-medium">Return</th></tr></thead>
-                <tbody className="divide-y">
-                  {portfolio.map((etf, idx) => {
-                    const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
-                    return (
-                      <tr key={idx} className="hover:bg-gray-50">
-                        <td className="px-4 py-3"><button onClick={() => setSelectedETF(etf)} className="text-blue-600 hover:underline text-left">{etf.naam}</button></td>
-                        <td className="px-4 py-3 text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
-                        <td className="px-4 py-3 text-right">{formatEuro(etfValue)}</td>
-                        <td className={`px-4 py-3 text-right ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="space-y-6">
+              {Object.entries(
+                portfolio.reduce((acc, etf) => {
+                  const category = etf.categorie || 'Overig';
+                  if (!acc[category]) acc[category] = [];
+                  acc[category].push(etf);
+                  return acc;
+                }, {})
+              ).map(([category, etfs]) => (
+                <div key={category} className="border rounded-lg overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold text-lg text-gray-800">{category}</h4>
+                      <span className="text-sm font-medium text-gray-600">
+                        {etfs.reduce((sum, e) => sum + (e.weight || 0), 0).toFixed(1)}% van portfolio • {formatEuro(etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0))}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">Waarde</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium">Return</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {etfs.map((etf, idx) => {
+                          const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
+                          return (
+                            <tr key={idx} className="hover:bg-gray-50">
+                              <td className="px-4 py-3"><button onClick={() => setSelectedETF(etf)} className="text-blue-600 hover:underline text-left">{etf.naam}</button></td>
+                              <td className="px-4 py-3 text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
+                              <td className="px-4 py-3 text-right">{formatEuro(etfValue)}</td>
+                              <td className={`px-4 py-3 text-right ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -2825,6 +3123,294 @@ useEffect(() => {
     );
   };
 
+  const CustomerDatabasePage = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredCustomers = customers.filter(customer => {
+      const search = searchTerm.toLowerCase();
+      return (
+        customer.name.toLowerCase().includes(search) ||
+        customer.email.toLowerCase().includes(search) ||
+        customer.phone.toLowerCase().includes(search) ||
+        customer.city.toLowerCase().includes(search)
+      );
+    });
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-blue-600">ETF PORTAL - Account Manager</div>
+            <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-blue-600">
+              Uitloggen
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">Klanten Database</h1>
+
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Zoek op naam, email, telefoon of woonplaats..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <p className="text-gray-600 mb-4">
+            {searchTerm ? `${filteredCustomers.length} van ${customers.length} klanten` : `Totaal aantal klanten: ${customers.length}`}
+          </p>
+
+          <div className="bg-white rounded-lg shadow">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Naam</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Email</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Telefoon</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Woonplaats</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Geregistreerd</th>
+                  <th className="px-6 py-3 text-right text-sm font-medium text-gray-700">Actie</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {filteredCustomers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                      {searchTerm ? 'Geen klanten gevonden' : 'Nog geen geregistreerde klanten'}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCustomers.map(customer => (
+                    <tr key={customer.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium">{customer.name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{customer.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{customer.phone}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{customer.city}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-right">
+                        <button
+                          onClick={() => {
+                            setSelectedCustomer(customer);
+                            setCurrentPage('customerDetail');
+                          }}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                        >
+                          Bekijk Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const CustomerDetailPage = () => {
+    if (!selectedCustomer) {
+      setCurrentPage('customerDatabase');
+      return null;
+    }
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-blue-600">ETF PORTAL - Account Manager</div>
+            <div className="flex gap-4">
+              <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-700 hover:text-blue-600">
+                ← Terug naar Database
+              </button>
+              <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-blue-600">
+                Uitloggen
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">Klant Gegevens</h1>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-4 text-blue-600">Persoonlijke Informatie</h2>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm text-gray-600">Naam:</span>
+                  <div className="font-medium">{selectedCustomer.name}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Email:</span>
+                  <div className="font-medium">{selectedCustomer.email}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Telefoon:</span>
+                  <div className="font-medium">{selectedCustomer.phone}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Adres:</span>
+                  <div className="font-medium">{selectedCustomer.address}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Woonplaats:</span>
+                  <div className="font-medium">{selectedCustomer.city}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Geregistreerd op:</span>
+                  <div className="font-medium">
+                    {new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-4 text-blue-600">Beleggingsinformatie</h2>
+              <div className="space-y-3">
+                {selectedCustomer.investmentDetails?.goal ? (
+                  <>
+                    <div>
+                      <span className="text-sm text-gray-600">Doelstelling:</span>
+                      <div className="font-medium">{selectedCustomer.investmentDetails.goal}</div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Horizon:</span>
+                      <div className="font-medium">{selectedCustomer.investmentDetails.horizon} jaar</div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Beleggingsbedrag:</span>
+                      <div className="font-medium">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Maandelijkse storting:</span>
+                      <div className="font-medium">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Risicoprofiel:</span>
+                      <div className="font-medium">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-gray-500">Nog geen beleggingsinformatie beschikbaar</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Portfolio Performance */}
+          {selectedCustomer.portfolioValue && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-bold mb-4 text-blue-600">Portfolio Waarde</h2>
+                <div className="text-3xl font-bold text-gray-900">
+                  € {selectedCustomer.portfolioValue.toLocaleString('nl-NL')}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-bold mb-4 text-blue-600">Totaal Rendement</h2>
+                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {selectedCustomer.totalReturn >= 0 ? '+' : ''}{selectedCustomer.totalReturn}%
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4 text-blue-600">Portfolio</h2>
+            {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium">Categorie</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {selectedCustomer.portfolio.map((etf, idx) => {
+                      const fullETF = etfs.find(e => e.isin === etf.isin) || etf;
+                      return (
+                        <tr key={idx} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm">
+                            <button
+                              onClick={() => setSelectedETF(fullETF)}
+                              className="text-blue-600 hover:text-blue-800 hover:underline text-left"
+                            >
+                              {etf.naam}
+                            </button>
+                          </td>
+                          <td className="px-4 py-3 text-sm">{etf.categorie}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
+                          <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500">Klant heeft nog geen portfolio samengesteld</p>
+            )}
+          </div>
+
+          {/* Transaction History */}
+          {selectedCustomer.transactions && selectedCustomer.transactions.length > 0 && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-bold mb-4 text-blue-600">Transactie Geschiedenis</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-medium">Datum</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium">Type</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium">Beschrijving</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium">Bedrag</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {selectedCustomer.transactions.map((transaction, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm">
+                          {new Date(transaction.date).toLocaleDateString('nl-NL')}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                            transaction.type === 'Storting' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {transaction.type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm">{transaction.description}</td>
+                        <td className="px-4 py-3 text-sm text-right font-medium text-green-600">
+                          + € {transaction.amount.toLocaleString('nl-NL')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="font-sans">
       {currentPage === 'landing' && <LandingPage />}
@@ -2837,6 +3423,8 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'dashboard' && <DashboardPage />}
+      {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
+      {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
     </div>
   );
