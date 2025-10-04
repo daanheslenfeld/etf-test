@@ -3223,7 +3223,20 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">Klanten Database</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Klanten Database</h1>
+            <button
+              onClick={() => {
+                const saved = localStorage.getItem('customers');
+                if (saved) {
+                  setCustomers(JSON.parse(saved));
+                }
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+            >
+              Ververs Data
+            </button>
+          </div>
 
           <div className="mb-6">
             <input
