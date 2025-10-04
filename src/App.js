@@ -216,9 +216,20 @@ const SAMPLE_ETFS = [
 ];
 
 const ETFPortal = () => {
-  const [currentPage, setCurrentPage] = useState('landing');
-  const [user, setUser] = useState(null);
-  const [customers, setCustomers] = useState([
+  // Initialize state from localStorage
+  const [currentPage, setCurrentPage] = useState(() => {
+    const saved = localStorage.getItem('currentPage');
+    return saved || 'landing';
+  });
+
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [customers, setCustomers] = useState(() => {
+    const saved = localStorage.getItem('customers');
+    return saved ? JSON.parse(saved) : [
     {
       id: 1,
       name: 'Jan Pietersen',
@@ -369,7 +380,7 @@ const ETFPortal = () => {
       portfolioValue: 150450,
       totalReturn: 0.30
     }
-  ]);
+  ]});
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [etfs, setEtfs] = useState(SAMPLE_ETFS);
   const [filteredEtfs, setFilteredEtfs] = useState(SAMPLE_ETFS);
@@ -513,6 +524,35 @@ useEffect(() => {
     
     setFilteredEtfs(filtered);
   }, [filters, etfs]);
+
+  // Save user to localStorage when it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('currentPage', currentPage);
+    } else {
+      localStorage.removeItem('user');
+      localStorage.setItem('currentPage', 'landing');
+    }
+  }, [user, currentPage]);
+
+  // Save customers to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('customers', JSON.stringify(customers));
+  }, [customers]);
+
+  // Redirect to correct page on mount if user is logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'accountmanager' && currentPage === 'landing') {
+        setCurrentPage('customerDatabase');
+      } else if (user.role === 'customer' && currentPage === 'landing') {
+        setCurrentPage('mainDashboard');
+      }
+    }
+    // Only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogin = (email, password) => {
     // Check if accountmanager login
