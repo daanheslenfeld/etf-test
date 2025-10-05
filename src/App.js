@@ -1634,19 +1634,50 @@ useEffect(() => {
   };
 
   const RegisterPage = () => {
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [houseNumber, setHouseNumber] = useState('');
+    const [street, setStreet] = useState('');
     const [city, setCity] = useState('');
     const [phone, setPhone] = useState('');
+    const [birthDate, setBirthDate] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [addressLoading, setAddressLoading] = useState(false);
+
+    const fetchAddress = async () => {
+      if (postalCode && houseNumber) {
+        setAddressLoading(true);
+        try {
+          const cleanPostalCode = postalCode.replace(/\s/g, '');
+          const response = await fetch(`https://postcode.tech/api/v1/postcode?postcode=${cleanPostalCode}&number=${houseNumber}`);
+          const data = await response.json();
+
+          if (data.street && data.city) {
+            setStreet(data.street);
+            setCity(data.city);
+          }
+        } catch (error) {
+          console.error('Error fetching address:', error);
+        }
+        setAddressLoading(false);
+      }
+    };
 
     const handleSubmit = () => {
-      if (!name || !address || !city || !phone || !email || !password) {
+      if (!firstName || !lastName || !postalCode || !houseNumber || !street || !city || !phone || !birthDate || !email || !password || !confirmPassword) {
         alert('Vul alstublieft alle velden in');
         return;
       }
-      handleRegister(name, email, password, address, city, phone);
+      if (password !== confirmPassword) {
+        alert('Wachtwoorden komen niet overeen');
+        return;
+      }
+      const fullName = `${firstName} ${lastName}`;
+      const fullAddress = `${street} ${houseNumber}, ${postalCode} ${city}`;
+      handleRegister(fullName, email, password, fullAddress, city, phone);
     };
 
     return (
@@ -1665,28 +1696,70 @@ useEffect(() => {
             <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
             <div className="space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Volledige Naam *</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jan Jansen"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Voornaam *</label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Jan"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Achternaam *</label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Jansen"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Postcode *</label>
+                  <input
+                    type="text"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    onBlur={fetchAddress}
+                    placeholder="1234AB"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Huisnummer *</label>
+                  <input
+                    type="text"
+                    value={houseNumber}
+                    onChange={(e) => setHouseNumber(e.target.value)}
+                    onBlur={fetchAddress}
+                    placeholder="12"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Adres *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Straatnaam *</label>
                 <input
                   type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Straatnaam 123"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  placeholder="Straatnaam (automatisch ingevuld)"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors bg-gray-50"
+                  readOnly
                   required
                 />
+                {addressLoading && <p className="text-xs text-gray-500 mt-1">Adres ophalen...</p>}
               </div>
 
               <div>
@@ -1695,8 +1768,9 @@ useEffect(() => {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Amsterdam"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  placeholder="Woonplaats (automatisch ingevuld)"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors bg-gray-50"
+                  readOnly
                   required
                 />
               </div>
@@ -1707,7 +1781,18 @@ useEffect(() => {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+31 6 12345678"
+                  placeholder="06 12345678"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Geboortedatum *</label>
+                <input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
@@ -1732,6 +1817,18 @@ useEffect(() => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimaal 8 tekens"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Herhaal Wachtwoord *</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Herhaal wachtwoord"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
