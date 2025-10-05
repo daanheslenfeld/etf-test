@@ -1129,8 +1129,8 @@ useEffect(() => {
   );
 
   const LandingPage = () => (
-    <div className="min-h-screen bg-[#1A1B1F]">
-      <nav className="bg-[#1A1B1F] border-b border-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
           <div className="flex flex-col">
             <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
@@ -1145,7 +1145,7 @@ useEffect(() => {
             </button>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-[#1A1B1F] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
             >
               Start nu
             </button>
@@ -1164,7 +1164,7 @@ useEffect(() => {
             </p>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#28EBCF] text-[#0A0B0D] rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
+              className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
             >
               Begin met beleggen →
             </button>
@@ -1222,30 +1222,45 @@ useEffect(() => {
                       </div>
                     </div>
 
-                    {/* Portfolio Allocation */}
+                    {/* Portfolio Holdings - ETF Names */}
                     <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3">
-                      <div className="text-white text-xs font-semibold mb-2">Verdeling</div>
+                      <div className="text-white text-xs font-semibold mb-2">Mijn ETF's</div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#28EBCF]"></div>
-                            <span className="text-gray-400 text-xs">Aandelen</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-[10px] font-medium truncate">iShares Core MSCI World</div>
+                            <div className="text-gray-400 text-[9px]">IE00B4L5Y983</div>
                           </div>
-                          <span className="text-white text-xs font-medium">65%</span>
+                          <div className="text-right ml-2">
+                            <div className="text-white text-[10px] font-medium">50%</div>
+                          </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                            <span className="text-gray-400 text-xs">Obligaties</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-[10px] font-medium truncate">Xtrackers MSCI EM</div>
+                            <div className="text-gray-400 text-[9px]">IE00BTJRMP35</div>
                           </div>
-                          <span className="text-white text-xs font-medium">20%</span>
+                          <div className="text-right ml-2">
+                            <div className="text-white text-[10px] font-medium">15%</div>
+                          </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                            <span className="text-gray-400 text-xs">Overig</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-[10px] font-medium truncate">iShares Euro Corporate Bond</div>
+                            <div className="text-gray-400 text-[9px]">IE00B3F81R35</div>
                           </div>
-                          <span className="text-white text-xs font-medium">15%</span>
+                          <div className="text-right ml-2">
+                            <div className="text-white text-[10px] font-medium">20%</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-[10px] font-medium truncate">iShares Physical Gold</div>
+                            <div className="text-gray-400 text-[9px]">IE00B579F325</div>
+                          </div>
+                          <div className="text-right ml-2">
+                            <div className="text-white text-[10px] font-medium">15%</div>
+                          </div>
                         </div>
                       </div>
                     </div>
