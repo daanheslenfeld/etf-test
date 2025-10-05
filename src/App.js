@@ -3880,7 +3880,7 @@ useEffect(() => {
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Klanten Database</h1>
+            <h1 className="text-3xl font-bold text-[#28EBCF]">Klanten Database</h1>
             <button
               onClick={() => {
                 const saved = localStorage.getItem('customers');
@@ -3888,7 +3888,7 @@ useEffect(() => {
                   setCustomers(JSON.parse(saved));
                 }
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+              className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm"
             >
               Ververs Data
             </button>
@@ -3900,7 +3900,7 @@ useEffect(() => {
               placeholder="Zoek op naam, email, telefoon of woonplaats..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
             />
           </div>
 
