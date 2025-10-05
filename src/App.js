@@ -1685,10 +1685,179 @@ useEffect(() => {
               </button>
             </div>
 
-            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
+            <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
+              <button onClick={() => setCurrentPage('resetPassword')} className="text-[#28EBCF] hover:underline font-semibold">
+                Wachtwoord vergeten?
+              </button>
+            </div>
+
+            <p className="text-center mt-3 text-xs sm:text-sm text-gray-600">
               Geen account?{' '}
               <button onClick={() => setCurrentPage('register')} className="text-[#28EBCF] hover:underline font-semibold">
                 Registreer hier
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ResetPasswordPage = () => {
+    const [email, setEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [step, setStep] = useState(1); // 1: enter email, 2: reset password
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const handleEmailSubmit = () => {
+      if (!email) {
+        setError('Vul een email adres in');
+        return;
+      }
+
+      const customer = customers.find(c => c.email.toLowerCase() === email.toLowerCase());
+      if (!customer) {
+        setError('Geen account gevonden met dit email adres');
+        return;
+      }
+
+      setError('');
+      setSuccess('Email gevonden! Voer een nieuw wachtwoord in.');
+      setStep(2);
+    };
+
+    const handlePasswordReset = () => {
+      if (!newPassword || !confirmPassword) {
+        setError('Vul alle velden in');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setError('Wachtwoorden komen niet overeen');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        setError('Wachtwoord moet minimaal 6 karakters zijn');
+        return;
+      }
+
+      // Update customer password
+      setCustomers(prev => prev.map(customer =>
+        customer.email.toLowerCase() === email.toLowerCase()
+          ? { ...customer, password: newPassword }
+          : customer
+      ));
+
+      setError('');
+      setSuccess('Wachtwoord succesvol gewijzigd! Je wordt doorgestuurd naar de login pagina...');
+
+      setTimeout(() => {
+        setCurrentPage('login');
+      }, 2000);
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
+                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
+                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+              </div>
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">
+              Wachtwoord Resetten
+            </h2>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                {success}
+              </div>
+            )}
+
+            {step === 1 ? (
+              <div className="space-y-3 sm:space-y-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  Voer je email adres in om je wachtwoord te resetten.
+                </p>
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    placeholder="Email"
+                  />
+                </div>
+
+                <button
+                  onClick={handleEmailSubmit}
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                >
+                  Volgende
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Nieuw Wachtwoord</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    placeholder="Nieuw wachtwoord"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Bevestig Wachtwoord</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    placeholder="Bevestig wachtwoord"
+                  />
+                </div>
+
+                <button
+                  onClick={handlePasswordReset}
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                >
+                  Wachtwoord Resetten
+                </button>
+              </div>
+            )}
+
+            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
+              <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] hover:underline font-semibold">
+                Terug naar inloggen
               </button>
             </p>
           </div>
@@ -4208,6 +4377,7 @@ useEffect(() => {
       {currentPage === 'landing' && <LandingPage />}
       {currentPage === 'login' && <LoginPage />}
       {currentPage === 'register' && <RegisterPage />}
+      {currentPage === 'resetPassword' && <ResetPasswordPage />}
       {currentPage === 'mainDashboard' && <MainDashboard />}
       {currentPage === 'etfDatabase' && <ETFDatabasePage />}
       {currentPage === 'customPortfolioBuilder' && <CustomPortfolioBuilder />}
