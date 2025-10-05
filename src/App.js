@@ -1035,8 +1035,8 @@ useEffect(() => {
   };
 
   const MainDashboard = () => (
-    <div className="min-h-screen bg-[#0A0B0D]">
-      <nav className="bg-[#0A0B0D] border-b border-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <div className="text-xl sm:text-2xl font-bold text-white">Hucha</div>
@@ -1174,12 +1174,12 @@ useEffect(() => {
             {/* iPhone Mockup */}
             <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
               {/* iPhone Frame */}
-              <div className="relative bg-[#1A1B1F] rounded-[3rem] p-3 shadow-2xl border-8 border-gray-900">
+              <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[3rem] p-3 shadow-2xl border-8 border-gray-700">
                 {/* Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-[#0A0B0D] rounded-b-2xl z-10"></div>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-b-2xl z-10"></div>
 
                 {/* Screen Content */}
-                <div className="bg-[#0A0B0D] rounded-[2.5rem] overflow-hidden aspect-[9/19]">
+                <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[2.5rem] overflow-hidden aspect-[9/19]">
                   {/* Portfolio Dashboard Preview */}
                   <div className="p-3 sm:p-4">
                     {/* Header */}
@@ -1223,7 +1223,7 @@ useEffect(() => {
                     </div>
 
                     {/* Portfolio Holdings - ETF Names */}
-                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3">
+                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3 mb-3">
                       <div className="text-white text-xs font-semibold mb-2">Mijn ETF's</div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -1246,23 +1246,24 @@ useEffect(() => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="text-white text-[10px] font-medium truncate">iShares Euro Corporate Bond</div>
+                            <div className="text-white text-[10px] font-medium truncate">iShares Euro Bond</div>
                             <div className="text-gray-400 text-[9px]">IE00B3F81R35</div>
                           </div>
                           <div className="text-right ml-2">
                             <div className="text-white text-[10px] font-medium">20%</div>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white text-[10px] font-medium truncate">iShares Physical Gold</div>
-                            <div className="text-gray-400 text-[9px]">IE00B579F325</div>
-                          </div>
-                          <div className="text-right ml-2">
-                            <div className="text-white text-[10px] font-medium">15%</div>
-                          </div>
-                        </div>
                       </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button className="flex-1 bg-[#28EBCF] text-gray-900 rounded-lg py-2 text-[10px] font-semibold">
+                        Geld Storten
+                      </button>
+                      <button className="flex-1 border border-gray-700 text-white rounded-lg py-2 text-[10px] font-semibold">
+                        Geld Opnemen
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -3065,20 +3066,20 @@ useEffect(() => {
     const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
     
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <div className="text-2xl font-bold text-white">Hucha</div>
             <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('dashboard')} className="text-blue-600 font-medium">Dashboard</button>
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-blue-600">ETF Database</button>
-              <div className="text-sm text-gray-600">{user?.name}</div>
+              <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium">Dashboard</button>
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
+              <div className="text-sm text-gray-400">{user?.name}</div>
               <button
                 onClick={() => {
                   setUser(null);
                   setCurrentPage('landing');
                 }}
-                className="text-gray-600 hover:text-gray-800 font-medium"
+                className="text-gray-400 hover:text-white font-medium"
               >
                 Uitloggen
               </button>
@@ -3088,10 +3089,12 @@ useEffect(() => {
         
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Mijn Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
             <div className="flex gap-3">
-              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium">Portfolio Aanpassen</button>
-              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Portfolio Balanceren</button>
+              <button onClick={() => alert('Geld storten functionaliteit komt binnenkort')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
+              <button onClick={() => alert('Geld opnemen functionaliteit komt binnenkort')} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
+              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-medium">Portfolio Balanceren</button>
             </div>
           </div>
           
