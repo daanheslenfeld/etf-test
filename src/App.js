@@ -1170,13 +1170,57 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-8 text-white border border-white/20 shadow-2xl">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4">
-              Wereldwijd gespreid beleggen
-            </h3>
-            <p className="opacity-90 leading-relaxed text-xs sm:text-sm md:text-base">
-              Toegang tot {etfs.length} ETF's. Stel je eigen portfolio samen of kies uit onze professioneel samengestelde strategieën.
-            </p>
+          <div className="relative flex justify-center items-center">
+            {/* iPhone Mockup */}
+            <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
+              {/* iPhone Frame */}
+              <div className="relative bg-[#1A1B1F] rounded-[3rem] p-3 shadow-2xl border-8 border-gray-900">
+                {/* Notch */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-[#0A0B0D] rounded-b-2xl z-10"></div>
+
+                {/* Screen Content */}
+                <div className="bg-[#0A0B0D] rounded-[2.5rem] overflow-hidden aspect-[9/19]">
+                  {/* Dashboard Preview */}
+                  <div className="p-4 sm:p-5">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="text-white font-bold text-lg">Hucha</div>
+                      <div className="text-gray-400 text-xs">Jan</div>
+                    </div>
+
+                    {/* Welcome Text */}
+                    <div className="mb-6">
+                      <h2 className="text-white text-xl font-bold mb-1">Welkom, Jan</h2>
+                      <p className="text-gray-400 text-xs">Wat wil je vandaag doen?</p>
+                    </div>
+
+                    {/* Cards */}
+                    <div className="space-y-3">
+                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4">
+                        <div className="text-2xl mb-2">📊</div>
+                        <div className="text-white font-bold text-sm mb-1">ETF Database</div>
+                        <div className="text-gray-400 text-xs">Ontdek alle ETF's</div>
+                      </div>
+
+                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4">
+                        <div className="text-2xl mb-2">🔧</div>
+                        <div className="text-white font-bold text-sm mb-1">Zelf Samenstellen</div>
+                        <div className="text-gray-400 text-xs">Bouw je portfolio</div>
+                      </div>
+
+                      <div className="bg-[#1A1B1F] border border-[#28EBCF] rounded-xl p-4">
+                        <div className="text-2xl mb-2">✨</div>
+                        <div className="text-[#28EBCF] font-bold text-sm mb-1">Vooraf Samengesteld</div>
+                        <div className="text-gray-400 text-xs">Kant-en-klaar</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Glow Effect */}
+              <div className="absolute inset-0 bg-[#28EBCF] opacity-20 blur-3xl rounded-full -z-10"></div>
+            </div>
           </div>
         </div>
       </div>
