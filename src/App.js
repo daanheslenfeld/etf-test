@@ -649,15 +649,21 @@ useEffect(() => {
     return false;
   };
 
-  const handleRegister = (name, email, password, address, city, phone) => {
+  const handleRegister = (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
     const newCustomer = {
       id: Date.now(),
-      name,
+      firstName,
+      lastName,
+      name: `${firstName} ${lastName}`,
       email,
       password,
-      address,
+      street,
+      houseNumber,
+      address: `${street} ${houseNumber}, ${postalCode} ${city}`,
+      postalCode,
       city,
       phone,
+      birthDate,
       registeredAt: new Date().toISOString(),
       portfolio: [],
       investmentDetails: {},
@@ -1683,9 +1689,7 @@ useEffect(() => {
         alert('Wachtwoorden komen niet overeen');
         return;
       }
-      const fullName = `${firstName} ${lastName}`;
-      const fullAddress = `${street} ${houseNumber}, ${postalCode} ${city}`;
-      handleRegister(fullName, email, password, fullAddress, city, phone);
+      handleRegister(firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate);
     };
 
     return (
@@ -3955,8 +3959,16 @@ useEffect(() => {
               <h2 className="text-xl font-bold mb-4 text-blue-600">Persoonlijke Informatie</h2>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-600">Naam:</span>
-                  <div className="font-medium">{selectedCustomer.name}</div>
+                  <span className="text-sm text-gray-600">Voornaam:</span>
+                  <div className="font-medium">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Achternaam:</span>
+                  <div className="font-medium">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Geboortedatum:</span>
+                  <div className="font-medium">{selectedCustomer.birthDate || 'N/A'}</div>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Email:</span>
@@ -3967,8 +3979,12 @@ useEffect(() => {
                   <div className="font-medium">{selectedCustomer.phone}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Adres:</span>
-                  <div className="font-medium">{selectedCustomer.address}</div>
+                  <span className="text-sm text-gray-600">Straat + Huisnummer:</span>
+                  <div className="font-medium">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Postcode:</span>
+                  <div className="font-medium">{selectedCustomer.postalCode || 'N/A'}</div>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600">Woonplaats:</span>
