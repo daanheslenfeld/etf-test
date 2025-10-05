@@ -737,7 +737,7 @@ useEffect(() => {
     if (selectedETFs.length > 0) {
       setPortfolio(selectedETFs);
       setSelectedProfile(type); // Store the selected profile type
-      setCurrentPage('portfolioOverview');
+      setCurrentPage('dashboard');
     }
   };
 
@@ -1140,9 +1140,15 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-8">
-              <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
-                <div className="text-xs sm:text-sm text-gray-400">Investeren voor iedereen</div>
+              <div className="flex items-center gap-3">
+                {/* Logo */}
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg text-2xl sm:text-3xl">
+                  💰
+                </div>
+                <div className="flex flex-col">
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                  <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+                </div>
               </div>
 
               {/* Menu Items */}
@@ -1381,12 +1387,12 @@ useEffect(() => {
             <p className="text-xl text-gray-300">Kies het plan dat bij jou past</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             {/* Free Plan */}
-            <div className="bg-[#1A1B1F] border-2 border-gray-700 rounded-2xl p-8">
+            <div className="bg-[#1A1B1F] border-2 border-gray-700 rounded-2xl p-8 flex flex-col h-full">
               <h3 className="text-2xl font-bold text-white mb-4">Gratis Account</h3>
               <div className="text-5xl font-bold text-white mb-6">€0<span className="text-xl text-gray-400">/jaar</span></div>
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-start gap-3">
                   <span className="text-[#28EBCF] text-xl">✓</span>
                   <span className="text-gray-300">Toegang tot hele ETF database (3000+)</span>
@@ -1400,19 +1406,19 @@ useEffect(() => {
                   <span className="text-gray-300">Gebruik alle tools</span>
                 </li>
               </ul>
-              <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-gray-600 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold">
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-gray-600 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold mt-auto">
                 Start Gratis
               </button>
             </div>
 
             {/* Paid Plan */}
-            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8 relative">
+            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8 relative flex flex-col h-full">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#28EBCF] text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
                 POPULAIR
               </div>
               <h3 className="text-2xl font-bold text-white mb-4">Belegger Account</h3>
               <div className="text-5xl font-bold text-white mb-6">€250<span className="text-xl text-gray-400">/jaar</span></div>
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-start gap-3">
                   <span className="text-[#28EBCF] text-xl">✓</span>
                   <span className="text-gray-300">Alles van Gratis Account</span>
@@ -1430,7 +1436,7 @@ useEffect(() => {
                   <span className="text-gray-300">Portfolio tracking</span>
                 </li>
               </ul>
-              <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold">
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold mt-auto">
                 Upgrade Naar Belegger
               </button>
             </div>
@@ -1681,7 +1687,7 @@ useEffect(() => {
                   Home
                 </button>
                 {portfolio.length > 0 && (
-                  <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
+                  <button onClick={() => setCurrentPage('dashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
                     Portfolio ({portfolio.length})
                   </button>
                 )}
@@ -2075,7 +2081,7 @@ useEffect(() => {
               <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
-                {portfolio.length > 0 && <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
+                {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
                 <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
                 <button
                   onClick={() => {
@@ -2198,7 +2204,7 @@ useEffect(() => {
               {allCategoriesCompleted && (
                 <div className="text-center">
                   <button
-                    onClick={() => setCurrentPage('portfolioOverview')}
+                    onClick={() => setCurrentPage('dashboard')}
                     className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:shadow-lg transition-all font-bold text-lg"
                   >
                     Ga naar Portfolio Overzicht →
@@ -2729,7 +2735,7 @@ useEffect(() => {
             {allCategoriesCompleted && (
               <div className="text-center">
                 <button
-                  onClick={() => setCurrentPage('portfolioOverview')}
+                  onClick={() => setCurrentPage('dashboard')}
                   className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-lg font-bold hover:shadow-2xl transition-all"
                 >
                   Ga naar Portfolio Overzicht →
