@@ -1129,8 +1129,8 @@ useEffect(() => {
   );
 
   const LandingPage = () => (
-    <div className="min-h-screen bg-[#0A0B0D]">
-      <nav className="bg-[#0A0B0D] border-b border-gray-800">
+    <div className="min-h-screen bg-[#1A1B1F]">
+      <nav className="bg-[#1A1B1F] border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
           <div className="flex flex-col">
             <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
@@ -1145,7 +1145,7 @@ useEffect(() => {
             </button>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-[#1A1B1F] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
             >
               Start nu
             </button>
@@ -1180,38 +1180,73 @@ useEffect(() => {
 
                 {/* Screen Content */}
                 <div className="bg-[#0A0B0D] rounded-[2.5rem] overflow-hidden aspect-[9/19]">
-                  {/* Dashboard Preview */}
-                  <div className="p-4 sm:p-5">
+                  {/* Portfolio Dashboard Preview */}
+                  <div className="p-3 sm:p-4">
                     {/* Header */}
-                    <div className="flex justify-between items-center mb-6">
-                      <div className="text-white font-bold text-lg">Hucha</div>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="text-white font-bold text-sm">Mijn Dashboard</div>
                       <div className="text-gray-400 text-xs">Jan</div>
                     </div>
 
-                    {/* Welcome Text */}
-                    <div className="mb-6">
-                      <h2 className="text-white text-xl font-bold mb-1">Welkom, Jan</h2>
-                      <p className="text-gray-400 text-xs">Wat wil je vandaag doen?</p>
+                    {/* Portfolio Value Card */}
+                    <div className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl p-3 mb-3">
+                      <div className="text-[#0A0B0D] text-xs font-medium mb-1">Totale Waarde</div>
+                      <div className="text-[#0A0B0D] text-2xl font-bold mb-1">€52,450</div>
+                      <div className="text-[#0A0B0D] text-xs">+€2,450 (+4.9%)</div>
                     </div>
 
-                    {/* Cards */}
-                    <div className="space-y-3">
-                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4">
-                        <div className="text-2xl mb-2">📊</div>
-                        <div className="text-white font-bold text-sm mb-1">ETF Database</div>
-                        <div className="text-gray-400 text-xs">Ontdek alle ETF's</div>
+                    {/* Performance Chart */}
+                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3 mb-3">
+                      <div className="text-white text-xs font-semibold mb-2">Performance</div>
+                      {/* Simple Line Chart Illustration */}
+                      <div className="relative h-20">
+                        <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+                          <path
+                            d="M 0,30 L 20,25 L 40,28 L 60,18 L 80,15 L 100,10"
+                            fill="none"
+                            stroke="#28EBCF"
+                            strokeWidth="2"
+                          />
+                          <path
+                            d="M 0,30 L 20,25 L 40,28 L 60,18 L 80,15 L 100,10 L 100,40 L 0,40 Z"
+                            fill="url(#gradient)"
+                            opacity="0.3"
+                          />
+                          <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="#28EBCF" />
+                              <stop offset="100%" stopColor="transparent" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
                       </div>
+                    </div>
 
-                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4">
-                        <div className="text-2xl mb-2">🔧</div>
-                        <div className="text-white font-bold text-sm mb-1">Zelf Samenstellen</div>
-                        <div className="text-gray-400 text-xs">Bouw je portfolio</div>
-                      </div>
-
-                      <div className="bg-[#1A1B1F] border border-[#28EBCF] rounded-xl p-4">
-                        <div className="text-2xl mb-2">✨</div>
-                        <div className="text-[#28EBCF] font-bold text-sm mb-1">Vooraf Samengesteld</div>
-                        <div className="text-gray-400 text-xs">Kant-en-klaar</div>
+                    {/* Portfolio Allocation */}
+                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3">
+                      <div className="text-white text-xs font-semibold mb-2">Verdeling</div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-[#28EBCF]"></div>
+                            <span className="text-gray-400 text-xs">Aandelen</span>
+                          </div>
+                          <span className="text-white text-xs font-medium">65%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span className="text-gray-400 text-xs">Obligaties</span>
+                          </div>
+                          <span className="text-white text-xs font-medium">20%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <span className="text-gray-400 text-xs">Overig</span>
+                          </div>
+                          <span className="text-white text-xs font-medium">15%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
