@@ -1117,7 +1117,7 @@ useEffect(() => {
             <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white">Je Huidige Portfolio</h2>
             <p className="text-sm sm:text-base text-gray-400 mb-6">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
-              onClick={() => setCurrentPage('portfolioOverview')}
+              onClick={() => setCurrentPage('dashboard')}
               className="px-6 py-3 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
             >
               Bekijk Portfolio
