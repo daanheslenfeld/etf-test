@@ -583,6 +583,22 @@ useEffect(() => {
     localStorage.setItem('categoriesCompleted', JSON.stringify(categoriesCompleted));
   }, [categoriesCompleted]);
 
+  // Sync user's portfolio and investment data back to customers array
+  useEffect(() => {
+    if (user && user.role === 'customer') {
+      setCustomers(prev => prev.map(customer =>
+        customer.email === user.email
+          ? {
+              ...customer,
+              portfolio: portfolio,
+              investmentDetails: investmentDetails,
+              selectedProfile: selectedProfile
+            }
+          : customer
+      ));
+    }
+  }, [portfolio, investmentDetails, selectedProfile, user]);
+
   // Redirect to correct page on mount if user is logged in
   useEffect(() => {
     if (user && user.role) {
@@ -3974,6 +3990,20 @@ useEffect(() => {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4 text-blue-600">Beleggingsinformatie</h2>
               <div className="space-y-3">
+                <div>
+                  <span className="text-sm text-gray-600">Account Type:</span>
+                  <div className="font-medium">
+                    {selectedCustomer.investmentDetails?.riskProfile ? (
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                        Betaald Account
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
+                        Gratis Account
+                      </span>
+                    )}
+                  </div>
+                </div>
                 {selectedCustomer.investmentDetails?.goal ? (
                   <>
                     <div>
@@ -3995,6 +4025,12 @@ useEffect(() => {
                     <div>
                       <span className="text-sm text-gray-600">Risicoprofiel:</span>
                       <div className="font-medium">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Actuele Waarde:</span>
+                      <div className="font-medium text-lg text-green-600">
+                        € {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
+                      </div>
                     </div>
                   </>
                 ) : (
