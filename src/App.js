@@ -592,7 +592,12 @@ useEffect(() => {
         }
       } else if (user.role === 'customer') {
         if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
-          setCurrentPage('mainDashboard');
+          // Check if customer has active investments
+          if (user.investmentDetails && user.investmentDetails.riskProfile) {
+            setCurrentPage('dashboard');
+          } else {
+            setCurrentPage('mainDashboard');
+          }
         }
       }
     } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register')) {
@@ -614,7 +619,14 @@ useEffect(() => {
     const customer = customers.find(c => c.email === email);
     if (customer && customer.password === password) {
       setUser({ ...customer, role: 'customer' });
-      setCurrentPage('mainDashboard');
+
+      // Check if customer has investment details (active portfolio)
+      // Redirect to dashboard if they have investment details, otherwise to main menu
+      if (customer.investmentDetails && customer.investmentDetails.riskProfile) {
+        setCurrentPage('dashboard');
+      } else {
+        setCurrentPage('mainDashboard');
+      }
       return true;
     }
 
