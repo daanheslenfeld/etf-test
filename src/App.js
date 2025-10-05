@@ -1023,14 +1023,14 @@ useEffect(() => {
   };
 
   const MainDashboard = () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+    <div className="min-h-screen bg-[#0A0B0D]">
+      <nav className="bg-[#0A0B0D] border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
-            <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">Hucha</div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-blue-600 font-medium text-sm sm:text-base">Home</button>
-              <div className="text-xs sm:text-sm text-gray-600 truncate max-w-[80px] sm:max-w-none">
+            <div className="text-xl sm:text-2xl font-bold text-white">Hucha</div>
+            <div className="flex items-center gap-4 sm:gap-6">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
+              <div className="text-sm text-gray-400 hidden sm:block">
                 {user?.name?.split(' ')[0]}
               </div>
               <button
@@ -1038,7 +1038,7 @@ useEffect(() => {
                   setUser(null);
                   setCurrentPage('landing');
                 }}
-                className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
+                className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
               >
                 Uitloggen
               </button>
@@ -1047,24 +1047,24 @@ useEffect(() => {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-16">
-        <div className="text-center mb-6 sm:mb-8 md:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Welkom, {user?.name?.split(' ')[0]}!
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="mb-12 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white">
+            Welkom, {user?.name?.split(' ')[0]}
           </h1>
-          <p className="text-sm sm:text-base md:text-xl text-gray-600">
+          <p className="text-base sm:text-lg text-gray-400">
             Wat wil je vandaag doen?
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           <button
             onClick={() => setCurrentPage('etfDatabase')}
-            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-blue-500 text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">📊</div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">ETF Database</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+            <div className="text-4xl sm:text-5xl mb-4">📊</div>
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">ETF Database</h3>
+            <p className="text-sm sm:text-base text-gray-400">
               Ontdek en filter alle beschikbare ETF's
             </p>
           </button>
@@ -1076,11 +1076,11 @@ useEffect(() => {
               setPortfolioType('custom');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-purple-500 text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">🔧</div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">Zelf Samenstellen</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+            <div className="text-4xl sm:text-5xl mb-4">🔧</div>
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">Zelf Samenstellen</h3>
+            <p className="text-sm sm:text-base text-gray-400">
               Bouw je eigen portfolio stap voor stap
             </p>
           </button>
@@ -1090,23 +1090,23 @@ useEffect(() => {
               setPortfolioType('premade');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8 hover:shadow-2xl transition-all active:scale-95 md:hover:scale-105 border-2 border-transparent hover:border-green-500 text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4">✨</div>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 text-gray-800">Vooraf Samengesteld</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600">
+            <div className="text-4xl sm:text-5xl mb-4">✨</div>
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
+            <p className="text-sm sm:text-base text-gray-400">
               Kies uit onze kant-en-klare portfolio's
             </p>
           </button>
         </div>
 
         {portfolio.length > 0 && (
-          <div className="mt-6 sm:mt-8 md:mt-12 bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 md:mb-4">Je Huidige Portfolio</h2>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600 mb-3 sm:mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
+          <div className="mt-8 sm:mt-12 bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white">Je Huidige Portfolio</h2>
+            <p className="text-sm sm:text-base text-gray-400 mb-6">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
               onClick={() => setCurrentPage('portfolioOverview')}
-              className="w-full md:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm sm:text-base"
+              className="px-6 py-3 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
             >
               Bekijk Portfolio
             </button>
@@ -1117,42 +1117,42 @@ useEffect(() => {
   );
 
   const LandingPage = () => (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
-      <nav className="bg-white/95 backdrop-blur-sm shadow-lg">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#0A0B0D]">
+      <nav className="bg-[#0A0B0D] border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="text-base sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
-            <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 italic whitespace-nowrap">Niet sparen maar beleggen</div>
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+            <div className="text-xs sm:text-sm text-gray-400">Investeren voor iedereen</div>
           </div>
-          <div className="flex gap-2 sm:gap-3 md:gap-4">
+          <div className="flex gap-3 sm:gap-4">
             <button
               onClick={() => setCurrentPage('login')}
-              className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-50 transition-all font-medium text-xs sm:text-sm md:text-base whitespace-nowrap"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base"
             >
               Login
             </button>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all font-medium text-xs sm:text-sm md:text-base whitespace-nowrap"
+              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
             >
-              Start
+              Start nu
             </button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
-          <div className="text-white text-center lg:text-left">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight px-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+          <div className="text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
               Beheer nu je eigen vermogen
             </h1>
-            <p className="text-sm sm:text-base md:text-xl mb-4 sm:mb-6 md:mb-8 opacity-90 leading-relaxed px-2">
+            <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-gray-300 leading-relaxed">
               Investeer je geld over de hele wereld met een paar klikken. Eenvoudig, transparant en tegen lage kosten.
             </p>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 bg-white text-indigo-600 rounded-full text-sm sm:text-base md:text-lg hover:shadow-2xl transition-all font-bold w-full sm:w-auto"
+              className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#28EBCF] text-[#0A0B0D] rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
             >
               Begin met beleggen →
             </button>
