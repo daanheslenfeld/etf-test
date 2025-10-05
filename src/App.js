@@ -1648,63 +1648,18 @@ useEffect(() => {
   const RegisterPage = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [postalCode, setPostalCode] = useState('');
-    const [houseNumber, setHouseNumber] = useState('');
     const [street, setStreet] = useState('');
+    const [houseNumber, setHouseNumber] = useState('');
+    const [postalCode, setPostalCode] = useState('');
     const [city, setCity] = useState('');
     const [phone, setPhone] = useState('');
     const [birthDate, setBirthDate] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [addressLoading, setAddressLoading] = useState(false);
-
-    const fetchAddress = async () => {
-      if (postalCode && houseNumber) {
-        setAddressLoading(true);
-        try {
-          const cleanPostalCode = postalCode.replace(/\s/g, '').toUpperCase();
-
-          // Using Pro6PP API (free tier available)
-          const response = await fetch(`https://api.pro6pp.nl/v2/autocomplete/nl?postalCode=${cleanPostalCode}&streetNumberAndPremise=${houseNumber}`, {
-            headers: {
-              'Accept': 'application/json'
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data && data.results && data.results.length > 0) {
-              const address = data.results[0];
-              if (address.street) setStreet(address.street);
-              if (address.settlement) setCity(address.settlement);
-            } else {
-              // Fallback: try Postcode API
-              const fallbackResponse = await fetch(`https://postcode.tech/api/v1/postcode?postcode=${cleanPostalCode}&number=${houseNumber}`);
-              const fallbackData = await fallbackResponse.json();
-
-              if (fallbackData.street && fallbackData.city) {
-                setStreet(fallbackData.street);
-                setCity(fallbackData.city);
-              } else {
-                alert('Geen adres gevonden. Vul de straatnaam handmatig in.');
-                // Make fields editable if API fails
-                document.querySelectorAll('input[readonly]').forEach(input => input.removeAttribute('readonly'));
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching address:', error);
-          alert('Adres automatisch ophalen werkt niet. Vul de straatnaam en woonplaats handmatig in.');
-          // Make fields editable on error
-          document.querySelectorAll('input[readonly]').forEach(input => input.removeAttribute('readonly'));
-        }
-        setAddressLoading(false);
-      }
-    };
 
     const handleSubmit = () => {
-      if (!firstName || !lastName || !postalCode || !houseNumber || !street || !city || !phone || !birthDate || !email || !password || !confirmPassword) {
+      if (!firstName || !lastName || !street || !houseNumber || !postalCode || !city || !phone || !birthDate || !email || !password || !confirmPassword) {
         alert('Vul alstublieft alle velden in');
         return;
       }
@@ -1772,13 +1727,12 @@ useEffect(() => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Postcode *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Adres *</label>
                   <input
                     type="text"
-                    value={postalCode}
-                    onChange={(e) => setPostalCode(e.target.value)}
-                    onBlur={fetchAddress}
-                    placeholder="1234AB"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    placeholder="Straatnaam"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                     required
                   />
@@ -1789,7 +1743,6 @@ useEffect(() => {
                     type="text"
                     value={houseNumber}
                     onChange={(e) => setHouseNumber(e.target.value)}
-                    onBlur={fetchAddress}
                     placeholder="12"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                     required
@@ -1798,16 +1751,15 @@ useEffect(() => {
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Straatnaam *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Postcode *</label>
                 <input
                   type="text"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  placeholder="Straatnaam (automatisch ingevuld of handmatig)"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder="1234AB"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
-                {addressLoading && <p className="text-xs text-gray-500 mt-1">Adres ophalen...</p>}
               </div>
 
               <div>
@@ -1816,7 +1768,7 @@ useEffect(() => {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Woonplaats (automatisch ingevuld of handmatig)"
+                  placeholder="Amsterdam"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
