@@ -1142,8 +1142,16 @@ useEffect(() => {
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-3">
                 {/* Logo */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg text-2xl sm:text-3xl">
-                  💰
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 sm:w-8 sm:h-8">
+                    {/* Rising chart bars */}
+                    <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
+                    <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
+                    <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
+                    <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
+                    {/* Upward trend line */}
+                    <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
                 <div className="flex flex-col">
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
