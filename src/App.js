@@ -3871,8 +3871,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gray-50">
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">ETF PORTAL - Account Manager</div>
-            <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-blue-600">
+            <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
+            <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-[#28EBCF]">
               Uitloggen
             </button>
           </div>
@@ -3969,12 +3969,12 @@ useEffect(() => {
       <div className="min-h-screen bg-gray-50">
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">ETF PORTAL - Account Manager</div>
+            <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
             <div className="flex gap-4">
-              <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-700 hover:text-blue-600">
+              <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-700 hover:text-[#28EBCF]">
                 ← Terug naar Database
               </button>
-              <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-blue-600">
+              <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-[#28EBCF]">
                 Uitloggen
               </button>
             </div>
