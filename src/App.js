@@ -1651,16 +1651,22 @@ useEffect(() => {
       if (postalCode && houseNumber) {
         setAddressLoading(true);
         try {
-          const cleanPostalCode = postalCode.replace(/\s/g, '');
-          const response = await fetch(`https://postcode.tech/api/v1/postcode?postcode=${cleanPostalCode}&number=${houseNumber}`);
+          const cleanPostalCode = postalCode.replace(/\s/g, '').toUpperCase();
+
+          // Using free Dutch postal code lookup from Nationaal Georegister
+          const response = await fetch(`https://geodata.nationaalgeoregister.nl/locatieserver/v3/free?fq=postcode:${cleanPostalCode}&fq=huisnummer:${houseNumber}`);
           const data = await response.json();
 
-          if (data.street && data.city) {
-            setStreet(data.street);
-            setCity(data.city);
+          if (data.response && data.response.docs && data.response.docs.length > 0) {
+            const address = data.response.docs[0];
+            if (address.straatnaam) setStreet(address.straatnaam);
+            if (address.woonplaatsnaam) setCity(address.woonplaatsnaam);
+          } else {
+            alert('Geen adres gevonden voor deze combinatie van postcode en huisnummer.');
           }
         } catch (error) {
           console.error('Error fetching address:', error);
+          alert('Kon adres niet ophalen. Controleer uw internetverbinding.');
         }
         setAddressLoading(false);
       }
