@@ -1226,9 +1226,20 @@ useEffect(() => {
                 <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[2.5rem] overflow-hidden aspect-[9/19]">
                   {/* Portfolio Dashboard Preview */}
                   <div className="p-3 sm:p-4">
-                    {/* Header */}
+                    {/* Header with Logo */}
                     <div className="flex justify-between items-center mb-4">
-                      <div className="text-white font-bold text-sm">Mijn Dashboard</div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-lg flex items-center justify-center">
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                            <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
+                            <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
+                            <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
+                            <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
+                            <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className="text-white font-bold text-sm">Hucha</div>
+                      </div>
                       <div className="text-gray-400 text-xs">Jan</div>
                     </div>
 
@@ -1334,13 +1345,35 @@ useEffect(() => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mb-3">
                       <button className="flex-1 bg-[#28EBCF] text-gray-900 rounded-lg py-2 text-[10px] font-semibold">
                         Geld Storten
                       </button>
                       <button className="flex-1 border border-gray-700 text-white rounded-lg py-2 text-[10px] font-semibold">
                         Geld Opnemen
                       </button>
+                    </div>
+
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                        <div className="text-[#28EBCF] text-xs font-bold">+12.5%</div>
+                        <div className="text-gray-400 text-[8px]">Dit jaar</div>
+                      </div>
+                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                        <div className="text-[#28EBCF] text-xs font-bold">€450</div>
+                        <div className="text-gray-400 text-[8px]">Dividend</div>
+                      </div>
+                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                        <div className="text-[#28EBCF] text-xs font-bold">5</div>
+                        <div className="text-gray-400 text-[8px]">ETF's</div>
+                      </div>
+                    </div>
+
+                    {/* Bottom branding */}
+                    <div className="flex items-center justify-center gap-1 pt-2 border-t border-gray-800">
+                      <div className="text-gray-500 text-[8px]">Powered by</div>
+                      <div className="text-[#28EBCF] text-[9px] font-bold">Hucha</div>
                     </div>
                   </div>
                 </div>
