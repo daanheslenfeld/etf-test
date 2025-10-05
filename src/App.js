@@ -1594,7 +1594,7 @@ useEffect(() => {
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welkom terug</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">Welkom terug</h2>
 
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -1627,7 +1627,7 @@ useEffect(() => {
 
               <button
                 onClick={handleLoginClick}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
               </button>
@@ -1635,7 +1635,7 @@ useEffect(() => {
 
             <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
               Geen account?{' '}
-              <button onClick={() => setCurrentPage('register')} className="text-indigo-600 hover:underline font-semibold">
+              <button onClick={() => setCurrentPage('register')} className="text-[#28EBCF] hover:underline font-semibold">
                 Registreer hier
               </button>
             </p>
