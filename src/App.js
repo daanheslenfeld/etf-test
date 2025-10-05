@@ -1571,11 +1571,23 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <button onClick={() => setCurrentPage('landing')} className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Hucha
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
+                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
+                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+              </div>
             </button>
           </div>
         </nav>
@@ -1687,11 +1699,23 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-8">
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-            <button onClick={() => setCurrentPage('landing')} className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Hucha
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
+                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
+                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
+                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+              </div>
             </button>
           </div>
         </nav>
