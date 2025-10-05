@@ -1217,13 +1217,36 @@ useEffect(() => {
           <div className="relative flex justify-center items-center">
             {/* iPhone Mockup */}
             <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
-              {/* iPhone Frame */}
-              <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[3rem] p-3 shadow-2xl border-8 border-gray-700">
-                {/* Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-b-2xl z-10"></div>
+              {/* iPhone Frame with realistic bezels */}
+              <div className="relative bg-black rounded-[3.5rem] p-3 shadow-2xl" style={{boxShadow: '0 0 0 2px #1a1a1a, 0 0 0 12px #2a2a2a, 0 20px 40px rgba(0,0,0,0.4)'}}>
+                {/* Status bar indicators */}
+                <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
+                  <div className="text-white text-[10px] font-semibold">9:41</div>
+                  <div className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="white" viewBox="0 0 24 24">
+                      <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
+                    </svg>
+                    <svg className="w-3 h-3" fill="white" viewBox="0 0 16 16">
+                      <rect x="1" y="4" width="3" height="8" rx="1"/>
+                      <rect x="5" y="2" width="3" height="10" rx="1"/>
+                      <rect x="9" y="1" width="3" height="11" rx="1"/>
+                      <rect x="13" y="3" width="3" height="9" rx="1" opacity="0.4"/>
+                    </svg>
+                    <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                      <rect x="2" y="7" width="18" height="10" rx="2" stroke="white" strokeWidth="1.5" fill="none"/>
+                      <rect x="4" y="9" width="12" height="6" fill="white"/>
+                      <rect x="20" y="10" width="2" height="4" rx="0.5"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Dynamic Island / Notch */}
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex items-center justify-center">
+                  <div className="w-12 h-3 bg-gray-900 rounded-full"></div>
+                </div>
 
                 {/* Screen Content */}
-                <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[2.5rem] overflow-hidden aspect-[9/19]">
+                <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[3rem] overflow-hidden aspect-[9/19]">
                   {/* Portfolio Dashboard Preview */}
                   <div className="p-3 sm:p-4">
                     {/* Header with Logo */}
