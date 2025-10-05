@@ -3868,7 +3868,7 @@ useEffect(() => {
     });
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50">
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
@@ -3943,7 +3943,7 @@ useEffect(() => {
                             setSelectedCustomer(customer);
                             setCurrentPage('customerDetail');
                           }}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                          className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
                         >
                           Bekijk Details
                         </button>
@@ -3966,7 +3966,7 @@ useEffect(() => {
     }
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50">
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
