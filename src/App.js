@@ -1218,7 +1218,7 @@ useEffect(() => {
             {/* iPhone Mockup */}
             <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
               {/* iPhone Frame with realistic bezels */}
-              <div className="relative bg-black rounded-[3.5rem] p-3 shadow-2xl" style={{boxShadow: '0 0 0 2px #1a1a1a, 0 0 0 12px #2a2a2a, 0 20px 40px rgba(0,0,0,0.4)'}}>
+              <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3.5rem] p-3 shadow-2xl" style={{boxShadow: '0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1)'}}>
                 {/* Status bar indicators */}
                 <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
                   <div className="text-white text-[10px] font-semibold">9:41</div>
