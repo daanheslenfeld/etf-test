@@ -583,16 +583,46 @@ useEffect(() => {
     localStorage.setItem('categoriesCompleted', JSON.stringify(categoriesCompleted));
   }, [categoriesCompleted]);
 
+  // Helper function to calculate current portfolio value
+  const calculateCurrentPortfolioValue = (details) => {
+    if (!details || !details.amount || !details.riskProfile) return 0;
+
+    const initialValue = parseFloat(details.amount) || 0;
+    const monthlyContribution = parseFloat(details.monthlyContribution) || 0;
+    const horizon = parseInt(details.horizon) || 10;
+
+    // Get portfolio configuration
+    const selectedPortfolioKey = Object.keys(premadePortfolios).find(
+      key => premadePortfolios[key].name === details.riskProfile
+    );
+    const portfolioConfig = premadePortfolios[selectedPortfolioKey] || premadePortfolios['neutral'];
+    const avgReturn = portfolioConfig.expectedReturn / 12; // Monthly return
+
+    // Simple calculation: assume we're at current month (0 for now since just invested)
+    // In real scenario, you'd track time since investment
+    const monthsSinceInvestment = 0;
+    let value = initialValue;
+
+    for (let month = 1; month <= monthsSinceInvestment; month++) {
+      value += monthlyContribution;
+      value = value * (1 + avgReturn);
+    }
+
+    return value;
+  };
+
   // Sync user's portfolio and investment data back to customers array
   useEffect(() => {
     if (user && user.role === 'customer') {
+      const currentValue = calculateCurrentPortfolioValue(investmentDetails);
       setCustomers(prev => prev.map(customer =>
         customer.email === user.email
           ? {
               ...customer,
               portfolio: portfolio,
               investmentDetails: investmentDetails,
-              selectedProfile: selectedProfile
+              selectedProfile: selectedProfile,
+              currentPortfolioValue: currentValue
             }
           : customer
       ));
@@ -1134,7 +1164,7 @@ useEffect(() => {
           </button>
         </div>
 
-        {portfolio.length > 0 && (
+        {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (
           <div className="mt-8 sm:mt-12 bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8">
             <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white">Je Huidige Portfolio</h2>
             <p className="text-sm sm:text-base text-gray-400 mb-6">Je hebt {portfolio.length} ETF's in je portfolio</p>
@@ -4045,7 +4075,23 @@ useEffect(() => {
                     <div>
                       <span className="text-sm text-gray-600">Actuele Waarde:</span>
                       <div className="font-medium text-lg text-green-600">
-                        € {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
+                        € {parseInt(selectedCustomer.currentPortfolioValue || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Totaal Rendement:</span>
+                      <div className={`font-medium text-lg ${(() => {
+                        const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
+                        const currentValue = selectedCustomer.currentPortfolioValue || initialValue;
+                        const returnPercentage = initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0;
+                        return returnPercentage >= 0 ? 'text-green-600' : 'text-red-600';
+                      })()}`}>
+                        {(() => {
+                          const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
+                          const currentValue = selectedCustomer.currentPortfolioValue || initialValue;
+                          const returnPercentage = initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100).toFixed(2) : '0.00';
+                          return `${parseFloat(returnPercentage) >= 0 ? '+' : ''}${returnPercentage}%`;
+                        })()}
                       </div>
                     </div>
                   </>
