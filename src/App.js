@@ -1665,20 +1665,39 @@ useEffect(() => {
         try {
           const cleanPostalCode = postalCode.replace(/\s/g, '').toUpperCase();
 
-          // Using free Dutch postal code lookup from Nationaal Georegister
-          const response = await fetch(`https://geodata.nationaalgeoregister.nl/locatieserver/v3/free?fq=postcode:${cleanPostalCode}&fq=huisnummer:${houseNumber}`);
-          const data = await response.json();
+          // Using Pro6PP API (free tier available)
+          const response = await fetch(`https://api.pro6pp.nl/v2/autocomplete/nl?postalCode=${cleanPostalCode}&streetNumberAndPremise=${houseNumber}`, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
 
-          if (data.response && data.response.docs && data.response.docs.length > 0) {
-            const address = data.response.docs[0];
-            if (address.straatnaam) setStreet(address.straatnaam);
-            if (address.woonplaatsnaam) setCity(address.woonplaatsnaam);
-          } else {
-            alert('Geen adres gevonden voor deze combinatie van postcode en huisnummer.');
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.results && data.results.length > 0) {
+              const address = data.results[0];
+              if (address.street) setStreet(address.street);
+              if (address.settlement) setCity(address.settlement);
+            } else {
+              // Fallback: try Postcode API
+              const fallbackResponse = await fetch(`https://postcode.tech/api/v1/postcode?postcode=${cleanPostalCode}&number=${houseNumber}`);
+              const fallbackData = await fallbackResponse.json();
+
+              if (fallbackData.street && fallbackData.city) {
+                setStreet(fallbackData.street);
+                setCity(fallbackData.city);
+              } else {
+                alert('Geen adres gevonden. Vul de straatnaam handmatig in.');
+                // Make fields editable if API fails
+                document.querySelectorAll('input[readonly]').forEach(input => input.removeAttribute('readonly'));
+              }
+            }
           }
         } catch (error) {
           console.error('Error fetching address:', error);
-          alert('Kon adres niet ophalen. Controleer uw internetverbinding.');
+          alert('Adres automatisch ophalen werkt niet. Vul de straatnaam en woonplaats handmatig in.');
+          // Make fields editable on error
+          document.querySelectorAll('input[readonly]').forEach(input => input.removeAttribute('readonly'));
         }
         setAddressLoading(false);
       }
@@ -1722,7 +1741,7 @@ useEffect(() => {
 
         <div className="max-w-md mx-auto mt-6 sm:mt-8 md:mt-12 mb-8 px-4">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Maak een gratis account</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">Maak een gratis account</h2>
             <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
             <div className="space-y-3 sm:space-y-4">
@@ -1784,9 +1803,8 @@ useEffect(() => {
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  placeholder="Straatnaam (automatisch ingevuld)"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors bg-gray-50"
-                  readOnly
+                  placeholder="Straatnaam (automatisch ingevuld of handmatig)"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
                 {addressLoading && <p className="text-xs text-gray-500 mt-1">Adres ophalen...</p>}
@@ -1798,9 +1816,8 @@ useEffect(() => {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Woonplaats (automatisch ingevuld)"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors bg-gray-50"
-                  readOnly
+                  placeholder="Woonplaats (automatisch ingevuld of handmatig)"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
                   required
                 />
               </div>
@@ -1866,14 +1883,14 @@ useEffect(() => {
 
               <button
                 onClick={handleSubmit}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
               >
                 Account aanmaken
               </button>
 
               <p className="text-center text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4">
                 Heeft u al een account?{' '}
-                <button onClick={() => setCurrentPage('login')} className="text-indigo-600 font-semibold hover:underline">
+                <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] font-semibold hover:underline">
                   Log in
                 </button>
               </p>
