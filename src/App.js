@@ -1364,6 +1364,15 @@ useEffect(() => {
                 <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">
                   {user?.name?.split(' ')[0]}
                 </div>
+                <button
+                  onClick={() => {
+                    setUser(null);
+                    setCurrentPage('landing');
+                  }}
+                  className="text-gray-600 hover:text-gray-800 font-medium text-xs sm:text-sm md:text-base"
+                >
+                  Uitloggen
+                </button>
               </div>
             </div>
           </div>
@@ -1744,6 +1753,15 @@ useEffect(() => {
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
                 {portfolio.length > 0 && <button onClick={() => setCurrentPage('portfolioOverview')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
                 <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
+                <button
+                  onClick={() => {
+                    setUser(null);
+                    setCurrentPage('landing');
+                  }}
+                  className="text-gray-600 hover:text-gray-800 font-medium text-xs sm:text-sm md:text-base"
+                >
+                  Uitloggen
+                </button>
               </div>
             </div>
           </div>
@@ -2126,6 +2144,15 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-700 hover:text-blue-600">Portfolio Samenstellen</button>
               <button onClick={() => setCurrentPage('portfolioOverview')} className="text-blue-600 font-medium">Portfolio Overzicht</button>
               <div className="text-sm text-gray-600">{user?.name}</div>
+              <button
+                onClick={() => {
+                  setUser(null);
+                  setCurrentPage('landing');
+                }}
+                className="text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Uitloggen
+              </button>
             </div>
           </div>
         </nav>
@@ -2644,7 +2671,20 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b"><div className="max-w-7xl mx-auto px-4 py-4"><div className="text-2xl font-bold text-blue-600">ETF PORTAL</div></div></nav>
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <button
+              onClick={() => {
+                setUser(null);
+                setCurrentPage('landing');
+              }}
+              className="text-gray-600 hover:text-gray-800 font-medium"
+            >
+              Uitloggen
+            </button>
+          </div>
+        </nav>
         <div className="max-w-3xl mx-auto px-4 py-12">
           <h1 className="text-3xl font-bold mb-8 text-center">Upgrade naar Betaald Account</h1>
           {step === 1 && (
@@ -2887,6 +2927,15 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('dashboard')} className="text-blue-600 font-medium">Dashboard</button>
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-blue-600">ETF Database</button>
               <div className="text-sm text-gray-600">{user?.name}</div>
+              <button
+                onClick={() => {
+                  setUser(null);
+                  setCurrentPage('landing');
+                }}
+                className="text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Uitloggen
+              </button>
             </div>
           </div>
         </nav>
