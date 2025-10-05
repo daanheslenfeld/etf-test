@@ -525,16 +525,18 @@ useEffect(() => {
     setFilteredEtfs(filtered);
   }, [filters, etfs]);
 
-  // Save user to localStorage when it changes
+  // Save user and currentPage to localStorage when they change
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('currentPage', currentPage);
     } else {
       localStorage.removeItem('user');
-      localStorage.setItem('currentPage', 'landing');
     }
-  }, [user, currentPage]);
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem('currentPage', currentPage);
+  }, [currentPage]);
 
   // Save customers to localStorage when they change
   useEffect(() => {
@@ -553,6 +555,9 @@ useEffect(() => {
           setCurrentPage('mainDashboard');
         }
       }
+    } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register')) {
+      // If no user is logged in and we're on a protected page, redirect to landing
+      setCurrentPage('landing');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -562,18 +567,18 @@ useEffect(() => {
     if (email === 'admin@etfportal.nl' && password === 'admin123') {
       setUser({ email, name: 'Account Manager', role: 'accountmanager' });
       setCurrentPage('customerDatabase');
-      return;
+      return true;
     }
 
     // Regular user login
     const customer = customers.find(c => c.email === email);
-    if (customer) {
+    if (customer && customer.password === password) {
       setUser({ ...customer, role: 'customer' });
       setCurrentPage('mainDashboard');
-    } else {
-      setUser({ email, name: email.split('@')[0], role: 'customer' });
-      setCurrentPage('mainDashboard');
+      return true;
     }
+
+    return false;
   };
 
   const handleRegister = (name, email, password, address, city, phone) => {
@@ -1129,6 +1134,14 @@ useEffect(() => {
   const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const handleLoginClick = () => {
+      const success = handleLogin(email, password);
+      if (!success) {
+        setError('Onjuiste email of wachtwoord');
+      }
+    };
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -1143,6 +1156,12 @@ useEffect(() => {
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welkom terug</h2>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
             <div className="space-y-3 sm:space-y-4">
               <div>
@@ -1168,7 +1187,7 @@ useEffect(() => {
               </div>
 
               <button
-                onClick={() => handleLogin(email, password)}
+                onClick={handleLoginClick}
                 className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
@@ -1302,8 +1321,9 @@ useEffect(() => {
                 Heeft u al een account?{' '}
                 <button onClick={() => setCurrentPage('login')} className="text-indigo-600 font-semibold hover:underline">
                   Log in
-              </button>
-            </p>
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
