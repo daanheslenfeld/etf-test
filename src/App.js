@@ -1128,30 +1128,60 @@ useEffect(() => {
     </div>
   );
 
-  const LandingPage = () => (
+  const LandingPage = () => {
+    const scrollToSection = (id) => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
-          <div className="flex flex-col">
-            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
-            <div className="text-xs sm:text-sm text-gray-400">Investeren voor iedereen</div>
-          </div>
-          <div className="flex gap-3 sm:gap-4">
-            <button
-              onClick={() => setCurrentPage('login')}
-              className="px-4 sm:px-6 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setCurrentPage('register')}
-              className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
-            >
-              Start nu
-            </button>
+      {/* Navigation with Menu */}
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-8">
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xs sm:text-sm text-gray-400">Investeren voor iedereen</div>
+              </div>
+
+              {/* Menu Items */}
+              <div className="hidden md:flex gap-6">
+                <button onClick={() => scrollToSection('hero')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Home
+                </button>
+                <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Voordelen
+                </button>
+                <button onClick={() => scrollToSection('how-it-works')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Hoe het werkt
+                </button>
+                <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Prijzen
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-3 sm:gap-4">
+              <button
+                onClick={() => setCurrentPage('login')}
+                className="px-4 sm:px-6 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => setCurrentPage('register')}
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
+              >
+                Start nu
+              </button>
+            </div>
           </div>
         </div>
       </nav>
+
+      {/* Hero Section */}
+      <section id="hero" className="min-h-screen flex items-center">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12 sm:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
@@ -1275,8 +1305,155 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Bij Hucha wordt beleggen leuk!</h2>
+            <p className="text-xl text-gray-300">Je hebt toegang tot ruim 3000 ETF's wereldwijd.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-2xl font-bold text-white mb-4">Overzichtelijk</h3>
+              <p className="text-gray-300">Alle ETF's overzichtelijk op één plek. Filter en vergelijk eenvoudig.</p>
+            </div>
+
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="text-6xl mb-4">✨</div>
+              <h3 className="text-2xl font-bold text-white mb-4">Makkelijk</h3>
+              <p className="text-gray-300">Stel in een paar klikken je eigen portfolio samen. Simpel en intuïtief.</p>
+            </div>
+
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="text-6xl mb-4">💰</div>
+              <h3 className="text-2xl font-bold text-white mb-4">Geen overbodige kosten</h3>
+              <p className="text-gray-300">Transparante prijzen zonder verborgen beheerkosten.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Hoe het werkt</h2>
+            <p className="text-xl text-gray-300">Bij Hucha hoef je geen professional te zijn om je eigen vermogen te beheren</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30">
+              <div className="text-8xl text-center">🛠️</div>
+            </div>
+            <div className="text-white">
+              <h3 className="text-3xl font-bold mb-6">Stel je eigen portefeuille samen</h3>
+              <p className="text-lg text-gray-300 leading-relaxed">
+                Stel heel eenvoudig je eigen portefeuille samen met hulp van onze tools.
+                Je kunt ook kiezen voor van te voren samengestelde portefeuilles.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-white md:order-2">
+              <h3 className="text-3xl font-bold mb-6">Maak een account en begin</h3>
+              <p className="text-lg text-gray-300 leading-relaxed">
+                Maak eenvoudig een account aan en ontdek de wereld van beleggen.
+                Toegang tot de hele database aan ETF's en alle tools om je eigen modelportefeuille te maken.
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/10 rounded-3xl p-12 border border-purple-500/30 md:order-1">
+              <div className="text-8xl text-center">🚀</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Transparante prijzen</h2>
+            <p className="text-xl text-gray-300">Kies het plan dat bij jou past</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-[#1A1B1F] border-2 border-gray-700 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-white mb-4">Gratis Account</h3>
+              <div className="text-5xl font-bold text-white mb-6">€0<span className="text-xl text-gray-400">/jaar</span></div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Toegang tot hele ETF database (3000+)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Maak modelportefeuilles</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Gebruik alle tools</span>
+                </li>
+              </ul>
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-gray-600 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold">
+                Start Gratis
+              </button>
+            </div>
+
+            {/* Paid Plan */}
+            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#28EBCF] text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                POPULAIR
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Belegger Account</h3>
+              <div className="text-5xl font-bold text-white mb-6">€250<span className="text-xl text-gray-400">/jaar</span></div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Alles van Gratis Account</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Investeer echt geld</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Geld storten en opnemen</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-[#28EBCF] text-xl">✓</span>
+                  <span className="text-gray-300">Portfolio tracking</span>
+                </li>
+              </ul>
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold">
+                Upgrade Naar Belegger
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Klaar om te beginnen?</h2>
+          <p className="text-xl text-gray-300 mb-10">Maak vandaag nog een gratis account aan en ontdek de mogelijkheden</p>
+          <button
+            onClick={() => setCurrentPage('register')}
+            className="px-12 py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-xl hover:bg-[#20D4BA] transition-all font-bold"
+          >
+            Begin met beleggen →
+          </button>
+        </div>
+      </section>
     </div>
-  );
+    );
+  };
 
   const LoginPage = () => {
     const [email, setEmail] = useState('');
