@@ -1241,20 +1241,53 @@ useEffect(() => {
 
                     {/* Performance Chart */}
                     <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3 mb-3">
-                      <div className="text-white text-xs font-semibold mb-2">Performance</div>
-                      {/* Simple Line Chart Illustration */}
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="text-white text-xs font-semibold">Performance</div>
+                        <div className="flex gap-2 text-[8px]">
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-0.5 bg-red-500"></div>
+                            <span className="text-gray-400">Slecht</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-0.5 bg-[#28EBCF]"></div>
+                            <span className="text-gray-400">Goed</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-0.5 bg-yellow-500 border-yellow-500" style={{borderStyle: 'dashed', borderWidth: '1px', height: '0'}}></div>
+                            <span className="text-gray-400">Verwacht</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Multi-Line Chart */}
                       <div className="relative h-20">
                         <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+                          {/* Bad scenario (red) - declining */}
                           <path
-                            d="M 0,30 L 20,25 L 40,28 L 60,18 L 80,15 L 100,10"
+                            d="M 0,30 L 20,32 L 40,35 L 60,36 L 80,37 L 100,38"
+                            fill="none"
+                            stroke="#EF4444"
+                            strokeWidth="1.5"
+                          />
+                          {/* Good scenario (teal) - growing well */}
+                          <path
+                            d="M 0,30 L 20,25 L 40,22 L 60,16 L 80,12 L 100,8"
                             fill="none"
                             stroke="#28EBCF"
                             strokeWidth="2"
                           />
+                          {/* Expected scenario (yellow dashed) - moderate growth */}
                           <path
-                            d="M 0,30 L 20,25 L 40,28 L 60,18 L 80,15 L 100,10 L 100,40 L 0,40 Z"
+                            d="M 0,30 L 20,28 L 40,27 L 60,24 L 80,22 L 100,20"
+                            fill="none"
+                            stroke="#EAB308"
+                            strokeWidth="1.5"
+                            strokeDasharray="3,2"
+                          />
+                          {/* Fill under good scenario */}
+                          <path
+                            d="M 0,30 L 20,25 L 40,22 L 60,16 L 80,12 L 100,8 L 100,40 L 0,40 Z"
                             fill="url(#gradient)"
-                            opacity="0.3"
+                            opacity="0.2"
                           />
                           <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
