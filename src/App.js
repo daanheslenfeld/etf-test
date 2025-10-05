@@ -393,25 +393,40 @@ const ETFPortal = () => {
     search: ''
   });
   const [selectedETF, setSelectedETF] = useState(null);
-  const [portfolio, setPortfolio] = useState([]);
-  const [portfolioType, setPortfolioType] = useState(null);
-  const [investmentDetails, setInvestmentDetails] = useState({
-    goal: '',
-    goalCustom: '',
-    horizon: '',
-    horizonCustom: '',
-    amount: '',
-    amountCustom: '',
-    monthlyContribution: '500',
-    monthlyContributionCustom: '',
-    riskProfile: ''
+  const [portfolio, setPortfolio] = useState(() => {
+    const saved = localStorage.getItem('portfolio');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [portfolioType, setPortfolioType] = useState(() => {
+    const saved = localStorage.getItem('portfolioType');
+    return saved || null;
+  });
+  const [investmentDetails, setInvestmentDetails] = useState(() => {
+    const saved = localStorage.getItem('investmentDetails');
+    return saved ? JSON.parse(saved) : {
+      goal: '',
+      goalCustom: '',
+      horizon: '',
+      horizonCustom: '',
+      amount: '',
+      amountCustom: '',
+      monthlyContribution: '500',
+      monthlyContributionCustom: '',
+      riskProfile: ''
+    };
   });
   const [portfolioValue, setPortfolioValue] = useState(10000);
   const [showEditPortfolio, setShowEditPortfolio] = useState(false);
   const [customBuildStep, setCustomBuildStep] = useState('profile'); // 'profile', 'categories', 'selectETFs'
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState(() => {
+    const saved = localStorage.getItem('selectedProfile');
+    return saved || null;
+  });
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoriesCompleted, setCategoriesCompleted] = useState({});
+  const [categoriesCompleted, setCategoriesCompleted] = useState(() => {
+    const saved = localStorage.getItem('categoriesCompleted');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   const premadePortfolios = {
     'bonds100': {
@@ -542,6 +557,31 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem('customers', JSON.stringify(customers));
   }, [customers]);
+
+  // Save portfolio data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('portfolio', JSON.stringify(portfolio));
+  }, [portfolio]);
+
+  useEffect(() => {
+    if (portfolioType) {
+      localStorage.setItem('portfolioType', portfolioType);
+    }
+  }, [portfolioType]);
+
+  useEffect(() => {
+    localStorage.setItem('investmentDetails', JSON.stringify(investmentDetails));
+  }, [investmentDetails]);
+
+  useEffect(() => {
+    if (selectedProfile) {
+      localStorage.setItem('selectedProfile', selectedProfile);
+    }
+  }, [selectedProfile]);
+
+  useEffect(() => {
+    localStorage.setItem('categoriesCompleted', JSON.stringify(categoriesCompleted));
+  }, [categoriesCompleted]);
 
   // Redirect to correct page on mount if user is logged in
   useEffect(() => {
