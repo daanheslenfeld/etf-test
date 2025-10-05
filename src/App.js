@@ -1153,14 +1153,14 @@ useEffect(() => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
           <div className="text-white">
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
               Beheer nu je eigen vermogen
             </h1>
             <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-gray-300 leading-relaxed">
-              Investeer je geld over de hele wereld met een paar klikken. Eenvoudig, transparant en tegen lage kosten.
+              Beleg nu in een paar klikken in de hele wereld. Heel simpel en overzichtelijk. Met eventueel onze ondersteuning wanneer je vragen hebt.
             </p>
             <button
               onClick={() => setCurrentPage('register')}
