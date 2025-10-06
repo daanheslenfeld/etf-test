@@ -4328,14 +4328,47 @@ useEffect(() => {
 
   const CustomerDatabasePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    // Fetch customers from API on mount
+    useEffect(() => {
+      const fetchCustomers = async () => {
+        try {
+          const response = await fetch(`${API_URL}/customers`);
+          const data = await response.json();
+          if (data.success) {
+            // Transform database format to app format
+            const transformedCustomers = data.customers.map(c => ({
+              ...c,
+              firstName: c.first_name,
+              lastName: c.last_name,
+              name: `${c.first_name} ${c.last_name}`,
+              houseNumber: c.house_number,
+              postalCode: c.postal_code,
+              birthDate: c.birth_date,
+              address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
+              registeredAt: c.registered_at || c.created_at,
+              portfolio: [],
+              investmentDetails: {}
+            }));
+            setCustomers(transformedCustomers);
+          }
+        } catch (error) {
+          console.error('Failed to fetch customers:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCustomers();
+    }, []);
 
     const filteredCustomers = customers.filter(customer => {
       const search = searchTerm.toLowerCase();
       return (
-        customer.name.toLowerCase().includes(search) ||
-        customer.email.toLowerCase().includes(search) ||
-        customer.phone.toLowerCase().includes(search) ||
-        customer.city.toLowerCase().includes(search)
+        customer.name?.toLowerCase().includes(search) ||
+        customer.email?.toLowerCase().includes(search) ||
+        customer.phone?.toLowerCase().includes(search) ||
+        customer.city?.toLowerCase().includes(search)
       );
     });
 
@@ -4354,10 +4387,31 @@ useEffect(() => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-[#28EBCF]">Klanten Database</h1>
             <button
-              onClick={() => {
-                const saved = localStorage.getItem('customers');
-                if (saved) {
-                  setCustomers(JSON.parse(saved));
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  const response = await fetch(`${API_URL}/customers`);
+                  const data = await response.json();
+                  if (data.success) {
+                    const transformedCustomers = data.customers.map(c => ({
+                      ...c,
+                      firstName: c.first_name,
+                      lastName: c.last_name,
+                      name: `${c.first_name} ${c.last_name}`,
+                      houseNumber: c.house_number,
+                      postalCode: c.postal_code,
+                      birthDate: c.birth_date,
+                      address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
+                      registeredAt: c.registered_at || c.created_at,
+                      portfolio: [],
+                      investmentDetails: {}
+                    }));
+                    setCustomers(transformedCustomers);
+                  }
+                } catch (error) {
+                  console.error('Failed to refresh customers:', error);
+                } finally {
+                  setLoading(false);
                 }
               }}
               className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm"
