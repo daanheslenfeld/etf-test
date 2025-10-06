@@ -1520,7 +1520,7 @@ useEffect(() => {
                 {/* Screen Content */}
                 <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[3rem] overflow-hidden aspect-[9/19]">
                   {/* Portfolio Dashboard Preview */}
-                  <div className="p-3 sm:p-4">
+                  <div className="p-3 sm:p-4 pt-10">
                     {/* Header with Logo */}
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex items-center gap-2">
