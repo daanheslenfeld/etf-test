@@ -695,8 +695,8 @@ useEffect(() => {
           // Existing user with portfolio → go to main dashboard
           setCurrentPage('mainDashboard');
         } else {
-          // User hasn't completed onboarding → start onboarding flow
-          setCurrentPage('onboarding');
+          // User hasn't completed onboarding → go to main dashboard
+          setCurrentPage('mainDashboard');
         }
         return true;
       } else {
@@ -746,8 +746,8 @@ useEffect(() => {
           investmentDetails: {},
           role: 'customer'
         });
-        // New users start onboarding flow
-        setCurrentPage('onboarding');
+        // New users go to main dashboard to choose portfolio type
+        setCurrentPage('mainDashboard');
       } else {
         alert(data.message || 'Registratie mislukt');
       }
