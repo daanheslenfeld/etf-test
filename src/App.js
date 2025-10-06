@@ -690,11 +690,13 @@ useEffect(() => {
           role: 'customer'
         });
 
-        // Check if customer has investment details
+        // Check if customer has completed onboarding (has investment details)
         if (customer.investmentDetails && customer.investmentDetails.risk_profile) {
-          setCurrentPage('dashboard');
-        } else {
+          // Existing user with portfolio → go to main dashboard
           setCurrentPage('mainDashboard');
+        } else {
+          // User hasn't completed onboarding → start onboarding flow
+          setCurrentPage('onboarding');
         }
         return true;
       } else {
@@ -744,7 +746,8 @@ useEffect(() => {
           investmentDetails: {},
           role: 'customer'
         });
-        setCurrentPage('mainDashboard');
+        // New users start onboarding flow
+        setCurrentPage('onboarding');
       } else {
         alert(data.message || 'Registratie mislukt');
       }
