@@ -1405,34 +1405,36 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-8">
-              <div className="flex items-center gap-3">
-                {/* Logo */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 sm:w-8 sm:h-8">
-                    {/* Piggy bank body */}
-                    <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                    {/* Piggy snout */}
-                    <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
-                    <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                    <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                    {/* Piggy ear */}
-                    <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                    {/* Piggy eye */}
-                    <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
-                    {/* Coin slot */}
-                    <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                    {/* Coin */}
-                    <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
-                    <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                    {/* Legs */}
-                    <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                    <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                  </svg>
-                </div>
-                <div className="flex flex-col">
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-3">
+                  {/* Logo */}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 sm:w-9 sm:h-9">
+                      {/* Piggy bank body */}
+                      <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#FF8BA0"/>
+                      {/* Piggy snout */}
+                      <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#FFB3C1"/>
+                      <circle cx="17.5" cy="12.5" r="0.4" fill="#8B4557"/>
+                      <circle cx="17.5" cy="13.5" r="0.4" fill="#8B4557"/>
+                      {/* Piggy ear */}
+                      <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#FF8BA0"/>
+                      {/* Piggy eye */}
+                      <circle cx="10" cy="11.5" r="0.9" fill="#2C2C2C"/>
+                      {/* Coin slot */}
+                      <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#8B4557"/>
+                      {/* Coin */}
+                      <circle cx="12" cy="4.5" r="2" fill="#FFD700" stroke="#DAA520" strokeWidth="0.3"/>
+                      <text x="12" y="5.8" fontSize="2.5" fill="#8B7500" fontWeight="bold" textAnchor="middle">€</text>
+                      {/* Legs */}
+                      <rect x="7.5" y="17" width="1.2" height="2.5" rx="0.6" fill="#FF8BA0"/>
+                      <rect x="15.3" y="17" width="1.2" height="2.5" rx="0.6" fill="#FF8BA0"/>
+                      {/* Tail */}
+                      <path d="M 19 11 Q 21 10 21 12 Q 21 13 20 13" stroke="#FF8BA0" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                    </svg>
+                  </div>
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                  <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
                 </div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
 
               {/* Menu Items */}
