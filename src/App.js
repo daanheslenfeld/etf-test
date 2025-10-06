@@ -4468,8 +4468,9 @@ useEffect(() => {
                                   });
                                   const data = await response.json();
                                   if (data.success) {
+                                    // Remove customer from local state immediately
+                                    setCustomers(prev => prev.filter(c => c.id !== customer.id));
                                     alert('Klant succesvol verwijderd');
-                                    window.location.reload();
                                   } else {
                                     alert(data.message || 'Verwijderen mislukt');
                                   }
