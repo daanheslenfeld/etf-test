@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
+// API URL - works both locally and in production
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
+
 // Sample ETF data
 const SAMPLE_ETFS = [
   {
@@ -663,7 +666,7 @@ useEffect(() => {
 
     // Regular user login via API
     try {
-      const response = await fetch('http://localhost:3001/api/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -705,7 +708,7 @@ useEffect(() => {
 
   const handleRegister = async (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
     try {
-      const response = await fetch('http://localhost:3001/api/register', {
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -4421,7 +4424,7 @@ useEffect(() => {
                             onClick={async () => {
                               if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
                                 try {
-                                  const response = await fetch(`http://localhost:3001/api/customers/${customer.id}`, {
+                                  const response = await fetch(`${API_URL}/customers/${customer.id}`, {
                                     method: 'DELETE'
                                   });
                                   const data = await response.json();
