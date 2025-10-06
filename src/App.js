@@ -1180,6 +1180,216 @@ useEffect(() => {
     </div>
   );
 
+  const CostComparisonCalculator = () => {
+    const [periodicDeposit, setPeriodicDeposit] = useState(2000);
+    const [initialInvestment, setInitialInvestment] = useState(200000);
+    const [expectedReturn, setExpectedReturn] = useState(5);
+    const [period, setPeriod] = useState(20);
+    const [wealthManagerFee, setWealthManagerFee] = useState(1.0);
+    const [huchaCost, setHuchaCost] = useState(200);
+
+    // Calculate final wealth and costs
+    const calculateResults = () => {
+      // Calculate final wealth for Hucha (with expected return, minus fixed annual cost)
+      let huchaWealth = initialInvestment;
+      for (let year = 1; year <= period; year++) {
+        huchaWealth = huchaWealth * (1 + expectedReturn / 100) + periodicDeposit * 12;
+        huchaWealth -= huchaCost; // Subtract fixed annual cost
+      }
+
+      // Calculate final wealth for wealth manager (with return minus percentage fee)
+      let managerWealth = initialInvestment;
+      const netReturn = expectedReturn - wealthManagerFee;
+      for (let year = 1; year <= period; year++) {
+        managerWealth = managerWealth * (1 + netReturn / 100) + periodicDeposit * 12;
+      }
+
+      // Calculate wealth with full return (no costs) to determine opportunity cost
+      let fullReturnWealth = initialInvestment;
+      for (let year = 1; year <= period; year++) {
+        fullReturnWealth = fullReturnWealth * (1 + expectedReturn / 100) + periodicDeposit * 12;
+      }
+
+      // Costs including lost returns
+      const huchaTotalCost = fullReturnWealth - huchaWealth;
+      const managerTotalCost = fullReturnWealth - managerWealth;
+      const savings = managerTotalCost - huchaTotalCost;
+
+      return {
+        huchaWealth,
+        managerWealth,
+        huchaTotalCost,
+        managerTotalCost,
+        savings
+      };
+    };
+
+    const results = calculateResults();
+
+    return (
+      <div className="max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Input Section */}
+          <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8">
+            <h3 className="text-2xl font-bold text-white mb-6">Jouw situatie</h3>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Inleg (eenmalig)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
+                  <input
+                    type="number"
+                    value={initialInvestment}
+                    onChange={(e) => setInitialInvestment(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Periodieke inleg (per maand)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
+                  <input
+                    type="number"
+                    value={periodicDeposit}
+                    onChange={(e) => setPeriodicDeposit(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Verwacht rendement (per jaar)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={expectedReturn}
+                    onChange={(e) => setExpectedReturn(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Periode (jaren)
+                </label>
+                <input
+                  type="number"
+                  value={period}
+                  onChange={(e) => setPeriod(Number(e.target.value))}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Kosten vermogensbeheerder (per jaar)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={wealthManagerFee}
+                    onChange={(e) => setWealthManagerFee(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2 font-medium">
+                  Kosten Hucha (per jaar)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
+                  <input
+                    type="number"
+                    value={huchaCost}
+                    onChange={(e) => setHuchaCost(Number(e.target.value))}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Results Section */}
+          <div className="space-y-6">
+            {/* Final Wealth Comparison */}
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-white mb-6">Eindvermogen na {period} jaar</h3>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center pb-4 border-b border-gray-700">
+                  <span className="text-gray-300">Vermogensbeheerder</span>
+                  <span className="text-xl font-bold text-white">
+                    € {results.managerWealth.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pb-4 border-b border-gray-700">
+                  <span className="text-[#28EBCF] font-medium">Hucha</span>
+                  <span className="text-xl font-bold text-[#28EBCF]">
+                    € {results.huchaWealth.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-gray-400 text-sm">Verschil</span>
+                  <span className="text-lg font-bold text-green-400">
+                    + € {(results.huchaWealth - results.managerWealth).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cost Breakdown */}
+            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-white mb-6">Totale kosten (incl. misgelopen rendement)</h3>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
+                  <span className="text-gray-300">Vermogensbeheerder</span>
+                  <span className="text-xl font-bold text-red-400">
+                    € {results.managerTotalCost.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
+                  <span className="text-[#28EBCF] font-medium">Hucha</span>
+                  <span className="text-xl font-bold text-[#28EBCF]">
+                    € {results.huchaTotalCost.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+
+                <div className="bg-[#28EBCF]/20 rounded-lg p-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white font-semibold">Jouw besparing</span>
+                    <span className="text-2xl font-bold text-[#28EBCF]">
+                      € {results.savings.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const LandingPage = () => {
     const scrollToSection = (id) => {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -1590,6 +1800,18 @@ useEffect(() => {
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Cost Comparison Calculator */}
+      <section className="py-20 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Kostenvergelijking</h2>
+            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met Hucha</p>
+          </div>
+
+          <CostComparisonCalculator />
         </div>
       </section>
 
