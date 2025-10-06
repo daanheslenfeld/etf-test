@@ -653,7 +653,7 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const handleLogin = (email, password) => {
+  const handleLogin = async (email, password) => {
     // Check if accountmanager login
     if (email === 'admin@etfportal.nl' && password === 'admin123') {
       setUser({ email, name: 'Account Manager', role: 'accountmanager' });
@@ -661,46 +661,49 @@ useEffect(() => {
       return true;
     }
 
-    // Regular user login
-    const customer = customers.find(c => c.email === email);
-    if (customer && customer.password === password) {
-      setUser({ ...customer, role: 'customer' });
+    // Regular user login via API
+    try {
+      const response = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-      // Check if customer has investment details (active portfolio)
-      // Redirect to dashboard if they have investment details, otherwise to main menu
-      if (customer.investmentDetails && customer.investmentDetails.riskProfile) {
-        setCurrentPage('dashboard');
+      const data = await response.json();
+
+      if (data.success) {
+        const customer = data.customer;
+        setUser({
+          ...customer,
+          firstName: customer.first_name,
+          lastName: customer.last_name,
+          name: `${customer.first_name} ${customer.last_name}`,
+          houseNumber: customer.house_number,
+          postalCode: customer.postal_code,
+          birthDate: customer.birth_date,
+          address: `${customer.street} ${customer.house_number}, ${customer.postal_code} ${customer.city}`,
+          role: 'customer'
+        });
+
+        // Check if customer has investment details
+        if (customer.investmentDetails && customer.investmentDetails.risk_profile) {
+          setCurrentPage('dashboard');
+        } else {
+          setCurrentPage('mainDashboard');
+        }
+        return true;
       } else {
-        setCurrentPage('mainDashboard');
+        return false;
       }
-      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-
-    return false;
   };
 
   const handleRegister = async (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
-    const newCustomer = {
-      id: Date.now(),
-      firstName,
-      lastName,
-      name: `${firstName} ${lastName}`,
-      email,
-      password,
-      street,
-      houseNumber,
-      address: `${street} ${houseNumber}, ${postalCode} ${city}`,
-      postalCode,
-      city,
-      phone,
-      birthDate,
-      registeredAt: new Date().toISOString(),
-      portfolio: [],
-      investmentDetails: {},
-      role: 'customer'
-    };
-
-    // Send registration to backend for email notification
     try {
       const response = await fetch('http://localhost:3001/api/register', {
         method: 'POST',
@@ -708,22 +711,44 @@ useEffect(() => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: `${firstName} ${lastName}`,
-          email: email,
-          password: password
+          firstName,
+          lastName,
+          email,
+          password,
+          street,
+          houseNumber,
+          postalCode,
+          city,
+          phone,
+          birthDate
         })
       });
 
       const data = await response.json();
-      console.log('Email notification:', data.message);
-    } catch (error) {
-      console.error('Failed to send email notification:', error);
-      // Continue with registration even if email fails
-    }
 
-    setCustomers(prev => [...prev, newCustomer]);
-    setUser({ ...newCustomer });
-    setCurrentPage('mainDashboard');
+      if (data.success) {
+        const customer = data.customer;
+        setUser({
+          ...customer,
+          firstName: customer.first_name,
+          lastName: customer.last_name,
+          name: `${customer.first_name} ${customer.last_name}`,
+          houseNumber: customer.house_number,
+          postalCode: customer.postal_code,
+          birthDate: customer.birth_date,
+          address: `${customer.street} ${customer.house_number}, ${customer.postal_code} ${customer.city}`,
+          portfolio: [],
+          investmentDetails: {},
+          role: 'customer'
+        });
+        setCurrentPage('mainDashboard');
+      } else {
+        alert(data.message || 'Registratie mislukt');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Registratie mislukt. Probeer opnieuw.');
+    }
   };
 
   const recalculateWeights = (portfolioToCalculate, profile) => {
@@ -4382,15 +4407,41 @@ useEffect(() => {
                         {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
                       </td>
                       <td className="px-6 py-4 text-sm text-right">
-                        <button
-                          onClick={() => {
-                            setSelectedCustomer(customer);
-                            setCurrentPage('customerDetail');
-                          }}
-                          className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
-                        >
-                          Bekijk Details
-                        </button>
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => {
+                              setSelectedCustomer(customer);
+                              setCurrentPage('customerDetail');
+                            }}
+                            className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
+                          >
+                            Bekijk Details
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
+                                try {
+                                  const response = await fetch(`http://localhost:3001/api/customers/${customer.id}`, {
+                                    method: 'DELETE'
+                                  });
+                                  const data = await response.json();
+                                  if (data.success) {
+                                    alert('Klant succesvol verwijderd');
+                                    window.location.reload();
+                                  } else {
+                                    alert(data.message || 'Verwijderen mislukt');
+                                  }
+                                } catch (error) {
+                                  console.error('Delete error:', error);
+                                  alert('Verwijderen mislukt. Probeer opnieuw.');
+                                }
+                              }
+                            }}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium"
+                          >
+                            Verwijder
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
