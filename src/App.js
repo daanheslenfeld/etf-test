@@ -1982,55 +1982,55 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">Welkom terug</h2>
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">Welkom terug</h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Email</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder="Email"
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Wachtwoord</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Wachtwoord</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder="Wachtwoord"
                 />
               </div>
 
               <button
                 onClick={handleLoginClick}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
               </button>
             </div>
 
-            <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
-              <button onClick={() => setCurrentPage('resetPassword')} className="text-[#28EBCF] hover:underline font-semibold">
+            <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-400">
+              <button onClick={() => setCurrentPage('resetPassword')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
                 Wachtwoord vergeten?
               </button>
             </div>
 
-            <p className="text-center mt-3 text-xs sm:text-sm text-gray-600">
+            <p className="text-center mt-3 text-xs sm:text-sm text-gray-400">
               Geen account?{' '}
-              <button onClick={() => setCurrentPage('register')} className="text-[#28EBCF] hover:underline font-semibold">
+              <button onClick={() => setCurrentPage('register')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
                 Registreer hier
               </button>
             </p>
@@ -2119,42 +2119,42 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">
               Wachtwoord Resetten
             </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-green-600/20 border border-green-600/50 text-green-400 rounded-lg text-sm">
                 {success}
               </div>
             )}
 
             {step === 1 ? (
               <div className="space-y-3 sm:space-y-4">
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-400 mb-4">
                   Voer je email adres in om je wachtwoord te resetten.
                 </p>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Email</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     placeholder="Email"
                   />
                 </div>
 
                 <button
                   onClick={handleEmailSubmit}
-                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
                 >
                   Volgende
                 </button>
@@ -2162,38 +2162,38 @@ useEffect(() => {
             ) : (
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Nieuw Wachtwoord</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Nieuw Wachtwoord</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     placeholder="Nieuw wachtwoord"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-700">Bevestig Wachtwoord</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Bevestig Wachtwoord</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     placeholder="Bevestig wachtwoord"
                   />
                 </div>
 
                 <button
                   onClick={handlePasswordReset}
-                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
                 >
                   Wachtwoord Resetten
                 </button>
               </div>
             )}
 
-            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-600">
-              <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] hover:underline font-semibold">
+            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-400">
+              <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
                 Terug naar inloggen
               </button>
             </p>
@@ -2251,31 +2251,31 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-md mx-auto mt-6 sm:mt-8 md:mt-12 mb-8 px-4">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-100">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] bg-clip-text text-transparent">Maak een gratis account</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 text-[#28EBCF]">Maak een gratis account</h2>
+            <p className="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
             <div className="space-y-3 sm:space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Voornaam *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Voornaam *</label>
                   <input
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Jan"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Achternaam *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Achternaam *</label>
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Jansen"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     required
                   />
                 </div>
@@ -2283,122 +2283,122 @@ useEffect(() => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Adres *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Adres *</label>
                   <input
                     type="text"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="Straatnaam"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Huisnummer *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Huisnummer *</label>
                   <input
                     type="text"
                     value={houseNumber}
                     onChange={(e) => setHouseNumber(e.target.value)}
                     placeholder="12"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Postcode *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Postcode *</label>
                 <input
                   type="text"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="1234AB"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Woonplaats *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Woonplaats *</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Amsterdam"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Telefoonnummer *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Telefoonnummer *</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="06 12345678"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Geboortedatum *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Geboortedatum *</label>
                 <input
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Email *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Email *</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jan@voorbeeld.nl"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Wachtwoord *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Wachtwoord *</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimaal 8 tekens"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-700">Herhaal Wachtwoord *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Herhaal Wachtwoord *</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Herhaal wachtwoord"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <button
                 onClick={handleSubmit}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 rounded-lg sm:rounded-xl hover:shadow-lg transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Account aanmaken
               </button>
 
-              <p className="text-center text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4">
+              <p className="text-center text-xs sm:text-sm text-gray-400 mt-3 sm:mt-4">
                 Heeft u al een account?{' '}
-                <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] font-semibold hover:underline">
+                <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] font-semibold hover:text-[#20D4BA] hover:underline">
                   Log in
                 </button>
               </p>
@@ -2416,31 +2416,31 @@ useEffect(() => {
     
     if (loading) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-[#0A0B0D] flex items-center justify-center">
           <div className="text-center">
-            <div className="text-2xl font-bold mb-4">ETF data laden...</div>
-            <div className="text-gray-600">Even geduld aub</div>
+            <div className="text-2xl font-bold mb-4 text-white">ETF data laden...</div>
+            <div className="text-gray-400">Even geduld aub</div>
           </div>
         </div>
       );
     }
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PIGG</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
                   Home
                 </button>
                 {portfolio.length > 0 && (
-                  <button onClick={() => setCurrentPage('dashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
+                  <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
                     Portfolio ({portfolio.length})
                   </button>
                 )}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">
                   {user?.name?.split(' ')[0]}
                 </div>
                 <button
@@ -2448,7 +2448,7 @@ useEffect(() => {
                     setUser(null);
                     setCurrentPage('landing');
                   }}
-                  className="text-gray-600 hover:text-gray-800 font-medium text-xs sm:text-sm md:text-base"
+                  className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -2458,22 +2458,22 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">ETF Database</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">ETF Database</h1>
 
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-100">
+          <div className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-800">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4">
               <input
                 type="text"
                 placeholder="Zoek op naam of ISIN..."
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
-                className="sm:col-span-2 px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="sm:col-span-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
               />
 
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({...filters, category: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
               >
                 <option value="">Alle Categorieën</option>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -2482,7 +2482,7 @@ useEffect(() => {
               <select
                 value={filters.subcategory}
                 onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
               >
                 <option value="">Alle Subcategorieën</option>
                 {subcategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
@@ -2491,37 +2491,37 @@ useEffect(() => {
               <select
                 value={filters.currency}
                 onChange={(e) => setFilters({...filters, currency: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
               >
                 <option value="">Alle Valuta's</option>
                 {currencies.map(curr => <option key={curr} value={curr}>{curr}</option>)}
               </select>
             </div>
-            
-            <div className="text-sm text-gray-600">
-              Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-orange-600">(Sample data - upload Excel voor volledige database)</span>}
+
+            <div className="text-sm text-gray-400">
+              Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-[#28EBCF]">(Sample data - upload Excel voor volledige database)</span>}
             </div>
           </div>
-          
+
           {/* Mobile view - Cards */}
           <div className="block md:hidden space-y-3">
             {filteredEtfs.map((etf, idx) => (
-              <div key={idx} className="bg-white rounded-lg shadow p-3 border border-gray-100">
+              <div key={idx} className="bg-[#1A1B1F] rounded-lg shadow p-3 border border-gray-800">
                 <button
                   onClick={() => setSelectedETF(etf)}
-                  className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline text-sm w-full mb-2"
+                  className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline text-sm w-full mb-2"
                 >
                   {etf.naam}
                 </button>
                 <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                  <div><span className="text-gray-500">ISIN:</span> <span className="font-medium">{etf.isin}</span></div>
-                  <div><span className="text-gray-500">Cat:</span> <span className="font-medium">{etf.categorie}</span></div>
-                  <div><span className="text-gray-500">TER:</span> <span className="font-medium">{etf['ter p.a.']}</span></div>
-                  <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</span></div>
+                  <div><span className="text-gray-500">ISIN:</span> <span className="font-medium text-gray-300">{etf.isin}</span></div>
+                  <div><span className="text-gray-500">Cat:</span> <span className="font-medium text-gray-300">{etf.categorie}</span></div>
+                  <div><span className="text-gray-500">TER:</span> <span className="font-medium text-gray-300">{etf['ter p.a.']}</span></div>
+                  <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</span></div>
                 </div>
                 <button
                   onClick={() => addToPortfolio(etf)}
-                  className="w-full px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                  className="w-full px-3 py-2 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                 >
                   + Toevoegen aan Portfolio
                 </button>
@@ -2530,44 +2530,44 @@ useEffect(() => {
           </div>
 
           {/* Desktop view - Table */}
-          <div className="hidden md:block bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          <div className="hidden md:block bg-[#1A1B1F] rounded-2xl shadow-lg overflow-hidden border border-gray-800">
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-indigo-50 to-purple-50 sticky top-0">
+                <thead className="bg-gray-800/50 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Naam</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ISIN</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Categorie</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">TER</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">YTD</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">2024</th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actie</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">2024</th>
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-800">
                   {filteredEtfs.map((etf, idx) => (
-                    <tr key={idx} className="hover:bg-indigo-50/50 transition-colors">
+                    <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                       <td className="px-4 py-3">
                         <button
                           onClick={() => setSelectedETF(etf)}
-                          className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline"
+                          className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline"
                         >
                           {etf.naam}
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{etf.isin}</td>
-                      <td className="px-4 py-3 text-sm">{etf.categorie}</td>
-                      <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
+                      <td className="px-4 py-3 text-sm text-gray-300">{etf.categorie}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {etf.ytd}
                       </td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {etf['2024']}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => addToPortfolio(etf)}
-                          className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                          className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                         >
                           + Portfolio
                         </button>
@@ -2718,83 +2718,83 @@ useEffect(() => {
     const topHoldings = getTopHoldingsForETF(etf);
     
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 bg-white border-b px-3 py-2 flex justify-between items-center z-10 gap-2">
-            <h2 className="text-base font-bold truncate">{etf.naam}</h2>
-            <button onClick={onClose} className="text-4xl text-gray-500 hover:text-gray-700 flex-shrink-0 leading-none -mt-2">×</button>
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div className="bg-[#1A1B1F] rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
+          <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-3 py-2 flex justify-between items-center z-10 gap-2">
+            <h2 className="text-base font-bold truncate text-white">{etf.naam}</h2>
+            <button onClick={onClose} className="text-4xl text-gray-400 hover:text-gray-200 flex-shrink-0 leading-none -mt-2">×</button>
           </div>
-          
+
           <div className="p-3 space-y-3">
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <div className="font-semibold mb-1">Basis Info</div>
+                <div className="font-semibold mb-1 text-white">Basis Info</div>
                 <div className="space-y-0.5">
-                  <div className="flex justify-between"><span className="text-gray-600">ISIN:</span><span>{etf.isin}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">Categorie:</span><span>{etf.categorie}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">TER:</span><span className="text-blue-600 font-medium">{etf['ter p.a.']}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">YTD:</span><span className={safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}>{etf.ytd}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">ISIN:</span><span className="text-gray-300">{etf.isin}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Categorie:</span><span className="text-gray-300">{etf.categorie}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">TER:</span><span className="text-[#28EBCF] font-medium">{etf['ter p.a.']}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">YTD:</span><span className={safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}>{etf.ytd}</span></div>
                 </div>
               </div>
-              
+
               <div>
-                <div className="font-semibold mb-1">Details</div>
+                <div className="font-semibold mb-1 text-white">Details</div>
                 <div className="space-y-0.5">
-                  <div className="flex justify-between"><span className="text-gray-600">Fund Size:</span><span>€{etf['fund size (in m €)']}M</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">Vol 1Y:</span><span>{etf['volatility 1y']}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">Holdings:</span><span>{etf.holdings}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">Uitkering:</span><span>{etf.distribution}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Fund Size:</span><span className="text-gray-300">€{etf['fund size (in m €)']}M</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Vol 1Y:</span><span className="text-gray-300">{etf['volatility 1y']}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Holdings:</span><span className="text-gray-300">{etf.holdings}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Uitkering:</span><span className="text-gray-300">{etf.distribution}</span></div>
                 </div>
               </div>
             </div>
-            
+
             <div>
-              <div className="font-semibold mb-1 text-xs">Historisch Rendement</div>
+              <div className="font-semibold mb-1 text-xs text-white">Historisch Rendement</div>
               <ResponsiveContainer width="100%" height={140}>
                 <BarChart data={historicalData}>
-                  <XAxis dataKey="year" tick={{fontSize: 10}} />
-                  <YAxis tick={{fontSize: 10}} />
-                  <Tooltip />
-                  <Bar dataKey="return" fill="#0088FE" />
+                  <XAxis dataKey="year" tick={{fontSize: 10, fill: '#9CA3AF'}} />
+                  <YAxis tick={{fontSize: 10, fill: '#9CA3AF'}} />
+                  <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
+                  <Bar dataKey="return" fill="#28EBCF" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            
+
             {topHoldings.length > 0 && (
               <div>
-                <div className="font-semibold mb-1 text-xs">Top 10 Holdings</div>
-                <div className="text-xs space-y-0.5 max-h-32 overflow-y-auto border rounded p-2">
+                <div className="font-semibold mb-1 text-xs text-white">Top 10 Holdings</div>
+                <div className="text-xs space-y-0.5 max-h-32 overflow-y-auto border border-gray-800 rounded p-2 bg-gray-900/30">
                   {topHoldings.map((holding, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b last:border-0">
+                    <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-800 last:border-0">
                       <div className="flex items-start gap-2 flex-1 min-w-0">
                         <span className="text-gray-500 flex-shrink-0">{idx + 1}.</span>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{holding.name}</div>
-                          <div className="text-gray-600 text-[10px]">
+                          <div className="font-medium truncate text-gray-300">{holding.name}</div>
+                          <div className="text-gray-500 text-[10px]">
                             {holding.sector || holding.rating || holding.type || '-'}
                           </div>
                         </div>
                       </div>
-                      <span className="font-medium ml-2 flex-shrink-0">{holding.weight.toFixed(1)}%</span>
+                      <span className="font-medium ml-2 flex-shrink-0 text-gray-300">{holding.weight.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
+
             <div className="flex gap-2 pt-1">
               <button
                 onClick={() => {
                   addToPortfolio(etf);
                   onClose();
                 }}
-                className="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium"
+                className="flex-1 py-2 bg-[#28EBCF] text-gray-900 rounded hover:bg-[#20D4BA] text-xs font-medium"
               >
                 + Portfolio
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-2 border-2 border-gray-300 rounded hover:bg-gray-50 text-xs font-medium"
+                className="flex-1 py-2 border-2 border-gray-700 rounded hover:bg-gray-800 text-xs font-medium text-gray-300"
               >
                 Sluiten
               </button>
@@ -2821,23 +2821,23 @@ useEffect(() => {
     
     const requiredCategories = getRequiredCategories();
     const allCategoriesCompleted = requiredCategories.every(cat => categoriesCompleted[cat]);
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PIGG</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
-                {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
+                {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
                 <button
                   onClick={() => {
                     setUser(null);
                     setCurrentPage('landing');
                   }}
-                  className="text-gray-600 hover:text-gray-800 font-medium text-xs sm:text-sm md:text-base"
+                  className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -2847,8 +2847,8 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Kies je beleggingsstrategie</h1>
-          <p className="text-center text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4 text-center text-white">Kies je beleggingsstrategie</h1>
+          <p className="text-center text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12">
             <button onClick={() => {
@@ -2858,22 +2858,22 @@ useEffect(() => {
               setSelectedCategory(null);
               setCategoriesCompleted({});
               setPortfolio([]);
-            }} className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-100 text-left">
+            }} className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-800 text-left">
               <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🎯</div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Zelf Samenstellen</h3>
-              <p className="text-sm sm:text-base text-gray-600">Kies een profiel en selecteer je eigen ETF's per categorie</p>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Zelf Samenstellen</h3>
+              <p className="text-sm sm:text-base text-gray-400">Kies een profiel en selecteer je eigen ETF's per categorie</p>
             </button>
 
-            <button onClick={() => setPortfolioType('premade')} className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-100 text-left">
+            <button onClick={() => setPortfolioType('premade')} className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-800 text-left">
               <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📊</div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Vooraf Samengesteld</h3>
-              <p className="text-sm sm:text-base text-gray-600">Kies een portfolio op basis van risicoprofiel</p>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Vooraf Samengesteld</h3>
+              <p className="text-sm sm:text-base text-gray-400">Kies een portfolio op basis van risicoprofiel</p>
             </button>
           </div>
           
           {portfolioType === 'custom' && customBuildStep === 'profile' && (
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Stap 1: Kies je risicoprofiel</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Stap 1: Kies je risicoprofiel</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => (
                   <button
@@ -2882,16 +2882,16 @@ useEffect(() => {
                       setSelectedProfile(key);
                       setCustomBuildStep('categories');
                     }}
-                    className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300"
+                    className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]"
                   >
-                    <h4 className="font-bold text-base sm:text-lg mb-2">{config.name}</h4>
-                    <div className="text-xs sm:text-sm text-gray-600 mb-3">
+                    <h4 className="font-bold text-base sm:text-lg mb-2 text-white">{config.name}</h4>
+                    <div className="text-xs sm:text-sm text-gray-400 mb-3">
                       {Object.entries(config.allocation).map(([cat, pct]) => (
                         <div key={cat}>{cat}: {pct}%</div>
                       ))}
                     </div>
-                    <div className="text-xs sm:text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-xs sm:text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                    <div className="text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                   </button>
                 ))}
               </div>
@@ -2902,27 +2902,27 @@ useEffect(() => {
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold">Stap 2: Vul categorieën</h2>
-                  <p className="text-gray-600">Geselecteerd profiel: {premadePortfolios[selectedProfile].name}</p>
+                  <h2 className="text-2xl font-bold text-white">Stap 2: Vul categorieën</h2>
+                  <p className="text-gray-400">Geselecteerd profiel: {premadePortfolios[selectedProfile].name}</p>
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     setCustomBuildStep('profile');
                     setSelectedProfile(null);
                     setCategoriesCompleted({});
                     setPortfolio([]);
                   }}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  className="px-4 py-2 text-gray-400 hover:text-gray-200"
                 >
                   ← Profiel wijzigen
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-6 mb-8">
                 {requiredCategories.map(category => {
                   const isCompleted = categoriesCompleted[category];
                   const allocation = premadePortfolios[selectedProfile].allocation[category];
-                  
+
                   return (
                     <button
                       key={category}
@@ -2932,16 +2932,16 @@ useEffect(() => {
                         setCategoryFilters({ subcategorie: '', currency: '', distribution: '' });
                       }}
                       className={`p-6 rounded-2xl shadow-lg transition-all border-2 text-left ${
-                        isCompleted 
-                          ? 'bg-green-50 border-green-500' 
-                          : 'bg-white border-gray-200 hover:border-indigo-400'
+                        isCompleted
+                          ? 'bg-[#28EBCF]/10 border-[#28EBCF]'
+                          : 'bg-[#1A1B1F] border-gray-800 hover:border-[#28EBCF]'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-bold text-lg">{category}</h3>
+                        <h3 className="font-bold text-lg text-white">{category}</h3>
                         {isCompleted && <span className="text-2xl">✓</span>}
                       </div>
-                      <p className="text-sm text-gray-600">Allocatie: {allocation}%</p>
+                      <p className="text-sm text-gray-400">Allocatie: {allocation}%</p>
                       <p className="text-xs text-gray-500 mt-2">
                         {isCompleted ? 'Voltooid - Klik om aan te passen' : 'Klik om ETF\'s te selecteren'}
                       </p>
@@ -2949,12 +2949,12 @@ useEffect(() => {
                   );
                 })}
               </div>
-              
+
               {allCategoriesCompleted && (
                 <div className="text-center">
                   <button
                     onClick={() => setCurrentPage('dashboard')}
-                    className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:shadow-lg transition-all font-bold text-lg"
+                    className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold text-lg"
                   >
                     Ga naar Portfolio Overzicht →
                   </button>
@@ -2967,8 +2967,8 @@ useEffect(() => {
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
-                  <p className="text-gray-600">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
+                  <h2 className="text-2xl font-bold text-white">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
+                  <p className="text-gray-400">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
                 </div>
                 <button
                   onClick={() => {
@@ -2976,26 +2976,26 @@ useEffect(() => {
                     setSelectedCategory(null);
                     setCategoryFilters({ subcategorie: '', currency: '', distribution: '' });
                   }}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                  className="px-4 py-2 text-gray-400 hover:text-gray-200"
                 >
                   ← Terug naar categorieën
                 </button>
               </div>
-              
-              <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                <h3 className="font-semibold mb-4">Huidige selectie voor {selectedCategory}</h3>
+
+              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 mb-6 border border-gray-800">
+                <h3 className="font-semibold mb-4 text-white">Huidige selectie voor {selectedCategory}</h3>
                 {portfolio.filter(etf => etf.categorie === selectedCategory).length === 0 ? (
                   <p className="text-gray-500 text-sm">Nog geen ETF's geselecteerd</p>
                 ) : (
                   <div className="space-y-2">
                     {portfolio.filter(etf => etf.categorie === selectedCategory).map((etf, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-sm font-medium">{etf.naam}</span>
+                      <div key={idx} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
+                        <span className="text-sm font-medium text-gray-300">{etf.naam}</span>
                         <button
                           onClick={() => {
                             setPortfolio(prev => prev.filter(p => p.isin !== etf.isin));
                           }}
-                          className="text-red-600 hover:text-red-800 text-sm"
+                          className="text-red-500 hover:text-red-400 text-sm"
                         >
                           Verwijder
                         </button>
@@ -3003,14 +3003,14 @@ useEffect(() => {
                     ))}
                   </div>
                 )}
-                
+
                 <button
                   onClick={() => {
                     setCategoriesCompleted(prev => ({ ...prev, [selectedCategory]: true }));
                     setCustomBuildStep('categories');
                     setSelectedCategory(null);
                   }}
-                  className="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+                  className="mt-4 w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-semibold"
                 >
                   Klaar met {selectedCategory} →
                 </button>
@@ -3024,20 +3024,20 @@ useEffect(() => {
                 const distributions = [...new Set(allCategoryETFs.map(e => e.distribution))].filter(Boolean).sort();
 
                 return (
-                  <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                    <h3 className="font-bold mb-4">Filters</h3>
+                  <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 mb-6 border border-gray-800">
+                    <h3 className="font-bold mb-4 text-white">Filters</h3>
 
                     {/* Subcategorie Filter */}
                     {subcategories.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="font-semibold text-sm mb-2">Subcategorie</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Subcategorie</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, subcategorie: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.subcategorie
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-[#28EBCF] text-gray-900'
+                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -3048,8 +3048,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, subcategorie: sub})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.subcategorie === sub
-                                  ? 'bg-indigo-600 text-white'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  ? 'bg-[#28EBCF] text-gray-900'
+                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                               }`}
                             >
                               {sub}
@@ -3062,14 +3062,14 @@ useEffect(() => {
                     {/* Currency Filter */}
                     {currencies.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="font-semibold text-sm mb-2">Valuta</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Valuta</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, currency: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.currency
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-[#28EBCF] text-gray-900'
+                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -3080,8 +3080,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, currency: curr})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.currency === curr
-                                  ? 'bg-indigo-600 text-white'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  ? 'bg-[#28EBCF] text-gray-900'
+                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                               }`}
                             >
                               {curr}
@@ -3094,14 +3094,14 @@ useEffect(() => {
                     {/* Distribution Filter */}
                     {distributions.length > 0 && (
                       <div>
-                        <h4 className="font-semibold text-sm mb-2">Distributie</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Distributie</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, distribution: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.distribution
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-[#28EBCF] text-gray-900'
+                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -3112,8 +3112,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, distribution: dist})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.distribution === dist
-                                  ? 'bg-indigo-600 text-white'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  ? 'bg-[#28EBCF] text-gray-900'
+                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                               }`}
                             >
                               {dist}
@@ -3126,22 +3126,22 @@ useEffect(() => {
                 );
               })()}
 
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50">
-                  <h3 className="font-bold">Beschikbare {selectedCategory} ETF's</h3>
+              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg overflow-hidden border border-gray-800">
+                <div className="p-4 bg-gray-800/50">
+                  <h3 className="font-bold text-white">Beschikbare {selectedCategory} ETF's</h3>
                 </div>
                 <div className="overflow-x-auto max-h-[500px]">
                   <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0">
+                    <thead className="bg-gray-800/30 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Naam</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">ISIN</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">TER</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold">YTD</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold">Actie</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y divide-gray-800">
                       {etfs.filter(etf => {
                         if (etf.categorie !== selectedCategory) return false;
                         if (categoryFilters.subcategorie && etf.subcategorie !== categoryFilters.subcategorie) return false;
@@ -3151,27 +3151,27 @@ useEffect(() => {
                       }).map((etf, idx) => {
                         const isAdded = portfolio.some(p => p.isin === etf.isin);
                         return (
-                          <tr key={idx} className="hover:bg-indigo-50/50 transition-colors">
+                          <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                             <td className="px-4 py-3">
                               <button
                                 onClick={() => setSelectedETF(etf)}
-                                className="text-indigo-600 hover:text-indigo-800 font-medium text-left hover:underline"
+                                className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline"
                               >
                                 {etf.naam}
                               </button>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{etf.isin}</td>
-                            <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
-                            <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
+                            <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                            <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {etf.ytd}
                             </td>
                             <td className="px-4 py-3 text-center">
                               {isAdded ? (
-                                <span className="text-xs text-green-600 font-medium">✓ Toegevoegd</span>
+                                <span className="text-xs text-green-500 font-medium">✓ Toegevoegd</span>
                               ) : (
                                 <button
                                   onClick={() => addToPortfolio(etf, 10)}
-                                  className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm rounded-lg hover:shadow-lg transition-all font-medium"
+                                  className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                                 >
                                   + Toevoegen
                                 </button>
@@ -3189,16 +3189,16 @@ useEffect(() => {
           
           {portfolioType === 'premade' && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Risicoprofielen</h2>
+              <h2 className="text-2xl font-bold mb-6 text-white">Risicoprofielen</h2>
               <div className="grid grid-cols-3 gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => (
-                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-100 hover:border-indigo-300">
-                    <h4 className="font-bold text-lg mb-2">{config.name}</h4>
-                    <div className="text-sm text-gray-600 mb-2">
+                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]">
+                    <h4 className="font-bold text-lg mb-2 text-white">{config.name}</h4>
+                    <div className="text-sm text-gray-400 mb-2">
                       {Object.entries(config.allocation).map(([cat, pct]) => <div key={cat}>{cat}: {pct}%</div>)}
                     </div>
-                    <div className="text-sm text-indigo-600 font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-sm text-gray-600">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                    <div className="text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                   </button>
                 ))}
               </div>
@@ -3212,35 +3212,35 @@ useEffect(() => {
   const PortfolioOverviewPage = () => {
     const metrics = calculatePortfolioMetrics();
     const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
-    
+
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
             <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-700 hover:text-blue-600">ETF Database</button>
-              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-700 hover:text-blue-600">Portfolio Samenstellen</button>
-              <button onClick={() => setCurrentPage('portfolioOverview')} className="text-blue-600 font-medium">Portfolio Overzicht</button>
-              <div className="text-sm text-gray-600">{user?.name}</div>
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-300 hover:text-[#28EBCF]">ETF Database</button>
+              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-300 hover:text-[#28EBCF]">Portfolio Samenstellen</button>
+              <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#28EBCF] font-medium">Portfolio Overzicht</button>
+              <div className="text-sm text-gray-400">{user?.name}</div>
               <button
                 onClick={() => {
                   setUser(null);
                   setCurrentPage('landing');
                 }}
-                className="text-gray-600 hover:text-gray-800 font-medium"
+                className="text-gray-400 hover:text-gray-200 font-medium"
               >
                 Uitloggen
               </button>
             </div>
           </div>
         </nav>
-        
+
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Portfolio Overzicht</h1>
+            <h1 className="text-3xl font-bold text-white">Portfolio Overzicht</h1>
             <div className="flex gap-3">
-              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-[#28EBCF] text-[#28EBCF] rounded-lg hover:bg-[#28EBCF]/10 font-medium">Portfolio Aanpassen</button>
               <button
                 onClick={() => {
                   // Set demo investment details for fictive portfolio
@@ -3253,36 +3253,36 @@ useEffect(() => {
                   setPortfolioValue(10000);
                   setCurrentPage('dashboard');
                 }}
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
               >
                 Fictieve Portfolio Behouden
               </button>
-              <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">Portfolio Aankopen →</button>
+              <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Totale TER</div><div className="text-2xl font-bold text-blue-600">{metrics.avgTER.toFixed(2)}%</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-2xl font-bold">{portfolio.length}</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Backtested Return 2024</div><div className={`text-2xl font-bold ${metrics.backtestReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>{metrics.backtestReturn.toFixed(2)}%</div></div>
-            <div className="bg-white rounded-lg shadow p-6"><div className="text-sm text-gray-600 mb-1">Risico Profiel</div><div className="text-2xl font-bold text-gray-800">Neutraal</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Totale TER</div><div className="text-2xl font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-2xl font-bold text-white">{portfolio.length}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Backtested Return 2024</div><div className={`text-2xl font-bold ${metrics.backtestReturn >= 0 ? 'text-green-500' : 'text-red-500'}`}>{metrics.backtestReturn.toFixed(2)}%</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Risico Profiel</div><div className="text-2xl font-bold text-white">Neutraal</div></div>
           </div>
-          
-          <div className="bg-white rounded-lg shadow p-6 mb-8">
-            <h3 className="font-bold text-lg mb-4">Asset Allocatie</h3>
+
+          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 mb-8 border border-gray-800">
+            <h3 className="font-bold text-lg mb-4 text-white">Asset Allocatie</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
                   {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="font-bold text-lg mb-4">Alle Holdings</h3>
+
+          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
+            <h3 className="font-bold text-lg mb-4 text-white">Alle Holdings</h3>
             <div className="space-y-6">
               {Object.entries(
                 portfolio.reduce((acc, etf) => {
@@ -3292,32 +3292,32 @@ useEffect(() => {
                   return acc;
                 }, {})
               ).map(([category, etfs]) => (
-                <div key={category} className="border rounded-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b">
+                <div key={category} className="border border-gray-800 rounded-lg overflow-hidden">
+                  <div className="bg-gray-800/50 px-4 py-3 border-b border-gray-800">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-bold text-lg text-gray-800">{category}</h4>
-                      <span className="text-sm font-medium text-gray-600">
+                      <h4 className="font-bold text-lg text-white">{category}</h4>
+                      <span className="text-sm font-medium text-gray-400">
                         {etfs.reduce((sum, e) => sum + (e.weight || 0), 0).toFixed(1)}% van portfolio
                       </span>
                     </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-800/30">
                         <tr>
-                          <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">Return 2024</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">ETF</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Weging</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">TER</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Return 2024</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y">
+                      <tbody className="divide-y divide-gray-800">
                         {etfs.map((etf, idx) => (
-                          <tr key={idx} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm">{etf.naam}</td>
-                            <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
-                            <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
-                            <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf['2024']}</td>
+                          <tr key={idx} className="hover:bg-gray-800/30">
+                            <td className="px-4 py-3 text-sm text-gray-300">{etf.naam}</td>
+                            <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{(etf.weight || 0).toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                            <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf['2024']}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -3353,19 +3353,19 @@ useEffect(() => {
       ];
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-          <nav className="bg-white shadow-sm border-b">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-blue-600">
+              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
                 ← Terug naar Dashboard
               </button>
             </div>
           </nav>
 
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4">Kies je Risicoprofiel</h1>
-            <p className="text-center text-gray-600 mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
+            <h1 className="text-4xl font-bold text-center mb-4 text-white">Kies je Risicoprofiel</h1>
+            <p className="text-center text-gray-400 mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {profiles.map(profile => (
@@ -3377,11 +3377,11 @@ useEffect(() => {
                     setPortfolio([]);
                     setCustomBuildStep('categories');
                   }}
-                  className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-transparent hover:border-blue-500 text-left"
+                  className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-gray-800 hover:border-[#28EBCF] text-left"
                 >
                   <div className="text-5xl mb-4">{profile.icon}</div>
-                  <h3 className="text-2xl font-bold mb-2 text-gray-800">{profile.name}</h3>
-                  <p className="text-gray-600 text-sm">{profile.desc}</p>
+                  <h3 className="text-2xl font-bold mb-2 text-white">{profile.name}</h3>
+                  <p className="text-gray-400 text-sm">{profile.desc}</p>
                 </button>
               ))}
             </div>
@@ -3427,20 +3427,20 @@ useEffect(() => {
         : availableCategories.every(cat => categoriesCompleted[cat]);
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-          <nav className="bg-white shadow-sm border-b">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
-              <button onClick={() => setCustomBuildStep('profile')} className="text-gray-700 hover:text-blue-600">
+              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
                 ← Terug naar Profiel Selectie
               </button>
             </div>
           </nav>
 
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4">Selecteer Beleggingscategorieën</h1>
-            <p className="text-center text-gray-600 mb-4">Profiel: <span className="font-bold text-blue-600">{profileConfig.name}</span></p>
-            <p className="text-center text-gray-600 mb-12">
+            <h1 className="text-4xl font-bold text-center mb-4 text-white">Selecteer Beleggingscategorieën</h1>
+            <p className="text-center text-gray-400 mb-4">Profiel: <span className="font-bold text-[#28EBCF]">{profileConfig.name}</span></p>
+            <p className="text-center text-gray-400 mb-12">
               {selectedProfile === 'free'
                 ? 'Klik op categorieën om ETF\'s te selecteren (kies minimaal 1 categorie)'
                 : 'Klik op een categorie om ETF\'s te selecteren (minimaal 1 per categorie)'}
@@ -3461,18 +3461,18 @@ useEffect(() => {
                     }}
                     className={`rounded-2xl shadow-lg p-8 transition-all transform hover:scale-105 border-2 text-left ${
                       isCompleted
-                        ? 'bg-green-50 border-green-500'
-                        : 'bg-white border-transparent hover:border-blue-500'
+                        ? 'bg-[#28EBCF]/10 border-[#28EBCF]'
+                        : 'bg-[#1A1B1F] border-gray-800 hover:border-[#28EBCF]'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="text-5xl">{categoryIcons[category] || '📦'}</div>
                       {isCompleted && <div className="text-3xl">✅</div>}
                     </div>
-                    <h3 className="text-2xl font-bold mb-2 text-gray-800">{category}</h3>
-                    {allocation > 0 && <p className="text-gray-600">Weging: {allocation}%</p>}
+                    <h3 className="text-2xl font-bold mb-2 text-white">{category}</h3>
+                    {allocation > 0 && <p className="text-gray-400">Weging: {allocation}%</p>}
                     {isCompleted && (
-                      <p className="text-green-600 text-sm mt-2">
+                      <p className="text-[#28EBCF] text-sm mt-2">
                         {portfolio.filter(p => p.categorie === category).length} ETF(s) geselecteerd
                       </p>
                     )}
@@ -3485,7 +3485,7 @@ useEffect(() => {
               <div className="text-center">
                 <button
                   onClick={() => setCurrentPage('dashboard')}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-lg font-bold hover:shadow-2xl transition-all"
+                  className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Ga naar Portfolio Overzicht →
                 </button>
@@ -3542,39 +3542,39 @@ useEffect(() => {
       };
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-          <nav className="bg-white shadow-sm border-b">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => {
                 setSelectedCategory(null);
                 setCustomBuildStep('categories');
                 setLocalFilters({ subcategorie: '', currency: '', distribution: '' });
-              }} className="text-gray-700 hover:text-blue-600">
+              }} className="text-gray-300 hover:text-[#28EBCF]">
                 ← Terug naar Categorieën
               </button>
             </div>
           </nav>
 
           <div className="max-w-7xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4">Selecteer ETF's voor {selectedCategory}</h1>
-            <p className="text-center text-gray-600 mb-8">
+            <h1 className="text-4xl font-bold text-center mb-4 text-white">Selecteer ETF's voor {selectedCategory}</h1>
+            <p className="text-center text-gray-400 mb-8">
               {selectedInCategory.length} ETF(s) geselecteerd (minimaal 1 vereist) • {categoryETFs.length} ETF(s) gevonden
             </p>
 
             {/* Filter Buttons */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div className="bg-[#1A1B1F] rounded-xl shadow-lg p-6 mb-8 border border-gray-800">
               {/* Subcategorie Filter */}
               {subcategories.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">Subcategorie</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-white">Subcategorie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setLocalFilters({...localFilters, subcategorie: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !localFilters.subcategorie
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -3585,8 +3585,8 @@ useEffect(() => {
                         onClick={() => setLocalFilters({...localFilters, subcategorie: sub})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           localFilters.subcategorie === sub
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
                       >
                         {sub}
@@ -3599,14 +3599,14 @@ useEffect(() => {
               {/* Currency Filter */}
               {currencies.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3">Valuta</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-white">Valuta</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setLocalFilters({...localFilters, currency: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !localFilters.currency
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -3617,8 +3617,8 @@ useEffect(() => {
                         onClick={() => setLocalFilters({...localFilters, currency: curr})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           localFilters.currency === curr
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
                       >
                         {curr}
@@ -3631,14 +3631,14 @@ useEffect(() => {
               {/* Distribution Filter */}
               {distributions.length > 0 && (
                 <div>
-                  <h3 className="font-semibold text-lg mb-3">Distributie</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-white">Distributie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setLocalFilters({...localFilters, distribution: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !localFilters.distribution
-                          ? 'bg-blue-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -3649,8 +3649,8 @@ useEffect(() => {
                         onClick={() => setLocalFilters({...localFilters, distribution: dist})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           localFilters.distribution === dist
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
                       >
                         {dist}
@@ -3669,31 +3669,31 @@ useEffect(() => {
                   <button
                     key={etf.isin}
                     onClick={() => handleETFToggle(etf)}
-                    className={`bg-white rounded-xl shadow p-6 transition-all text-left border-2 ${
+                    className={`bg-[#1A1B1F] rounded-xl shadow p-6 transition-all text-left border-2 ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-transparent hover:border-gray-300'
+                        ? 'border-[#28EBCF] bg-[#28EBCF]/10'
+                        : 'border-gray-800 hover:border-gray-700'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-2">{etf.naam}</h3>
+                        <h3 className="font-bold text-lg mb-2 text-white">{etf.naam}</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
-                            <span className="text-gray-600">ISIN:</span>
-                            <div className="font-medium">{etf.isin}</div>
+                            <span className="text-gray-400">ISIN:</span>
+                            <div className="font-medium text-gray-300">{etf.isin}</div>
                           </div>
                           <div>
-                            <span className="text-gray-600">TER:</span>
-                            <div className="font-medium">{etf['ter p.a.']}</div>
+                            <span className="text-gray-400">TER:</span>
+                            <div className="font-medium text-gray-300">{etf['ter p.a.']}</div>
                           </div>
                           <div>
-                            <span className="text-gray-600">Grootte:</span>
-                            <div className="font-medium">€{formatNumber(etf['fund size (in m €)'])}M</div>
+                            <span className="text-gray-400">Grootte:</span>
+                            <div className="font-medium text-gray-300">€{formatNumber(etf['fund size (in m €)'])}M</div>
                           </div>
                           <div>
-                            <span className="text-gray-600">2024:</span>
-                            <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <span className="text-gray-400">2024:</span>
+                            <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {etf['2024']}
                             </div>
                           </div>
@@ -3712,7 +3712,7 @@ useEffect(() => {
               <div className="text-center">
                 <button
                   onClick={handleContinue}
-                  className="px-8 py-4 bg-blue-600 text-white rounded-xl text-lg font-bold hover:bg-blue-700 transition-all"
+                  className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Bevestig Selectie →
                 </button>
@@ -3749,92 +3749,92 @@ useEffect(() => {
     const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
     
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">ETF PORTAL</div>
+            <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
             <button
               onClick={() => {
                 setUser(null);
                 setCurrentPage('landing');
               }}
-              className="text-gray-600 hover:text-gray-800 font-medium"
+              className="text-gray-400 hover:text-gray-200 font-medium"
             >
               Uitloggen
             </button>
           </div>
         </nav>
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <h1 className="text-3xl font-bold mb-8 text-center">Upgrade naar Betaald Account</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center text-white">Upgrade naar Betaald Account</h1>
           {step === 1 && (
-            <div className="bg-white rounded-lg shadow-lg p-8 space-y-8">
+            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
               <div>
-                <label className="block text-lg font-bold mb-4">Doelstelling</label>
+                <label className="block text-lg font-bold mb-4 text-white">Doelstelling</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Vermogensopbouw</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Pensioen</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Inkomsten</button>
-                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Vermogensopbouw</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Pensioen</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Inkomsten</button>
+                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
                 </div>
-                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600" />}
+                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
               </div>
               
               <div>
-                <label className="block text-lg font-bold mb-4">Beleggingshorizon</label>
+                <label className="block text-lg font-bold mb-4 text-white">Beleggingshorizon</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>5 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>10 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>20 jaar</button>
-                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>5 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>10 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>20 jaar</button>
+                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
                 </div>
-                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600" />}
+                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
               </div>
               
               <div>
-                <label className="block text-lg font-bold mb-4">Te Beleggen Vermogen</label>
+                <label className="block text-lg font-bold mb-4 text-white">Te Beleggen Vermogen</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 10.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 25.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 50.000</button>
-                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 10.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 25.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 50.000</button>
+                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
                 </div>
-                {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 text-lg" />}
+                {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4">Maandelijkse Storting</label>
+                <label className="block text-lg font-bold mb-4 text-white">Maandelijkse Storting</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 100</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 250</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>€ 500</button>
-                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 100</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 250</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 500</button>
+                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
                 </div>
-                {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-blue-400 rounded focus:outline-none focus:border-blue-600 text-lg" />}
+                {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4">Risicoprofiel</label>
+                <label className="block text-lg font-bold mb-4 text-white">Risicoprofiel</label>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(premadePortfolios).map(([key, config]) => (
-                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-300 hover:border-blue-400'}`}>
+                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>
                       <div>{config.name}</div>
-                      <div className="text-xs text-gray-600 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
+                      <div className="text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
                     </button>
                   ))}
                 </div>
               </div>
-              
-              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg disabled:bg-gray-300 disabled:cursor-not-allowed">Volgende Stap →</button>
+
+              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Volgende Stap →</button>
             </div>
           )}
           {step === 2 && (
-            <div className="bg-white rounded-lg shadow-lg p-8 space-y-6 text-center">
+            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-6 text-center border border-gray-800">
               <div className="text-6xl mb-4">💳</div>
-              <h2 className="text-2xl font-bold">Stort je beginbedrag</h2>
-              <p className="text-gray-600">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
-              <div className="bg-blue-50 p-6 rounded-lg"><div className="text-4xl font-bold text-blue-600 mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-600">Te storten bedrag</div></div>
-              <button onClick={() => { setPortfolioValue(parseFloat(investmentDetails.amount) || 10000); setCurrentPage('dashboard'); }} className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg">Betalen met iDEAL →</button>
-              <button onClick={() => setStep(1)} className="text-gray-600 hover:text-gray-800">← Terug</button>
+              <h2 className="text-2xl font-bold text-white">Stort je beginbedrag</h2>
+              <p className="text-gray-400">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
+              <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30"><div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-400">Te storten bedrag</div></div>
+              <button onClick={() => { setPortfolioValue(parseFloat(investmentDetails.amount) || 10000); setCurrentPage('dashboard'); }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
+              <button onClick={() => setStep(1)} className="text-gray-400 hover:text-gray-200">← Terug</button>
             </div>
           )}
         </div>
@@ -3957,16 +3957,16 @@ useEffect(() => {
     // Check if portfolio is empty
     if (!portfolio || portfolio.length === 0) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center bg-white rounded-2xl shadow-lg p-12 max-w-md">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="text-center bg-[#1A1B1F] rounded-2xl shadow-lg p-12 max-w-md border border-gray-800">
             <div className="text-6xl mb-6">📊</div>
-            <h2 className="text-2xl font-bold mb-4">Geen Portfolio</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-white">Geen Portfolio</h2>
+            <p className="text-gray-400 mb-6">
               Je hebt nog geen portfolio samengesteld. Ga terug om een portfolio te maken.
             </p>
             <button
               onClick={() => setCurrentPage('mainDashboard')}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
             >
               Terug naar Dashboard
             </button>
@@ -3977,10 +3977,10 @@ useEffect(() => {
 
     if (!staticPerformanceData) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-2xl font-bold mb-4">Dashboard laden...</div>
-            <div className="text-gray-600">Monte Carlo simulatie wordt berekend...</div>
+            <div className="text-2xl font-bold mb-4 text-white">Dashboard laden...</div>
+            <div className="text-gray-400">Monte Carlo simulatie wordt berekend...</div>
           </div>
         </div>
       );
@@ -4031,17 +4031,17 @@ useEffect(() => {
           </div>
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
-            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Inleg</div><div className="text-xl md:text-3xl font-bold">{formatEuro(initialValue)}</div></div>
-            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-600' : 'text-red-600'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
-            <div className="bg-white rounded-lg shadow p-4 md:p-6"><div className="text-xs md:text-sm text-gray-600 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold">{portfolio.length}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Inleg</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(initialValue)}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 mb-8 border border-gray-800">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-bold text-lg mb-2">Waardeontwikkeling ({horizon} jaar horizon)</h3>
-                <div className="text-sm text-gray-600">
+                <h3 className="font-bold text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar horizon)</h3>
+                <div className="text-sm text-gray-400">
                   Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
                 </div>
               </div>
@@ -4058,7 +4058,7 @@ useEffect(() => {
                 </button>
                 <button
                   onClick={resetSimulation}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition"
                 >
                   ↺ Reset
                 </button>
@@ -4101,31 +4101,31 @@ useEffect(() => {
                 <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name="Goed Scenario (P90)" dot={false} />
               </LineChart>
             </ResponsiveContainer>
-            <div className="mt-4 text-sm text-gray-600 text-center">
+            <div className="mt-4 text-sm text-gray-400 text-center">
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
             </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-            <div className="bg-white rounded-lg shadow p-4 md:p-6">
-              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">Asset Allocatie</h3>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800">
+              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
               <ResponsiveContainer width="100%" height={200}>
-                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip /><Legend /></PieChart>
+                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="font-bold text-lg mb-4">Portfolio Metrices</h3>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
+              <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span className="text-gray-600">Aantal Holdings:</span><span className="font-bold text-purple-600">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || 0), 0).toLocaleString('nl-NL')}</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-600">Gemiddelde TER:</span><span className="font-bold text-blue-600">{metrics.avgTER.toFixed(2)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-600">Verwacht Rendement:</span><span className="font-bold text-green-600">{(avgReturn * 100).toFixed(1)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-600">Risico (Std Dev):</span><span className="font-bold text-orange-600">{(stdDev * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || 0), 0).toLocaleString('nl-NL')}</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-400">Gemiddelde TER:</span><span className="font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-400">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-400">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="font-bold text-lg mb-4">Portfolio Holdings</h3>
+          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
+            <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
             <div className="space-y-6">
               {Object.entries(
                 portfolio.reduce((acc, etf) => {
@@ -4135,34 +4135,34 @@ useEffect(() => {
                   return acc;
                 }, {})
               ).map(([category, etfs]) => (
-                <div key={category} className="border rounded-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b">
+                <div key={category} className="border border-gray-800 rounded-lg overflow-hidden">
+                  <div className="bg-gray-900/50 px-4 py-3 border-b border-gray-800">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-bold text-lg text-gray-800">{category}</h4>
-                      <span className="text-sm font-medium text-gray-600">
+                      <h4 className="font-bold text-lg text-white">{category}</h4>
+                      <span className="text-sm font-medium text-gray-400">
                         {etfs.reduce((sum, e) => sum + (e.weight || 0), 0).toFixed(1)}% van portfolio • {formatEuro(etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0))}
                       </span>
                     </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-900/30">
                         <tr>
-                          <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">Waarde</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium">Return</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">ETF</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Weging</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Waarde</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Return</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y">
+                      <tbody className="divide-y divide-gray-800">
                         {etfs.map((etf, idx) => {
                           const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
                           return (
-                            <tr key={idx} className="hover:bg-gray-50">
-                              <td className="px-4 py-3"><button onClick={() => setSelectedETF(etf)} className="text-blue-600 hover:underline text-left">{etf.naam}</button></td>
-                              <td className="px-4 py-3 text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
-                              <td className="px-4 py-3 text-right">{formatEuro(etfValue)}</td>
-                              <td className={`px-4 py-3 text-right ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-600' : 'text-red-600'}`}>{etf.ytd}</td>
+                            <tr key={idx} className="hover:bg-gray-900/30">
+                              <td className="px-4 py-3"><button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left">{etf.naam}</button></td>
+                              <td className="px-4 py-3 text-right font-medium text-gray-300">{(etf.weight || 0).toFixed(1)}%</td>
+                              <td className="px-4 py-3 text-right text-gray-300">{formatEuro(etfValue)}</td>
+                              <td className={`px-4 py-3 text-right ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</td>
                             </tr>
                           );
                         })}
@@ -4176,24 +4176,24 @@ useEffect(() => {
         </div>
         
         {showHoldings && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-            <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
-                <h2 className="text-2xl font-bold">Portfolio Holdings</h2>
-                <button onClick={() => setShowHoldings(false)} className="text-3xl text-gray-500 hover:text-gray-700 leading-none">×</button>
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+            <div className="bg-[#1A1B1F] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-6 py-4 flex justify-between items-center z-10">
+                <h2 className="text-2xl font-bold text-white">Portfolio Holdings</h2>
+                <button onClick={() => setShowHoldings(false)} className="text-3xl text-gray-400 hover:text-gray-200 leading-none">×</button>
               </div>
-              
+
               <div className="p-6">
                 <div className="flex gap-4 mb-6">
                   <button
                     onClick={() => setHoldingsView('top10')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
                   >
                     Top 10
                   </button>
                   <button
                     onClick={() => setHoldingsView('top100')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
                   >
                     Top 100
                   </button>
@@ -4207,24 +4207,24 @@ useEffect(() => {
                     <div className="space-y-8">
                       {holdings.stocks.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold mb-4">Aandelen</h3>
+                          <h3 className="text-xl font-bold mb-4 text-white">Aandelen</h3>
                           <div className="overflow-x-auto">
                             <table className="w-full">
-                              <thead className="bg-gray-100">
+                              <thead className="bg-gray-900/50">
                                 <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Regio</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium">Weging</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y">
+                              <tbody className="divide-y divide-gray-800">
                                 {holdings.stocks.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium">{holding.weight.toFixed(2)}%</td>
+                                  <tr key={idx} className="hover:bg-gray-900/30">
+                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -4235,28 +4235,28 @@ useEffect(() => {
                       
                       {holdings.bonds.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold mb-4">Obligaties</h3>
+                          <h3 className="text-xl font-bold mb-4 text-white">Obligaties</h3>
                           <div className="overflow-x-auto">
                             <table className="w-full">
-                              <thead className="bg-gray-100">
+                              <thead className="bg-gray-900/50">
                                 <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Regio</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Looptijd</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium">Coupon</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium">Weging</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Looptijd</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Coupon</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y">
+                              <tbody className="divide-y divide-gray-800">
                                 {holdings.bonds.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 text-sm text-gray-600">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm">{holding.maturity}</td>
-                                    <td className="px-4 py-3 text-sm">{holding.coupon}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium">{holding.weight.toFixed(2)}%</td>
+                                  <tr key={idx} className="hover:bg-gray-900/30">
+                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.maturity}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.coupon}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -4414,31 +4414,47 @@ useEffect(() => {
     });
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50">
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setUser(null);
-                setCurrentPage('landing');
-              }}
-              className="text-gray-700 hover:text-[#28EBCF] cursor-pointer"
-            >
-              Uitloggen
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
+                  <div className="text-xs text-gray-400">Account Manager Portal</div>
+                </div>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setUser(null);
+                  setCurrentPage('landing');
+                }}
+                className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
+              >
+                Uitloggen
+              </button>
+            </div>
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-[#28EBCF]">Klanten Database</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">Klanten Database</h1>
             <button
               onClick={() => fetchCustomers(true)}
               disabled={refreshing}
-              className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm disabled:opacity-50"
+              className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50"
             >
               {refreshing ? 'Laden...' : 'Ververs Data'}
             </button>
@@ -4450,83 +4466,85 @@ useEffect(() => {
               placeholder="Zoek op naam, email, telefoon of woonplaats..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
+              className="w-full px-4 py-3 bg-[#1A1B1F] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
             />
           </div>
 
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-400 mb-6">
             {searchTerm ? `${filteredCustomers.length} van ${customers.length} klanten` : `Totaal aantal klanten: ${customers.length}`}
           </p>
 
-          <div className="bg-white rounded-lg shadow">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Naam</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Email</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Telefoon</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Woonplaats</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Geregistreerd</th>
-                  <th className="px-6 py-3 text-right text-sm font-medium text-gray-700">Actie</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {filteredCustomers.length === 0 ? (
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-900/50 border-b border-gray-800">
                   <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                      {searchTerm ? 'Geen klanten gevonden' : 'Nog geen geregistreerde klanten'}
-                    </td>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Naam</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Woonplaats</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Geregistreerd</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Actie</th>
                   </tr>
-                ) : (
-                  filteredCustomers.map(customer => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium">{customer.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{customer.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{customer.phone}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{customer.city}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-right">
-                        <div className="flex gap-2 justify-end">
-                          <button
-                            onClick={() => {
-                              setSelectedCustomer(customer);
-                              setCurrentPage('customerDetail');
-                            }}
-                            className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
-                          >
-                            Bekijk Details
-                          </button>
-                          <button
-                            onClick={async () => {
-                              if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
-                                // Immediately remove from UI for instant feedback
-                                setCustomers(prev => prev.filter(c => c.id !== customer.id));
-
-                                // Delete from database in background
-                                try {
-                                  await fetch(`${API_URL}/customers/${customer.id}`, {
-                                    method: 'DELETE'
-                                  });
-                                } catch (error) {
-                                  console.error('Delete error:', error);
-                                  // Refresh to restore customer if delete failed
-                                  fetchCustomers();
-                                }
-                              }
-                            }}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium"
-                          >
-                            Verwijder
-                          </button>
-                        </div>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {filteredCustomers.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                        {searchTerm ? 'Geen klanten gevonden' : 'Nog geen geregistreerde klanten'}
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    filteredCustomers.map(customer => (
+                      <tr key={customer.id} className="hover:bg-gray-900/30 transition-colors">
+                        <td className="px-6 py-4 text-sm font-medium text-white">{customer.name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-400">{customer.email}</td>
+                        <td className="px-6 py-4 text-sm text-gray-400">{customer.phone}</td>
+                        <td className="px-6 py-4 text-sm text-gray-400">{customer.city}</td>
+                        <td className="px-6 py-4 text-sm text-gray-400">
+                          {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-right">
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={() => {
+                                setSelectedCustomer(customer);
+                                setCurrentPage('customerDetail');
+                              }}
+                              className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
+                            >
+                              Bekijk Details
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
+                                  // Immediately remove from UI for instant feedback
+                                  setCustomers(prev => prev.filter(c => c.id !== customer.id));
+
+                                  // Delete from database in background
+                                  try {
+                                    await fetch(`${API_URL}/customers/${customer.id}`, {
+                                      method: 'DELETE'
+                                    });
+                                  } catch (error) {
+                                    console.error('Delete error:', error);
+                                    // Refresh to restore customer if delete failed
+                                    fetchCustomers();
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-all"
+                            >
+                              Verwijder
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -4540,63 +4558,79 @@ useEffect(() => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-teal-50">
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-[#28EBCF]">ETF PORTAL - Account Manager</div>
-            <div className="flex gap-4">
-              <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-700 hover:text-[#28EBCF]">
-                ← Terug naar Database
-              </button>
-              <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-700 hover:text-[#28EBCF]">
-                Uitloggen
-              </button>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
+                  <div className="text-xs text-gray-400">Account Manager Portal</div>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  ← Terug naar Database
+                </button>
+                <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">Klant Gegevens</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-white">Klant Gegevens</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4 text-blue-600">Persoonlijke Informatie</h2>
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Persoonlijke Informatie</h2>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-600">Voornaam:</span>
-                  <div className="font-medium">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
+                  <span className="text-sm text-gray-500">Voornaam:</span>
+                  <div className="font-medium text-white">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Achternaam:</span>
-                  <div className="font-medium">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
+                  <span className="text-sm text-gray-500">Achternaam:</span>
+                  <div className="font-medium text-white">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Geboortedatum:</span>
-                  <div className="font-medium">{selectedCustomer.birthDate || 'N/A'}</div>
+                  <span className="text-sm text-gray-500">Geboortedatum:</span>
+                  <div className="font-medium text-white">{selectedCustomer.birthDate || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <div className="font-medium">{selectedCustomer.email}</div>
+                  <span className="text-sm text-gray-500">Email:</span>
+                  <div className="font-medium text-white">{selectedCustomer.email}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Telefoon:</span>
-                  <div className="font-medium">{selectedCustomer.phone}</div>
+                  <span className="text-sm text-gray-500">Telefoon:</span>
+                  <div className="font-medium text-white">{selectedCustomer.phone}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Straat + Huisnummer:</span>
-                  <div className="font-medium">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
+                  <span className="text-sm text-gray-500">Straat + Huisnummer:</span>
+                  <div className="font-medium text-white">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Postcode:</span>
-                  <div className="font-medium">{selectedCustomer.postalCode || 'N/A'}</div>
+                  <span className="text-sm text-gray-500">Postcode:</span>
+                  <div className="font-medium text-white">{selectedCustomer.postalCode || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Woonplaats:</span>
-                  <div className="font-medium">{selectedCustomer.city}</div>
+                  <span className="text-sm text-gray-500">Woonplaats:</span>
+                  <div className="font-medium text-white">{selectedCustomer.city}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-600">Geregistreerd op:</span>
-                  <div className="font-medium">
+                  <span className="text-sm text-gray-500">Geregistreerd op:</span>
+                  <div className="font-medium text-white">
                     {new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL', {
                       year: 'numeric',
                       month: 'long',
@@ -4607,18 +4641,18 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4 text-blue-600">Beleggingsinformatie</h2>
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Beleggingsinformatie</h2>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-600">Account Type:</span>
+                  <span className="text-sm text-gray-500">Account Type:</span>
                   <div className="font-medium">
                     {selectedCustomer.investmentDetails?.riskProfile ? (
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      <span className="px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm font-semibold">
                         Betaald Account
                       </span>
                     ) : (
-                      <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
+                      <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold">
                         Gratis Account
                       </span>
                     )}
@@ -4627,38 +4661,38 @@ useEffect(() => {
                 {selectedCustomer.investmentDetails?.goal ? (
                   <>
                     <div>
-                      <span className="text-sm text-gray-600">Doelstelling:</span>
-                      <div className="font-medium">{selectedCustomer.investmentDetails.goal}</div>
+                      <span className="text-sm text-gray-500">Doelstelling:</span>
+                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.goal}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Horizon:</span>
-                      <div className="font-medium">{selectedCustomer.investmentDetails.horizon} jaar</div>
+                      <span className="text-sm text-gray-500">Horizon:</span>
+                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.horizon} jaar</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Beleggingsbedrag:</span>
-                      <div className="font-medium">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
+                      <span className="text-sm text-gray-500">Beleggingsbedrag:</span>
+                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Maandelijkse storting:</span>
-                      <div className="font-medium">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
+                      <span className="text-sm text-gray-500">Maandelijkse storting:</span>
+                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Risicoprofiel:</span>
-                      <div className="font-medium">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
+                      <span className="text-sm text-gray-500">Risicoprofiel:</span>
+                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Actuele Waarde:</span>
-                      <div className="font-medium text-lg text-green-600">
+                      <span className="text-sm text-gray-500">Actuele Waarde:</span>
+                      <div className="font-medium text-lg text-green-400">
                         € {parseInt(selectedCustomer.currentPortfolioValue || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
                       </div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Totaal Rendement:</span>
+                      <span className="text-sm text-gray-500">Totaal Rendement:</span>
                       <div className={`font-medium text-lg ${(() => {
                         const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
                         const currentValue = selectedCustomer.currentPortfolioValue || initialValue;
                         const returnPercentage = initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0;
-                        return returnPercentage >= 0 ? 'text-green-600' : 'text-red-600';
+                        return returnPercentage >= 0 ? 'text-green-400' : 'text-red-400';
                       })()}`}>
                         {(() => {
                           const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
@@ -4679,50 +4713,50 @@ useEffect(() => {
           {/* Portfolio Performance */}
           {selectedCustomer.portfolioValue && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-4 text-blue-600">Portfolio Waarde</h2>
-                <div className="text-3xl font-bold text-gray-900">
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio Waarde</h2>
+                <div className="text-3xl font-bold text-white">
                   € {selectedCustomer.portfolioValue.toLocaleString('nl-NL')}
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-4 text-blue-600">Totaal Rendement</h2>
-                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Totaal Rendement</h2>
+                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {selectedCustomer.totalReturn >= 0 ? '+' : ''}{selectedCustomer.totalReturn}%
                 </div>
               </div>
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 className="text-xl font-bold mb-4 text-blue-600">Portfolio</h2>
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio</h2>
             {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-900/50 border-b border-gray-800">
                     <tr>
-                      <th className="px-4 py-2 text-left text-sm font-medium">ETF</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium">Categorie</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium">Weging</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium">TER</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ETF</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Weging</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-gray-800">
                     {selectedCustomer.portfolio.map((etf, idx) => {
                       const fullETF = etfs.find(e => e.isin === etf.isin) || etf;
                       return (
-                        <tr key={idx} className="hover:bg-gray-50">
+                        <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
                           <td className="px-4 py-3 text-sm">
                             <button
                               onClick={() => setSelectedETF(fullETF)}
-                              className="text-blue-600 hover:text-blue-800 hover:underline text-left"
+                              className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline text-left"
                             >
                               {etf.naam}
                             </button>
                           </td>
-                          <td className="px-4 py-3 text-sm">{etf.categorie}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium">{(etf.weight || 0).toFixed(1)}%</td>
-                          <td className="px-4 py-3 text-sm text-right">{etf['ter p.a.']}</td>
+                          <td className="px-4 py-3 text-sm text-gray-400">{etf.categorie}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium text-white">{(etf.weight || 0).toFixed(1)}%</td>
+                          <td className="px-4 py-3 text-sm text-right text-gray-400">{etf['ter p.a.']}</td>
                         </tr>
                       );
                     })}
@@ -4736,33 +4770,33 @@ useEffect(() => {
 
           {/* Transaction History */}
           {selectedCustomer.transactions && selectedCustomer.transactions.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4 text-blue-600">Transactie Geschiedenis</h2>
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Transactie Geschiedenis</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-900/50 border-b border-gray-800">
                     <tr>
-                      <th className="px-4 py-2 text-left text-sm font-medium">Datum</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium">Type</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium">Beschrijving</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium">Bedrag</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Datum</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Type</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Beschrijving</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Bedrag</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-gray-800">
                     {selectedCustomer.transactions.map((transaction, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm">
+                      <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-400">
                           {new Date(transaction.date).toLocaleDateString('nl-NL')}
                         </td>
                         <td className="px-4 py-3 text-sm">
                           <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                            transaction.type === 'Storting' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                            transaction.type === 'Storting' ? 'bg-green-600/20 text-green-400' : 'bg-blue-600/20 text-blue-400'
                           }`}>
                             {transaction.type}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm">{transaction.description}</td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-green-600">
+                        <td className="px-4 py-3 text-sm text-gray-400">{transaction.description}</td>
+                        <td className="px-4 py-3 text-sm text-right font-medium text-green-400">
                           + € {transaction.amount.toLocaleString('nl-NL')}
                         </td>
                       </tr>
