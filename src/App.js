@@ -1749,8 +1749,11 @@ useEffect(() => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
-            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30">
-              <div className="text-8xl text-center">🛠️</div>
+            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30 flex items-center justify-center">
+              <svg className="w-32 h-32" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="1.5">
+                <rect x="2" y="3" width="20" height="18" rx="2"/>
+                <path d="M8 3v18M16 3v18M2 9h20M2 15h20"/>
+              </svg>
             </div>
             <div className="text-white">
               <h3 className="text-3xl font-bold mb-6">Stel je eigen portefeuille samen</h3>
@@ -1769,8 +1772,11 @@ useEffect(() => {
                 Toegang tot de hele database aan ETF's en alle tools om je eigen modelportefeuille te maken.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/10 rounded-3xl p-12 border border-purple-500/30 md:order-1">
-              <div className="text-8xl text-center">🚀</div>
+            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30 md:order-1 flex items-center justify-center">
+              <svg className="w-32 h-32" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
             </div>
           </div>
         </div>
@@ -1786,7 +1792,7 @@ useEffect(() => {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             {/* Free Plan */}
-            <div className="bg-[#1A1B1F] border-2 border-gray-700 rounded-2xl p-8 flex flex-col h-full">
+            <div className="bg-gray-900/95 backdrop-blur-sm border-2 border-gray-700 rounded-2xl p-8 flex flex-col h-full">
               <h3 className="text-2xl font-bold text-white mb-4">Gratis Account</h3>
               <div className="text-5xl font-bold text-white mb-6">€0<span className="text-xl text-gray-400">/jaar</span></div>
               <ul className="space-y-4 mb-8 flex-1">
