@@ -1691,7 +1691,7 @@ useEffect(() => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+            <div className="bg-gradient-to-br from-[#1A1B1F] to-[#0f1012] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
               <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
                 <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
                   <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -1704,7 +1704,7 @@ useEffect(() => {
               <p className="text-gray-300">Alle ETF's overzichtelijk op één plek. Filter en vergelijk eenvoudig.</p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+            <div className="bg-gradient-to-br from-[#1A1B1F] to-[#0f1012] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
               <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
                 <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
@@ -1714,7 +1714,7 @@ useEffect(() => {
               <p className="text-gray-300">Stel in een paar klikken je eigen portfolio samen. Simpel en intuïtief.</p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+            <div className="bg-gradient-to-br from-[#1A1B1F] to-[#0f1012] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
               <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
                 <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
                   <path d="M9 12l2 2 4-4"/>
