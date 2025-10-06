@@ -1405,7 +1405,7 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-8">
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-start gap-2">
                 <div className="flex items-center gap-3">
                   {/* Logo */}
                   <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl flex items-center justify-center shadow-lg">
@@ -1434,7 +1434,7 @@ useEffect(() => {
                   </div>
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-xs sm:text-sm text-gray-400 pl-[60px] sm:pl-[68px]">Your digital Piggy Bank for global Investing</div>
               </div>
 
               {/* Menu Items */}
