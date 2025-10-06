@@ -678,6 +678,20 @@ useEffect(() => {
 
       if (data.success) {
         const customer = data.customer;
+
+        // Load portfolio and investment details from database
+        if (customer.portfolio && customer.portfolio.length > 0) {
+          setPortfolio(customer.portfolio);
+        } else {
+          setPortfolio([]);
+        }
+
+        if (customer.investmentDetails && Object.keys(customer.investmentDetails).length > 0) {
+          setInvestmentDetails(customer.investmentDetails);
+        } else {
+          setInvestmentDetails({});
+        }
+
         setUser({
           ...customer,
           firstName: customer.first_name,
@@ -733,6 +747,15 @@ useEffect(() => {
 
       if (data.success) {
         const customer = data.customer;
+
+        // Clear old portfolio data for new user
+        setPortfolio([]);
+        setInvestmentDetails({});
+        localStorage.removeItem('portfolio');
+        localStorage.removeItem('investmentDetails');
+        localStorage.removeItem('portfolioType');
+        localStorage.removeItem('selectedProfile');
+
         setUser({
           ...customer,
           firstName: customer.first_name,
