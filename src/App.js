@@ -679,15 +679,23 @@ useEffect(() => {
       if (data.success) {
         const customer = data.customer;
 
+        // Clear localStorage first to remove old data
+        localStorage.removeItem('portfolio');
+        localStorage.removeItem('investmentDetails');
+        localStorage.removeItem('portfolioType');
+        localStorage.removeItem('selectedProfile');
+
         // Load portfolio and investment details from database
         if (customer.portfolio && customer.portfolio.length > 0) {
           setPortfolio(customer.portfolio);
+          localStorage.setItem('portfolio', JSON.stringify(customer.portfolio));
         } else {
           setPortfolio([]);
         }
 
         if (customer.investmentDetails && Object.keys(customer.investmentDetails).length > 0) {
           setInvestmentDetails(customer.investmentDetails);
+          localStorage.setItem('investmentDetails', JSON.stringify(customer.investmentDetails));
         } else {
           setInvestmentDetails({});
         }
