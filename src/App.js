@@ -1186,15 +1186,14 @@ useEffect(() => {
     const [expectedReturn, setExpectedReturn] = useState(5);
     const [period, setPeriod] = useState(20);
     const [wealthManagerFee, setWealthManagerFee] = useState(1.0);
-    const [huchaCost, setHuchaCost] = useState(200);
+    const huchaCost = 200; // Fixed annual cost
 
     // Calculate final wealth and costs
     const calculateResults = () => {
-      // Calculate final wealth for Hucha (with expected return, minus fixed annual cost)
+      // Calculate final wealth for Hucha (with full expected return)
       let huchaWealth = initialInvestment;
       for (let year = 1; year <= period; year++) {
         huchaWealth = huchaWealth * (1 + expectedReturn / 100) + periodicDeposit * 12;
-        huchaWealth -= huchaCost; // Subtract fixed annual cost
       }
 
       // Calculate final wealth for wealth manager (with return minus percentage fee)
@@ -1204,15 +1203,9 @@ useEffect(() => {
         managerWealth = managerWealth * (1 + netReturn / 100) + periodicDeposit * 12;
       }
 
-      // Calculate wealth with full return (no costs) to determine opportunity cost
-      let fullReturnWealth = initialInvestment;
-      for (let year = 1; year <= period; year++) {
-        fullReturnWealth = fullReturnWealth * (1 + expectedReturn / 100) + periodicDeposit * 12;
-      }
-
-      // Costs including lost returns
-      const huchaTotalCost = fullReturnWealth - huchaWealth;
-      const managerTotalCost = fullReturnWealth - managerWealth;
+      // Simple costs calculation
+      const huchaTotalCost = huchaCost * period; // Just the fixed annual fees
+      const managerTotalCost = huchaWealth - managerWealth; // Difference due to percentage fee
       const savings = managerTotalCost - huchaTotalCost;
 
       return {
@@ -1308,18 +1301,10 @@ useEffect(() => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-gray-300 mb-2 font-medium">
-                  Kosten Hucha (per jaar)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
-                  <input
-                    type="number"
-                    value={huchaCost}
-                    onChange={(e) => setHuchaCost(Number(e.target.value))}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
-                  />
+              <div className="bg-[#28EBCF]/10 border border-[#28EBCF]/30 rounded-lg p-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300 font-medium">Kosten Hucha (per jaar)</span>
+                  <span className="text-xl font-bold text-[#28EBCF]">€ 200</span>
                 </div>
               </div>
             </div>
@@ -1702,6 +1687,18 @@ useEffect(() => {
         </div>
       </section>
 
+      {/* Cost Comparison Calculator */}
+      <section className="py-20 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Kostenvergelijking</h2>
+            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met Hucha</p>
+          </div>
+
+          <CostComparisonCalculator />
+        </div>
+      </section>
+
       {/* How It Works Section */}
       <section id="how-it-works" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -1800,18 +1797,6 @@ useEffect(() => {
               </button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Cost Comparison Calculator */}
-      <section className="py-20 bg-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Kostenvergelijking</h2>
-            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met Hucha</p>
-          </div>
-
-          <CostComparisonCalculator />
         </div>
       </section>
 
