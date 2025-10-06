@@ -1223,7 +1223,7 @@ useEffect(() => {
       <div className="max-w-5xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
-          <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8">
             <h3 className="text-2xl font-bold text-white mb-6">Jouw situatie</h3>
 
             <div className="space-y-6">
@@ -1331,7 +1331,7 @@ useEffect(() => {
           {/* Results Section */}
           <div className="space-y-6">
             {/* Final Wealth Comparison */}
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8">
+            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8">
               <h3 className="text-xl font-bold text-white mb-6">Eindvermogen na {period} jaar</h3>
 
               <div className="space-y-4">
