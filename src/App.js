@@ -1431,7 +1431,7 @@ useEffect(() => {
                 </div>
                 <div className="flex flex-col">
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                  <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+                  <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
                 </div>
               </div>
 
@@ -1886,7 +1886,7 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -2029,7 +2029,7 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -2167,7 +2167,7 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
