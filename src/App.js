@@ -1234,9 +1234,14 @@ useEffect(() => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
                   <input
-                    type="number"
-                    value={initialInvestment}
-                    onChange={(e) => setInitialInvestment(Number(e.target.value))}
+                    type="text"
+                    value={initialInvestment.toLocaleString('nl-NL')}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\./g, '').replace(',', '.');
+                      const num = parseFloat(value);
+                      if (!isNaN(num)) setInitialInvestment(num);
+                      else if (e.target.value === '') setInitialInvestment(0);
+                    }}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
                   />
                 </div>
@@ -1249,9 +1254,14 @@ useEffect(() => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
                   <input
-                    type="number"
-                    value={periodicDeposit}
-                    onChange={(e) => setPeriodicDeposit(Number(e.target.value))}
+                    type="text"
+                    value={periodicDeposit.toLocaleString('nl-NL')}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\./g, '').replace(',', '.');
+                      const num = parseFloat(value);
+                      if (!isNaN(num)) setPeriodicDeposit(num);
+                      else if (e.target.value === '') setPeriodicDeposit(0);
+                    }}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
                   />
                 </div>
@@ -1263,10 +1273,14 @@ useEffect(() => {
                 </label>
                 <div className="relative">
                   <input
-                    type="number"
-                    step="0.1"
-                    value={expectedReturn}
-                    onChange={(e) => setExpectedReturn(Number(e.target.value))}
+                    type="text"
+                    value={expectedReturn.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\./g, '').replace(',', '.');
+                      const num = parseFloat(value);
+                      if (!isNaN(num)) setExpectedReturn(num);
+                      else if (e.target.value === '') setExpectedReturn(0);
+                    }}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
@@ -1291,10 +1305,14 @@ useEffect(() => {
                 </label>
                 <div className="relative">
                   <input
-                    type="number"
-                    step="0.1"
-                    value={wealthManagerFee}
-                    onChange={(e) => setWealthManagerFee(Number(e.target.value))}
+                    type="text"
+                    value={wealthManagerFee.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\./g, '').replace(',', '.');
+                      const num = parseFloat(value);
+                      if (!isNaN(num)) setWealthManagerFee(num);
+                      else if (e.target.value === '') setWealthManagerFee(0);
+                    }}
                     className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
