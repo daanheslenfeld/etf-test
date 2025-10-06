@@ -4462,21 +4462,18 @@ useEffect(() => {
                           <button
                             onClick={async () => {
                               if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
+                                // Immediately remove from UI for instant feedback
+                                setCustomers(prev => prev.filter(c => c.id !== customer.id));
+
+                                // Delete from database in background
                                 try {
-                                  const response = await fetch(`${API_URL}/customers/${customer.id}`, {
+                                  await fetch(`${API_URL}/customers/${customer.id}`, {
                                     method: 'DELETE'
                                   });
-                                  const data = await response.json();
-                                  if (data.success) {
-                                    // Remove customer from local state immediately
-                                    setCustomers(prev => prev.filter(c => c.id !== customer.id));
-                                    alert('Klant succesvol verwijderd');
-                                  } else {
-                                    alert(data.message || 'Verwijderen mislukt');
-                                  }
                                 } catch (error) {
                                   console.error('Delete error:', error);
-                                  alert('Verwijderen mislukt. Probeer opnieuw.');
+                                  // Refresh to restore customer if delete failed
+                                  fetchCustomers();
                                 }
                               }
                             }}
