@@ -1091,7 +1091,7 @@ useEffect(() => {
       <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
-            <div className="text-xl sm:text-2xl font-bold text-white">Hucha</div>
+            <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
             <div className="flex items-center gap-4 sm:gap-6">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
               <div className="text-sm text-gray-400 hidden sm:block">
@@ -1190,7 +1190,7 @@ useEffect(() => {
 
     // Calculate final wealth and costs
     const calculateResults = () => {
-      // Calculate final wealth for Hucha (with full expected return)
+      // Calculate final wealth for PIGG (with full expected return)
       let huchaWealth = initialInvestment;
       for (let year = 1; year <= period; year++) {
         huchaWealth = huchaWealth * (1 + expectedReturn / 100) + periodicDeposit * 12;
@@ -1321,7 +1321,7 @@ useEffect(() => {
 
               <div className="bg-[#28EBCF]/10 border border-[#28EBCF]/30 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300 font-medium">Kosten Hucha (per jaar)</span>
+                  <span className="text-gray-300 font-medium">Kosten PIGG (per jaar)</span>
                   <span className="text-xl font-bold text-[#28EBCF]">€ 200</span>
                 </div>
               </div>
@@ -1343,7 +1343,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex justify-between items-center pb-4 border-b border-gray-700">
-                  <span className="text-[#28EBCF] font-medium">Hucha</span>
+                  <span className="text-[#28EBCF] font-medium">PIGG</span>
                   <span className="text-xl font-bold text-[#28EBCF]">
                     € {results.huchaWealth.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
@@ -1371,7 +1371,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
-                  <span className="text-[#28EBCF] font-medium">Hucha</span>
+                  <span className="text-[#28EBCF] font-medium">PIGG</span>
                   <span className="text-xl font-bold text-[#28EBCF]">
                     € {results.huchaTotalCost.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
@@ -1409,17 +1409,28 @@ useEffect(() => {
                 {/* Logo */}
                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
                   <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 sm:w-8 sm:h-8">
-                    {/* Rising chart bars */}
-                    <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
-                    <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
-                    <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
-                    <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
-                    {/* Upward trend line */}
-                    <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    {/* Piggy bank body */}
+                    <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
+                    {/* Piggy snout */}
+                    <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
+                    <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
+                    <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
+                    {/* Piggy ear */}
+                    <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
+                    {/* Piggy eye */}
+                    <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
+                    {/* Coin slot */}
+                    <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
+                    {/* Coin */}
+                    <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
+                    <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
+                    {/* Legs */}
+                    <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
+                    <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
                   </svg>
                 </div>
                 <div className="flex flex-col">
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                   <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
                 </div>
               </div>
@@ -1519,14 +1530,20 @@ useEffect(() => {
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-lg flex items-center justify-center">
                           <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                            <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
-                            <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
-                            <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
-                            <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
-                            <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
+                            <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
+                            <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
+                            <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
+                            <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
+                            <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
+                            <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
+                            <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
+                            <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
+                            <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
+                            <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
                           </svg>
                         </div>
-                        <div className="text-white font-bold text-sm">Hucha</div>
+                        <div className="text-white font-bold text-sm">PIGG</div>
                       </div>
                       <div className="text-gray-400 text-xs">Jan</div>
                     </div>
@@ -1661,7 +1678,7 @@ useEffect(() => {
                     {/* Bottom branding */}
                     <div className="flex items-center justify-center gap-1 pt-2 border-t border-gray-800">
                       <div className="text-gray-500 text-[8px]">Powered by</div>
-                      <div className="text-[#28EBCF] text-[9px] font-bold">Hucha</div>
+                      <div className="text-[#28EBCF] text-[9px] font-bold">PIGG</div>
                     </div>
                   </div>
                 </div>
@@ -1679,7 +1696,7 @@ useEffect(() => {
       <section id="features" className="py-20 bg-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Bij Hucha wordt beleggen leuk!</h2>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Bij PIGG wordt beleggen leuk!</h2>
             <p className="text-xl text-gray-300">Je hebt toegang tot ruim 3000 ETF's wereldwijd.</p>
           </div>
 
@@ -1710,7 +1727,7 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Kostenvergelijking</h2>
-            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met Hucha</p>
+            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met PIGG</p>
           </div>
 
           <CostComparisonCalculator />
@@ -1722,7 +1739,7 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Hoe het werkt</h2>
-            <p className="text-xl text-gray-300">Bij Hucha hoef je geen professional te zijn om je eigen vermogen te beheren</p>
+            <p className="text-xl text-gray-300">Bij PIGG hoef je geen professional te zijn om je eigen vermogen te beheren</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
@@ -1854,15 +1871,21 @@ useEffect(() => {
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
                 <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
-                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
+                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
+                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
+                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
+                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
+                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
+                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
+                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
+                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
+                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
+                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
                 </svg>
               </div>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
               </div>
             </button>
@@ -1991,15 +2014,21 @@ useEffect(() => {
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
                 <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
-                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
+                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
+                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
+                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
+                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
+                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
+                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
+                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
+                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
+                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
+                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
                 </svg>
               </div>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
               </div>
             </button>
@@ -2123,15 +2152,21 @@ useEffect(() => {
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
                 <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <rect x="3" y="16" width="3" height="5" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="8" y="12" width="3" height="9" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="13" y="8" width="3" height="13" fill="#0A0B0D" rx="0.5"/>
-                  <rect x="18" y="4" width="3" height="17" fill="#0A0B0D" rx="0.5"/>
-                  <path d="M 3 18 L 8 14 L 13 10 L 18 6 L 21 3" stroke="#0A0B0D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
+                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
+                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
+                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
+                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
+                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
+                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
+                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
+                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
+                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
+                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
                 </svg>
               </div>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Hucha</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Invest your future</div>
               </div>
             </button>
@@ -2318,7 +2353,7 @@ useEffect(() => {
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PIGG</div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">
                   Home
@@ -2715,7 +2750,7 @@ useEffect(() => {
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Hucha</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PIGG</div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
                 {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-700 hover:text-indigo-600 font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
@@ -3889,7 +3924,7 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-white">Hucha</div>
+            <div className="text-2xl font-bold text-white">PIGG</div>
             <div className="flex items-center gap-6">
               <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium">Dashboard</button>
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
