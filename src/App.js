@@ -1321,7 +1321,7 @@ useEffect(() => {
 
               <div className="bg-[#28EBCF]/10 border border-[#28EBCF]/30 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300 font-medium">Kosten PIGG (per jaar)</span>
+                  <span className="text-gray-300 font-medium">Betaald account PIGG (per jaar)</span>
                   <span className="text-xl font-bold text-[#28EBCF]">€ 200</span>
                 </div>
               </div>
