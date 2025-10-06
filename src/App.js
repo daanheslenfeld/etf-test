@@ -1691,20 +1691,36 @@ useEffect(() => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
-              <div className="text-6xl mb-4">📊</div>
+            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+              </div>
               <h3 className="text-2xl font-bold text-white mb-4">Overzichtelijk</h3>
               <p className="text-gray-300">Alle ETF's overzichtelijk op één plek. Filter en vergelijk eenvoudig.</p>
             </div>
 
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
-              <div className="text-6xl mb-4">✨</div>
+            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+              </div>
               <h3 className="text-2xl font-bold text-white mb-4">Makkelijk</h3>
               <p className="text-gray-300">Stel in een paar klikken je eigen portfolio samen. Simpel en intuïtief.</p>
             </div>
 
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
-              <div className="text-6xl mb-4">💰</div>
+            <div className="bg-gradient-to-br from-[#0d4d45] to-[#0a3d37] border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+                  <path d="M9 12l2 2 4-4"/>
+                  <circle cx="12" cy="12" r="10"/>
+                </svg>
+              </div>
               <h3 className="text-2xl font-bold text-white mb-4">Geen overbodige kosten</h3>
               <p className="text-gray-300">Transparante prijzen zonder verborgen beheerkosten.</p>
             </div>
