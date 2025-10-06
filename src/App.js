@@ -1408,30 +1408,28 @@ useEffect(() => {
               <div className="flex flex-col items-start gap-2">
                 <div className="flex items-center gap-3">
                   {/* Logo */}
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 sm:w-9 sm:h-9">
-                      {/* Piggy bank body */}
-                      <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                      {/* Piggy snout */}
-                      <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#1a1b1f"/>
-                      <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                      <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                      {/* Piggy ear */}
-                      <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                      {/* Piggy eye */}
-                      <circle cx="10" cy="11.5" r="0.9" fill="#28EBCF"/>
-                      {/* Coin slot */}
-                      <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                      {/* Coin */}
-                      <circle cx="12" cy="4.5" r="2" fill="#FFD700" stroke="#DAA520" strokeWidth="0.3"/>
-                      <text x="12" y="5.8" fontSize="2.5" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                      {/* Legs */}
-                      <rect x="7.5" y="17" width="1.2" height="2.5" rx="0.6" fill="#0A0B0D"/>
-                      <rect x="15.3" y="17" width="1.2" height="2.5" rx="0.6" fill="#0A0B0D"/>
-                      {/* Tail */}
-                      <path d="M 19 11 Q 21 10 21 12 Q 21 13 20 13" stroke="#0A0B0D" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                    </svg>
-                  </div>
+                  <svg viewBox="0 0 32 24" fill="none" className="w-16 h-12 sm:w-20 sm:h-14">
+                    {/* Piggy bank body */}
+                    <ellipse cx="16" cy="12" rx="10" ry="7.5" fill="#28EBCF"/>
+                    {/* Piggy snout */}
+                    <ellipse cx="25" cy="12" rx="2.5" ry="3" fill="#20D4BA"/>
+                    <circle cx="24.2" cy="10.8" r="0.6" fill="#1a5f54"/>
+                    <circle cx="24.2" cy="13.2" r="0.6" fill="#1a5f54"/>
+                    {/* Piggy ear */}
+                    <path d="M 7 7 Q 4 5 4 9 Q 4 11 6.5 11 Z" fill="#28EBCF"/>
+                    {/* Piggy eye */}
+                    <circle cx="12" cy="10" r="1.3" fill="#1a5f54"/>
+                    {/* Coin slot */}
+                    <rect x="13" y="5" width="6" height="1.5" rx="0.5" fill="#1a5f54"/>
+                    {/* Coin */}
+                    <circle cx="16" cy="2" r="2.5" fill="#FFD700" stroke="#DAA520" strokeWidth="0.4"/>
+                    <text x="16" y="3.5" fontSize="3" fill="#8B7500" fontWeight="bold" textAnchor="middle">€</text>
+                    {/* Legs */}
+                    <rect x="10" cy="18" width="1.8" height="3.5" rx="0.9" fill="#28EBCF"/>
+                    <rect x="21" cy="18" width="1.8" height="3.5" rx="0.9" fill="#28EBCF"/>
+                    {/* Tail */}
+                    <path d="M 26 9 Q 29 7 29 11 Q 29 13 27.5 13" stroke="#28EBCF" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+                  </svg>
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-[#28EBCF]">PIGG</div>
                 </div>
                 <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
