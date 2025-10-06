@@ -1524,21 +1524,15 @@ useEffect(() => {
                     {/* Header with Logo */}
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-lg flex items-center justify-center">
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                            <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                            <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
-                            <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                            <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                            <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                            <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
-                            <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                            <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
-                            <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                            <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                            <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                          </svg>
-                        </div>
+                        <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
+                          <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                          <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                          <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                          <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                          <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                          <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                          <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                        </svg>
                         <div className="text-white font-bold text-sm">PIGG</div>
                       </div>
                       <div className="text-gray-400 text-xs">Jan</div>
@@ -1865,21 +1859,15 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
-                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
-                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
-                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                </svg>
-              </div>
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
@@ -2008,21 +1996,15 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
-                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
-                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
-                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                </svg>
-              </div>
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
@@ -2146,21 +2128,15 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl flex items-center justify-center shadow-lg">
-                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 sm:w-7 sm:h-7">
-                  <ellipse cx="12" cy="13" rx="7" ry="5.5" fill="#0A0B0D"/>
-                  <ellipse cx="18" cy="13" rx="1.5" ry="1.8" fill="#0A0B0D"/>
-                  <circle cx="17.5" cy="12.5" r="0.4" fill="#28EBCF"/>
-                  <circle cx="17.5" cy="13.5" r="0.4" fill="#28EBCF"/>
-                  <path d="M 6 9 Q 4 8 4 10 Q 4 11 5 11 Z" fill="#0A0B0D"/>
-                  <circle cx="10" cy="11.5" r="0.8" fill="#28EBCF"/>
-                  <rect x="10" y="7" width="4" height="1.2" rx="0.3" fill="#28EBCF"/>
-                  <circle cx="12" cy="4.5" r="1.8" fill="#28EBCF" opacity="0.9"/>
-                  <text x="12" y="5.5" fontSize="2" fill="#0A0B0D" fontWeight="bold" textAnchor="middle">€</text>
-                  <rect x="7.5" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                  <rect x="15.3" y="17" width="1.2" height="2" rx="0.6" fill="#0A0B0D"/>
-                </svg>
-              </div>
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
               <div className="flex flex-col">
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
