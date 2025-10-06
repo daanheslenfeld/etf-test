@@ -679,7 +679,7 @@ useEffect(() => {
     return false;
   };
 
-  const handleRegister = (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
+  const handleRegister = async (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
     const newCustomer = {
       id: Date.now(),
       firstName,
@@ -699,6 +699,27 @@ useEffect(() => {
       investmentDetails: {},
       role: 'customer'
     };
+
+    // Send registration to backend for email notification
+    try {
+      const response = await fetch('http://localhost:3001/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`,
+          email: email,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+      console.log('Email notification:', data.message);
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+      // Continue with registration even if email fails
+    }
 
     setCustomers(prev => [...prev, newCustomer]);
     setUser({ ...newCustomer });
