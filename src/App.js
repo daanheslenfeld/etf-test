@@ -219,14 +219,19 @@ const SAMPLE_ETFS = [
 ];
 
 const ETFPortal = () => {
+  // Check for token BEFORE any state initialization
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasToken = !!(urlParams.get('token') || urlParams.get('Token'));
+
   // Initialize state from localStorage or URL
   const [currentPage, setCurrentPage] = useState(() => {
-    // Check if URL has a verify-email token
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('token')) {
+    if (hasToken) {
+      console.log('Token detected in URL, going to verify-email');
+      localStorage.removeItem('currentPage');
       return 'verify-email';
     }
     const saved = localStorage.getItem('currentPage');
+    console.log('No token, using saved page:', saved);
     return saved || 'landing';
   });
 
@@ -558,7 +563,21 @@ useEffect(() => {
   }, [user]);
 
   useEffect(() => {
-    localStorage.setItem('currentPage', currentPage);
+    // Don't save 'verify-email' or 'emailVerificationPending' to localStorage as they're temporary
+    if (currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending') {
+      localStorage.setItem('currentPage', currentPage);
+    }
+  }, [currentPage]);
+
+  // Prevent navigation away from verify-email page when token is present
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasToken = !!(urlParams.get('token') || urlParams.get('Token'));
+
+    if (hasToken && currentPage !== 'verify-email') {
+      console.log('Token present but not on verify-email page, forcing navigation');
+      setCurrentPage('verify-email');
+    }
   }, [currentPage]);
 
   // Save customers to localStorage when they change
@@ -2242,9 +2261,9 @@ useEffect(() => {
 
     useEffect(() => {
       const verifyEmail = async () => {
-        // Get token from URL
+        // Get token from URL (handle both lowercase and uppercase)
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
+        const token = urlParams.get('token') || urlParams.get('Token');
 
         if (!token) {
           setMessage('Ongeldige verificatie link');
@@ -2281,6 +2300,8 @@ useEffect(() => {
         const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(timer);
       } else if (success && countdown === 0) {
+        // Clear the URL token before redirecting
+        window.history.replaceState({}, document.title, '/');
         setCurrentPage('login');
       }
     }, [success, countdown]);
@@ -2322,7 +2343,10 @@ useEffect(() => {
                 <p className="text-gray-300 mb-4">{message}</p>
                 <p className="text-gray-400 mb-6 text-sm">Je wordt automatisch doorgestuurd naar de login pagina in {countdown} seconden...</p>
                 <button
-                  onClick={() => setCurrentPage('login')}
+                  onClick={() => {
+                    window.history.replaceState({}, document.title, '/');
+                    setCurrentPage('login');
+                  }}
                   className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
                 >
                   Direct naar Login
