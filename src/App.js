@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
 // API URL - works both locally and in production
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000/api';
 
 // Sample ETF data
 const SAMPLE_ETFS = [
@@ -219,8 +219,13 @@ const SAMPLE_ETFS = [
 ];
 
 const ETFPortal = () => {
-  // Initialize state from localStorage
+  // Initialize state from localStorage or URL
   const [currentPage, setCurrentPage] = useState(() => {
+    // Check if URL has a verify-email token
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('token')) {
+      return 'verify-email';
+    }
     const saved = localStorage.getItem('currentPage');
     return saved || 'landing';
   });
@@ -754,31 +759,9 @@ useEffect(() => {
       const data = await response.json();
 
       if (data.success) {
-        const customer = data.customer;
-
-        // Clear old portfolio data for new user
-        setPortfolio([]);
-        setInvestmentDetails({});
-        localStorage.removeItem('portfolio');
-        localStorage.removeItem('investmentDetails');
-        localStorage.removeItem('portfolioType');
-        localStorage.removeItem('selectedProfile');
-
-        setUser({
-          ...customer,
-          firstName: customer.first_name,
-          lastName: customer.last_name,
-          name: `${customer.first_name} ${customer.last_name}`,
-          houseNumber: customer.house_number,
-          postalCode: customer.postal_code,
-          birthDate: customer.birth_date,
-          address: `${customer.street} ${customer.house_number}, ${customer.postal_code} ${customer.city}`,
-          portfolio: [],
-          investmentDetails: {},
-          role: 'customer'
-        });
-        // New users go to main dashboard to choose portfolio type
-        setCurrentPage('mainDashboard');
+        // Show success message and redirect to email verification page
+        alert(data.message || 'Registratie succesvol! Controleer je email om je account te activeren.');
+        setCurrentPage('emailVerificationPending');
       } else {
         alert(data.message || 'Registratie mislukt');
       }
@@ -2197,6 +2180,163 @@ useEffect(() => {
                 Terug naar inloggen
               </button>
             </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EmailVerificationPendingPage = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+              </div>
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
+            <div className="text-6xl mb-6">📧</div>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#28EBCF]">Bevestig je Email</h2>
+            <p className="text-gray-300 mb-6">
+              We hebben een verificatie link naar je emailadres gestuurd.
+              Klik op de link in de email om je account te activeren.
+            </p>
+            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mb-6">
+              <p className="text-sm text-gray-400">
+                Geen email ontvangen? Controleer je spam folder of probeer het opnieuw te registreren.
+              </p>
+            </div>
+            <button
+              onClick={() => setCurrentPage('login')}
+              className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+            >
+              Ga naar Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const EmailVerifyPage = () => {
+    const [verifying, setVerifying] = useState(true);
+    const [success, setSuccess] = useState(false);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+      const verifyEmail = async () => {
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+          setMessage('Ongeldige verificatie link');
+          setVerifying(false);
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/verify-email?token=${token}`);
+          const data = await response.json();
+
+          if (data.success) {
+            setSuccess(true);
+            setMessage(data.message);
+          } else {
+            setSuccess(false);
+            setMessage(data.message);
+          }
+        } catch (error) {
+          console.error('Verification error:', error);
+          setSuccess(false);
+          setMessage('Er is een fout opgetreden. Probeer het later opnieuw.');
+        } finally {
+          setVerifying(false);
+        }
+      };
+
+      verifyEmail();
+    }, []);
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+              </div>
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
+            {verifying ? (
+              <>
+                <div className="text-6xl mb-6">⏳</div>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-white">Email Verifiëren...</h2>
+                <p className="text-gray-400">Even geduld terwijl we je email verifiëren.</p>
+              </>
+            ) : success ? (
+              <>
+                <div className="text-6xl mb-6">✅</div>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-green-400">Verificatie Gelukt!</h2>
+                <p className="text-gray-300 mb-6">{message}</p>
+                <button
+                  onClick={() => setCurrentPage('login')}
+                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+                >
+                  Ga naar Login
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-6">❌</div>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-400">Verificatie Mislukt</h2>
+                <p className="text-gray-300 mb-6">{message}</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setCurrentPage('register')}
+                    className="flex-1 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold"
+                  >
+                    Opnieuw Registreren
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage('login')}
+                    className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+                  >
+                    Naar Login
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -4817,6 +4957,8 @@ useEffect(() => {
       {currentPage === 'login' && <LoginPage />}
       {currentPage === 'register' && <RegisterPage />}
       {currentPage === 'resetPassword' && <ResetPasswordPage />}
+      {currentPage === 'emailVerificationPending' && <EmailVerificationPendingPage />}
+      {currentPage === 'verify-email' && <EmailVerifyPage />}
       {currentPage === 'mainDashboard' && <MainDashboard />}
       {currentPage === 'etfDatabase' && <ETFDatabasePage />}
       {currentPage === 'customPortfolioBuilder' && <CustomPortfolioBuilder />}
