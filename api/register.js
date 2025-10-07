@@ -47,6 +47,7 @@ module.exports = async (req, res) => {
   try {
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
+    console.log('Generated verification token:', verificationToken);
 
     // Insert customer into Supabase (unverified)
     const { data: customer, error } = await supabase
@@ -70,6 +71,9 @@ module.exports = async (req, res) => {
       ])
       .select()
       .single();
+
+    console.log('Insert result - customer:', customer);
+    console.log('Insert result - error:', error);
 
     if (error) {
       console.error('Supabase error:', error);
