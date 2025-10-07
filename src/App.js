@@ -855,7 +855,7 @@ useEffect(() => {
     if (selectedETFs.length > 0) {
       setPortfolio(selectedETFs);
       setSelectedProfile(type); // Store the selected profile type
-      setCurrentPage('dashboard');
+      setCurrentPage('portfolioOverview');
     }
   };
 
@@ -1204,7 +1204,7 @@ useEffect(() => {
               setPortfolio([]);
               setSelectedProfile(null);
               setPortfolioType('custom');
-              setCurrentPage('portfolioBuilder');
+              setCurrentPage('customPortfolioBuilder');
             }}
             className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
           >
@@ -3093,10 +3093,10 @@ useEffect(() => {
               {allCategoriesCompleted && (
                 <div className="text-center">
                   <button
-                    onClick={() => setCurrentPage('dashboard')}
+                    onClick={() => setCurrentPage('portfolioOverview')}
                     className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold text-lg"
                   >
-                    Ga naar Portfolio Overzicht →
+                    Bekijk Portfolio Voorstel →
                   </button>
                 </div>
               )}
