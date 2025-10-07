@@ -2238,6 +2238,7 @@ useEffect(() => {
     const [verifying, setVerifying] = useState(true);
     const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState('');
+    const [countdown, setCountdown] = useState(3);
 
     useEffect(() => {
       const verifyEmail = async () => {
@@ -2274,6 +2275,16 @@ useEffect(() => {
       verifyEmail();
     }, []);
 
+    // Auto redirect to login after successful verification
+    useEffect(() => {
+      if (success && countdown > 0) {
+        const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        return () => clearTimeout(timer);
+      } else if (success && countdown === 0) {
+        setCurrentPage('login');
+      }
+    }, [success, countdown]);
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
@@ -2308,12 +2319,13 @@ useEffect(() => {
               <>
                 <div className="text-6xl mb-6">✅</div>
                 <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-green-400">Verificatie Gelukt!</h2>
-                <p className="text-gray-300 mb-6">{message}</p>
+                <p className="text-gray-300 mb-4">{message}</p>
+                <p className="text-gray-400 mb-6 text-sm">Je wordt automatisch doorgestuurd naar de login pagina in {countdown} seconden...</p>
                 <button
                   onClick={() => setCurrentPage('login')}
                   className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
                 >
-                  Ga naar Login
+                  Direct naar Login
                 </button>
               </>
             ) : (

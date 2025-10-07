@@ -95,7 +95,7 @@ module.exports = async (req, res) => {
     await transporter.sendMail(mailOptions);
 
     // Send verification email to the user
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}?token=${verificationToken}`;
     const verificationEmail = {
       from: process.env.EMAIL_USER,
       to: email,
