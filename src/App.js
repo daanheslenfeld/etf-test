@@ -3732,14 +3732,24 @@ useEffect(() => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => {
-                setSelectedCategory(null);
-                setCustomBuildStep('categories');
-                setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
-              }} className="text-gray-300 hover:text-[#28EBCF]">
-                ← Terug naar Categorieën
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+                <button onClick={() => {
+                  setSelectedCategory(null);
+                  setCustomBuildStep('categories');
+                  setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
+                }} className="text-gray-300 hover:text-[#28EBCF]">
+                  ← Terug naar Categorieën
+                </button>
+              </div>
+              {selectedInCategory.length > 0 && (
+                <button
+                  onClick={handleContinue}
+                  className="px-6 py-2 bg-[#28EBCF] text-gray-900 rounded-lg text-sm font-bold hover:bg-[#20D4BA] transition-all"
+                >
+                  Bevestig Selectie ({selectedInCategory.length}) →
+                </button>
+              )}
             </div>
           </nav>
 
