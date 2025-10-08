@@ -1,8 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
 );
 
 module.exports = async (req, res) => {
@@ -38,14 +38,14 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!customer.email_verified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatie link.',
-        emailNotVerified: true
-      });
-    }
+    // Email verification disabled
+    // if (!customer.email_verified) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatie link.',
+    //     emailNotVerified: true
+    //   });
+    // }
 
     // Get portfolio
     const { data: portfolio } = await supabase

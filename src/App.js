@@ -787,11 +787,14 @@ useEffect(() => {
 
       const data = await response.json();
 
+      console.log('Registration response:', data);
+
       if (data.success) {
         // Show success message and redirect to login
         alert(data.message || 'Registratie succesvol! Je kunt nu inloggen.');
         setCurrentPage('login');
       } else {
+        console.error('Registration failed:', data);
         alert(data.message || 'Registratie mislukt');
       }
     } catch (error) {

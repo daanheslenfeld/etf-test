@@ -3,8 +3,8 @@ const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
 );
 
 const transporter = nodemailer.createTransport({
@@ -45,9 +45,14 @@ module.exports = async (req, res) => {
   } = req.body;
 
   try {
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    console.log('Generated verification token:', verificationToken);
+    console.log('=== REGISTRATION DEBUG ===');
+    console.log('SUPABASE_KEY first 50 chars:', process.env.SUPABASE_KEY?.substring(0, 50));
+    console.log('SUPABASE_KEY length:', process.env.SUPABASE_KEY?.length);
+    console.log('Contains service_role:', process.env.SUPABASE_KEY?.includes('service_role'));
+
+    // Verification token generation disabled
+    // const verificationToken = crypto.randomBytes(32).toString('hex');
+    // console.log('Generated verification token:', verificationToken);
 
     // Insert customer into Supabase (unverified)
     const { data: customer, error } = await supabase
@@ -65,15 +70,30 @@ module.exports = async (req, res) => {
           phone: phone,
           birth_date: birthDate,
           role: 'customer',
-          email_verified: false,
-          verification_token: verificationToken
+          email_verified: true  // Auto-verify since we disabled email verification
+          // verification_token: verificationToken
         }
       ])
       .select()
       .single();
 
-    console.log('Insert result - customer:', customer);
-    console.log('Insert result - error:', error);
+    console.log('Insert result - customer:', JSON.stringify(customer, null, 2));
+    console.log('Insert result - error:', JSON.stringify(error, null, 2));
+
+    // Double check what's actually in the database
+    if (customer && customer.id) {
+      const { data: dbCheck, error: dbCheckError } = await supabase
+        .from('customers')
+        .select('id, email, verification_token, email_verified')
+        .eq('id', customer.id)
+        .single();
+
+      console.log('DATABASE CHECK - What is actually stored:');
+      console.log('- Customer ID:', customer.id);
+      console.log('- Token from INSERT response:', customer.verification_token);
+      console.log('- Token from DB query:', dbCheck?.verification_token);
+      console.log('- Are they the same?', customer.verification_token === dbCheck?.verification_token);
+    }
 
     if (error) {
       console.error('Supabase error:', error);
@@ -98,48 +118,15 @@ module.exports = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    // Send verification email to the user
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}?token=${verificationToken}`;
-    const verificationEmail = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Bevestig je email - PIGG',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #28EBCF;">Welkom bij PIGG!</h2>
-          <p>Hi ${firstName},</p>
-          <p>Bedankt voor je registratie bij PIGG - Your digital Piggy Bank for global Investing.</p>
-          <p>Om je account te activeren, moet je eerst je emailadres bevestigen.</p>
-          <div style="margin: 30px 0;">
-            <a href="${verificationUrl}"
-               style="background-color: #28EBCF;
-                      color: #0A0B0D;
-                      padding: 12px 30px;
-                      text-decoration: none;
-                      border-radius: 8px;
-                      font-weight: bold;
-                      display: inline-block;">
-              Bevestig Email
-            </a>
-          </div>
-          <p style="color: #666; font-size: 14px;">
-            Of kopieer deze link naar je browser:<br>
-            <a href="${verificationUrl}" style="color: #28EBCF;">${verificationUrl}</a>
-          </p>
-          <p style="color: #666; font-size: 14px; margin-top: 30px;">
-            Deze link is geldig voor 24 uur. Als je deze email niet hebt aangevraagd, kun je deze negeren.
-          </p>
-          <p>Best regards,<br>The PIGG Team</p>
-        </div>
-      `
-    };
-
-    await transporter.sendMail(verificationEmail);
+    // Verification email disabled - users can login immediately
+    // const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}?token=${verificationToken}`;
+    // const verificationEmail = { ... };
+    // await transporter.sendMail(verificationEmail);
 
     res.status(200).json({
       success: true,
-      message: 'Registratie succesvol! Controleer je email om je account te activeren.',
-      emailSent: true,
+      message: 'Registratie succesvol! Je kunt nu inloggen.',
+      emailSent: false,
       email: email
     });
 

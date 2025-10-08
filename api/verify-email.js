@@ -1,8 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
 );
 
 module.exports = async (req, res) => {
@@ -23,7 +23,14 @@ module.exports = async (req, res) => {
 
   const { token } = req.query;
 
+  console.log('=== VERIFICATION DEBUG ===');
+  console.log('Token received:', token);
+  console.log('Token length:', token ? token.length : 0);
+  console.log('Supabase URL:', process.env.SUPABASE_URL);
+  console.log('Using service_role key:', process.env.SUPABASE_KEY?.includes('service_role'));
+
   if (!token) {
+    console.log('No token provided in request');
     return res.status(400).json({
       success: false,
       message: 'Verificatie token ontbreekt'
@@ -31,14 +38,34 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Find customer with this verification token
+    // First, let's try to get ALL unverified customers to see what we have
+    const { data: allUnverified, error: allError } = await supabase
+      .from('customers')
+      .select('id, email, verification_token')
+      .eq('email_verified', false);
+
+    console.log('All unverified customers:', allUnverified?.length || 0);
+    if (allUnverified && allUnverified.length > 0) {
+      console.log('Sample tokens:', allUnverified.map(c => ({ email: c.email, token: c.verification_token?.substring(0, 20) + '...' })));
+    }
+
+    // Find customer with this verification token (exact match)
     const { data: customer, error: findError } = await supabase
       .from('customers')
       .select('*')
       .eq('verification_token', token)
-      .single();
+      .maybeSingle();
+
+    console.log('Database lookup result:');
+    console.log('- Customer found:', !!customer);
+    console.log('- Error:', findError);
+    if (customer) {
+      console.log('- Customer email:', customer.email);
+      console.log('- Already verified:', customer.email_verified);
+    }
 
     if (findError || !customer) {
+      console.log('FAILURE - No match found for token:', token.substring(0, 20) + '...');
       return res.status(400).json({
         success: false,
         message: 'Ongeldige of verlopen verificatie link'
