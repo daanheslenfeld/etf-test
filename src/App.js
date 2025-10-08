@@ -405,6 +405,16 @@ const ETFPortal = () => {
     distribution: '',
     search: ''
   });
+  const [customBuilderFilters, setCustomBuilderFilters] = useState({
+    subcategorie: '',
+    currency: '',
+    distribution: ''
+  });
+  const [categoryFilters, setCategoryFilters] = useState({
+    subcategorie: '',
+    currency: '',
+    distribution: ''
+  });
   const [selectedETF, setSelectedETF] = useState(null);
   const [portfolio, setPortfolio] = useState(() => {
     const saved = localStorage.getItem('portfolio');
@@ -685,7 +695,7 @@ useEffect(() => {
     if (email === 'admin@etfportal.nl' && password === 'admin123') {
       setUser({ email, name: 'Account Manager', role: 'accountmanager' });
       setCurrentPage('customerDatabase');
-      return true;
+      return { success: true };
     }
 
     // Regular user login via API
@@ -744,13 +754,13 @@ useEffect(() => {
           // User hasn't completed onboarding → go to main dashboard
           setCurrentPage('mainDashboard');
         }
-        return true;
+        return { success: true };
       } else {
-        return false;
+        return { success: false, message: data.message };
       }
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return { success: false, message: 'Er is een fout opgetreden. Probeer opnieuw.' };
     }
   };
 
@@ -778,9 +788,9 @@ useEffect(() => {
       const data = await response.json();
 
       if (data.success) {
-        // Show success message and redirect to email verification page
-        alert(data.message || 'Registratie succesvol! Controleer je email om je account te activeren.');
-        setCurrentPage('emailVerificationPending');
+        // Show success message and redirect to login
+        alert(data.message || 'Registratie succesvol! Je kunt nu inloggen.');
+        setCurrentPage('login');
       } else {
         alert(data.message || 'Registratie mislukt');
       }
@@ -1954,10 +1964,10 @@ useEffect(() => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLoginClick = () => {
-      const success = handleLogin(email, password);
-      if (!success) {
-        setError('Onjuiste email of wachtwoord');
+    const handleLoginClick = async () => {
+      const result = await handleLogin(email, password);
+      if (!result.success) {
+        setError(result.message || 'Onjuiste email of wachtwoord');
       }
     };
 
@@ -2300,9 +2310,8 @@ useEffect(() => {
         const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(timer);
       } else if (success && countdown === 0) {
-        // Clear the URL token before redirecting
-        window.history.replaceState({}, document.title, '/');
-        setCurrentPage('login');
+        // Use replace instead of pushState to prevent going back
+        window.location.replace('/?page=login');
       }
     }, [success, countdown]);
 
@@ -2344,8 +2353,7 @@ useEffect(() => {
                 <p className="text-gray-400 mb-6 text-sm">Je wordt automatisch doorgestuurd naar de login pagina in {countdown} seconden...</p>
                 <button
                   onClick={() => {
-                    window.history.replaceState({}, document.title, '/');
-                    setCurrentPage('login');
+                    window.location.replace('/?page=login');
                   }}
                   className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
                 >
@@ -2982,11 +2990,12 @@ useEffect(() => {
   };
 
   const PortfolioBuilderPage = () => {
-    const [categoryFilters, setCategoryFilters] = React.useState({
-      subcategorie: '',
-      currency: '',
-      distribution: ''
-    });
+    // categoryFilters state moved to App level to prevent reset on re-renders
+    // const [categoryFilters, setCategoryFilters] = React.useState({
+    //   subcategorie: '',
+    //   currency: '',
+    //   distribution: ''
+    // });
 
     // Get required categories based on selected profile
     const getRequiredCategories = () => {
@@ -3511,11 +3520,12 @@ useEffect(() => {
   };
 
   const CustomPortfolioBuilder = () => {
-    const [localFilters, setLocalFilters] = React.useState({
-      subcategorie: '',
-      currency: '',
-      distribution: ''
-    });
+    // Use App-level state instead of local state to prevent reset on re-renders
+    // const [localFilters, setLocalFilters] = React.useState({
+    //   subcategorie: '',
+    //   currency: '',
+    //   distribution: ''
+    // });
 
     const renderProfileSelection = () => {
       const profiles = [
@@ -3633,7 +3643,7 @@ useEffect(() => {
                     onClick={() => {
                       setSelectedCategory(category);
                       setCustomBuildStep('selectETFs');
-                      setLocalFilters({ subcategorie: '', currency: '', distribution: '' });
+                      setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
                     }}
                     className={`rounded-2xl shadow-lg p-8 transition-all transform hover:scale-105 border-2 text-left ${
                       isCompleted
@@ -3686,15 +3696,16 @@ useEffect(() => {
 
       // Apply filters
       const categoryETFs = allCategoryETFs.filter(etf => {
-        if (localFilters.subcategorie && etf.subcategorie !== localFilters.subcategorie) return false;
-        if (localFilters.currency && etf['fund ccy'] !== localFilters.currency) return false;
-        if (localFilters.distribution && etf.distribution !== localFilters.distribution) return false;
+        if (customBuilderFilters.subcategorie && etf.subcategorie !== customBuilderFilters.subcategorie) return false;
+        if (customBuilderFilters.currency && etf['fund ccy'] !== customBuilderFilters.currency) return false;
+        if (customBuilderFilters.distribution && etf.distribution !== customBuilderFilters.distribution) return false;
         return true;
       });
 
       const selectedInCategory = portfolio.filter(p => p.categorie === selectedCategory);
 
-      const handleETFToggle = (etf) => {
+      const handleETFToggle = (etf, e) => {
+        if (e) e.stopPropagation();
         const isSelected = selectedInCategory.some(p => p.isin === etf.isin);
 
         if (isSelected) {
@@ -3725,7 +3736,7 @@ useEffect(() => {
               <button onClick={() => {
                 setSelectedCategory(null);
                 setCustomBuildStep('categories');
-                setLocalFilters({ subcategorie: '', currency: '', distribution: '' });
+                setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
               }} className="text-gray-300 hover:text-[#28EBCF]">
                 ← Terug naar Categorieën
               </button>
@@ -3746,9 +3757,9 @@ useEffect(() => {
                   <h3 className="font-semibold text-lg mb-3 text-white">Subcategorie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setLocalFilters({...localFilters, subcategorie: ''})}
+                      onClick={() => setCustomBuilderFilters({...customBuilderFilters, subcategorie: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        !localFilters.subcategorie
+                        !customBuilderFilters.subcategorie
                           ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                           : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
@@ -3758,9 +3769,9 @@ useEffect(() => {
                     {subcategories.map(sub => (
                       <button
                         key={sub}
-                        onClick={() => setLocalFilters({...localFilters, subcategorie: sub})}
+                        onClick={() => setCustomBuilderFilters({...customBuilderFilters, subcategorie: sub})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                          localFilters.subcategorie === sub
+                          customBuilderFilters.subcategorie === sub
                             ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
@@ -3778,9 +3789,9 @@ useEffect(() => {
                   <h3 className="font-semibold text-lg mb-3 text-white">Valuta</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setLocalFilters({...localFilters, currency: ''})}
+                      onClick={() => setCustomBuilderFilters({...customBuilderFilters, currency: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        !localFilters.currency
+                        !customBuilderFilters.currency
                           ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                           : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
@@ -3790,9 +3801,9 @@ useEffect(() => {
                     {currencies.map(curr => (
                       <button
                         key={curr}
-                        onClick={() => setLocalFilters({...localFilters, currency: curr})}
+                        onClick={() => setCustomBuilderFilters({...customBuilderFilters, currency: curr})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                          localFilters.currency === curr
+                          customBuilderFilters.currency === curr
                             ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
@@ -3810,9 +3821,9 @@ useEffect(() => {
                   <h3 className="font-semibold text-lg mb-3 text-white">Distributie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setLocalFilters({...localFilters, distribution: ''})}
+                      onClick={() => setCustomBuilderFilters({...customBuilderFilters, distribution: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        !localFilters.distribution
+                        !customBuilderFilters.distribution
                           ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                           : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                       }`}
@@ -3822,9 +3833,9 @@ useEffect(() => {
                     {distributions.map(dist => (
                       <button
                         key={dist}
-                        onClick={() => setLocalFilters({...localFilters, distribution: dist})}
+                        onClick={() => setCustomBuilderFilters({...customBuilderFilters, distribution: dist})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                          localFilters.distribution === dist
+                          customBuilderFilters.distribution === dist
                             ? 'bg-[#28EBCF] text-gray-900 shadow-md'
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
@@ -3844,7 +3855,7 @@ useEffect(() => {
                 return (
                   <button
                     key={etf.isin}
-                    onClick={() => handleETFToggle(etf)}
+                    onClick={(e) => handleETFToggle(etf, e)}
                     className={`bg-[#1A1B1F] rounded-xl shadow p-6 transition-all text-left border-2 ${
                       isSelected
                         ? 'border-[#28EBCF] bg-[#28EBCF]/10'
