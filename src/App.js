@@ -4136,6 +4136,11 @@ useEffect(() => {
     const [currentMonth, setCurrentMonth] = useState(0);
     const [staticPerformanceData, setStaticPerformanceData] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [showEditChoice, setShowEditChoice] = useState(false);
+    const [showDeposit, setShowDeposit] = useState(false);
+    const [showWithdrawal, setShowWithdrawal] = useState(false);
+    const [depositAmount, setDepositAmount] = useState('');
+    const [withdrawalAmount, setWithdrawalAmount] = useState('');
     const metrics = calculatePortfolioMetrics();
 
     const horizon = parseInt(investmentDetails.horizon) || 10;
@@ -4310,9 +4315,9 @@ useEffect(() => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
             <div className="flex gap-3">
-              <button onClick={() => alert('Geld storten functionaliteit komt binnenkort')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
-              <button onClick={() => alert('Geld opnemen functionaliteit komt binnenkort')} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
-              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowDeposit(true)} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
+              <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
+              <button onClick={() => setShowEditChoice(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
               <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-medium">Portfolio Balanceren</button>
             </div>
           </div>
@@ -4641,7 +4646,219 @@ useEffect(() => {
             </div>
           </div>
         )}
-        
+
+        {/* Portfolio Edit Choice Modal */}
+        {showEditChoice && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowEditChoice(false)}>
+            <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-3xl font-bold mb-6 text-white">Portfolio Aanpassen</h2>
+              <p className="text-gray-400 mb-8">Kies hoe je je portfolio wilt aanpassen</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button
+                  onClick={() => {
+                    setShowEditChoice(false);
+                    setCustomBuildStep('profile');
+                    setCurrentPage('customPortfolioBuilder');
+                  }}
+                  className="bg-[#1A1B1F] border-2 border-gray-700 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all"
+                >
+                  <div className="text-4xl mb-4">🎯</div>
+                  <h3 className="text-xl font-bold mb-2 text-white">Ander Profiel Kiezen</h3>
+                  <p className="text-gray-400 text-sm">Kies een nieuw risicoprofiel en start opnieuw</p>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowEditChoice(false);
+                    setShowEditPortfolio(true);
+                  }}
+                  className="bg-[#1A1B1F] border-2 border-gray-700 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all"
+                >
+                  <div className="text-4xl mb-4">⚙️</div>
+                  <h3 className="text-xl font-bold mb-2 text-white">ETF's Aanpassen</h3>
+                  <p className="text-gray-400 text-sm">Wijzig de wegingen van je huidige ETF's</p>
+                </button>
+              </div>
+
+              <button
+                onClick={() => setShowEditChoice(false)}
+                className="mt-6 w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+              >
+                Annuleren
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Deposit Modal */}
+        {showDeposit && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowDeposit(false)}>
+            <div className="bg-[#1A1B1F] rounded-xl max-w-md w-full mx-4 p-8 border border-gray-800" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-3xl font-bold mb-4 text-white">Geld Storten</h2>
+              <p className="text-gray-400 mb-6">Voer het bedrag in dat je wilt storten</p>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-2 text-gray-300">Bedrag (€)</label>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white text-lg focus:outline-none focus:border-[#28EBCF]"
+                />
+              </div>
+
+              <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-400">Huidige waarde:</span>
+                  <span className="text-white font-medium">{formatEuro(portfolioValue)}</span>
+                </div>
+                {depositAmount && parseFloat(depositAmount) > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Na storting:</span>
+                    <span className="text-[#28EBCF] font-bold">{formatEuro(portfolioValue + parseFloat(depositAmount))}</span>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  if (depositAmount && parseFloat(depositAmount) > 0) {
+                    setPortfolioValue(prev => prev + parseFloat(depositAmount));
+                    setInvestmentDetails(prev => ({
+                      ...prev,
+                      amount: String(parseFloat(prev.amount || 0) + parseFloat(depositAmount))
+                    }));
+                    setShowDeposit(false);
+                    setDepositAmount('');
+                    alert(`€${parseFloat(depositAmount).toFixed(2)} succesvol gestort via iDEAL!`);
+                  }
+                }}
+                disabled={!depositAmount || parseFloat(depositAmount) <= 0}
+                className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all mb-3"
+              >
+                Betaal met iDEAL
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowDeposit(false);
+                  setDepositAmount('');
+                }}
+                className="w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+              >
+                Annuleren
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Withdrawal Modal */}
+        {showWithdrawal && (() => {
+          const amount = parseFloat(withdrawalAmount) || 0;
+          const salesPreview = amount > 0 ? portfolio.map(etf => {
+            const currentValue = portfolioValue * (etf.weight / 100);
+            const saleAmount = amount * (etf.weight / 100);
+            const remainingValue = currentValue - saleAmount;
+            return {
+              ...etf,
+              currentValue,
+              saleAmount,
+              remainingValue
+            };
+          }) : [];
+
+          return (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowWithdrawal(false)}>
+              <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-3xl font-bold mb-4 text-white">Geld Opnemen</h2>
+                <p className="text-gray-400 mb-6">Voer het bedrag in dat je wilt opnemen</p>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Bedrag (€)</label>
+                  <input
+                    type="number"
+                    value={withdrawalAmount}
+                    onChange={(e) => setWithdrawalAmount(e.target.value)}
+                    placeholder="0"
+                    max={portfolioValue}
+                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white text-lg focus:outline-none focus:border-[#28EBCF]"
+                  />
+                  {amount > portfolioValue && (
+                    <p className="text-red-500 text-sm mt-2">Bedrag kan niet hoger zijn dan je portfolio waarde</p>
+                  )}
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-400">Huidige waarde:</span>
+                    <span className="text-white font-medium">{formatEuro(portfolioValue)}</span>
+                  </div>
+                  {amount > 0 && amount <= portfolioValue && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Na opname:</span>
+                      <span className="text-[#28EBCF] font-bold">{formatEuro(portfolioValue - amount)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {amount > 0 && amount <= portfolioValue && (
+                  <div className="mb-6">
+                    <h3 className="font-bold mb-3 text-white">Te verkopen (kaasschaaf methode):</h3>
+                    <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                      {salesPreview.map((etf, idx) => (
+                        <div key={idx} className="border-b border-gray-700 last:border-0 pb-3 last:pb-0">
+                          <div className="font-medium text-sm mb-1 text-white">{etf.naam}</div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-gray-400">Verkoop: </span>
+                              <span className="text-red-400">{formatEuro(etf.saleAmount)}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Resteert: </span>
+                              <span className="text-gray-300">{formatEuro(etf.remainingValue)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    if (amount > 0 && amount <= portfolioValue) {
+                      setPortfolioValue(prev => prev - amount);
+                      setInvestmentDetails(prev => ({
+                        ...prev,
+                        amount: String(parseFloat(prev.amount || 0) - amount)
+                      }));
+                      setShowWithdrawal(false);
+                      setWithdrawalAmount('');
+                      alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
+                    }
+                  }}
+                  disabled={!amount || amount <= 0 || amount > portfolioValue}
+                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all mb-3"
+                >
+                  Bevestig Opname
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowWithdrawal(false);
+                    setWithdrawalAmount('');
+                  }}
+                  className="w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+                >
+                  Annuleren
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         {showEditPortfolio && <EditPortfolioModal onClose={() => setShowEditPortfolio(false)} />}
       </div>
     );
