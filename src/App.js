@@ -3674,7 +3674,17 @@ useEffect(() => {
             {allCategoriesCompleted && (
               <div className="text-center">
                 <button
-                  onClick={() => setCustomBuildStep('accountType')}
+                  onClick={() => {
+                    // Check if user is existing customer (has portfolio value and investment details)
+                    const isExistingCustomer = portfolioValue > 0 && investmentDetails.amount;
+                    if (isExistingCustomer) {
+                      // Existing customer: go directly to dashboard, keep current portfolio value
+                      setCurrentPage('dashboard');
+                    } else {
+                      // New customer: show account type selection
+                      setCustomBuildStep('accountType');
+                    }
+                  }}
                   className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Volgende Stap →
