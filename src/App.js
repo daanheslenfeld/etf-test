@@ -3670,10 +3670,10 @@ useEffect(() => {
             {allCategoriesCompleted && (
               <div className="text-center">
                 <button
-                  onClick={() => setCurrentPage('dashboard')}
+                  onClick={() => setCustomBuildStep('accountType')}
                   className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
-                  Ga naar Portfolio Overzicht →
+                  Volgende Stap →
                 </button>
               </div>
             )}
@@ -3920,9 +3920,95 @@ useEffect(() => {
       );
     };
 
+    const renderAccountTypeSelection = () => {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
+                ← Terug naar Categorieën
+              </button>
+            </div>
+          </nav>
+
+          <div className="max-w-4xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold text-center mb-4 text-white">Kies je Account Type</h1>
+            <p className="text-center text-gray-400 mb-12">Je hebt {portfolio.length} ETF(s) geselecteerd voor je portfolio</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Fictieve Portfolio */}
+              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 border-2 border-gray-800 hover:border-[#28EBCF] transition-all">
+                <div className="text-5xl mb-4 text-center">📊</div>
+                <h3 className="text-2xl font-bold mb-4 text-white text-center">Fictieve Portfolio</h3>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Gratis demo portfolio</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Test de applicatie zonder risico</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Simuleer investeringen</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Geen echte transacties</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setPortfolioValue(10000); // Default fictive value
+                    setCurrentPage('dashboard');
+                  }}
+                  className="w-full py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Start met Fictieve Portfolio
+                </button>
+              </div>
+
+              {/* Echte Portfolio */}
+              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 border-2 border-[#28EBCF] transition-all">
+                <div className="text-5xl mb-4 text-center">💎</div>
+                <h3 className="text-2xl font-bold mb-4 text-white text-center">Echte Portfolio</h3>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Professioneel beheerde portfolio</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Echte investeringen</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Volledige ondersteuning</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#28EBCF]">✓</span>
+                    <span className="text-gray-300">Start vanaf €100</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCurrentPage('purchase')}
+                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold"
+                >
+                  Upgrade naar Betaald Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     if (customBuildStep === 'profile') return renderProfileSelection();
     if (customBuildStep === 'categories') return renderCategorySelection();
     if (customBuildStep === 'selectETFs') return renderETFSelection();
+    if (customBuildStep === 'accountType') return renderAccountTypeSelection();
   };
 
   const PurchasePage = () => {
