@@ -236,7 +236,8 @@ const ETFPortal = () => {
   });
 
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
+    // Use sessionStorage instead of localStorage so user is logged out when browser closes
+    const saved = sessionStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -563,12 +564,12 @@ useEffect(() => {
     setFilteredEtfs(filtered);
   }, [filters, etfs]);
 
-  // Save user and currentPage to localStorage when they change
+  // Save user to sessionStorage (cleared when browser closes) and currentPage to localStorage
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(user));
     } else {
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
     }
   }, [user]);
 
