@@ -4712,6 +4712,11 @@ useEffect(() => {
                               </tr>
                             );
                           })}
+                          <tr className="border-t-2 border-gray-700 bg-gray-800/30">
+                            <td className="px-4 py-3 text-sm font-bold text-white">Totaal {category}</td>
+                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-24">{categoryWeight.toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-32">{formatEuro(categoryValue)}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
