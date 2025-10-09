@@ -826,7 +826,13 @@ useEffect(() => {
 
   const savePortfolioToDatabase = async (accountType = 'fictief') => {
     if (!user || !user.id) {
-      console.error('No user logged in');
+      console.error('❌ No user logged in');
+      return false;
+    }
+
+    if (!portfolio || portfolio.length === 0) {
+      console.error('❌ Cannot save: Portfolio is empty!');
+      alert('Fout: Geen portfolio geselecteerd. Kies eerst een portfolio voordat je verder gaat.');
       return false;
     }
 
