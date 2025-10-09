@@ -5122,25 +5122,56 @@ useEffect(() => {
   const WelcomePage = () => {
     const [marketData, setMarketData] = useState({
       indices: [
-        { name: 'S&P 500', value: '5,234.18', change: '+1.2%', positive: true },
-        { name: 'Dow Jones', value: '41,250.50', change: '+0.8%', positive: true },
-        { name: 'NASDAQ', value: '16,825.93', change: '+1.5%', positive: true },
-        { name: 'AEX', value: '915.32', change: '-0.3%', positive: false },
-        { name: 'DAX', value: '19,850.45', change: '+0.6%', positive: true },
-        { name: 'FTSE 100', value: '8,350.22', change: '+0.4%', positive: true },
+        { name: 'S&P 500', value: 5234.18, baseValue: 5234.18, change: 1.2, positive: true },
+        { name: 'Dow Jones', value: 41250.50, baseValue: 41250.50, change: 0.8, positive: true },
+        { name: 'NASDAQ', value: 16825.93, baseValue: 16825.93, change: 1.5, positive: true },
+        { name: 'AEX', value: 915.32, baseValue: 915.32, change: -0.3, positive: false },
+        { name: 'DAX', value: 19850.45, baseValue: 19850.45, change: 0.6, positive: true },
+        { name: 'FTSE 100', value: 8350.22, baseValue: 8350.22, change: 0.4, positive: true },
       ],
       currencies: [
-        { name: 'EUR/USD', value: '1.0875', change: '+0.2%', positive: true },
-        { name: 'GBP/USD', value: '1.2650', change: '-0.1%', positive: false },
-        { name: 'USD/JPY', value: '149.85', change: '+0.3%', positive: true },
-        { name: 'EUR/GBP', value: '0.8595', change: '+0.1%', positive: true },
+        { name: 'EUR/USD', value: 1.0875, baseValue: 1.0875, change: 0.2, positive: true },
+        { name: 'GBP/USD', value: 1.2650, baseValue: 1.2650, change: -0.1, positive: false },
+        { name: 'USD/JPY', value: 149.85, baseValue: 149.85, change: 0.3, positive: true },
+        { name: 'EUR/GBP', value: 0.8595, baseValue: 0.8595, change: 0.1, positive: true },
       ],
       commodities: [
-        { name: 'Gold', symbol: 'XAU', value: '$2,345.60', change: '+0.8%', positive: true },
-        { name: 'Bitcoin', symbol: 'BTC', value: '$98,250.00', change: '+2.3%', positive: true },
-        { name: 'Ethereum', symbol: 'ETH', value: '$3,420.50', change: '+1.9%', positive: true },
+        { name: 'Gold', symbol: 'XAU', value: 2345.60, baseValue: 2345.60, change: 0.8, positive: true },
+        { name: 'Bitcoin', symbol: 'BTC', value: 98250.00, baseValue: 98250.00, change: 2.3, positive: true },
+        { name: 'Ethereum', symbol: 'ETH', value: 3420.50, baseValue: 3420.50, change: 1.9, positive: true },
       ]
     });
+
+    // Simulate real-time price updates
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setMarketData(prevData => {
+          const updateCategory = (items) => items.map(item => {
+            // Random price change between -0.15% and +0.15%
+            const randomChange = (Math.random() - 0.5) * 0.3;
+            const newValue = item.value * (1 + randomChange / 100);
+
+            // Calculate change percentage from base value
+            const changePercent = ((newValue - item.baseValue) / item.baseValue) * 100;
+
+            return {
+              ...item,
+              value: newValue,
+              change: changePercent,
+              positive: changePercent >= 0
+            };
+          });
+
+          return {
+            indices: updateCategory(prevData.indices),
+            currencies: updateCategory(prevData.currencies),
+            commodities: updateCategory(prevData.commodities)
+          };
+        });
+      }, 2000); // Update every 2 seconds
+
+      return () => clearInterval(interval);
+    }, []);
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -5222,9 +5253,9 @@ useEffect(() => {
               {marketData.indices.map((index, i) => (
                 <div key={i} className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-4">
                   <div className="text-sm text-gray-400 mb-1">{index.name}</div>
-                  <div className="text-lg font-bold text-white mb-1">{index.value}</div>
+                  <div className="text-lg font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   <div className={`text-sm font-medium ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
-                    {index.change}
+                    {index.positive ? '+' : ''}{index.change.toFixed(2)}%
                   </div>
                 </div>
               ))}
@@ -5238,9 +5269,9 @@ useEffect(() => {
               {marketData.currencies.map((currency, i) => (
                 <div key={i} className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-4">
                   <div className="text-sm text-gray-400 mb-1">{currency.name}</div>
-                  <div className="text-lg font-bold text-white mb-1">{currency.value}</div>
+                  <div className="text-lg font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
                   <div className={`text-sm font-medium ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
-                    {currency.change}
+                    {currency.positive ? '+' : ''}{currency.change.toFixed(2)}%
                   </div>
                 </div>
               ))}
@@ -5264,9 +5295,9 @@ useEffect(() => {
                       {commodity.name === 'Ethereum' && 'Ξ'}
                     </div>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">{commodity.value}</div>
+                  <div className="text-2xl font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   <div className={`text-sm font-medium ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
-                    {commodity.change}
+                    {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
                   </div>
                 </div>
               ))}
