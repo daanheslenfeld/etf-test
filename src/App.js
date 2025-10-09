@@ -4967,12 +4967,12 @@ useEffect(() => {
               <div className="bg-gray-800 rounded-lg p-4 mb-6">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-400">Huidige waarde:</span>
-                  <span className="text-white font-medium">{formatEuro(portfolioValue)}</span>
+                  <span className="text-white font-medium">{formatEuro(animatedPortfolioValue)}</span>
                 </div>
                 {depositAmount && parseFloat(depositAmount) > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Na storting:</span>
-                    <span className="text-[#28EBCF] font-bold">{formatEuro(portfolioValue + parseFloat(depositAmount))}</span>
+                    <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue + parseFloat(depositAmount))}</span>
                   </div>
                 )}
               </div>
@@ -5015,7 +5015,7 @@ useEffect(() => {
         {showWithdrawal && (() => {
           const amount = parseFloat(withdrawalAmount) || 0;
           const salesPreview = amount > 0 ? portfolio.map(etf => {
-            const currentValue = portfolioValue * (etf.weight / 100);
+            const currentValue = animatedPortfolioValue * (etf.weight / 100);
             const saleAmount = amount * (etf.weight / 100);
             const remainingValue = currentValue - saleAmount;
             return {
@@ -5039,10 +5039,10 @@ useEffect(() => {
                     value={withdrawalAmount}
                     onChange={(e) => setWithdrawalAmount(e.target.value)}
                     placeholder="0"
-                    max={portfolioValue}
+                    max={animatedPortfolioValue}
                     className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white text-lg focus:outline-none focus:border-[#28EBCF]"
                   />
-                  {amount > portfolioValue && (
+                  {amount > animatedPortfolioValue && (
                     <p className="text-red-500 text-sm mt-2">Bedrag kan niet hoger zijn dan je portfolio waarde</p>
                   )}
                 </div>
@@ -5050,17 +5050,17 @@ useEffect(() => {
                 <div className="bg-gray-800 rounded-lg p-4 mb-6">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-400">Huidige waarde:</span>
-                    <span className="text-white font-medium">{formatEuro(portfolioValue)}</span>
+                    <span className="text-white font-medium">{formatEuro(animatedPortfolioValue)}</span>
                   </div>
-                  {amount > 0 && amount <= portfolioValue && (
+                  {amount > 0 && amount <= animatedPortfolioValue && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Na opname:</span>
-                      <span className="text-[#28EBCF] font-bold">{formatEuro(portfolioValue - amount)}</span>
+                      <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue - amount)}</span>
                     </div>
                   )}
                 </div>
 
-                {amount > 0 && amount <= portfolioValue && (
+                {amount > 0 && amount <= animatedPortfolioValue && (
                   <div className="mb-6">
                     <h3 className="font-bold mb-3 text-white">Te verkopen (kaasschaaf methode):</h3>
                     <div className="bg-gray-800 rounded-lg p-4 space-y-3">
@@ -5085,7 +5085,7 @@ useEffect(() => {
 
                 <button
                   onClick={() => {
-                    if (amount > 0 && amount <= portfolioValue) {
+                    if (amount > 0 && amount <= animatedPortfolioValue) {
                       // Update portfolio value and simulation data
                       setPortfolioValue(prev => prev - amount);
                       setStaticPerformanceData(prev => prev.map(point => ({
@@ -5097,7 +5097,7 @@ useEffect(() => {
                       alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
                     }
                   }}
-                  disabled={!amount || amount <= 0 || amount > portfolioValue}
+                  disabled={!amount || amount <= 0 || amount > animatedPortfolioValue}
                   className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all mb-3"
                 >
                   Bevestig Opname
