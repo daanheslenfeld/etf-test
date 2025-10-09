@@ -35,9 +35,33 @@ module.exports = async (req, res) => {
       });
     }
 
+    // Fetch portfolio and investment details for each customer
+    const customersWithDetails = await Promise.all(
+      (customers || []).map(async (customer) => {
+        // Get portfolio
+        const { data: portfolio } = await supabase
+          .from('portfolio')
+          .select('*')
+          .eq('customer_id', customer.id);
+
+        // Get investment details
+        const { data: investmentDetails } = await supabase
+          .from('investment_details')
+          .select('*')
+          .eq('customer_id', customer.id)
+          .single();
+
+        return {
+          ...customer,
+          portfolio: portfolio || [],
+          investmentDetails: investmentDetails || null
+        };
+      })
+    );
+
     res.status(200).json({
       success: true,
-      customers: customers || []
+      customers: customersWithDetails
     });
 
   } catch (error) {

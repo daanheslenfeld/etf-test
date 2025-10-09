@@ -5091,8 +5091,8 @@ useEffect(() => {
             birthDate: c.birth_date,
             address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
             registeredAt: c.registered_at || c.created_at,
-            portfolio: [],
-            investmentDetails: {}
+            portfolio: c.portfolio || [],
+            investmentDetails: c.investmentDetails || {}
           }));
           setCustomers(transformedCustomers);
         }
@@ -5191,6 +5191,8 @@ useEffect(() => {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Woonplaats</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Account Type</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Portfolio</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Geregistreerd</th>
                     <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Actie</th>
                   </tr>
@@ -5198,7 +5200,7 @@ useEffect(() => {
                 <tbody className="divide-y divide-gray-800">
                   {filteredCustomers.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
                         {searchTerm ? 'Geen klanten gevonden' : 'Nog geen geregistreerde klanten'}
                       </td>
                     </tr>
@@ -5209,6 +5211,22 @@ useEffect(() => {
                         <td className="px-6 py-4 text-sm text-gray-400">{customer.email}</td>
                         <td className="px-6 py-4 text-sm text-gray-400">{customer.phone}</td>
                         <td className="px-6 py-4 text-sm text-gray-400">{customer.city}</td>
+                        <td className="px-6 py-4 text-sm">
+                          {customer.account_type === 'betaald' ? (
+                            <span className="px-2 py-1 bg-green-600/20 text-green-400 rounded-full text-xs font-semibold">Betaald</span>
+                          ) : customer.account_type === 'fictief' ? (
+                            <span className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded-full text-xs font-semibold">Fictief</span>
+                          ) : (
+                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-semibold">Gratis</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-400">
+                          {customer.portfolio && customer.portfolio.length > 0 ? (
+                            <span className="text-[#28EBCF] font-medium">{customer.portfolio.length} ETFs</span>
+                          ) : (
+                            <span className="text-gray-500">Geen</span>
+                          )}
+                        </td>
                         <td className="px-6 py-4 text-sm text-gray-400">
                           {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
                         </td>
@@ -5355,9 +5373,13 @@ useEffect(() => {
                 <div>
                   <span className="text-sm text-gray-500">Account Type:</span>
                   <div className="font-medium">
-                    {selectedCustomer.investmentDetails?.riskProfile ? (
+                    {selectedCustomer.account_type === 'betaald' ? (
                       <span className="px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm font-semibold">
                         Betaald Account
+                      </span>
+                    ) : selectedCustomer.account_type === 'fictief' ? (
+                      <span className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-semibold">
+                        Fictief Account
                       </span>
                     ) : (
                       <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold">
