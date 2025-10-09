@@ -834,13 +834,16 @@ useEffect(() => {
       if (data.success) {
         // Update user object with account type
         setUser({...user, account_type: accountType, portfolio: portfolio});
+        console.log('Portfolio saved successfully!');
         return true;
       } else {
-        console.error('Failed to save portfolio:', data.message);
+        console.error('Failed to save portfolio:', data.message, data);
+        alert('Fout bij opslaan portfolio: ' + (data.message || 'Onbekende fout'));
         return false;
       }
     } catch (error) {
       console.error('Error saving portfolio:', error);
+      alert('Fout bij opslaan portfolio: ' + error.message);
       return false;
     }
   };

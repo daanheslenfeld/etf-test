@@ -103,7 +103,9 @@ module.exports = async (req, res) => {
     console.error('Error saving portfolio:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to save portfolio'
+      message: 'Failed to save portfolio',
+      error: error.message,
+      details: error
     });
   }
 };
