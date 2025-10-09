@@ -499,11 +499,19 @@ const ETFPortal = () => {
 
 useEffect(() => {
   const loadETFs = async () => {
+    console.log('📥 LOADING ETFs FROM EXCEL FILE...');
     setLoading(true);
     try {
       const response = await fetch('/ETF_overzicht_met_subcategorie.xlsx');
+      console.log('Excel file fetch response:', response.status, response.statusText);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Excel file: ${response.status} ${response.statusText}`);
+      }
+
       const arrayBuffer = await response.arrayBuffer();
       const data = new Uint8Array(arrayBuffer);
+      console.log('Excel file loaded, size:', data.length, 'bytes');
 
       // Dynamically import xlsx
       const XLSX = await import('xlsx');
@@ -511,6 +519,7 @@ useEffect(() => {
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      console.log('Excel parsed, total rows:', jsonData.length);
 
       if (jsonData && jsonData.length > 0) {
         // Filter out empty rows (rows without naam or isin)
@@ -518,21 +527,22 @@ useEffect(() => {
           etf.naam && etf.naam.trim() !== '' &&
           etf.isin && etf.isin.trim() !== ''
         );
-        console.log(`Loaded ${validETFs.length} valid ETFs from Excel (filtered from ${jsonData.length} rows)`);
+        console.log(`✅ Loaded ${validETFs.length} valid ETFs from Excel (filtered from ${jsonData.length} rows)`);
         setEtfs(validETFs);
         setFilteredEtfs(validETFs);
       } else {
-        console.warn('Excel file is empty, using sample data');
+        console.warn('⚠️ Excel file is empty, using sample data');
         setEtfs(SAMPLE_ETFS);
         setFilteredEtfs(SAMPLE_ETFS);
       }
     } catch (error) {
-      console.error('Error loading Excel file:', error);
-      console.log('Using sample ETF data as fallback');
+      console.error('❌ Error loading Excel file:', error);
+      console.log('Using sample ETF data as fallback (' + SAMPLE_ETFS.length + ' items)');
       setEtfs(SAMPLE_ETFS);
       setFilteredEtfs(SAMPLE_ETFS);
     }
     setLoading(false);
+    console.log('ETF loading complete');
   };
 
   loadETFs();
