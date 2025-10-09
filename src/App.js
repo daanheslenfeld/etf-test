@@ -4651,47 +4651,6 @@ useEffect(() => {
             <div className="mt-4 text-sm text-gray-400 text-center">
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
             </div>
-
-            {/* Yearly Results Table */}
-            <div className="mt-6 overflow-x-auto">
-              <h4 className="font-bold text-white mb-3">Jaarlijkse Resultaten</h4>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-gray-300">Jaar</th>
-                    <th className="px-4 py-2 text-right text-gray-300">Waarde</th>
-                    <th className="px-4 py-2 text-right text-gray-300">Winst/Verlies</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {(() => {
-                    const yearlyData = [];
-                    for (let year = 0; year <= horizon; year++) {
-                      const monthIndex = year * 12;
-                      if (monthIndex < staticPerformanceData.length) {
-                        const data = staticPerformanceData[monthIndex];
-                        const value = data.portfolioValue;
-                        const profit = value - initialValue;
-                        yearlyData.push({
-                          year,
-                          value,
-                          profit
-                        });
-                      }
-                    }
-                    return yearlyData.map((yearData, idx) => (
-                      <tr key={idx} className="hover:bg-gray-900/30">
-                        <td className="px-4 py-2 text-white">Jaar {yearData.year}</td>
-                        <td className="px-4 py-2 text-right text-white font-medium">{formatEuro(yearData.value)}</td>
-                        <td className={`px-4 py-2 text-right font-medium ${yearData.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {yearData.profit >= 0 ? '+' : ''}{formatEuro(yearData.profit)}
-                        </td>
-                      </tr>
-                    ));
-                  })()}
-                </tbody>
-              </table>
-            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
