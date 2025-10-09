@@ -4221,30 +4221,11 @@ useEffect(() => {
               <p className="text-gray-400">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
               <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30"><div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-400">Te storten bedrag</div></div>
               <button onClick={async () => {
+                console.log('💰 PAYMENT BUTTON CLICKED');
                 setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
 
-                // Save portfolio and investment details to database
-                if (user && user.id) {
-                  try {
-                    await fetch(`${API_URL}/save-portfolio`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        customer_id: user.id,
-                        portfolio: portfolio,
-                        investmentDetails: investmentDetails,
-                        account_type: 'betaald'
-                      })
-                    });
-
-                    // Update user object with account type
-                    setUser({...user, account_type: 'betaald'});
-                  } catch (error) {
-                    console.error('Error saving portfolio:', error);
-                  }
-                }
+                // Save portfolio and investment details to database using the helper function
+                await savePortfolioToDatabase('betaald');
 
                 setCurrentPage('dashboard');
               }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
