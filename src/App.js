@@ -809,6 +809,42 @@ useEffect(() => {
     }
   };
 
+  const savePortfolioToDatabase = async (accountType = 'fictief') => {
+    if (!user || !user.id) {
+      console.error('No user logged in');
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/save-portfolio`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customer_id: user.id,
+          portfolio: portfolio,
+          investmentDetails: investmentDetails,
+          account_type: accountType
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update user object with account type
+        setUser({...user, account_type: accountType, portfolio: portfolio});
+        return true;
+      } else {
+        console.error('Failed to save portfolio:', data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error saving portfolio:', error);
+      return false;
+    }
+  };
+
   const recalculateWeights = (portfolioToCalculate, profile) => {
     if (!profile) return portfolioToCalculate;
 
@@ -3436,15 +3472,21 @@ useEffect(() => {
             <div className="flex gap-3">
               <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-[#28EBCF] text-[#28EBCF] rounded-lg hover:bg-[#28EBCF]/10 font-medium">Portfolio Aanpassen</button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   // Set demo investment details for fictive portfolio
-                  setInvestmentDetails({
+                  const newInvestmentDetails = {
                     goal: 'Demo',
                     horizon: '10',
                     amount: '10000',
+                    monthlyContribution: '0',
                     riskProfile: selectedProfile ? premadePortfolios[selectedProfile]?.name || 'Neutraal' : 'Neutraal'
-                  });
+                  };
+                  setInvestmentDetails(newInvestmentDetails);
                   setPortfolioValue(10000);
+
+                  // Save to database
+                  await savePortfolioToDatabase('fictief');
+
                   setCurrentPage('dashboard');
                 }}
                 className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
@@ -3679,10 +3721,12 @@ useEffect(() => {
             {allCategoriesCompleted && (
               <div className="text-center">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     // Check if user is existing customer (has portfolio value and investment details)
                     const isExistingCustomer = portfolioValue > 0 && investmentDetails.amount;
                     if (isExistingCustomer) {
+                      // Save portfolio before going to dashboard
+                      await savePortfolioToDatabase(user?.account_type || 'fictief');
                       // Existing customer: go directly to dashboard, keep current portfolio value
                       setCurrentPage('dashboard');
                     } else {
@@ -3979,8 +4023,23 @@ useEffect(() => {
                   </div>
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setPortfolioValue(10000); // Default fictive value
+
+                    // Set basic investment details if not set
+                    if (!investmentDetails.amount || !investmentDetails.riskProfile) {
+                      setInvestmentDetails({
+                        goal: 'Demo',
+                        horizon: '10',
+                        amount: '10000',
+                        monthlyContribution: '0',
+                        riskProfile: 'Neutraal'
+                      });
+                    }
+
+                    // Save to database
+                    await savePortfolioToDatabase('fictief');
+
                     setCurrentPage('dashboard');
                   }}
                   className="w-full py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
@@ -4135,7 +4194,34 @@ useEffect(() => {
               <h2 className="text-2xl font-bold text-white">Stort je beginbedrag</h2>
               <p className="text-gray-400">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
               <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30"><div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-400">Te storten bedrag</div></div>
-              <button onClick={() => { setPortfolioValue(parseFloat(investmentDetails.amount) || 10000); setCurrentPage('dashboard'); }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
+              <button onClick={async () => {
+                setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
+
+                // Save portfolio and investment details to database
+                if (user && user.id) {
+                  try {
+                    await fetch(`${API_URL}/save-portfolio`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        customer_id: user.id,
+                        portfolio: portfolio,
+                        investmentDetails: investmentDetails,
+                        account_type: 'betaald'
+                      })
+                    });
+
+                    // Update user object with account type
+                    setUser({...user, account_type: 'betaald'});
+                  } catch (error) {
+                    console.error('Error saving portfolio:', error);
+                  }
+                }
+
+                setCurrentPage('dashboard');
+              }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
               <button onClick={() => setStep(1)} className="text-gray-400 hover:text-gray-200">← Terug</button>
             </div>
           )}
