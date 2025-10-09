@@ -4661,7 +4661,6 @@ useEffect(() => {
                     <th className="px-4 py-2 text-left text-gray-300">Jaar</th>
                     <th className="px-4 py-2 text-right text-gray-300">Waarde</th>
                     <th className="px-4 py-2 text-right text-gray-300">Winst/Verlies</th>
-                    <th className="px-4 py-2 text-right text-gray-300">Return %</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
@@ -4673,12 +4672,10 @@ useEffect(() => {
                         const data = staticPerformanceData[monthIndex];
                         const value = data.portfolioValue;
                         const profit = value - initialValue;
-                        const returnPct = ((value - initialValue) / initialValue * 100).toFixed(2);
                         yearlyData.push({
                           year,
                           value,
-                          profit,
-                          returnPct
+                          profit
                         });
                       }
                     }
@@ -4688,9 +4685,6 @@ useEffect(() => {
                         <td className="px-4 py-2 text-right text-white font-medium">{formatEuro(yearData.value)}</td>
                         <td className={`px-4 py-2 text-right font-medium ${yearData.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                           {yearData.profit >= 0 ? '+' : ''}{formatEuro(yearData.profit)}
-                        </td>
-                        <td className={`px-4 py-2 text-right font-medium ${parseFloat(yearData.returnPct) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {parseFloat(yearData.returnPct) >= 0 ? '+' : ''}{yearData.returnPct}%
                         </td>
                       </tr>
                     ));
