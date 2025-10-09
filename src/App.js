@@ -773,13 +773,13 @@ useEffect(() => {
 
         // Check if customer has portfolio or active investments
         if (customer.portfolio && customer.portfolio.length > 0) {
-          console.log('➡️ Redirecting to dashboard (has portfolio)');
-          // Has portfolio → go to dashboard
-          setCurrentPage('dashboard');
+          console.log('➡️ Redirecting to welcome page (has portfolio)');
+          // Has portfolio → go to welcome page
+          setCurrentPage('welcome');
         } else if (customer.account_type && customer.account_type !== 'fictief') {
-          console.log('➡️ Redirecting to dashboard (paid account)');
-          // Has paid account → go to dashboard
-          setCurrentPage('dashboard');
+          console.log('➡️ Redirecting to welcome page (paid account)');
+          // Has paid account → go to welcome page
+          setCurrentPage('welcome');
         } else {
           console.log('➡️ Redirecting to mainDashboard (no portfolio)');
           // New user or fictitious account without portfolio → go to main dashboard
