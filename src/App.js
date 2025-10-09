@@ -4398,6 +4398,40 @@ useEffect(() => {
       }
     }, [isAnimating, currentMonth, months, staticPerformanceData]);
 
+    // Auto-save portfolio value every 10 seconds while running
+    useEffect(() => {
+      if (user && user.id && staticPerformanceData && currentMonth >= 0) {
+        const savePortfolioValue = async () => {
+          try {
+            const currentValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
+            const returnPct = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+
+            await fetch(`${API_URL}/update-portfolio-value`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                customer_id: user.id,
+                current_portfolio_value: currentValue,
+                total_return: parseFloat(returnPct)
+              })
+            });
+            console.log('📊 Portfolio value updated:', currentValue, 'Return:', returnPct + '%');
+          } catch (error) {
+            console.error('Error auto-saving portfolio value:', error);
+          }
+        };
+
+        // Save immediately
+        savePortfolioValue();
+
+        // Then save every 10 seconds
+        const interval = setInterval(savePortfolioValue, 10000);
+        return () => clearInterval(interval);
+      }
+    }, [currentMonth, staticPerformanceData, user, initialValue]);
+
     const toggleAnimation = async () => {
       if (currentMonth >= months) {
         // Restart from beginning
