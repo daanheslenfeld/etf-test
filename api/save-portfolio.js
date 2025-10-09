@@ -47,13 +47,16 @@ module.exports = async (req, res) => {
 
     // Insert new portfolio items
     if (portfolio && portfolio.length > 0) {
+      const now = new Date().toISOString();
       const portfolioItems = portfolio.map(item => ({
         customer_id,
         naam: item.naam,
         isin: item.isin,
         categorie: item.categorie,
         weight: item.weight,
-        ter_pa: item['ter p.a.'] || item.ter_pa
+        ter_pa: item['ter p.a.'] || item.ter_pa,
+        created_at: now,
+        updated_at: now
       }));
 
       const { error: portfolioError } = await supabase
