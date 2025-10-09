@@ -4223,15 +4223,45 @@ useEffect(() => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialValue, months, avgReturn, stdDev, generateNormalRandom]);
 
-    // Generate static data once when component mounts
+    // Load saved simulation state from database on mount
     useEffect(() => {
-      if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
-        const generatedData = runMonteCarloSimulation(1000);
-        setStaticPerformanceData(generatedData);
-        setCurrentMonth(0);
-      }
+      const loadSimulationState = async () => {
+        if (user && user.id) {
+          try {
+            const response = await fetch(`${API_URL}/get-simulation-state?customer_id=${user.id}`);
+            const data = await response.json();
+
+            if (data.success && data.state) {
+              // Load saved simulation state
+              setStaticPerformanceData(data.state.performanceData);
+              setCurrentMonth(data.state.currentMonth);
+              setIsAnimating(false); // Keep it paused
+            } else if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+              // No saved state, generate new simulation
+              const generatedData = runMonteCarloSimulation(1000);
+              setStaticPerformanceData(generatedData);
+              setCurrentMonth(0);
+            }
+          } catch (error) {
+            console.error('Error loading simulation state:', error);
+            // Fallback: generate new simulation
+            if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+              const generatedData = runMonteCarloSimulation(1000);
+              setStaticPerformanceData(generatedData);
+              setCurrentMonth(0);
+            }
+          }
+        } else if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+          // No user logged in, just generate simulation
+          const generatedData = runMonteCarloSimulation(1000);
+          setStaticPerformanceData(generatedData);
+          setCurrentMonth(0);
+        }
+      };
+
+      loadSimulationState();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [portfolio]);
+    }, [portfolio, user]);
 
     // Animate month by month - 1 second per month
     useEffect(() => {
@@ -4246,19 +4276,56 @@ useEffect(() => {
       }
     }, [isAnimating, currentMonth, months, staticPerformanceData]);
 
-    const toggleAnimation = () => {
+    const toggleAnimation = async () => {
       if (currentMonth >= months) {
         // Restart from beginning
         setCurrentMonth(0);
         setIsAnimating(true);
       } else {
-        setIsAnimating(!isAnimating);
+        const newAnimatingState = !isAnimating;
+        setIsAnimating(newAnimatingState);
+
+        // If pausing (newAnimatingState is false), save the state
+        if (!newAnimatingState && user && user.id) {
+          try {
+            await fetch(`${API_URL}/save-simulation-state`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                customer_id: user.id,
+                currentMonth: currentMonth,
+                performanceData: staticPerformanceData
+              })
+            });
+          } catch (error) {
+            console.error('Error saving simulation state:', error);
+          }
+        }
       }
     };
 
-    const resetSimulation = () => {
+    const resetSimulation = async () => {
       setCurrentMonth(0);
       setIsAnimating(true);
+
+      // Clear saved simulation state from database
+      if (user && user.id) {
+        try {
+          await fetch(`${API_URL}/clear-simulation-state`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customer_id: user.id
+            })
+          });
+        } catch (error) {
+          console.error('Error clearing simulation state:', error);
+        }
+      }
     };
     
     // Check if portfolio is empty
