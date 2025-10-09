@@ -676,8 +676,10 @@ useEffect(() => {
         }
       } else if (user.role === 'customer') {
         if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
-          // Check if customer has active investments
-          if (user.investmentDetails && user.investmentDetails.riskProfile) {
+          // Check if customer has portfolio or active investments
+          if (user.portfolio && user.portfolio.length > 0) {
+            setCurrentPage('dashboard');
+          } else if (user.account_type && user.account_type !== 'fictief') {
             setCurrentPage('dashboard');
           } else {
             setCurrentPage('mainDashboard');
@@ -747,12 +749,15 @@ useEffect(() => {
           role: 'customer'
         });
 
-        // Check if customer has completed onboarding (has investment details)
-        if (customer.investmentDetails && customer.investmentDetails.risk_profile) {
-          // Existing user with portfolio → go to main dashboard
-          setCurrentPage('mainDashboard');
+        // Check if customer has portfolio or active investments
+        if (customer.portfolio && customer.portfolio.length > 0) {
+          // Has portfolio → go to dashboard
+          setCurrentPage('dashboard');
+        } else if (customer.account_type && customer.account_type !== 'fictief') {
+          // Has paid account → go to dashboard
+          setCurrentPage('dashboard');
         } else {
-          // User hasn't completed onboarding → go to main dashboard
+          // New user or fictitious account without portfolio → go to main dashboard
           setCurrentPage('mainDashboard');
         }
         return { success: true };
