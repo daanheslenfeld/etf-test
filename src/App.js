@@ -716,6 +716,14 @@ useEffect(() => {
       if (data.success) {
         const customer = data.customer;
 
+        console.log('🟢 LOGIN SUCCESS - Customer data from API:', {
+          customer_id: customer.id,
+          account_type: customer.account_type,
+          portfolio_count: customer.portfolio?.length || 0,
+          portfolio: customer.portfolio,
+          investmentDetails: customer.investmentDetails
+        });
+
         // Clear localStorage first to remove old data
         localStorage.removeItem('portfolio');
         localStorage.removeItem('investmentDetails');
@@ -724,16 +732,20 @@ useEffect(() => {
 
         // Load portfolio and investment details from database
         if (customer.portfolio && customer.portfolio.length > 0) {
+          console.log('✅ Loading portfolio from database:', customer.portfolio.length, 'items');
           setPortfolio(customer.portfolio);
           localStorage.setItem('portfolio', JSON.stringify(customer.portfolio));
         } else {
+          console.log('❌ No portfolio found in database');
           setPortfolio([]);
         }
 
         if (customer.investmentDetails && Object.keys(customer.investmentDetails).length > 0) {
+          console.log('✅ Loading investment details from database');
           setInvestmentDetails(customer.investmentDetails);
           localStorage.setItem('investmentDetails', JSON.stringify(customer.investmentDetails));
         } else {
+          console.log('❌ No investment details found in database');
           setInvestmentDetails({});
         }
 
@@ -751,12 +763,15 @@ useEffect(() => {
 
         // Check if customer has portfolio or active investments
         if (customer.portfolio && customer.portfolio.length > 0) {
+          console.log('➡️ Redirecting to dashboard (has portfolio)');
           // Has portfolio → go to dashboard
           setCurrentPage('dashboard');
         } else if (customer.account_type && customer.account_type !== 'fictief') {
+          console.log('➡️ Redirecting to dashboard (paid account)');
           // Has paid account → go to dashboard
           setCurrentPage('dashboard');
         } else {
+          console.log('➡️ Redirecting to mainDashboard (no portfolio)');
           // New user or fictitious account without portfolio → go to main dashboard
           setCurrentPage('mainDashboard');
         }
@@ -814,6 +829,14 @@ useEffect(() => {
       console.error('No user logged in');
       return false;
     }
+
+    console.log('🔵 SAVING PORTFOLIO TO DATABASE', {
+      customer_id: user.id,
+      portfolio_count: portfolio.length,
+      portfolio_items: portfolio,
+      investmentDetails,
+      accountType
+    });
 
     try {
       const response = await fetch(`${API_URL}/save-portfolio`, {
