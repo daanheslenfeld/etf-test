@@ -4980,11 +4980,16 @@ useEffect(() => {
               <button
                 onClick={() => {
                   if (depositAmount && parseFloat(depositAmount) > 0) {
-                    // Only add to portfolio value, NOT to initial investment amount
-                    setPortfolioValue(prev => prev + parseFloat(depositAmount));
+                    const amount = parseFloat(depositAmount);
+                    // Update portfolio value and simulation data
+                    setPortfolioValue(prev => prev + amount);
+                    setStaticPerformanceData(prev => prev.map(point => ({
+                      ...point,
+                      portfolioValue: point.portfolioValue + amount
+                    })));
                     setShowDeposit(false);
                     setDepositAmount('');
-                    alert(`€${parseFloat(depositAmount).toFixed(2)} succesvol gestort via iDEAL!`);
+                    alert(`€${amount.toFixed(2)} succesvol gestort via iDEAL!`);
                   }
                 }}
                 disabled={!depositAmount || parseFloat(depositAmount) <= 0}
@@ -5081,8 +5086,12 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     if (amount > 0 && amount <= portfolioValue) {
-                      // Only deduct from portfolio value, NOT from initial investment amount
+                      // Update portfolio value and simulation data
                       setPortfolioValue(prev => prev - amount);
+                      setStaticPerformanceData(prev => prev.map(point => ({
+                        ...point,
+                        portfolioValue: point.portfolioValue - amount
+                      })));
                       setShowWithdrawal(false);
                       setWithdrawalAmount('');
                       alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
