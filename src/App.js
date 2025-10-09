@@ -4614,7 +4614,7 @@ useEffect(() => {
             <div className="text-xs text-gray-500 mb-4">
               Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
             </div>
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={performanceData}>
                 <XAxis 
                   dataKey="date" 
@@ -4650,6 +4650,53 @@ useEffect(() => {
             </ResponsiveContainer>
             <div className="mt-4 text-sm text-gray-400 text-center">
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
+            </div>
+
+            {/* Yearly Results Table */}
+            <div className="mt-6 overflow-x-auto">
+              <h4 className="font-bold text-white mb-3">Jaarlijkse Resultaten</h4>
+              <table className="w-full text-sm">
+                <thead className="bg-gray-900/50 border-b border-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-gray-300">Jaar</th>
+                    <th className="px-4 py-2 text-right text-gray-300">Waarde</th>
+                    <th className="px-4 py-2 text-right text-gray-300">Winst/Verlies</th>
+                    <th className="px-4 py-2 text-right text-gray-300">Return %</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {(() => {
+                    const yearlyData = [];
+                    for (let year = 0; year <= horizon; year++) {
+                      const monthIndex = year * 12;
+                      if (monthIndex < staticPerformanceData.length) {
+                        const data = staticPerformanceData[monthIndex];
+                        const value = data.portfolioValue;
+                        const profit = value - initialValue;
+                        const returnPct = ((value - initialValue) / initialValue * 100).toFixed(2);
+                        yearlyData.push({
+                          year,
+                          value,
+                          profit,
+                          returnPct
+                        });
+                      }
+                    }
+                    return yearlyData.map((yearData, idx) => (
+                      <tr key={idx} className="hover:bg-gray-900/30">
+                        <td className="px-4 py-2 text-white">Jaar {yearData.year}</td>
+                        <td className="px-4 py-2 text-right text-white font-medium">{formatEuro(yearData.value)}</td>
+                        <td className={`px-4 py-2 text-right font-medium ${yearData.profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {yearData.profit >= 0 ? '+' : ''}{formatEuro(yearData.profit)}
+                        </td>
+                        <td className={`px-4 py-2 text-right font-medium ${parseFloat(yearData.returnPct) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {parseFloat(yearData.returnPct) >= 0 ? '+' : ''}{yearData.returnPct}%
+                        </td>
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+              </table>
             </div>
           </div>
           
@@ -4980,11 +5027,8 @@ useEffect(() => {
               <button
                 onClick={() => {
                   if (depositAmount && parseFloat(depositAmount) > 0) {
+                    // Only add to portfolio value, NOT to initial investment amount
                     setPortfolioValue(prev => prev + parseFloat(depositAmount));
-                    setInvestmentDetails(prev => ({
-                      ...prev,
-                      amount: String(parseFloat(prev.amount || 0) + parseFloat(depositAmount))
-                    }));
                     setShowDeposit(false);
                     setDepositAmount('');
                     alert(`€${parseFloat(depositAmount).toFixed(2)} succesvol gestort via iDEAL!`);
@@ -5084,11 +5128,8 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     if (amount > 0 && amount <= portfolioValue) {
+                      // Only deduct from portfolio value, NOT from initial investment amount
                       setPortfolioValue(prev => prev - amount);
-                      setInvestmentDetails(prev => ({
-                        ...prev,
-                        amount: String(parseFloat(prev.amount || 0) - amount)
-                      }));
                       setShowWithdrawal(false);
                       setWithdrawalAmount('');
                       alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
