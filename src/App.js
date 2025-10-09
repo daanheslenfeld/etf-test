@@ -937,11 +937,13 @@ useEffect(() => {
   };
 
   const createPremadePortfolio = (type) => {
+    console.log('📊 CREATE PREMADE PORTFOLIO:', type);
     const config = premadePortfolios[type];
     const selectedETFs = [];
 
     Object.entries(config.allocation).forEach(([category, percentage]) => {
       let categoryETFs = etfs.filter(e => e.categorie === category);
+      console.log(`  Category ${category}: Found ${categoryETFs.length} ETFs`);
 
       categoryETFs.sort((a, b) => {
         const sizeA = parseFloat(String(a['fund size (in m €)'] || '0').replace(',', ''));
@@ -958,10 +960,16 @@ useEffect(() => {
       }
     });
 
+    console.log('✅ PORTFOLIO CREATED:', selectedETFs.length, 'ETFs');
+    console.log('Portfolio items:', selectedETFs);
+
     if (selectedETFs.length > 0) {
       setPortfolio(selectedETFs);
       setSelectedProfile(type); // Store the selected profile type
       setCurrentPage('portfolioOverview');
+    } else {
+      console.error('❌ NO ETFs SELECTED - etfs array might be empty!');
+      alert('Fout: Geen ETFs beschikbaar. Probeer de pagina te verversen.');
     }
   };
 
