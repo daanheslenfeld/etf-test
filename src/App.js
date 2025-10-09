@@ -688,9 +688,9 @@ useEffect(() => {
         if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
           // Check if customer has portfolio or active investments
           if (user.portfolio && user.portfolio.length > 0) {
-            setCurrentPage('dashboard');
+            setCurrentPage('welcome');
           } else if (user.account_type && user.account_type !== 'fictief') {
-            setCurrentPage('dashboard');
+            setCurrentPage('welcome');
           } else {
             setCurrentPage('mainDashboard');
           }
@@ -5119,6 +5119,177 @@ useEffect(() => {
     );
   };
 
+  const WelcomePage = () => {
+    const [marketData, setMarketData] = useState({
+      indices: [
+        { name: 'S&P 500', value: '5,234.18', change: '+1.2%', positive: true },
+        { name: 'Dow Jones', value: '41,250.50', change: '+0.8%', positive: true },
+        { name: 'NASDAQ', value: '16,825.93', change: '+1.5%', positive: true },
+        { name: 'AEX', value: '915.32', change: '-0.3%', positive: false },
+        { name: 'DAX', value: '19,850.45', change: '+0.6%', positive: true },
+        { name: 'FTSE 100', value: '8,350.22', change: '+0.4%', positive: true },
+      ],
+      currencies: [
+        { name: 'EUR/USD', value: '1.0875', change: '+0.2%', positive: true },
+        { name: 'GBP/USD', value: '1.2650', change: '-0.1%', positive: false },
+        { name: 'USD/JPY', value: '149.85', change: '+0.3%', positive: true },
+        { name: 'EUR/GBP', value: '0.8595', change: '+0.1%', positive: true },
+      ],
+      commodities: [
+        { name: 'Gold', symbol: 'XAU', value: '$2,345.60', change: '+0.8%', positive: true },
+        { name: 'Bitcoin', symbol: 'BTC', value: '$98,250.00', change: '+2.3%', positive: true },
+        { name: 'Ethereum', symbol: 'ETH', value: '$3,420.50', change: '+1.9%', positive: true },
+      ]
+    });
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="text-2xl font-bold text-white">PIGG</div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium">Welkom</button>
+              <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white">Dashboard</button>
+              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
+              <div className="text-sm text-gray-400">{user?.name}</div>
+              <button
+                onClick={() => {
+                  setUser(null);
+                  setCurrentPage('landing');
+                }}
+                className="text-gray-400 hover:text-white font-medium"
+              >
+                Uitloggen
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-white mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
+            <p className="text-gray-400">Bekijk de laatste marktgegevens en beheer je portfolio</p>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <button
+              onClick={() => setCurrentPage('dashboard')}
+              className="bg-[#28EBCF] hover:bg-[#20D4BA] rounded-xl p-6 text-left transition-all group"
+            >
+              <div className="text-4xl mb-3">📊</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Mijn Portfolio</h3>
+              <p className="text-gray-800">Bekijk en beheer je beleggingen</p>
+              <div className="mt-4 text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
+                Ga naar dashboard →
+              </div>
+            </button>
+
+            <button
+              onClick={() => setCurrentPage('etfDatabase')}
+              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all group"
+            >
+              <div className="text-4xl mb-3">🔍</div>
+              <h3 className="text-xl font-bold text-white mb-2">ETF Database</h3>
+              <p className="text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
+              <div className="mt-4 text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+                Verken ETFs →
+              </div>
+            </button>
+
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <div className="text-4xl mb-3">💼</div>
+              <h3 className="text-xl font-bold text-white mb-2">Je Portfolio</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">ETFs:</span>
+                  <span className="text-white font-medium">{portfolio?.length || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Type:</span>
+                  <span className="text-white font-medium">
+                    {user?.account_type === 'betaald' ? 'Betaald' : user?.account_type === 'fictief' ? 'Fictief' : 'Gratis'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Market Indices */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">📈 Beursindices</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {marketData.indices.map((index, i) => (
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-4">
+                  <div className="text-sm text-gray-400 mb-1">{index.name}</div>
+                  <div className="text-lg font-bold text-white mb-1">{index.value}</div>
+                  <div className={`text-sm font-medium ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
+                    {index.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Currencies */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">💱 Valuta</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {marketData.currencies.map((currency, i) => (
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-4">
+                  <div className="text-sm text-gray-400 mb-1">{currency.name}</div>
+                  <div className="text-lg font-bold text-white mb-1">{currency.value}</div>
+                  <div className={`text-sm font-medium ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
+                    {currency.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Commodities */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">🪙 Grondstoffen & Crypto</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {marketData.commodities.map((commodity, i) => (
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <div className="text-sm text-gray-400">{commodity.name}</div>
+                      <div className="text-xs text-gray-500">{commodity.symbol}</div>
+                    </div>
+                    <div className="text-3xl">
+                      {commodity.name === 'Gold' && '🥇'}
+                      {commodity.name === 'Bitcoin' && '₿'}
+                      {commodity.name === 'Ethereum' && 'Ξ'}
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">{commodity.value}</div>
+                  <div className={`text-sm font-medium ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
+                    {commodity.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="bg-gradient-to-r from-[#28EBCF]/20 to-blue-600/20 border border-[#28EBCF]/30 rounded-xl p-8 text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Klaar om te beleggen?</h3>
+            <p className="text-gray-300 mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
+            <button
+              onClick={() => setCurrentPage('dashboard')}
+              className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-lg transition-all inline-flex items-center gap-2"
+            >
+              Naar Mijn Dashboard
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const CustomerDatabasePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
@@ -5606,6 +5777,7 @@ useEffect(() => {
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
+      {currentPage === 'welcome' && <WelcomePage />}
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
