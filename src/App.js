@@ -4410,6 +4410,7 @@ useEffect(() => {
         // If pausing (newAnimatingState is false), save the state
         if (!newAnimatingState && user && user.id) {
           try {
+            // Save simulation state
             await fetch(`${API_URL}/save-simulation-state`, {
               method: 'POST',
               headers: {
@@ -4419,6 +4420,22 @@ useEffect(() => {
                 customer_id: user.id,
                 currentMonth: currentMonth,
                 performanceData: staticPerformanceData
+              })
+            });
+
+            // Also save current portfolio value
+            const currentValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
+            const returnPct = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+
+            await fetch(`${API_URL}/update-portfolio-value`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                customer_id: user.id,
+                current_portfolio_value: currentValue,
+                total_return: parseFloat(returnPct)
               })
             });
           } catch (error) {
@@ -5413,21 +5430,21 @@ useEffect(() => {
                     <div>
                       <span className="text-sm text-gray-500">Actuele Waarde:</span>
                       <div className="font-medium text-lg text-green-400">
-                        € {parseInt(selectedCustomer.currentPortfolioValue || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
+                        € {parseInt(selectedCustomer.investmentDetails.current_portfolio_value || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
                       </div>
                     </div>
                     <div>
                       <span className="text-sm text-gray-500">Totaal Rendement:</span>
                       <div className={`font-medium text-lg ${(() => {
                         const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
-                        const currentValue = selectedCustomer.currentPortfolioValue || initialValue;
-                        const returnPercentage = initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0;
+                        const currentValue = selectedCustomer.investmentDetails.current_portfolio_value || initialValue;
+                        const returnPercentage = selectedCustomer.investmentDetails.total_return || (initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0);
                         return returnPercentage >= 0 ? 'text-green-400' : 'text-red-400';
                       })()}`}>
                         {(() => {
-                          const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
-                          const currentValue = selectedCustomer.currentPortfolioValue || initialValue;
-                          const returnPercentage = initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100).toFixed(2) : '0.00';
+                          const returnPercentage = selectedCustomer.investmentDetails.total_return !== null && selectedCustomer.investmentDetails.total_return !== undefined
+                            ? parseFloat(selectedCustomer.investmentDetails.total_return).toFixed(2)
+                            : '0.00';
                           return `${parseFloat(returnPercentage) >= 0 ? '+' : ''}${returnPercentage}%`;
                         })()}
                       </div>
