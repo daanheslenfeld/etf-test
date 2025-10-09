@@ -100,12 +100,17 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error saving portfolio:', error);
+    console.error('DETAILED ERROR saving portfolio:', error);
+    console.error('Error message:', error.message);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     res.status(500).json({
       success: false,
       message: 'Failed to save portfolio',
       error: error.message,
-      details: error
+      errorCode: error.code,
+      errorDetails: error.details,
+      errorHint: error.hint,
+      fullError: error
     });
   }
 };

@@ -876,8 +876,13 @@ useEffect(() => {
         console.log('Portfolio saved successfully!');
         return true;
       } else {
-        console.error('Failed to save portfolio:', data.message, data);
-        alert('Fout bij opslaan portfolio: ' + (data.message || 'Onbekende fout'));
+        console.error('❌ FAILED TO SAVE PORTFOLIO - Full error:', data);
+        console.error('Error message:', data.error);
+        console.error('Error code:', data.errorCode);
+        console.error('Error details:', data.errorDetails);
+        console.error('Error hint:', data.errorHint);
+        const errorMsg = data.error || data.errorDetails || data.message || 'Onbekende fout';
+        alert('Fout bij opslaan portfolio: ' + errorMsg);
         return false;
       }
     } catch (error) {
