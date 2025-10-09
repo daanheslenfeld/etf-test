@@ -4687,13 +4687,8 @@ useEffect(() => {
 
                 return (
                   <div key={category} className="border border-gray-700 rounded-lg overflow-hidden">
-                    <div className="bg-gray-800/50 px-4 py-3 flex justify-between items-center">
+                    <div className="bg-gray-800/50 px-4 py-3">
                       <h4 className="font-bold text-white">{category}</h4>
-                      <div className="text-sm text-gray-300">
-                        <span className="font-medium">{categoryWeight.toFixed(1)}%</span>
-                        <span className="mx-2">•</span>
-                        <span className="font-medium">{formatEuro(categoryValue)}</span>
-                      </div>
                     </div>
                     <div className="bg-[#1A1B1F]">
                       <table className="w-full">
