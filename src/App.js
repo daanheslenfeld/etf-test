@@ -4673,34 +4673,51 @@ useEffect(() => {
           
           <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
             <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">ETF</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Categorie</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Waarde</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {portfolio.map((etf, idx) => {
-                    const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
-                    return (
-                      <tr key={idx} className="hover:bg-gray-900/30">
-                        <td className="px-4 py-3">
-                          <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left">
-                            {etf.naam}
-                          </button>
-                        </td>
-                        <td className="px-4 py-3 text-gray-400 text-sm">{etf.categorie || 'Overig'}</td>
-                        <td className="px-4 py-3 text-right font-medium text-gray-300">{(etf.weight || 0).toFixed(1)}%</td>
-                        <td className="px-4 py-3 text-right text-white font-medium">{formatEuro(etfValue)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              {Object.entries(
+                portfolio.reduce((acc, etf) => {
+                  const category = etf.categorie || 'Overig';
+                  if (!acc[category]) acc[category] = [];
+                  acc[category].push(etf);
+                  return acc;
+                }, {})
+              ).map(([category, etfs]) => {
+                const categoryWeight = etfs.reduce((sum, e) => sum + (e.weight || 0), 0);
+                const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
+
+                return (
+                  <div key={category} className="border border-gray-700 rounded-lg overflow-hidden">
+                    <div className="bg-gray-800/50 px-4 py-3 flex justify-between items-center">
+                      <h4 className="font-bold text-white">{category}</h4>
+                      <div className="text-sm text-gray-300">
+                        <span className="font-medium">{categoryWeight.toFixed(1)}%</span>
+                        <span className="mx-2">•</span>
+                        <span className="font-medium">{formatEuro(categoryValue)}</span>
+                      </div>
+                    </div>
+                    <div className="bg-[#1A1B1F]">
+                      <table className="w-full">
+                        <tbody>
+                          {etfs.map((etf, idx) => {
+                            const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
+                            return (
+                              <tr key={idx} className="border-t border-gray-800 hover:bg-gray-900/30">
+                                <td className="px-4 py-3">
+                                  <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-sm">
+                                    {etf.naam}
+                                  </button>
+                                </td>
+                                <td className="px-4 py-3 text-right text-gray-300 text-sm w-24">{(etf.weight || 0).toFixed(1)}%</td>
+                                <td className="px-4 py-3 text-right text-white font-medium text-sm w-32">{formatEuro(etfValue)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
