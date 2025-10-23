@@ -241,6 +241,8 @@ const ETFPortal = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
+
   const [customers, setCustomers] = useState(() => {
     const saved = localStorage.getItem('customers');
     return saved ? JSON.parse(saved) : [
@@ -729,10 +731,23 @@ useEffect(() => {
         console.log('🟢 LOGIN SUCCESS - Customer data from API:', {
           customer_id: customer.id,
           account_type: customer.account_type,
+          email_verified: customer.email_verified,
           portfolio_count: customer.portfolio?.length || 0,
           portfolio: customer.portfolio,
           investmentDetails: customer.investmentDetails
         });
+
+        // Check if email is verified
+        if (!customer.email_verified) {
+          console.log('❌ Email not verified - redirecting to verification page');
+          setPendingVerificationEmail(email);
+          setCurrentPage('verify-code');
+          return {
+            success: false,
+            message: 'Je moet eerst je email verifiëren. Check je inbox voor de verificatiecode.',
+            requiresVerification: true
+          };
+        }
 
         // Clear localStorage first to remove old data
         localStorage.removeItem('portfolio');
@@ -821,9 +836,15 @@ useEffect(() => {
       console.log('Registration response:', data);
 
       if (data.success) {
-        // Show success message and redirect to login
-        alert(data.message || 'Registratie succesvol! Je kunt nu inloggen.');
-        setCurrentPage('login');
+        if (data.requiresVerification) {
+          // Email verification required - go to verification page
+          setPendingVerificationEmail(email);
+          setCurrentPage('verify-code');
+        } else {
+          // No verification needed - go to login
+          alert(data.message || 'Registratie succesvol! Je kunt nu inloggen.');
+          setCurrentPage('login');
+        }
       } else {
         console.error('Registration failed:', data);
         alert(data.message || 'Registratie mislukt');
@@ -2687,6 +2708,195 @@ useEffect(() => {
                 </button>
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const VerifyCodePage = () => {
+    const [code, setCode] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleVerifyCode = async () => {
+      if (!code || code.length !== 6) {
+        setError('Voer een geldige 6-cijferige code in');
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+
+      try {
+        const response = await fetch(`${API_URL}/verify-code`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: pendingVerificationEmail,
+            code: code
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setSuccess(true);
+          setTimeout(() => {
+            setPendingVerificationEmail(null);
+            setCurrentPage('login');
+          }, 2000);
+        } else {
+          setError(data.message || 'Ongeldige verificatiecode');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        setError('Er is een fout opgetreden. Probeer het opnieuw.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const handleResendCode = async () => {
+      setLoading(true);
+      setError('');
+
+      try {
+        const response = await fetch(`${API_URL}/resend-verification`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: pendingVerificationEmail
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Nieuwe verificatiecode is verzonden naar je email');
+          setCode('');
+        } else {
+          setError(data.message || 'Kon geen nieuwe code verzenden');
+        }
+      } catch (error) {
+        console.error('Resend error:', error);
+        setError('Er is een fout opgetreden. Probeer het opnieuw.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="flex flex-col">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+              </div>
+            </button>
+          </div>
+        </nav>
+
+        <div className="max-w-md mx-auto mt-12 px-4">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-xl p-8">
+            {success ? (
+              <div className="text-center">
+                <div className="mb-4 text-green-500">
+                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Email Geverifieerd!</h2>
+                <p className="text-gray-400">Je wordt doorgestuurd naar de login pagina...</p>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-6">
+                  <div className="mb-4 text-[#28EBCF]">
+                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-[#28EBCF] mb-2">Verifieer je Email</h2>
+                  <p className="text-gray-400 text-sm">
+                    We hebben een 6-cijferige code verzonden naar<br />
+                    <span className="font-semibold text-white">{pendingVerificationEmail}</span>
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-300">Verificatiecode</label>
+                    <input
+                      type="text"
+                      value={code}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                        setCode(value);
+                        setError('');
+                      }}
+                      placeholder="000000"
+                      maxLength={6}
+                      className="w-full px-4 py-3 text-center text-2xl font-bold tracking-widest bg-gray-900 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-600"
+                      autoFocus
+                    />
+                    {error && (
+                      <p className="text-red-500 text-sm mt-2">{error}</p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={handleVerifyCode}
+                    disabled={loading || code.length !== 6}
+                    className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Verifiëren...' : 'Verifieer Email'}
+                  </button>
+
+                  <div className="text-center">
+                    <button
+                      onClick={handleResendCode}
+                      disabled={loading}
+                      className="text-[#28EBCF] hover:text-[#20D4BA] font-semibold text-sm disabled:text-gray-600 disabled:cursor-not-allowed"
+                    >
+                      Nieuwe code versturen
+                    </button>
+                  </div>
+
+                  <p className="text-center text-xs text-gray-400 mt-4">
+                    Code niet ontvangen? Check je spam folder of vraag een nieuwe code aan.
+                  </p>
+
+                  <div className="border-t border-gray-700 mt-6 pt-4">
+                    <button
+                      onClick={() => {
+                        setPendingVerificationEmail(null);
+                        setCurrentPage('login');
+                      }}
+                      className="w-full text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      ← Terug naar login
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -6260,6 +6470,7 @@ useEffect(() => {
       {currentPage === 'landing' && <LandingPage />}
       {currentPage === 'login' && <LoginPage />}
       {currentPage === 'register' && <RegisterPage />}
+      {currentPage === 'verify-code' && <VerifyCodePage />}
       {currentPage === 'resetPassword' && <ResetPasswordPage />}
       {currentPage === 'emailVerificationPending' && <EmailVerificationPendingPage />}
       {currentPage === 'verify-email' && <EmailVerifyPage />}
