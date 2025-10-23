@@ -5128,29 +5128,36 @@ useEffect(() => {
                 />
               </div>
 
-              <div className="bg-gray-800 rounded-lg p-4 mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-400">Huidige portfolio:</span>
-                  <span className="text-white font-medium">{formatEuro(animatedPortfolioValue)}</span>
-                </div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-400">Huidige inleg:</span>
-                  <span className="text-white font-medium">{formatEuro(parseFloat(investmentDetails.amount))}</span>
-                </div>
-                {depositAmount && parseFloat(depositAmount) > 0 && (
-                  <>
-                    <div className="border-t border-gray-700 my-2"></div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-400">Nieuwe portfolio:</span>
-                      <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue + parseFloat(depositAmount))}</span>
+              {(() => {
+                const currentValue = staticPerformanceData && staticPerformanceData[currentMonth]
+                  ? staticPerformanceData[currentMonth].portfolioValue
+                  : initialValue;
+                return (
+                  <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Huidige portfolio:</span>
+                      <span className="text-white font-medium">{formatEuro(currentValue)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Nieuwe inleg:</span>
-                      <span className="text-[#28EBCF] font-bold">{formatEuro(parseFloat(investmentDetails.amount) + parseFloat(depositAmount))}</span>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Huidige inleg:</span>
+                      <span className="text-white font-medium">{formatEuro(parseFloat(investmentDetails.amount))}</span>
                     </div>
-                  </>
-                )}
-              </div>
+                    {depositAmount && parseFloat(depositAmount) > 0 && (
+                      <>
+                        <div className="border-t border-gray-700 my-2"></div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-400">Nieuwe portfolio:</span>
+                          <span className="text-[#28EBCF] font-bold">{formatEuro(currentValue + parseFloat(depositAmount))}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Nieuwe inleg:</span>
+                          <span className="text-[#28EBCF] font-bold">{formatEuro(parseFloat(investmentDetails.amount) + parseFloat(depositAmount))}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
 
               {selectedProfile && (
                 <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-3 mb-4">
@@ -5164,7 +5171,9 @@ useEffect(() => {
                   onClick={() => {
                     if (depositAmount && parseFloat(depositAmount) > 0) {
                       const amount = parseFloat(depositAmount);
-                      const currentPortfolioValue = animatedPortfolioValue;
+                      const currentPortfolioValue = staticPerformanceData && staticPerformanceData[currentMonth]
+                        ? staticPerformanceData[currentMonth].portfolioValue
+                        : initialValue;
                       const newTotalValue = currentPortfolioValue + amount;
 
                       // Update investment details amount (total deposited)
@@ -5214,11 +5223,14 @@ useEffect(() => {
                         setCustomers(updatedCustomers);
                       }
 
-                      // Update portfolio value and simulation data
-                      setStaticPerformanceData(prev => prev.map(point => ({
-                        ...point,
-                        portfolioValue: point.portfolioValue + amount
-                      })));
+                      // Update simulation with new values by adding the amount to all points
+                      setStaticPerformanceData(prev => {
+                        if (!prev) return prev;
+                        return prev.map(point => ({
+                          ...point,
+                          portfolioValue: point.portfolioValue + amount
+                        }));
+                      });
 
                       setShowDeposit(false);
                       setDepositAmount('');
