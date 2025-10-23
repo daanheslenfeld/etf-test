@@ -5236,14 +5236,52 @@ useEffect(() => {
                         amount: newInvestedAmount.toString()
                       };
 
-                      // Invest according to current profile by maintaining current weights
-                      // Weights stay the same - we just add money proportionally
-                      // Force React to detect the change by creating a new array with new objects
-                      const updatedPortfolio = portfolio.map((etf, index) => ({
-                        ...etf,
-                        weight: etf.weight, // Keep the same weight percentage
-                        _updateKey: Date.now() + index // Force React to see this as a new object
-                      }));
+                      // Invest according to current profile allocation
+                      // Get the profile configuration
+                      const selectedPortfolioKey = Object.keys(premadePortfolios).find(
+                        key => premadePortfolios[key].name === investmentDetails.riskProfile
+                      );
+                      const profileConfig = premadePortfolios[selectedPortfolioKey] || premadePortfolios['neutral'];
+                      const profileAllocation = profileConfig.allocation;
+
+                      console.log('📊 Deposit - Investing according to profile:', {
+                        profile: investmentDetails.riskProfile,
+                        allocation: profileAllocation,
+                        amount: amount,
+                        currentPortfolioValue: currentPortfolioValue,
+                        newTotalValue: newTotalValue
+                      });
+
+                      // Calculate new values: existing portfolio value + new money allocated by profile
+                      const updatedPortfolio = portfolio.map((etf, index) => {
+                        const category = etf.categorie;
+                        const targetCategoryPercentage = profileAllocation[category] || 0;
+
+                        // Current value of this ETF
+                        const currentEtfValue = currentPortfolioValue * (etf.weight / 100);
+
+                        // New money for this category (based on profile allocation)
+                        const newMoneyForCategory = amount * (targetCategoryPercentage / 100);
+
+                        // Calculate how many ETFs are in this category
+                        const categoryETFs = portfolio.filter(e => e.categorie === category);
+                        const etfShareInCategory = categoryETFs.length > 0 ? 1 / categoryETFs.length : 1;
+
+                        // This ETF gets an equal share of the new money for its category
+                        const additionalValue = newMoneyForCategory * etfShareInCategory;
+
+                        // New total value for this ETF
+                        const newEtfValue = currentEtfValue + additionalValue;
+
+                        // Calculate new weight as percentage of total portfolio
+                        const newWeight = (newEtfValue / newTotalValue) * 100;
+
+                        return {
+                          ...etf,
+                          weight: newWeight,
+                          _updateKey: Date.now() + index
+                        };
+                      });
 
                       // Update simulation with new values by adding the amount to all points
                       const updatedPerformanceData = staticPerformanceData.map(point => ({
