@@ -3496,7 +3496,10 @@ useEffect(() => {
 
   const PortfolioOverviewPage = () => {
     const metrics = calculatePortfolioMetrics();
-    const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
+    const categoryData = Object.entries(metrics.categories)
+      .filter(([name, value]) => value > 0) // Filter out 0% categories
+      .map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }))
+      .sort((a, b) => b.value - a.value); // Sort by value descending (highest first)
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -4542,7 +4545,10 @@ useEffect(() => {
     // Calculate current portfolio value based on animation progress
     const animatedPortfolioValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
     const totalReturn = ((animatedPortfolioValue - initialValue) / initialValue * 100).toFixed(2);
-    const categoryData = Object.entries(metrics.categories).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
+    const categoryData = Object.entries(metrics.categories)
+      .filter(([name, value]) => value > 0) // Filter out 0% categories
+      .map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }))
+      .sort((a, b) => b.value - a.value); // Sort by value descending (highest first)
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -4942,7 +4948,10 @@ useEffect(() => {
                   <div className="bg-gray-50 rounded-xl p-4 mb-6">
                     <h3 className="font-bold mb-3">Huidige verdeling:</h3>
                     <div className="space-y-2 text-sm">
-                      {Object.entries(metrics.categories).map(([cat, value]) => (
+                      {Object.entries(metrics.categories)
+                        .filter(([cat, value]) => value > 0)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([cat, value]) => (
                         <div key={cat} className="flex justify-between">
                           <span>{cat}</span>
                           <span className="font-medium">{value.toFixed(1)}%</span>
