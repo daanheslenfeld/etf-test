@@ -3077,6 +3077,39 @@ useEffect(() => {
     );
   };
 
+  const getHistoricalReturns = (etf) => {
+    // First try to find by ISIN in SAMPLE_ETFS
+    if (etf.isin) {
+      const sampleETF = SAMPLE_ETFS.find(e => e.isin === etf.isin);
+      if (sampleETF && sampleETF['2021']) {
+        return {
+          '2021': sampleETF['2021'],
+          '2022': sampleETF['2022'],
+          '2023': sampleETF['2023'],
+          '2024': sampleETF['2024']
+        };
+      }
+    }
+
+    // If ETF already has the data, return it
+    if (etf['2021']) {
+      return {
+        '2021': etf['2021'],
+        '2022': etf['2022'],
+        '2023': etf['2023'],
+        '2024': etf['2024']
+      };
+    }
+
+    // Fallback: return zeros
+    return {
+      '2021': '0%',
+      '2022': '0%',
+      '2023': '0%',
+      '2024': '0%'
+    };
+  };
+
   const getHoldingsCount = (etf) => {
     const name = (etf.naam || '').toLowerCase();
     const isin = etf.isin || '';
@@ -3335,11 +3368,12 @@ useEffect(() => {
   const ETFDetailModal = ({ etf, onClose }) => {
     if (!etf) return null;
 
+    const historicalReturns = getHistoricalReturns(etf);
     const historicalData = [
-      { year: '2021', return: safeParseFloat(etf['2021']) },
-      { year: '2022', return: safeParseFloat(etf['2022']) },
-      { year: '2023', return: safeParseFloat(etf['2023']) },
-      { year: '2024', return: safeParseFloat(etf['2024']) }
+      { year: '2021', return: safeParseFloat(historicalReturns['2021']) },
+      { year: '2022', return: safeParseFloat(historicalReturns['2022']) },
+      { year: '2023', return: safeParseFloat(historicalReturns['2023']) },
+      { year: '2024', return: safeParseFloat(historicalReturns['2024']) }
     ];
 
     const topHoldings = getTopHoldingsForETF(etf);
@@ -4924,10 +4958,13 @@ useEffect(() => {
       );
     }
 
-    // Create display data with growing portfolio line
+    // Create display data with growing portfolio line and convert to percentages
     const performanceData = staticPerformanceData.map((point, i) => ({
       ...point,
-      portfolio: i <= currentMonth ? point.portfolioValue : null
+      portfolio: i <= currentMonth ? ((point.portfolioValue - initialValue) / initialValue * 100) : null,
+      poor: ((point.poor - initialValue) / initialValue * 100),
+      expected: ((point.expected - initialValue) / initialValue * 100),
+      good: ((point.good - initialValue) / initialValue * 100)
     }));
 
     // Calculate current portfolio value based on animation progress
@@ -5010,32 +5047,19 @@ useEffect(() => {
             </div>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={performanceData}>
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   interval={Math.floor(months / 10)}
                 />
-                <YAxis 
-                  tickFormatter={(value) => formatEuro(value)}
-                  label={{ value: 'Portofolio Waarde', angle: -90, position: 'insideLeft' }}
-                  domain={[
-                    (dataMin) => Math.floor(dataMin * 0.9 / 1000) * 1000,
-                    (dataMax) => Math.ceil(dataMax * 1.1 / 1000) * 1000
-                  ]}
+                <YAxis
+                  tickFormatter={(value) => `${value.toFixed(1)}%`}
+                  label={{ value: 'Rendement (%)', angle: -90, position: 'insideLeft' }}
                 />
-                <Tooltip 
-                  formatter={(value) => [formatEuro(value), '']}
+                <Tooltip
+                  formatter={(value) => [`${value.toFixed(2)}%`, '']}
                   labelFormatter={(label) => `Datum: ${label}`}
                 />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey={() => initialValue} 
-                  stroke="#999" 
-                  strokeWidth={1} 
-                  strokeDasharray="3 3" 
-                  dot={false}
-                  name="Startwaarde"
-                />
                 <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name="Slecht Scenario (P10)" dot={false} />
                 <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name="Jouw Portfolio (Median)" dot={false} connectNulls />
                 <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name="Verwacht Scenario (Median)" dot={false} opacity={0.3} />
