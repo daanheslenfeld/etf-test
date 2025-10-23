@@ -4292,9 +4292,35 @@ useEffect(() => {
     const metrics = calculatePortfolioMetrics();
 
     const horizon = parseInt(investmentDetails.horizon) || 10;
-    const initialValue = parseFloat(investmentDetails.amount) || 10000;
+    // Fix: parseFloat("") gives NaN, so we need to check for valid values
+    const amountValue = investmentDetails.amount && investmentDetails.amount !== ''
+      ? parseFloat(investmentDetails.amount)
+      : null;
+    const initialValue = (amountValue && !isNaN(amountValue)) ? amountValue : 10000;
     const monthlyContribution = parseFloat(investmentDetails.monthlyContribution) || 500;
     const months = horizon * 12;
+
+    // Fix: if amount is empty, initialize it with the current portfolio value
+    useEffect(() => {
+      if ((!investmentDetails.amount || investmentDetails.amount === '') && staticPerformanceData && staticPerformanceData[0]) {
+        const initialPortfolioValue = staticPerformanceData[0].portfolioValue || 10000;
+        const updatedDetails = {
+          ...investmentDetails,
+          amount: initialPortfolioValue.toString()
+        };
+        console.log('🔧 Initializing empty investmentDetails.amount with:', initialPortfolioValue);
+        setInvestmentDetails(updatedDetails);
+        localStorage.setItem('investmentDetails', JSON.stringify(updatedDetails));
+      }
+    }, [staticPerformanceData, investmentDetails, setInvestmentDetails]);
+
+    // Debug log
+    console.log('💰 Dashboard investmentDetails:', {
+      rawAmount: investmentDetails.amount,
+      amountValue,
+      initialValue,
+      fullDetails: investmentDetails
+    });
 
     // Get portfolio configuration
     const selectedPortfolioKey = Object.keys(premadePortfolios).find(
@@ -4358,6 +4384,9 @@ useEffect(() => {
 
     // Load saved simulation state from database on mount
     useEffect(() => {
+      // Only load simulation state if we don't have it yet
+      if (staticPerformanceData) return;
+
       const loadSimulationState = async () => {
         if (user && user.id) {
           try {
@@ -4369,7 +4398,7 @@ useEffect(() => {
               setStaticPerformanceData(data.state.performanceData);
               setCurrentMonth(data.state.currentMonth);
               setIsAnimating(false); // Keep it paused
-            } else if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+            } else if (portfolio && portfolio.length > 0) {
               // No saved state, generate new simulation
               const generatedData = runMonteCarloSimulation(1000);
               setStaticPerformanceData(generatedData);
@@ -4378,13 +4407,13 @@ useEffect(() => {
           } catch (error) {
             console.error('Error loading simulation state:', error);
             // Fallback: generate new simulation
-            if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+            if (portfolio && portfolio.length > 0) {
               const generatedData = runMonteCarloSimulation(1000);
               setStaticPerformanceData(generatedData);
               setCurrentMonth(0);
             }
           }
-        } else if (portfolio && portfolio.length > 0 && !staticPerformanceData) {
+        } else if (portfolio && portfolio.length > 0) {
           // No user logged in, just generate simulation
           const generatedData = runMonteCarloSimulation(1000);
           setStaticPerformanceData(generatedData);
@@ -4394,7 +4423,7 @@ useEffect(() => {
 
       loadSimulationState();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [portfolio, user]);
+    }, [user]);
 
     // Animate month by month - 1 second per month
     useEffect(() => {
@@ -4414,8 +4443,15 @@ useEffect(() => {
       if (user && user.id && staticPerformanceData && currentMonth >= 0) {
         const savePortfolioValue = async () => {
           try {
-            const currentValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
-            const returnPct = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+            // Fix: handle empty string and NaN
+            const amountVal = investmentDetails.amount && investmentDetails.amount !== ''
+              ? parseFloat(investmentDetails.amount)
+              : null;
+            const currentInvestedAmount = (amountVal && !isNaN(amountVal)) ? amountVal : 10000;
+            const currentValue = staticPerformanceData[currentMonth]?.portfolioValue || currentInvestedAmount;
+            const returnPct = currentInvestedAmount > 0
+              ? ((currentValue - currentInvestedAmount) / currentInvestedAmount * 100).toFixed(2)
+              : '0.00';
 
             await fetch(`${API_URL}/update-portfolio-value`, {
               method: 'POST',
@@ -4428,7 +4464,7 @@ useEffect(() => {
                 total_return: parseFloat(returnPct)
               })
             });
-            console.log('📊 Portfolio value updated:', currentValue, 'Return:', returnPct + '%');
+            console.log('📊 Portfolio value auto-saved:', currentValue, 'Inleg:', currentInvestedAmount, 'Return:', returnPct + '%');
           } catch (error) {
             console.error('Error auto-saving portfolio value:', error);
           }
@@ -4441,7 +4477,7 @@ useEffect(() => {
         const interval = setInterval(savePortfolioValue, 10000);
         return () => clearInterval(interval);
       }
-    }, [currentMonth, staticPerformanceData, user, initialValue]);
+    }, [currentMonth, staticPerformanceData, user, investmentDetails.amount]);
 
     const toggleAnimation = async () => {
       if (currentMonth >= months) {
@@ -5132,6 +5168,11 @@ useEffect(() => {
                 const currentValue = staticPerformanceData && staticPerformanceData[currentMonth]
                   ? staticPerformanceData[currentMonth].portfolioValue
                   : initialValue;
+                // Fix: handle empty string and NaN
+                const amountVal = investmentDetails.amount && investmentDetails.amount !== ''
+                  ? parseFloat(investmentDetails.amount)
+                  : null;
+                const currentInvestedAmount = (amountVal && !isNaN(amountVal)) ? amountVal : initialValue;
                 return (
                   <div className="bg-gray-800 rounded-lg p-4 mb-6">
                     <div className="flex justify-between text-sm mb-2">
@@ -5140,7 +5181,7 @@ useEffect(() => {
                     </div>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-400">Huidige inleg:</span>
-                      <span className="text-white font-medium">{formatEuro(parseFloat(investmentDetails.amount))}</span>
+                      <span className="text-white font-medium">{formatEuro(currentInvestedAmount)}</span>
                     </div>
                     {depositAmount && parseFloat(depositAmount) > 0 && (
                       <>
@@ -5151,7 +5192,7 @@ useEffect(() => {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Nieuwe inleg:</span>
-                          <span className="text-[#28EBCF] font-bold">{formatEuro(parseFloat(investmentDetails.amount) + parseFloat(depositAmount))}</span>
+                          <span className="text-[#28EBCF] font-bold">{formatEuro(currentInvestedAmount + parseFloat(depositAmount))}</span>
                         </div>
                       </>
                     )}
@@ -5168,7 +5209,7 @@ useEffect(() => {
 
               <div className="space-y-3 mb-4">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (depositAmount && parseFloat(depositAmount) > 0) {
                       const amount = parseFloat(depositAmount);
                       const currentPortfolioValue = staticPerformanceData && staticPerformanceData[currentMonth]
@@ -5177,12 +5218,16 @@ useEffect(() => {
                       const newTotalValue = currentPortfolioValue + amount;
 
                       // Update investment details amount (total deposited)
-                      const newInvestedAmount = parseFloat(investmentDetails.amount) + amount;
+                      // Fix: handle empty string and NaN properly
+                      const amountVal = investmentDetails.amount && investmentDetails.amount !== ''
+                        ? parseFloat(investmentDetails.amount)
+                        : null;
+                      const currentInvestedAmount = (amountVal && !isNaN(amountVal)) ? amountVal : initialValue;
+                      const newInvestedAmount = currentInvestedAmount + amount;
                       const updatedInvestmentDetails = {
                         ...investmentDetails,
                         amount: newInvestedAmount.toString()
                       };
-                      setInvestmentDetails(updatedInvestmentDetails);
 
                       // Invest according to current profile by maintaining current weights
                       // Each ETF gets a proportional share of the new money
@@ -5193,7 +5238,26 @@ useEffect(() => {
                         const newWeight = (newEtfValue / newTotalValue) * 100;
                         return { ...etf, weight: newWeight };
                       });
+
+                      // Update simulation with new values by adding the amount to all points
+                      const updatedPerformanceData = staticPerformanceData.map(point => ({
+                        ...point,
+                        portfolioValue: point.portfolioValue + amount
+                      }));
+
+                      console.log('Depositing:', {
+                        amount,
+                        oldInleg: investmentDetails.amount,
+                        newInleg: newInvestedAmount,
+                        oldPortfolioValue: currentPortfolioValue,
+                        newPortfolioValue: currentPortfolioValue + amount
+                      });
+
+                      // Update all states
+                      setInvestmentDetails(updatedInvestmentDetails);
+                      localStorage.setItem('investmentDetails', JSON.stringify(updatedInvestmentDetails));
                       setPortfolio(updatedPortfolio);
+                      setStaticPerformanceData(updatedPerformanceData);
 
                       // Update user's investment details
                       if (user) {
@@ -5221,20 +5285,58 @@ useEffect(() => {
                             : c
                         );
                         setCustomers(updatedCustomers);
-                      }
 
-                      // Update simulation with new values by adding the amount to all points
-                      setStaticPerformanceData(prev => {
-                        if (!prev) return prev;
-                        return prev.map(point => ({
-                          ...point,
-                          portfolioValue: point.portfolioValue + amount
-                        }));
-                      });
+                        // Save to database
+                        try {
+                          // Save investment details and portfolio
+                          await fetch(`${API_URL}/save-portfolio`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              customer_id: user.id,
+                              portfolio: updatedPortfolio,
+                              investmentDetails: updatedInvestmentDetails,
+                              account_type: user.account_type || 'fictief'
+                            })
+                          });
+
+                          // Update portfolio value
+                          await fetch(`${API_URL}/update-portfolio-value`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              customer_id: user.id,
+                              portfolio_value: currentPortfolioValue + amount,
+                              total_return: (((currentPortfolioValue + amount) - newInvestedAmount) / newInvestedAmount * 100).toFixed(2)
+                            })
+                          });
+
+                          // Save simulation state
+                          await fetch(`${API_URL}/save-simulation-state`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              customer_id: user.id,
+                              currentMonth: currentMonth,
+                              performanceData: updatedPerformanceData
+                            })
+                          });
+
+                          console.log('✅ Database updated successfully - investmentDetails, portfolio, value and simulation saved');
+                        } catch (error) {
+                          console.error('❌ Error saving to database:', error);
+                        }
+                      }
 
                       setShowDeposit(false);
                       setDepositAmount('');
-                      alert(`€${amount.toFixed(2)} succesvol gestort en belegd volgens je huidige portfolio verdeling!`);
+                      alert(`€${amount.toFixed(2)} succesvol gestort en belegd volgens je huidige portfolio verdeling!\n\nNieuwe inleg: €${newInvestedAmount.toFixed(2)}\nNieuwe portfolio waarde: €${(currentPortfolioValue + amount).toFixed(2)}`);
                     }
                   }}
                   disabled={!depositAmount || parseFloat(depositAmount) <= 0}
