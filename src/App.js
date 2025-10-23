@@ -4716,23 +4716,25 @@ useEffect(() => {
       return mean + stdDev * z0;
     }, []);
 
-    // Monte Carlo simulation
-    const runMonteCarloSimulation = useCallback((scenarios = 200) => {
+    // Monte Carlo simulation - now simulates percentage returns instead of absolute values
+    const runMonteCarloSimulation = useCallback((scenarios = 1000) => {
       const allSimulations = [];
 
       for (let sim = 0; sim < scenarios; sim++) {
-        let value = initialValue;
-        const simulation = [value];
+        // Start with 0% return
+        let cumulativeReturn = 0;
+        const simulation = [0]; // Month 0: 0% return
 
         for (let month = 1; month <= months; month++) {
-          // Add monthly contribution
-          value += monthlyContribution;
-
           // Generate monthly return using normal distribution
+          // Annual return / 12 for monthly, stdDev / sqrt(12) for monthly volatility
           const monthlyReturn = generateNormalRandom(avgReturn / 12, stdDev / Math.sqrt(12));
-          value = value * (1 + monthlyReturn);
 
-          simulation.push(value);
+          // Calculate cumulative return: (1 + old_return) * (1 + new_return) - 1
+          cumulativeReturn = (1 + cumulativeReturn) * (1 + monthlyReturn) - 1;
+
+          // Store as percentage
+          simulation.push(cumulativeReturn * 100);
         }
         allSimulations.push(simulation);
       }
@@ -4740,25 +4742,33 @@ useEffect(() => {
       // Calculate percentiles for each month
       const performanceData = [];
       for (let month = 0; month <= months; month++) {
-        const monthValues = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
+        const monthReturns = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
 
         const date = new Date();
         date.setMonth(date.getMonth() + month);
 
         // Use 10th percentile for poor, median for expected, 90th percentile for good
+        const p10 = monthReturns[Math.floor(scenarios * 0.10)];
+        const p50 = monthReturns[Math.floor(scenarios * 0.50)];
+        const p90 = monthReturns[Math.floor(scenarios * 0.90)];
+
+        // Calculate portfolio value based on expected return percentage
+        // This is used for display purposes (Totale Waarde, etc.)
+        const totalInvested = initialValue + (monthlyContribution * month);
+        const portfolioValue = totalInvested * (1 + p50 / 100);
+
         performanceData.push({
           date: date.toLocaleDateString('nl-NL', { month: 'short', year: '2-digit' }),
-          poor: monthValues[Math.floor(scenarios * 0.10)],
-          expected: monthValues[Math.floor(scenarios * 0.50)],
-          good: monthValues[Math.floor(scenarios * 0.90)],
-          // Portfolio will be revealed progressively
-          portfolioValue: monthValues[Math.floor(scenarios * 0.50)]
+          poor: p10,
+          expected: p50,
+          good: p90,
+          portfolioValue: portfolioValue
         });
       }
 
       return performanceData;
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [initialValue, months, avgReturn, stdDev, generateNormalRandom]);
+    }, [months, avgReturn, stdDev, generateNormalRandom, initialValue, monthlyContribution]);
 
     // Load saved simulation state from database on mount
     useEffect(() => {
@@ -4960,20 +4970,18 @@ useEffect(() => {
       );
     }
 
-    // Create display data with percentage returns based on Monte Carlo simulation
-    // Convert absolute values from Monte Carlo to percentage returns
+    // Create display data - Monte Carlo already returns percentages
     const performanceData = staticPerformanceData.map((point, i) => {
-      // Calculate total invested up to this month (initial + all monthly contributions)
-      const totalInvested = initialValue + (monthlyContribution * i);
+      // Portfolio line shows expected scenario up to current month
+      // This represents the median expected return path
+      const portfolioReturn = i <= currentMonth ? point.expected : null;
 
-      // Calculate percentage return for each scenario relative to total invested
-      // Return = (current value - total invested) / total invested * 100
       return {
         ...point,
-        portfolio: i <= currentMonth ? ((point.portfolioValue - totalInvested) / totalInvested * 100) : null,
-        poor: ((point.poor - totalInvested) / totalInvested * 100),
-        expected: ((point.expected - totalInvested) / totalInvested * 100),
-        good: ((point.good - totalInvested) / totalInvested * 100)
+        portfolio: portfolioReturn,
+        poor: point.poor,      // Already in percentage
+        expected: point.expected,  // Already in percentage
+        good: point.good       // Already in percentage
       };
     });
 
