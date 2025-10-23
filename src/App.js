@@ -5145,12 +5145,46 @@ useEffect(() => {
                 onClick={() => {
                   if (depositAmount && parseFloat(depositAmount) > 0) {
                     const amount = parseFloat(depositAmount);
+
+                    // Update investment details amount (total deposited)
+                    const updatedInvestmentDetails = {
+                      ...investmentDetails,
+                      amount: (parseFloat(investmentDetails.amount) + amount).toString()
+                    };
+                    setInvestmentDetails(updatedInvestmentDetails);
+
+                    // Update user's investment details
+                    if (user) {
+                      const updatedUser = {
+                        ...user,
+                        investmentDetails: {
+                          ...user.investmentDetails,
+                          amount: (parseFloat(user.investmentDetails?.amount || investmentDetails.amount) + amount).toString()
+                        }
+                      };
+                      setUser(updatedUser);
+
+                      // Update in customers list
+                      const updatedCustomers = customers.map(c =>
+                        c.email === user.email
+                          ? {
+                              ...c,
+                              investmentDetails: {
+                                ...c.investmentDetails,
+                                amount: (parseFloat(c.investmentDetails?.amount || investmentDetails.amount) + amount).toString()
+                              }
+                            }
+                          : c
+                      );
+                      setCustomers(updatedCustomers);
+                    }
+
                     // Update portfolio value and simulation data
-                    setPortfolioValue(prev => prev + amount);
                     setStaticPerformanceData(prev => prev.map(point => ({
                       ...point,
                       portfolioValue: point.portfolioValue + amount
                     })));
+
                     setShowDeposit(false);
                     setDepositAmount('');
                     alert(`€${amount.toFixed(2)} succesvol gestort via iDEAL!`);
@@ -5250,12 +5284,52 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     if (amount > 0 && amount <= animatedPortfolioValue) {
+                      // Calculate proportional reduction of invested amount
+                      // If you withdraw from a portfolio that has grown, you withdraw both principal and gains proportionally
+                      const currentInvestedAmount = parseFloat(investmentDetails.amount);
+                      const proportionWithdrawn = amount / animatedPortfolioValue;
+                      const investedAmountReduction = currentInvestedAmount * proportionWithdrawn;
+                      const newInvestedAmount = currentInvestedAmount - investedAmountReduction;
+
+                      // Update investment details amount
+                      const updatedInvestmentDetails = {
+                        ...investmentDetails,
+                        amount: newInvestedAmount.toString()
+                      };
+                      setInvestmentDetails(updatedInvestmentDetails);
+
+                      // Update user's investment details
+                      if (user) {
+                        const updatedUser = {
+                          ...user,
+                          investmentDetails: {
+                            ...user.investmentDetails,
+                            amount: newInvestedAmount.toString()
+                          }
+                        };
+                        setUser(updatedUser);
+
+                        // Update in customers list
+                        const updatedCustomers = customers.map(c =>
+                          c.email === user.email
+                            ? {
+                                ...c,
+                                investmentDetails: {
+                                  ...c.investmentDetails,
+                                  amount: newInvestedAmount.toString()
+                                }
+                              }
+                            : c
+                        );
+                        setCustomers(updatedCustomers);
+                      }
+
                       // Update portfolio value and simulation data
-                      setPortfolioValue(prev => prev - amount);
                       setStaticPerformanceData(prev => prev.map(point => ({
                         ...point,
                         portfolioValue: point.portfolioValue - amount
                       })));
+
                       setShowWithdrawal(false);
                       setWithdrawalAmount('');
                       alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
