@@ -4831,60 +4831,7 @@ useEffect(() => {
         {showRebalance && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
             <div className="bg-white rounded-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Account Beheer</h2>
-
-              {/* Account Upgrade Section */}
-              {(!user?.account_type || user.account_type === 'fictief') && (
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-6">
-                  <div className="flex items-start gap-4">
-                    <div className="text-4xl">⭐</div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-purple-900 mb-2">Upgrade naar Betaald Account</h3>
-                      <p className="text-purple-700 text-sm mb-4">
-                        Ontgrendel premium functies en krijg toegang tot uitgebreide portfolio analyses, realtime marktdata en persoonlijk advies.
-                      </p>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => {
-                            const confirmUpgrade = window.confirm(
-                              'Wil je upgraden naar een betaald account?\n\n' +
-                              'Voordelen:\n' +
-                              '✓ Realtime portfolio tracking\n' +
-                              '✓ Uitgebreide analyses\n' +
-                              '✓ Persoonlijk advies\n' +
-                              '✓ Premium ETF selecties\n\n' +
-                              'Prijs: €4.99/maand'
-                            );
-                            if (confirmUpgrade) {
-                              const updatedUser = { ...user, account_type: 'premium' };
-                              setUser(updatedUser);
-
-                              // Update in customers list if exists
-                              const updatedCustomers = customers.map(c =>
-                                c.email === user.email ? { ...c, account_type: 'premium' } : c
-                              );
-                              setCustomers(updatedCustomers);
-
-                              alert('🎉 Gefeliciteerd! Je account is geüpgraded naar Premium!');
-                            }
-                          }}
-                          className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
-                        >
-                          Upgrade Nu - €4.99/maand
-                        </button>
-                        <button
-                          onClick={() => {
-                            alert('Je blijft het gratis account gebruiken. Sommige functies zijn beperkt.');
-                          }}
-                          className="px-6 py-2 border-2 border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium transition-all"
-                        >
-                          Later
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Profiel Beheer</h2>
 
               {/* Profile Change Section */}
               <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
@@ -5040,9 +4987,62 @@ useEffect(() => {
         {/* Portfolio Edit Choice Modal */}
         {showEditChoice && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowEditChoice(false)}>
-            <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <h2 className="text-3xl font-bold mb-6 text-white">Portfolio Aanpassen</h2>
               <p className="text-gray-400 mb-8">Kies hoe je je portfolio wilt aanpassen</p>
+
+              {/* Account Upgrade Section */}
+              {(!user?.account_type || user.account_type === 'fictief') && (
+                <div className="bg-gradient-to-r from-purple-900 to-indigo-900 border-2 border-purple-500 rounded-xl p-6 mb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">⭐</div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-white mb-2">Upgrade naar Betaald Account</h3>
+                      <p className="text-purple-200 text-sm mb-4">
+                        Ontgrendel premium functies en krijg toegang tot uitgebreide portfolio analyses, realtime marktdata en persoonlijk advies.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            const confirmUpgrade = window.confirm(
+                              'Wil je upgraden naar een betaald account?\n\n' +
+                              'Voordelen:\n' +
+                              '✓ Realtime portfolio tracking\n' +
+                              '✓ Uitgebreide analyses\n' +
+                              '✓ Persoonlijk advies\n' +
+                              '✓ Premium ETF selecties\n\n' +
+                              'Prijs: €4.99/maand'
+                            );
+                            if (confirmUpgrade) {
+                              const updatedUser = { ...user, account_type: 'premium' };
+                              setUser(updatedUser);
+
+                              // Update in customers list if exists
+                              const updatedCustomers = customers.map(c =>
+                                c.email === user.email ? { ...c, account_type: 'premium' } : c
+                              );
+                              setCustomers(updatedCustomers);
+
+                              alert('🎉 Gefeliciteerd! Je account is geüpgraded naar Premium!');
+                            }
+                          }}
+                          className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                        >
+                          Upgrade Nu - €4.99/maand
+                        </button>
+                        <button
+                          onClick={() => {
+                            alert('Je blijft het gratis account gebruiken. Sommige functies zijn beperkt.');
+                          }}
+                          className="px-6 py-2 border-2 border-purple-400 text-purple-200 rounded-lg hover:bg-purple-800 font-medium transition-all"
+                        >
+                          Later
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <button
