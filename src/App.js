@@ -4827,8 +4827,10 @@ useEffect(() => {
               : null;
             const currentInvestedAmount = (amountVal && !isNaN(amountVal)) ? amountVal : 10000;
             const currentValue = staticPerformanceData[currentMonth]?.portfolioValue || currentInvestedAmount;
-            const returnPct = currentInvestedAmount > 0
-              ? ((currentValue - currentInvestedAmount) / currentInvestedAmount * 100).toFixed(2)
+            // Calculate return including monthly contributions
+            const totalInvestedNow = currentInvestedAmount + (monthlyContribution * currentMonth);
+            const returnPct = totalInvestedNow > 0
+              ? ((currentValue - totalInvestedNow) / totalInvestedNow * 100).toFixed(2)
               : '0.00';
 
             await fetch(`${API_URL}/update-portfolio-value`, {
@@ -4842,7 +4844,7 @@ useEffect(() => {
                 total_return: parseFloat(returnPct)
               })
             });
-            console.log('📊 Portfolio value auto-saved:', currentValue, 'Inleg:', currentInvestedAmount, 'Return:', returnPct + '%');
+            console.log('📊 Portfolio value auto-saved:', currentValue, 'Totaal Ingelegd:', totalInvestedNow, 'Return:', returnPct + '%');
           } catch (error) {
             console.error('Error auto-saving portfolio value:', error);
           }
@@ -4959,17 +4961,22 @@ useEffect(() => {
     }
 
     // Create display data with growing portfolio line and convert to percentages
-    const performanceData = staticPerformanceData.map((point, i) => ({
-      ...point,
-      portfolio: i <= currentMonth ? ((point.portfolioValue - initialValue) / initialValue * 100) : null,
-      poor: ((point.poor - initialValue) / initialValue * 100),
-      expected: ((point.expected - initialValue) / initialValue * 100),
-      good: ((point.good - initialValue) / initialValue * 100)
-    }));
+    // Calculate return as: (current value - total invested) / total invested * 100
+    const performanceData = staticPerformanceData.map((point, i) => {
+      const totalInvested = initialValue + (monthlyContribution * i);
+      return {
+        ...point,
+        portfolio: i <= currentMonth ? ((point.portfolioValue - totalInvested) / totalInvested * 100) : null,
+        poor: ((point.poor - totalInvested) / totalInvested * 100),
+        expected: ((point.expected - totalInvested) / totalInvested * 100),
+        good: ((point.good - totalInvested) / totalInvested * 100)
+      };
+    });
 
     // Calculate current portfolio value based on animation progress
     const animatedPortfolioValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
-    const totalReturn = ((animatedPortfolioValue - initialValue) / initialValue * 100).toFixed(2);
+    const totalInvestedAtCurrentMonth = initialValue + (monthlyContribution * currentMonth);
+    const totalReturn = ((animatedPortfolioValue - totalInvestedAtCurrentMonth) / totalInvestedAtCurrentMonth * 100).toFixed(2);
     const categoryData = Object.entries(metrics.categories)
       .filter(([name, value]) => value > 0) // Filter out 0% categories
       .map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }))
@@ -5010,8 +5017,8 @@ useEffect(() => {
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
             <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Inleg</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(initialValue)}</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= initialValue ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - initialValue)}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
+            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
             <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
           </div>
           
