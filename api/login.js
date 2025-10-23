@@ -60,12 +60,28 @@ module.exports = async (req, res) => {
       .eq('customer_id', customer.id)
       .single();
 
+    console.log('Login - Raw investment details from DB:', investmentDetails);
+    console.log('Login - risk_profile value:', investmentDetails?.risk_profile);
+
+    // Transform snake_case to camelCase for consistency with frontend
+    const transformedInvestmentDetails = investmentDetails ? {
+      goal: investmentDetails.goal,
+      horizon: investmentDetails.horizon,
+      amount: investmentDetails.amount,
+      monthlyContribution: investmentDetails.monthly_contribution,
+      riskProfile: investmentDetails.risk_profile,
+      current_portfolio_value: investmentDetails.current_portfolio_value,
+      total_return: investmentDetails.total_return
+    } : {};
+
+    console.log('Login - Transformed investment details:', transformedInvestmentDetails);
+
     res.status(200).json({
       success: true,
       customer: {
         ...customer,
         portfolio: portfolio || [],
-        investmentDetails: investmentDetails || {}
+        investmentDetails: transformedInvestmentDetails
       }
     });
 

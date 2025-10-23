@@ -70,6 +70,9 @@ module.exports = async (req, res) => {
 
     // Save or update investment details
     if (investmentDetails && Object.keys(investmentDetails).length > 0) {
+      console.log('Saving investment details:', investmentDetails);
+      console.log('riskProfile value:', investmentDetails.riskProfile);
+
       const { data: existing } = await supabase
         .from('investment_details')
         .select('id')
@@ -84,6 +87,8 @@ module.exports = async (req, res) => {
         monthly_contribution: investmentDetails.monthlyContribution,
         risk_profile: investmentDetails.riskProfile
       };
+
+      console.log('Saving to database:', investmentData);
 
       if (existing) {
         await supabase

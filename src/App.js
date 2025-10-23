@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
 // API URL - works both locally and in production
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3000/api';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
 
 // Sample ETF data
 const SAMPLE_ETFS = [
@@ -6003,21 +6003,27 @@ useEffect(() => {
       try {
         const response = await fetch(`${API_URL}/customers`);
         const data = await response.json();
+        console.log('Fetched customers data:', data);
         if (data.success) {
           // Transform database format to app format
-          const transformedCustomers = data.customers.map(c => ({
-            ...c,
-            firstName: c.first_name,
-            lastName: c.last_name,
-            name: `${c.first_name} ${c.last_name}`,
-            houseNumber: c.house_number,
-            postalCode: c.postal_code,
-            birthDate: c.birth_date,
-            address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
-            registeredAt: c.registered_at || c.created_at,
-            portfolio: c.portfolio || [],
-            investmentDetails: c.investmentDetails || {}
-          }));
+          const transformedCustomers = data.customers.map(c => {
+            console.log('Customer investmentDetails from API:', c.investmentDetails);
+            console.log('Customer riskProfile:', c.investmentDetails?.riskProfile);
+            return {
+              ...c,
+              firstName: c.first_name,
+              lastName: c.last_name,
+              name: `${c.first_name} ${c.last_name}`,
+              houseNumber: c.house_number,
+              postalCode: c.postal_code,
+              birthDate: c.birth_date,
+              address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
+              registeredAt: c.registered_at || c.created_at,
+              portfolio: c.portfolio || [],
+              investmentDetails: c.investmentDetails || {}
+            };
+          });
+          console.log('Transformed customers:', transformedCustomers);
           setCustomers(transformedCustomers);
         }
       } catch (error) {

@@ -51,10 +51,26 @@ module.exports = async (req, res) => {
           .eq('customer_id', customer.id)
           .single();
 
+        console.log('Raw investment details from DB for customer', customer.id, ':', investmentDetails);
+        console.log('risk_profile value:', investmentDetails?.risk_profile);
+
+        // Transform snake_case to camelCase for consistency with frontend
+        const transformedInvestmentDetails = investmentDetails ? {
+          goal: investmentDetails.goal,
+          horizon: investmentDetails.horizon,
+          amount: investmentDetails.amount,
+          monthlyContribution: investmentDetails.monthly_contribution,
+          riskProfile: investmentDetails.risk_profile,
+          current_portfolio_value: investmentDetails.current_portfolio_value,
+          total_return: investmentDetails.total_return
+        } : null;
+
+        console.log('Transformed investment details:', transformedInvestmentDetails);
+
         return {
           ...customer,
           portfolio: portfolio || [],
-          investmentDetails: investmentDetails || null
+          investmentDetails: transformedInvestmentDetails
         };
       })
     );
