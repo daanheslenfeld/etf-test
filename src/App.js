@@ -3077,11 +3077,144 @@ useEffect(() => {
     );
   };
 
+  const getHoldingsCount = (etf) => {
+    const name = (etf.naam || '').toLowerCase();
+    const isin = etf.isin || '';
+    const category = etf.categorie || '';
+
+    // Return realistic holdings count based on ETF type
+    if (name.includes('s&p 500') || isin === 'IE00B5BMR087' || isin === 'IE00B3XXRP09') {
+      return 503;
+    }
+    if (name.includes('msci world') || isin === 'IE00B4L5Y983') {
+      return 1463;
+    }
+    if (name.includes('corporate bond') || name.includes('corporate esg') || isin === 'IE00B3F81R35' || isin === 'IE00BLF7VX27') {
+      return 1826;
+    }
+    if (name.includes('treasury') || isin === 'IE00B3VWN393') {
+      return 45;
+    }
+    if (name.includes('gold') || name.includes('xetra-gold') || isin === 'IE00B4ND3602' || isin === 'IE00B579F325' || isin === 'DE000A0S9GB0') {
+      return 1;
+    }
+    if (name.includes('real estate') || name.includes('epra') || isin === 'LU1812091194' || isin === 'LU1681039480' || isin === 'LU1832418773') {
+      return 342;
+    }
+    if (name.includes('overnight') || name.includes('money market') || isin === 'FR0010510800' || isin === 'LU1190417599' || isin === 'LU2082999306') {
+      return 78;
+    }
+
+    // Fallback based on category
+    if (category === 'Aandelen') return 1200;
+    if (category === 'Obligaties') return 800;
+    if (category === 'Commodities') return 1;
+    if (category === 'Vastgoed') return 300;
+    if (category === 'Money market') return 50;
+
+    return 500; // Default
+  };
+
   const getTopHoldingsForETF = (etf) => {
     const subcategory = etf.subcategorie || '';
     const category = etf.categorie || '';
-    
+    const name = (etf.naam || '').toLowerCase();
+    const isin = etf.isin || '';
+
     // Generate appropriate holdings based on ETF type
+    // First check by name/ISIN for more accurate matching
+    if (name.includes('s&p 500') || isin === 'IE00B5BMR087' || isin === 'IE00B3XXRP09') {
+      return [
+        { name: 'Apple Inc.', weight: 7.2, sector: 'Technology' },
+        { name: 'Microsoft Corp.', weight: 6.8, sector: 'Technology' },
+        { name: 'NVIDIA Corp.', weight: 5.9, sector: 'Technology' },
+        { name: 'Amazon.com Inc.', weight: 3.8, sector: 'Consumer Discretionary' },
+        { name: 'Meta Platforms Inc.', weight: 2.5, sector: 'Technology' },
+        { name: 'Alphabet Inc. Class A', weight: 2.3, sector: 'Technology' },
+        { name: 'Berkshire Hathaway', weight: 1.9, sector: 'Financials' },
+        { name: 'Tesla Inc.', weight: 1.8, sector: 'Consumer Discretionary' },
+        { name: 'Broadcom Inc.', weight: 1.7, sector: 'Technology' },
+        { name: 'JPMorgan Chase & Co.', weight: 1.5, sector: 'Financials' }
+      ];
+    }
+
+    if (name.includes('msci world') || isin === 'IE00B4L5Y983') {
+      return [
+        { name: 'Apple Inc.', weight: 4.8, sector: 'Technology' },
+        { name: 'Microsoft Corp.', weight: 4.2, sector: 'Technology' },
+        { name: 'NVIDIA Corp.', weight: 3.5, sector: 'Technology' },
+        { name: 'Amazon.com Inc.', weight: 2.4, sector: 'Consumer Discretionary' },
+        { name: 'Meta Platforms Inc.', weight: 1.8, sector: 'Technology' },
+        { name: 'Alphabet Inc.', weight: 1.7, sector: 'Technology' },
+        { name: 'Tesla Inc.', weight: 1.3, sector: 'Consumer Discretionary' },
+        { name: 'ASML Holding NV', weight: 1.2, sector: 'Technology' },
+        { name: 'Nestlé SA', weight: 1.1, sector: 'Consumer Staples' },
+        { name: 'JPMorgan Chase', weight: 1.0, sector: 'Financials' }
+      ];
+    }
+
+    if (name.includes('corporate bond') || name.includes('corporate esg') || isin === 'IE00B3F81R35' || isin === 'IE00BLF7VX27') {
+      return [
+        { name: 'Apple Inc. 3.25%', weight: 2.8, maturity: '2029', rating: 'AA+' },
+        { name: 'Microsoft Corp 2.4%', weight: 2.5, maturity: '2030', rating: 'AAA' },
+        { name: 'JPMorgan 3.5%', weight: 2.3, maturity: '2028', rating: 'A+' },
+        { name: 'Johnson & Johnson 2.95%', weight: 2.1, maturity: '2027', rating: 'AAA' },
+        { name: 'Alphabet Inc. 2.05%', weight: 1.9, maturity: '2029', rating: 'AA+' },
+        { name: 'Coca-Cola 2.75%', weight: 1.8, maturity: '2030', rating: 'A+' },
+        { name: 'Visa Inc. 3.15%', weight: 1.7, maturity: '2028', rating: 'AA-' },
+        { name: 'Procter & Gamble 2.8%', weight: 1.6, maturity: '2029', rating: 'AA-' },
+        { name: 'Toyota Motor 2.35%', weight: 1.5, maturity: '2027', rating: 'A+' },
+        { name: 'Nestlé SA 1.85%', weight: 1.4, maturity: '2028', rating: 'AA' }
+      ];
+    }
+
+    if (name.includes('treasury') || isin === 'IE00B3VWN393') {
+      return [
+        { name: 'US Treasury 3Y', weight: 18.5, maturity: '3 jaar', rating: 'AAA' },
+        { name: 'US Treasury 5Y', weight: 16.2, maturity: '5 jaar', rating: 'AAA' },
+        { name: 'US Treasury 7Y', weight: 15.8, maturity: '7 jaar', rating: 'AAA' },
+        { name: 'US Treasury 4Y', weight: 12.3, maturity: '4 jaar', rating: 'AAA' },
+        { name: 'US Treasury 6Y', weight: 11.7, maturity: '6 jaar', rating: 'AAA' },
+        { name: 'US Treasury 3.5Y', weight: 9.2, maturity: '3.5 jaar', rating: 'AAA' },
+        { name: 'US Treasury 4.5Y', weight: 8.1, maturity: '4.5 jaar', rating: 'AAA' },
+        { name: 'US Treasury 5.5Y', weight: 4.6, maturity: '5.5 jaar', rating: 'AAA' },
+        { name: 'US Treasury 6.5Y', weight: 2.3, maturity: '6.5 jaar', rating: 'AAA' },
+        { name: 'US Treasury 3.25Y', weight: 1.3, maturity: '3.25 jaar', rating: 'AAA' }
+      ];
+    }
+
+    if (name.includes('gold') || name.includes('xetra-gold') || isin === 'IE00B4ND3602' || isin === 'IE00B579F325' || isin === 'DE000A0S9GB0') {
+      return [
+        { name: 'Physical Gold Holdings', weight: 100, type: 'Precious Metal' }
+      ];
+    }
+
+    if (name.includes('real estate') || name.includes('epra') || isin === 'LU1812091194' || isin === 'LU1681039480' || isin === 'LU1832418773') {
+      return [
+        { name: 'Prologis Inc.', weight: 8.5, sector: 'Industrial REITs', country: 'US' },
+        { name: 'American Tower Corp.', weight: 6.2, sector: 'Telecom REITs', country: 'US' },
+        { name: 'Equinix Inc.', weight: 5.8, sector: 'Data Center REITs', country: 'US' },
+        { name: 'Public Storage', weight: 4.9, sector: 'Storage REITs', country: 'US' },
+        { name: 'Welltower Inc.', weight: 4.3, sector: 'Healthcare REITs', country: 'US' },
+        { name: 'Simon Property Group', weight: 4.1, sector: 'Retail REITs', country: 'US' },
+        { name: 'Vonovia SE', weight: 3.8, sector: 'Residential', country: 'DE' },
+        { name: 'Segro PLC', weight: 3.6, sector: 'Industrial REITs', country: 'UK' },
+        { name: 'Unibail-Rodamco', weight: 3.4, sector: 'Retail REITs', country: 'FR' },
+        { name: 'Land Securities', weight: 3.2, sector: 'Diversified REITs', country: 'UK' }
+      ];
+    }
+
+    if (name.includes('overnight') || name.includes('money market') || isin === 'FR0010510800' || isin === 'LU1190417599' || isin === 'LU2082999306') {
+      return [
+        { name: 'EUR Overnight Deposits', weight: 45.2, type: 'Cash', rating: 'AAA' },
+        { name: 'Short-term Govt Bonds', weight: 25.8, type: 'Government', rating: 'AAA' },
+        { name: 'Commercial Paper', weight: 15.3, type: 'Corporate', rating: 'A-1' },
+        { name: 'Certificates of Deposit', weight: 8.9, type: 'Bank', rating: 'A-1+' },
+        { name: 'Repo Agreements', weight: 4.8, type: 'Collateralized', rating: 'AAA' }
+      ];
+    }
+
+    // Fallback to category-based logic
     if (category === 'Aandelen') {
       if (subcategory.includes('Verenigde Staten') || subcategory.includes('S&P 500')) {
         return [
@@ -3201,15 +3334,16 @@ useEffect(() => {
 
   const ETFDetailModal = ({ etf, onClose }) => {
     if (!etf) return null;
-    
+
     const historicalData = [
       { year: '2021', return: safeParseFloat(etf['2021']) },
       { year: '2022', return: safeParseFloat(etf['2022']) },
       { year: '2023', return: safeParseFloat(etf['2023']) },
       { year: '2024', return: safeParseFloat(etf['2024']) }
     ];
-    
+
     const topHoldings = getTopHoldingsForETF(etf);
+    const holdingsCount = etf.holdings || getHoldingsCount(etf);
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -3236,7 +3370,7 @@ useEffect(() => {
                 <div className="space-y-0.5">
                   <div className="flex justify-between"><span className="text-gray-500">Fund Size:</span><span className="text-gray-300">€{etf['fund size (in m €)']}M</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Vol 1Y:</span><span className="text-gray-300">{etf['volatility 1y']}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Holdings:</span><span className="text-gray-300">{etf.holdings}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Holdings:</span><span className="text-gray-300">{holdingsCount.toLocaleString('nl-NL')}</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Uitkering:</span><span className="text-gray-300">{etf.distribution}</span></div>
                 </div>
               </div>
@@ -4923,7 +5057,7 @@ useEffect(() => {
             <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
               <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || 0), 0).toLocaleString('nl-NL')}</span></div>
+                <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-400">Gemiddelde TER:</span><span className="font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-400">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
                 <div className="flex justify-between items-center"><span className="text-gray-400">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
