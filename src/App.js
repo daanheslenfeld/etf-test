@@ -3585,7 +3585,15 @@ useEffect(() => {
                   acc[category].push(etf);
                   return acc;
                 }, {})
-              ).map(([category, etfs]) => (
+              )
+              .map(([category, etfs]) => ({
+                category,
+                etfs,
+                weight: etfs.reduce((sum, e) => sum + (e.weight || 0), 0)
+              }))
+              .filter(item => item.weight > 0) // Filter out 0% categories
+              .sort((a, b) => b.weight - a.weight) // Sort by weight descending
+              .map(({ category, etfs }) => (
                 <div key={category} className="border border-gray-800 rounded-lg overflow-hidden">
                   <div className="bg-gray-800/50 px-4 py-3 border-b border-gray-800">
                     <div className="flex justify-between items-center">
@@ -4687,8 +4695,14 @@ useEffect(() => {
                   acc[category].push(etf);
                   return acc;
                 }, {})
-              ).map(([category, etfs]) => {
+              )
+              .map(([category, etfs]) => {
                 const categoryWeight = etfs.reduce((sum, e) => sum + (e.weight || 0), 0);
+                return { category, etfs, categoryWeight };
+              })
+              .filter(item => item.categoryWeight > 0) // Filter out 0% categories
+              .sort((a, b) => b.categoryWeight - a.categoryWeight) // Sort by weight descending
+              .map(({ category, etfs, categoryWeight }) => {
                 const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
 
                 return (
