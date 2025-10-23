@@ -5244,45 +5244,49 @@ useEffect(() => {
                       const profileConfig = premadePortfolios[selectedPortfolioKey] || premadePortfolios['neutral'];
                       const profileAllocation = profileConfig.allocation;
 
-                      console.log('📊 Deposit - Rebalancing to profile:', {
+                      console.log('📊 Deposit - Distributing according to profile:', {
                         profile: investmentDetails.riskProfile,
                         allocation: profileAllocation,
                         depositAmount: amount,
-                        oldPortfolioValue: currentPortfolioValue,
+                        currentPortfolioValue: currentPortfolioValue,
                         newTotalValue: newTotalValue
                       });
-                      console.log('  Category targets:');
-                      Object.entries(profileAllocation).forEach(([cat, pct]) => {
-                        const targetValue = newTotalValue * (pct / 100);
-                        console.log(`  - ${cat}: ${pct}% = €${targetValue.toFixed(2)}`);
-                      });
-                      console.log('  ETF allocations:');
 
-                      // Rebalance ENTIRE portfolio to match profile allocation after deposit
-                      // The total portfolio value after deposit should exactly match the profile percentages
-
-                      // First, group ETFs by category to count them
+                      // Count ETFs per category in current portfolio
                       const categoryCounts = {};
                       portfolio.forEach(etf => {
                         const cat = etf.categorie;
                         categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
                       });
 
+                      console.log('  Categories in portfolio:', Object.keys(categoryCounts));
+                      console.log('  New money distribution per category:');
+
+                      // Distribute new deposit according to profile allocation
                       const updatedPortfolio = portfolio.map((etf, index) => {
                         const category = etf.categorie;
-                        const targetCategoryPercentage = profileAllocation[category] || 0;
+                        const profilePercentage = profileAllocation[category] || 0;
 
-                        // Target total value for this category after deposit
-                        const categoryTargetValue = newTotalValue * (targetCategoryPercentage / 100);
+                        // Current value of this ETF
+                        const currentEtfValue = currentPortfolioValue * (etf.weight / 100);
 
-                        // Split category value equally among ETFs in that category
+                        // New money for this category according to profile
+                        const newMoneyForCategory = amount * (profilePercentage / 100);
+
+                        // Split new money equally among all ETFs in this category
                         const etfsInCategory = categoryCounts[category] || 1;
-                        const etfTargetValue = categoryTargetValue / etfsInCategory;
+                        const newMoneyForThisETF = newMoneyForCategory / etfsInCategory;
 
-                        // Calculate new weight as percentage of total portfolio
-                        const newWeight = (etfTargetValue / newTotalValue) * 100;
+                        // New total value for this ETF
+                        const newEtfValue = currentEtfValue + newMoneyForThisETF;
 
-                        console.log(`  - ${etf.naam} (${category}): target value = €${etfTargetValue.toFixed(2)}, weight = ${newWeight.toFixed(2)}%`);
+                        // Calculate new weight
+                        const newWeight = (newEtfValue / newTotalValue) * 100;
+
+                        if (index === 0 || portfolio[index - 1].categorie !== category) {
+                          console.log(`  - ${category} (${profilePercentage}%): €${newMoneyForCategory.toFixed(2)} → split over ${etfsInCategory} ETF(s)`);
+                        }
+                        console.log(`    • ${etf.naam}: €${currentEtfValue.toFixed(2)} + €${newMoneyForThisETF.toFixed(2)} = €${newEtfValue.toFixed(2)} (${newWeight.toFixed(2)}%)`);
 
                         return {
                           ...etf,
