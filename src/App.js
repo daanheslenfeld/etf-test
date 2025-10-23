@@ -4851,10 +4851,14 @@ useEffect(() => {
                               `Wil je je risicoprofiel wijzigen naar ${config.name}?\n\n` +
                               `Verwacht rendement: ${(config.expectedReturn * 100).toFixed(1)}%\n` +
                               `Standaarddeviatie: ${(config.stdDev * 100).toFixed(0)}%\n\n` +
-                              `Na bevestiging kun je je portfolio balanceren naar dit nieuwe profiel.`
+                              `Je portfolio wegingen worden automatisch aangepast naar dit profiel.`
                             );
                             if (confirmChange) {
                               setSelectedProfile(key);
+
+                              // Automatically rebalance portfolio to new profile
+                              const rebalanced = recalculateWeights(portfolio, key);
+                              setPortfolio(rebalanced);
 
                               // Update investment details if they exist
                               if (investmentDetails) {
@@ -4864,14 +4868,15 @@ useEffect(() => {
                                 });
                               }
 
-                              // Update user's investment details
+                              // Update user's investment details and portfolio
                               if (user?.investmentDetails) {
                                 const updatedUser = {
                                   ...user,
                                   investmentDetails: {
                                     ...user.investmentDetails,
                                     riskProfile: config.name
-                                  }
+                                  },
+                                  portfolio: rebalanced
                                 };
                                 setUser(updatedUser);
 
@@ -4883,14 +4888,15 @@ useEffect(() => {
                                         investmentDetails: {
                                           ...c.investmentDetails,
                                           riskProfile: config.name
-                                        }
+                                        },
+                                        portfolio: rebalanced
                                       }
                                     : c
                                 );
                                 setCustomers(updatedCustomers);
                               }
 
-                              alert(`✅ Je risicoprofiel is gewijzigd naar ${config.name}!`);
+                              alert(`✅ Je risicoprofiel is gewijzigd naar ${config.name} en je portfolio is automatisch gebalanceerd!`);
                             }
                           }}
                           className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
