@@ -50,9 +50,11 @@ module.exports = async (req, res) => {
     console.log('SUPABASE_KEY length:', process.env.SUPABASE_KEY?.length);
     console.log('Contains service_role:', process.env.SUPABASE_KEY?.includes('service_role'));
 
-    // Verification token generation disabled
-    // const verificationToken = crypto.randomBytes(32).toString('hex');
-    // console.log('Generated verification token:', verificationToken);
+    // Generate 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
+    console.log('Generated verification code:', verificationCode);
+    console.log('Code expires at:', codeExpiresAt.toISOString());
 
     // Insert customer into Supabase (unverified)
     const { data: customer, error } = await supabase
@@ -70,8 +72,9 @@ module.exports = async (req, res) => {
           phone: phone,
           birth_date: birthDate,
           role: 'customer',
-          email_verified: true  // Auto-verify since we disabled email verification
-          // verification_token: verificationToken
+          email_verified: false,  // User must verify email
+          verification_code: verificationCode,
+          verification_code_expires_at: codeExpiresAt.toISOString()
         }
       ])
       .select()
@@ -103,8 +106,36 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Send email notification
-    const mailOptions = {
+    // Send verification code email to user
+    const verificationEmail = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Bevestig je emailadres - PIGG',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #28EBCF;">Welkom bij PIGG!</h2>
+          <p>Hallo ${firstName},</p>
+          <p>Bedankt voor je registratie! Gebruik de onderstaande code om je emailadres te bevestigen:</p>
+          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+            <h1 style="color: #1A1B1F; font-size: 36px; letter-spacing: 8px; margin: 0;">${verificationCode}</h1>
+          </div>
+          <p>Deze code is <strong>15 minuten geldig</strong>.</p>
+          <p>Als je deze registratie niet hebt aangevraagd, kun je deze email negeren.</p>
+          <p>Met vriendelijke groet,<br>Het PIGG Team</p>
+        </div>
+      `
+    };
+
+    try {
+      await transporter.sendMail(verificationEmail);
+      console.log('Verification code email sent to:', email);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      // Don't fail registration if email fails, but log it
+    }
+
+    // Send notification email to admin
+    const notificationEmail = {
       from: process.env.EMAIL_USER,
       to: process.env.NOTIFICATION_EMAIL,
       subject: 'New User Registration - PIGG',
@@ -113,21 +144,22 @@ module.exports = async (req, res) => {
         <p><strong>Name:</strong> ${firstName} ${lastName}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Registration Date:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+        <p><strong>Status:</strong> Awaiting email verification</p>
       `
     };
 
-    await transporter.sendMail(mailOptions);
-
-    // Verification email disabled - users can login immediately
-    // const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}?token=${verificationToken}`;
-    // const verificationEmail = { ... };
-    // await transporter.sendMail(verificationEmail);
+    try {
+      await transporter.sendMail(notificationEmail);
+    } catch (emailError) {
+      console.error('Error sending notification email:', emailError);
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Registratie succesvol! Je kunt nu inloggen.',
-      emailSent: false,
-      email: email
+      message: 'Registratie succesvol! Check je email voor de verificatiecode.',
+      emailSent: true,
+      email: email,
+      requiresVerification: true
     });
 
   } catch (error) {
