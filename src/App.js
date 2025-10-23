@@ -5114,8 +5114,8 @@ useEffect(() => {
         {showDeposit && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowDeposit(false)}>
             <div className="bg-[#1A1B1F] rounded-xl max-w-md w-full mx-4 p-8 border border-gray-800" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-3xl font-bold mb-4 text-white">Geld Storten</h2>
-              <p className="text-gray-400 mb-6">Voer het bedrag in dat je wilt storten</p>
+              <h2 className="text-3xl font-bold mb-4 text-white">Geld Storten & Beleggen</h2>
+              <p className="text-gray-400 mb-6">Voer het bedrag in en kies hoe je wilt beleggen</p>
 
               <div className="mb-6">
                 <label className="block text-sm font-medium mb-2 text-gray-300">Bedrag (€)</label>
@@ -5130,71 +5130,118 @@ useEffect(() => {
 
               <div className="bg-gray-800 rounded-lg p-4 mb-6">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-400">Huidige waarde:</span>
+                  <span className="text-gray-400">Huidige portfolio:</span>
                   <span className="text-white font-medium">{formatEuro(animatedPortfolioValue)}</span>
                 </div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-400">Huidige inleg:</span>
+                  <span className="text-white font-medium">{formatEuro(parseFloat(investmentDetails.amount))}</span>
+                </div>
                 {depositAmount && parseFloat(depositAmount) > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Na storting:</span>
-                    <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue + parseFloat(depositAmount))}</span>
-                  </div>
+                  <>
+                    <div className="border-t border-gray-700 my-2"></div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-400">Nieuwe portfolio:</span>
+                      <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue + parseFloat(depositAmount))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Nieuwe inleg:</span>
+                      <span className="text-[#28EBCF] font-bold">{formatEuro(parseFloat(investmentDetails.amount) + parseFloat(depositAmount))}</span>
+                    </div>
+                  </>
                 )}
               </div>
 
-              <button
-                onClick={() => {
-                  if (depositAmount && parseFloat(depositAmount) > 0) {
-                    const amount = parseFloat(depositAmount);
+              {selectedProfile && (
+                <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-3 mb-4">
+                  <div className="text-xs text-blue-300 mb-1">Huidig profiel:</div>
+                  <div className="text-sm font-bold text-white">{premadePortfolios[selectedProfile].name}</div>
+                </div>
+              )}
 
-                    // Update investment details amount (total deposited)
-                    const updatedInvestmentDetails = {
-                      ...investmentDetails,
-                      amount: (parseFloat(investmentDetails.amount) + amount).toString()
-                    };
-                    setInvestmentDetails(updatedInvestmentDetails);
+              <div className="space-y-3 mb-4">
+                <button
+                  onClick={() => {
+                    if (depositAmount && parseFloat(depositAmount) > 0) {
+                      const amount = parseFloat(depositAmount);
+                      const currentPortfolioValue = animatedPortfolioValue;
+                      const newTotalValue = currentPortfolioValue + amount;
 
-                    // Update user's investment details
-                    if (user) {
-                      const updatedUser = {
-                        ...user,
-                        investmentDetails: {
-                          ...user.investmentDetails,
-                          amount: (parseFloat(user.investmentDetails?.amount || investmentDetails.amount) + amount).toString()
-                        }
+                      // Update investment details amount (total deposited)
+                      const newInvestedAmount = parseFloat(investmentDetails.amount) + amount;
+                      const updatedInvestmentDetails = {
+                        ...investmentDetails,
+                        amount: newInvestedAmount.toString()
                       };
-                      setUser(updatedUser);
+                      setInvestmentDetails(updatedInvestmentDetails);
 
-                      // Update in customers list
-                      const updatedCustomers = customers.map(c =>
-                        c.email === user.email
-                          ? {
-                              ...c,
-                              investmentDetails: {
-                                ...c.investmentDetails,
-                                amount: (parseFloat(c.investmentDetails?.amount || investmentDetails.amount) + amount).toString()
+                      // Invest according to current profile by maintaining current weights
+                      // Each ETF gets a proportional share of the new money
+                      const updatedPortfolio = portfolio.map(etf => {
+                        const currentEtfValue = currentPortfolioValue * (etf.weight / 100);
+                        const additionalValue = amount * (etf.weight / 100);
+                        const newEtfValue = currentEtfValue + additionalValue;
+                        const newWeight = (newEtfValue / newTotalValue) * 100;
+                        return { ...etf, weight: newWeight };
+                      });
+                      setPortfolio(updatedPortfolio);
+
+                      // Update user's investment details
+                      if (user) {
+                        const updatedUser = {
+                          ...user,
+                          investmentDetails: {
+                            ...user.investmentDetails,
+                            amount: newInvestedAmount.toString()
+                          },
+                          portfolio: updatedPortfolio
+                        };
+                        setUser(updatedUser);
+
+                        // Update in customers list
+                        const updatedCustomers = customers.map(c =>
+                          c.email === user.email
+                            ? {
+                                ...c,
+                                investmentDetails: {
+                                  ...c.investmentDetails,
+                                  amount: newInvestedAmount.toString()
+                                },
+                                portfolio: updatedPortfolio
                               }
-                            }
-                          : c
-                      );
-                      setCustomers(updatedCustomers);
+                            : c
+                        );
+                        setCustomers(updatedCustomers);
+                      }
+
+                      // Update portfolio value and simulation data
+                      setStaticPerformanceData(prev => prev.map(point => ({
+                        ...point,
+                        portfolioValue: point.portfolioValue + amount
+                      })));
+
+                      setShowDeposit(false);
+                      setDepositAmount('');
+                      alert(`€${amount.toFixed(2)} succesvol gestort en belegd volgens je huidige portfolio verdeling!`);
                     }
+                  }}
+                  disabled={!depositAmount || parseFloat(depositAmount) <= 0}
+                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all"
+                >
+                  💼 Beleg volgens huidig profiel
+                </button>
 
-                    // Update portfolio value and simulation data
-                    setStaticPerformanceData(prev => prev.map(point => ({
-                      ...point,
-                      portfolioValue: point.portfolioValue + amount
-                    })));
-
+                <button
+                  onClick={() => {
                     setShowDeposit(false);
-                    setDepositAmount('');
-                    alert(`€${amount.toFixed(2)} succesvol gestort via iDEAL!`);
-                  }
-                }}
-                disabled={!depositAmount || parseFloat(depositAmount) <= 0}
-                className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all mb-3"
-              >
-                Betaal met iDEAL
-              </button>
+                    setShowRebalance(true);
+                  }}
+                  disabled={!depositAmount || parseFloat(depositAmount) <= 0}
+                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all"
+                >
+                  🎯 Profiel aanpassen en beleggen
+                </button>
+              </div>
 
               <button
                 onClick={() => {
