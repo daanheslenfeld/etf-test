@@ -4724,24 +4724,30 @@ useEffect(() => {
           <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
             <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
             <div className="space-y-4">
-              {Object.entries(
-                portfolio.reduce((acc, etf) => {
-                  const category = etf.categorie || 'Overig';
-                  if (!acc[category]) acc[category] = [];
-                  acc[category].push(etf);
-                  return acc;
-                }, {})
-              )
-              .map(([category, etfs]) => {
-                const categoryWeight = etfs.reduce((sum, e) => sum + (e.weight || 0), 0);
-                return { category, etfs, categoryWeight };
-              })
-              .filter(item => item.categoryWeight > 0) // Filter out 0% categories
-              .sort((a, b) => b.categoryWeight - a.categoryWeight) // Sort by weight descending
-              .map(({ category, etfs, categoryWeight }) => {
-                const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
+              {(() => {
+                console.log('📊 Portfolio Holdings Render:', {
+                  animatedPortfolioValue,
+                  portfolioLength: portfolio.length,
+                  firstETF: portfolio[0]
+                });
+                return Object.entries(
+                  portfolio.reduce((acc, etf) => {
+                    const category = etf.categorie || 'Overig';
+                    if (!acc[category]) acc[category] = [];
+                    acc[category].push(etf);
+                    return acc;
+                  }, {})
+                )
+                .map(([category, etfs]) => {
+                  const categoryWeight = etfs.reduce((sum, e) => sum + (e.weight || 0), 0);
+                  return { category, etfs, categoryWeight };
+                })
+                .filter(item => item.categoryWeight > 0) // Filter out 0% categories
+                .sort((a, b) => b.categoryWeight - a.categoryWeight) // Sort by weight descending
+                .map(({ category, etfs, categoryWeight }) => {
+                  const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
 
-                return (
+                  return (
                   <div key={category} className="border border-gray-700 rounded-lg overflow-hidden">
                     <div className="bg-gray-800/50 px-4 py-3">
                       <h4 className="font-bold text-white">{category}</h4>
@@ -4773,7 +4779,8 @@ useEffect(() => {
                     </div>
                   </div>
                 );
-              })}
+              });
+              })()}
             </div>
           </div>
         </div>
@@ -5230,14 +5237,13 @@ useEffect(() => {
                       };
 
                       // Invest according to current profile by maintaining current weights
-                      // Each ETF gets a proportional share of the new money
-                      const updatedPortfolio = portfolio.map(etf => {
-                        const currentEtfValue = currentPortfolioValue * (etf.weight / 100);
-                        const additionalValue = amount * (etf.weight / 100);
-                        const newEtfValue = currentEtfValue + additionalValue;
-                        const newWeight = (newEtfValue / newTotalValue) * 100;
-                        return { ...etf, weight: newWeight };
-                      });
+                      // Weights stay the same - we just add money proportionally
+                      // Force React to detect the change by creating a new array with new objects
+                      const updatedPortfolio = portfolio.map((etf, index) => ({
+                        ...etf,
+                        weight: etf.weight, // Keep the same weight percentage
+                        _updateKey: Date.now() + index // Force React to see this as a new object
+                      }));
 
                       // Update simulation with new values by adding the amount to all points
                       const updatedPerformanceData = staticPerformanceData.map(point => ({
@@ -5334,9 +5340,12 @@ useEffect(() => {
                         }
                       }
 
-                      setShowDeposit(false);
-                      setDepositAmount('');
-                      alert(`€${amount.toFixed(2)} succesvol gestort en belegd volgens je huidige portfolio verdeling!\n\nNieuwe inleg: €${newInvestedAmount.toFixed(2)}\nNieuwe portfolio waarde: €${(currentPortfolioValue + amount).toFixed(2)}`);
+                      // Small delay to ensure all state updates are processed before closing modal
+                      setTimeout(() => {
+                        setShowDeposit(false);
+                        setDepositAmount('');
+                        alert(`€${amount.toFixed(2)} succesvol gestort en belegd volgens je huidige portfolio verdeling!\n\nNieuwe inleg: €${newInvestedAmount.toFixed(2)}\nNieuwe portfolio waarde: €${(currentPortfolioValue + amount).toFixed(2)}`);
+                      }, 100);
                     }
                   }}
                   disabled={!depositAmount || parseFloat(depositAmount) <= 0}
