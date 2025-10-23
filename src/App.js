@@ -4960,30 +4960,20 @@ useEffect(() => {
       );
     }
 
-    // Create display data with percentage-based scenarios starting at 0%
-    // All scenarios show cumulative return percentage over time
+    // Create display data with percentage returns based on Monte Carlo simulation
+    // Convert absolute values from Monte Carlo to percentage returns
     const performanceData = staticPerformanceData.map((point, i) => {
-      // Calculate cumulative return for different scenarios
-      // P10 scenario: avgReturn - 1.28 * stdDev (approximately 10th percentile)
-      const poorReturn = avgReturn - 1.28 * stdDev;
-      // P90 scenario: avgReturn + 1.28 * stdDev (approximately 90th percentile)
-      const goodReturn = avgReturn + 1.28 * stdDev;
-
-      // Calculate cumulative returns (compound growth)
-      const monthlyPoorReturn = poorReturn / 12;
-      const monthlyExpectedReturn = avgReturn / 12;
-      const monthlyGoodReturn = goodReturn / 12;
-
-      // For actual portfolio, calculate realized return
+      // Calculate total invested up to this month (initial + all monthly contributions)
       const totalInvested = initialValue + (monthlyContribution * i);
-      const portfolioReturn = i <= currentMonth ? ((point.portfolioValue - totalInvested) / totalInvested * 100) : null;
 
+      // Calculate percentage return for each scenario relative to total invested
+      // Return = (current value - total invested) / total invested * 100
       return {
         ...point,
-        portfolio: portfolioReturn,
-        poor: (Math.pow(1 + monthlyPoorReturn, i) - 1) * 100,
-        expected: (Math.pow(1 + monthlyExpectedReturn, i) - 1) * 100,
-        good: (Math.pow(1 + monthlyGoodReturn, i) - 1) * 100
+        portfolio: i <= currentMonth ? ((point.portfolioValue - totalInvested) / totalInvested * 100) : null,
+        poor: ((point.poor - totalInvested) / totalInvested * 100),
+        expected: ((point.expected - totalInvested) / totalInvested * 100),
+        good: ((point.good - totalInvested) / totalInvested * 100)
       };
     });
 
