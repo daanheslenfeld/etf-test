@@ -4830,13 +4830,148 @@ useEffect(() => {
         
         {showRebalance && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
-            <div className="bg-white rounded-2xl max-w-2xl w-full p-8" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren</h2>
-              <p className="text-gray-600 mb-6">
-                Door te balanceren worden alle wegingen aangepast naar de oorspronkelijke verdeling van je gekozen risicoprofiel: 
-                <span className="font-bold text-indigo-600"> {selectedProfile ? premadePortfolios[selectedProfile].name : 'Aangepast'}</span>
-              </p>
-              
+            <div className="bg-white rounded-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Account Beheer</h2>
+
+              {/* Account Upgrade Section */}
+              {(!user?.account_type || user.account_type === 'fictief') && (
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">⭐</div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-purple-900 mb-2">Upgrade naar Betaald Account</h3>
+                      <p className="text-purple-700 text-sm mb-4">
+                        Ontgrendel premium functies en krijg toegang tot uitgebreide portfolio analyses, realtime marktdata en persoonlijk advies.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            const confirmUpgrade = window.confirm(
+                              'Wil je upgraden naar een betaald account?\n\n' +
+                              'Voordelen:\n' +
+                              '✓ Realtime portfolio tracking\n' +
+                              '✓ Uitgebreide analyses\n' +
+                              '✓ Persoonlijk advies\n' +
+                              '✓ Premium ETF selecties\n\n' +
+                              'Prijs: €4.99/maand'
+                            );
+                            if (confirmUpgrade) {
+                              const updatedUser = { ...user, account_type: 'premium' };
+                              setUser(updatedUser);
+
+                              // Update in customers list if exists
+                              const updatedCustomers = customers.map(c =>
+                                c.email === user.email ? { ...c, account_type: 'premium' } : c
+                              );
+                              setCustomers(updatedCustomers);
+
+                              alert('🎉 Gefeliciteerd! Je account is geüpgraded naar Premium!');
+                            }
+                          }}
+                          className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                        >
+                          Upgrade Nu - €4.99/maand
+                        </button>
+                        <button
+                          onClick={() => {
+                            alert('Je blijft het gratis account gebruiken. Sommige functies zijn beperkt.');
+                          }}
+                          className="px-6 py-2 border-2 border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 font-medium transition-all"
+                        >
+                          Later
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Profile Change Section */}
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">🎯</div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-blue-900 mb-2">Risicoprofiel Wijzigen</h3>
+                    <p className="text-blue-700 text-sm mb-4">
+                      Wijzig je risicoprofiel om je portfolio aan te passen aan je huidige beleggingsdoelen.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {Object.entries(premadePortfolios).filter(([key]) => key !== 'free').map(([key, config]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            const confirmChange = window.confirm(
+                              `Wil je je risicoprofiel wijzigen naar ${config.name}?\n\n` +
+                              `Verwacht rendement: ${(config.expectedReturn * 100).toFixed(1)}%\n` +
+                              `Standaarddeviatie: ${(config.stdDev * 100).toFixed(0)}%\n\n` +
+                              `Na bevestiging kun je je portfolio balanceren naar dit nieuwe profiel.`
+                            );
+                            if (confirmChange) {
+                              setSelectedProfile(key);
+
+                              // Update investment details if they exist
+                              if (investmentDetails) {
+                                setInvestmentDetails({
+                                  ...investmentDetails,
+                                  riskProfile: config.name
+                                });
+                              }
+
+                              // Update user's investment details
+                              if (user?.investmentDetails) {
+                                const updatedUser = {
+                                  ...user,
+                                  investmentDetails: {
+                                    ...user.investmentDetails,
+                                    riskProfile: config.name
+                                  }
+                                };
+                                setUser(updatedUser);
+
+                                // Update in customers list
+                                const updatedCustomers = customers.map(c =>
+                                  c.email === user.email
+                                    ? {
+                                        ...c,
+                                        investmentDetails: {
+                                          ...c.investmentDetails,
+                                          riskProfile: config.name
+                                        }
+                                      }
+                                    : c
+                                );
+                                setCustomers(updatedCustomers);
+                              }
+
+                              alert(`✅ Je risicoprofiel is gewijzigd naar ${config.name}!`);
+                            }
+                          }}
+                          className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                            selectedProfile === key
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-blue-900 border-blue-300 hover:border-blue-500'
+                          }`}
+                        >
+                          {config.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-blue-600">
+                      Huidig profiel: <span className="font-bold">{selectedProfile ? premadePortfolios[selectedProfile].name : 'Geen'}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Original Rebalancing Content */}
+              <div className="border-t-2 border-gray-200 pt-6">
+                <h3 className="text-lg font-bold mb-3">Portfolio Balanceren</h3>
+                <p className="text-gray-600 mb-6">
+                  Door te balanceren worden alle wegingen aangepast naar de oorspronkelijke verdeling van je gekozen risicoprofiel:
+                  <span className="font-bold text-indigo-600"> {selectedProfile ? premadePortfolios[selectedProfile].name : 'Aangepast'}</span>
+                </p>
+              </div>
+
               {selectedProfile ? (
                 <>
                   <div className="bg-indigo-50 rounded-xl p-4 mb-6 border border-indigo-200">
