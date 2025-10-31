@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
-// API URL - works both locally and in production
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3001/api';
+// API URL - works with Vercel Dev and production
+const API_URL = '/api';
 
 // Sample ETF data
 const SAMPLE_ETFS = [
@@ -218,6 +218,380 @@ const SAMPLE_ETFS = [
   }
 ];
 
+// Translations
+const translations = {
+  nl: {
+    nav: {
+      home: 'Home',
+      features: 'Voordelen',
+      howItWorks: 'Hoe het werkt',
+      pricing: 'Prijzen',
+      login: 'Login',
+      startNow: 'Start nu'
+    },
+    tagline: 'Your digital Piggy Bank for global Investing',
+    hero: {
+      title: 'Beheer nu je eigen vermogen',
+      subtitle: 'Beleg nu in een paar klikken in de hele wereld. Heel simpel en overzichtelijk. Met eventueel onze ondersteuning wanneer je vragen hebt.',
+      cta: 'Begin met beleggen →'
+    },
+    features: {
+      title: 'Waarom PIGG?',
+      lowCost: { title: 'Lage kosten', desc: 'Geen verborgen kosten of hoge fees' },
+      global: { title: 'Wereldwijd beleggen', desc: 'Toegang tot internationale ETFs' },
+      simple: { title: 'Simpel', desc: 'Beleggen in een paar klikken' },
+      support: { title: 'Ondersteuning', desc: 'Persoonlijke begeleiding wanneer nodig' }
+    },
+    howItWorks: {
+      title: 'Hoe werkt het?',
+      step1: { title: 'Account aanmaken', desc: 'Registreer gratis in 2 minuten' },
+      step2: { title: 'Portfolio samenstellen', desc: 'Kies zelf je ETFs of gebruik vooraf samengestelde portfolio' },
+      step3: { title: 'Beginnen met beleggen', desc: 'Start met beleggen vanaf €50' }
+    },
+    pricing: {
+      title: 'Kies je account type',
+      free: {
+        title: 'Gratis Account',
+        price: '€0',
+        period: '/altijd',
+        features: ['Simuleer beleggingen', 'Maak modelportefeuilles', 'Gebruik alle tools'],
+        cta: 'Start Gratis'
+      },
+      paid: {
+        title: 'Belegger Account',
+        price: '€250',
+        period: '/jaar',
+        badge: 'POPULAIR',
+        features: ['Alles van Gratis Account', 'Investeer echt geld', 'Geld storten en opnemen', 'Portfolio tracking'],
+        cta: 'Upgrade Naar Belegger'
+      }
+    },
+    etfPreview: {
+      title: 'Ontdek onze ETF Database',
+      subtitle: 'Krijg toegang tot honderden ETF\'s met realtime prijzen en gedetailleerde informatie',
+      name: 'Naam',
+      isin: 'ISIN',
+      category: 'Categorie',
+      ter: 'TER',
+      ytd: 'YTD',
+      cta: 'Bekijk volledige database →'
+    },
+    etfDetail: {
+      title: 'Gedetailleerde ETF Informatie',
+      subtitle: 'Elke ETF bevat uitgebreide details om je te helpen de juiste keuze te maken',
+      basicInfo: 'Basis Info',
+      details: 'Details',
+      fundSize: 'Fund Size',
+      vol1y: 'Vol 1Y',
+      holdings: 'Holdings',
+      distribution: 'Uitkering',
+      historicalReturns: 'Historisch Rendement',
+      cta: 'Ontdek meer ETF\'s →'
+    },
+    cta: {
+      title: 'Klaar om te beginnen?',
+      subtitle: 'Maak vandaag nog een gratis account aan en ontdek de mogelijkheden',
+      button: 'Begin met beleggen →'
+    }
+  },
+  en: {
+    nav: {
+      home: 'Home',
+      features: 'Features',
+      howItWorks: 'How it works',
+      pricing: 'Pricing',
+      login: 'Login',
+      startNow: 'Start now'
+    },
+    tagline: 'Your digital Piggy Bank for global Investing',
+    hero: {
+      title: 'Manage your own wealth now',
+      subtitle: 'Invest globally in just a few clicks. Simple and clear. With our support when you have questions.',
+      cta: 'Start investing →'
+    },
+    features: {
+      title: 'Why PIGG?',
+      lowCost: { title: 'Low costs', desc: 'No hidden fees or high costs' },
+      global: { title: 'Global investing', desc: 'Access to international ETFs' },
+      simple: { title: 'Simple', desc: 'Invest in a few clicks' },
+      support: { title: 'Support', desc: 'Personal guidance when needed' }
+    },
+    howItWorks: {
+      title: 'How does it work?',
+      step1: { title: 'Create account', desc: 'Register for free in 2 minutes' },
+      step2: { title: 'Build portfolio', desc: 'Choose your own ETFs or use pre-made portfolios' },
+      step3: { title: 'Start investing', desc: 'Start investing from €50' }
+    },
+    pricing: {
+      title: 'Choose your account type',
+      free: {
+        title: 'Free Account',
+        price: '€0',
+        period: '/forever',
+        features: ['Simulate investments', 'Create model portfolios', 'Use all tools'],
+        cta: 'Start Free'
+      },
+      paid: {
+        title: 'Investor Account',
+        price: '€250',
+        period: '/year',
+        badge: 'POPULAR',
+        features: ['Everything from Free Account', 'Invest real money', 'Deposit and withdraw funds', 'Portfolio tracking'],
+        cta: 'Upgrade to Investor'
+      }
+    },
+    etfPreview: {
+      title: 'Discover our ETF Database',
+      subtitle: 'Get access to hundreds of ETFs with real-time prices and detailed information',
+      name: 'Name',
+      isin: 'ISIN',
+      category: 'Category',
+      ter: 'TER',
+      ytd: 'YTD',
+      cta: 'View full database →'
+    },
+    etfDetail: {
+      title: 'Detailed ETF Information',
+      subtitle: 'Each ETF contains extensive details to help you make the right choice',
+      basicInfo: 'Basic Info',
+      details: 'Details',
+      fundSize: 'Fund Size',
+      vol1y: 'Vol 1Y',
+      holdings: 'Holdings',
+      distribution: 'Distribution',
+      historicalReturns: 'Historical Returns',
+      cta: 'Discover more ETFs →'
+    },
+    cta: {
+      title: 'Ready to get started?',
+      subtitle: 'Create a free account today and discover the possibilities',
+      button: 'Start investing →'
+    }
+  },
+  de: {
+    nav: {
+      home: 'Startseite',
+      features: 'Vorteile',
+      howItWorks: 'Wie es funktioniert',
+      pricing: 'Preise',
+      login: 'Anmelden',
+      startNow: 'Jetzt starten'
+    },
+    tagline: 'Ihr digitales Sparschwein für globales Investieren',
+    hero: {
+      title: 'Verwalten Sie jetzt Ihr eigenes Vermögen',
+      subtitle: 'Investieren Sie weltweit mit nur wenigen Klicks. Einfach und übersichtlich. Mit unserer Unterstützung bei Fragen.',
+      cta: 'Mit Investieren beginnen →'
+    },
+    features: {
+      title: 'Warum PIGG?',
+      lowCost: { title: 'Niedrige Kosten', desc: 'Keine versteckten Gebühren oder hohe Kosten' },
+      global: { title: 'Global investieren', desc: 'Zugang zu internationalen ETFs' },
+      simple: { title: 'Einfach', desc: 'In wenigen Klicks investieren' },
+      support: { title: 'Unterstützung', desc: 'Persönliche Begleitung bei Bedarf' }
+    },
+    howItWorks: {
+      title: 'Wie funktioniert es?',
+      step1: { title: 'Konto erstellen', desc: 'Kostenlos in 2 Minuten registrieren' },
+      step2: { title: 'Portfolio zusammenstellen', desc: 'Wählen Sie Ihre eigenen ETFs oder nutzen Sie vorgefertigte Portfolios' },
+      step3: { title: 'Mit Investieren beginnen', desc: 'Investieren Sie ab €50' }
+    },
+    pricing: {
+      title: 'Wählen Sie Ihren Kontotyp',
+      free: {
+        title: 'Kostenloses Konto',
+        price: '€0',
+        period: '/für immer',
+        features: ['Investitionen simulieren', 'Modellportfolios erstellen', 'Alle Tools nutzen'],
+        cta: 'Kostenlos starten'
+      },
+      paid: {
+        title: 'Anleger-Konto',
+        price: '€250',
+        period: '/Jahr',
+        badge: 'BELIEBT',
+        features: ['Alles vom kostenlosen Konto', 'Echtes Geld investieren', 'Geld einzahlen und abheben', 'Portfolio-Tracking'],
+        cta: 'Auf Anleger upgraden'
+      }
+    },
+    etfPreview: {
+      title: 'Entdecken Sie unsere ETF-Datenbank',
+      subtitle: 'Erhalten Sie Zugang zu Hunderten von ETFs mit Echtzeitpreisen und detaillierten Informationen',
+      name: 'Name',
+      isin: 'ISIN',
+      category: 'Kategorie',
+      ter: 'TER',
+      ytd: 'YTD',
+      cta: 'Vollständige Datenbank anzeigen →'
+    },
+    etfDetail: {
+      title: 'Detaillierte ETF-Informationen',
+      subtitle: 'Jeder ETF enthält umfangreiche Details, um Ihnen bei der richtigen Wahl zu helfen',
+      basicInfo: 'Grundlegende Informationen',
+      details: 'Details',
+      fundSize: 'Fondsgröße',
+      vol1y: 'Vol 1J',
+      holdings: 'Positionen',
+      distribution: 'Ausschüttung',
+      historicalReturns: 'Historische Renditen',
+      cta: 'Mehr ETFs entdecken →'
+    },
+    cta: {
+      title: 'Bereit anzufangen?',
+      subtitle: 'Erstellen Sie noch heute ein kostenloses Konto und entdecken Sie die Möglichkeiten',
+      button: 'Mit Investieren beginnen →'
+    }
+  },
+  fr: {
+    nav: {
+      home: 'Accueil',
+      features: 'Avantages',
+      howItWorks: 'Comment ça marche',
+      pricing: 'Tarifs',
+      login: 'Connexion',
+      startNow: 'Commencer maintenant'
+    },
+    tagline: 'Votre tirelire numérique pour investir globalement',
+    hero: {
+      title: 'Gérez maintenant votre propre patrimoine',
+      subtitle: 'Investissez dans le monde entier en quelques clics. Simple et clair. Avec notre soutien quand vous avez des questions.',
+      cta: 'Commencer à investir →'
+    },
+    features: {
+      title: 'Pourquoi PIGG?',
+      lowCost: { title: 'Coûts faibles', desc: 'Pas de frais cachés ou de coûts élevés' },
+      global: { title: 'Investissement mondial', desc: 'Accès aux ETF internationaux' },
+      simple: { title: 'Simple', desc: 'Investir en quelques clics' },
+      support: { title: 'Support', desc: 'Accompagnement personnalisé si nécessaire' }
+    },
+    howItWorks: {
+      title: 'Comment ça marche?',
+      step1: { title: 'Créer un compte', desc: 'Inscrivez-vous gratuitement en 2 minutes' },
+      step2: { title: 'Construire un portefeuille', desc: 'Choisissez vos propres ETF ou utilisez des portefeuilles prédéfinis' },
+      step3: { title: 'Commencer à investir', desc: 'Investissez à partir de €50' }
+    },
+    pricing: {
+      title: 'Choisissez votre type de compte',
+      free: {
+        title: 'Compte Gratuit',
+        price: '€0',
+        period: '/toujours',
+        features: ['Simuler des investissements', 'Créer des portefeuilles modèles', 'Utiliser tous les outils'],
+        cta: 'Commencer Gratuitement'
+      },
+      paid: {
+        title: 'Compte Investisseur',
+        price: '€250',
+        period: '/an',
+        badge: 'POPULAIRE',
+        features: ['Tout du Compte Gratuit', 'Investir de l\'argent réel', 'Déposer et retirer des fonds', 'Suivi du portefeuille'],
+        cta: 'Passer à Investisseur'
+      }
+    },
+    etfPreview: {
+      title: 'Découvrez notre base de données ETF',
+      subtitle: 'Accédez à des centaines d\'ETF avec des prix en temps réel et des informations détaillées',
+      name: 'Nom',
+      isin: 'ISIN',
+      category: 'Catégorie',
+      ter: 'TER',
+      ytd: 'YTD',
+      cta: 'Voir la base de données complète →'
+    },
+    etfDetail: {
+      title: 'Informations détaillées sur les ETF',
+      subtitle: 'Chaque ETF contient des détails complets pour vous aider à faire le bon choix',
+      basicInfo: 'Informations de base',
+      details: 'Détails',
+      fundSize: 'Taille du fonds',
+      vol1y: 'Vol 1A',
+      holdings: 'Positions',
+      distribution: 'Distribution',
+      historicalReturns: 'Rendements historiques',
+      cta: 'Découvrir plus d\'ETF →'
+    },
+    cta: {
+      title: 'Prêt à commencer?',
+      subtitle: 'Créez un compte gratuit aujourd\'hui et découvrez les possibilités',
+      button: 'Commencer à investir →'
+    }
+  },
+  es: {
+    nav: {
+      home: 'Inicio',
+      features: 'Ventajas',
+      howItWorks: 'Cómo funciona',
+      pricing: 'Precios',
+      login: 'Iniciar sesión',
+      startNow: 'Empezar ahora'
+    },
+    tagline: 'Tu hucha digital para invertir globalmente',
+    hero: {
+      title: 'Gestiona ahora tu propio patrimonio',
+      subtitle: 'Invierte en todo el mundo con solo unos clics. Simple y claro. Con nuestro apoyo cuando tengas preguntas.',
+      cta: 'Empezar a invertir →'
+    },
+    features: {
+      title: '¿Por qué PIGG?',
+      lowCost: { title: 'Costos bajos', desc: 'Sin tarifas ocultas o costos altos' },
+      global: { title: 'Inversión global', desc: 'Acceso a ETFs internacionales' },
+      simple: { title: 'Simple', desc: 'Invertir en pocos clics' },
+      support: { title: 'Soporte', desc: 'Orientación personalizada cuando sea necesario' }
+    },
+    howItWorks: {
+      title: '¿Cómo funciona?',
+      step1: { title: 'Crear cuenta', desc: 'Regístrate gratis en 2 minutos' },
+      step2: { title: 'Construir cartera', desc: 'Elige tus propios ETFs o usa carteras prediseñadas' },
+      step3: { title: 'Empezar a invertir', desc: 'Comienza a invertir desde €50' }
+    },
+    pricing: {
+      title: 'Elige tu tipo de cuenta',
+      free: {
+        title: 'Cuenta Gratuita',
+        price: '€0',
+        period: '/siempre',
+        features: ['Simular inversiones', 'Crear carteras modelo', 'Usar todas las herramientas'],
+        cta: 'Empezar Gratis'
+      },
+      paid: {
+        title: 'Cuenta Inversor',
+        price: '€250',
+        period: '/año',
+        badge: 'POPULAR',
+        features: ['Todo de Cuenta Gratuita', 'Invertir dinero real', 'Depositar y retirar fondos', 'Seguimiento de cartera'],
+        cta: 'Actualizar a Inversor'
+      }
+    },
+    etfPreview: {
+      title: 'Descubre nuestra base de datos de ETF',
+      subtitle: 'Accede a cientos de ETFs con precios en tiempo real e información detallada',
+      name: 'Nombre',
+      isin: 'ISIN',
+      category: 'Categoría',
+      ter: 'TER',
+      ytd: 'YTD',
+      cta: 'Ver base de datos completa →'
+    },
+    etfDetail: {
+      title: 'Información detallada de ETF',
+      subtitle: 'Cada ETF contiene detalles extensos para ayudarte a tomar la decisión correcta',
+      basicInfo: 'Información básica',
+      details: 'Detalles',
+      fundSize: 'Tamaño del fondo',
+      vol1y: 'Vol 1A',
+      holdings: 'Posiciones',
+      distribution: 'Distribución',
+      historicalReturns: 'Rendimientos históricos',
+      cta: 'Descubrir más ETFs →'
+    },
+    cta: {
+      title: '¿Listo para empezar?',
+      subtitle: 'Crea una cuenta gratuita hoy y descubre las posibilidades',
+      button: 'Empezar a invertir →'
+    }
+  }
+};
+
 const ETFPortal = () => {
   // Check for token BEFORE any state initialization
   const urlParams = new URLSearchParams(window.location.search);
@@ -400,6 +774,8 @@ const ETFPortal = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [etfs, setEtfs] = useState(SAMPLE_ETFS);
   const [filteredEtfs, setFilteredEtfs] = useState(SAMPLE_ETFS);
+  const [etfPrices, setEtfPrices] = useState({});
+  const [etfPricesLastUpdated, setEtfPricesLastUpdated] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     category: '',
@@ -444,6 +820,10 @@ const ETFPortal = () => {
   const [portfolioValue, setPortfolioValue] = useState(10000);
   const [showEditPortfolio, setShowEditPortfolio] = useState(false);
   const [customBuildStep, setCustomBuildStep] = useState('profile'); // 'profile', 'categories', 'selectETFs'
+  const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem('language');
+    return saved || 'nl';
+  });
   const [selectedProfile, setSelectedProfile] = useState(() => {
     const saved = localStorage.getItem('selectedProfile');
     return saved || null;
@@ -498,6 +878,14 @@ const ETFPortal = () => {
       stdDev: 0.12 // 12% estimated
     }
   };
+
+  // Persist language to localStorage
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  // Get current translations
+  const t = translations[language] || translations.nl;
 
 useEffect(() => {
   const loadETFs = async () => {
@@ -632,6 +1020,13 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem('categoriesCompleted', JSON.stringify(categoriesCompleted));
   }, [categoriesCompleted]);
+
+  // Fetch ETF prices when entering ETF Database page
+  useEffect(() => {
+    if (currentPage === 'etfDatabase' && user) {
+      fetchAllETFPrices();
+    }
+  }, [currentPage]);
 
   // Helper function to calculate current portfolio value
   const calculateCurrentPortfolioValue = (details) => {
@@ -852,6 +1247,44 @@ useEffect(() => {
     } catch (error) {
       console.error('Registration error:', error);
       alert('Registratie mislukt. Probeer opnieuw.');
+    }
+  };
+
+  // Fetch ETF prices for ETF Database
+  const fetchAllETFPrices = async () => {
+    try {
+      console.log('📊 Fetching ETF prices for database...');
+
+      // Get all unique ISINs from the ETF list
+      const isins = etfs
+        .map(etf => etf.isin)
+        .filter(Boolean)
+        .filter((isin, index, self) => self.indexOf(isin) === index); // unique ISINs
+
+      if (isins.length === 0) {
+        console.log('No ISINs to fetch prices for');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/fetch-etf-prices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isins })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('✅ ETF prices fetched:', data.prices);
+        setEtfPrices(data.prices);
+        setEtfPricesLastUpdated(data.timestamp);
+      } else {
+        console.error('Failed to fetch ETF prices:', data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching ETF prices:', error);
     }
   };
 
@@ -1382,7 +1815,20 @@ useEffect(() => {
 
         {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (
           <div className="mt-8 sm:mt-12 bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white">Je Huidige Portfolio</h2>
+            <div className="flex justify-between items-start mb-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Je Huidige Portfolio</h2>
+              {investmentDetails.pricesLastUpdated && (
+                <div className="text-xs text-gray-500">
+                  Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              )}
+            </div>
             <p className="text-sm sm:text-base text-gray-400 mb-6">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
               onClick={() => setCurrentPage('dashboard')}
@@ -1644,38 +2090,51 @@ useEffect(() => {
                   </svg>
                   <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-xs sm:text-sm text-gray-400">{t.tagline}</div>
               </div>
 
               {/* Menu Items */}
               <div className="hidden md:flex gap-6">
                 <button onClick={() => scrollToSection('hero')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  Home
+                  {t.nav.home}
                 </button>
                 <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  Voordelen
+                  {t.nav.features}
                 </button>
                 <button onClick={() => scrollToSection('how-it-works')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  Hoe het werkt
+                  {t.nav.howItWorks}
                 </button>
                 <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  Prijzen
+                  {t.nav.pricing}
                 </button>
               </div>
             </div>
 
-            <div className="flex gap-3 sm:gap-4">
+            <div className="flex gap-3 sm:gap-4 items-center">
+              {/* Language Selector */}
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors"
+              >
+                <option value="nl">🇳🇱 NL</option>
+                <option value="en">🇬🇧 EN</option>
+                <option value="de">🇩🇪 DE</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="es">🇪🇸 ES</option>
+              </select>
+
               <button
                 onClick={() => setCurrentPage('login')}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base"
               >
-                Login
+                {t.nav.login}
               </button>
               <button
                 onClick={() => setCurrentPage('register')}
                 className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
               >
-                Start nu
+                {t.nav.startNow}
               </button>
             </div>
           </div>
@@ -1689,16 +2148,16 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
           <div className="text-white">
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
-              Beheer nu je eigen vermogen
+              {t.hero.title}
             </h1>
             <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-gray-300 leading-relaxed">
-              Beleg nu in een paar klikken in de hele wereld. Heel simpel en overzichtelijk. Met eventueel onze ondersteuning wanneer je vragen hebt.
+              {t.hero.subtitle}
             </p>
             <button
               onClick={() => setCurrentPage('register')}
               className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
             >
-              Begin met beleggen →
+              {t.hero.cta}
             </button>
           </div>
 
@@ -2002,62 +2461,158 @@ useEffect(() => {
       <section id="pricing" className="py-20 bg-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Transparante prijzen</h2>
-            <p className="text-xl text-gray-300">Kies het plan dat bij jou past</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">{t.pricing.title}</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             {/* Free Plan */}
             <div className="bg-gray-900/95 backdrop-blur-sm border-2 border-gray-700 rounded-2xl p-8 flex flex-col h-full">
-              <h3 className="text-2xl font-bold text-white mb-4">Gratis Account</h3>
-              <div className="text-5xl font-bold text-white mb-6">€0<span className="text-xl text-gray-400">/jaar</span></div>
+              <h3 className="text-2xl font-bold text-white mb-4">{t.pricing.free.title}</h3>
+              <div className="text-5xl font-bold text-white mb-6">{t.pricing.free.price}<span className="text-xl text-gray-400">{t.pricing.free.period}</span></div>
               <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Toegang tot hele ETF database (3000+)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Maak modelportefeuilles</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Gebruik alle tools</span>
-                </li>
+                {t.pricing.free.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <span className="text-[#28EBCF] text-xl">✓</span>
+                    <span className="text-gray-300">{feature}</span>
+                  </li>
+                ))}
               </ul>
               <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-gray-600 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold mt-auto">
-                Start Gratis
+                {t.pricing.free.cta}
               </button>
             </div>
 
             {/* Paid Plan */}
             <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8 relative flex flex-col h-full">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#28EBCF] text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
-                POPULAIR
+                {t.pricing.paid.badge}
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Belegger Account</h3>
-              <div className="text-5xl font-bold text-white mb-6">€250<span className="text-xl text-gray-400">/jaar</span></div>
+              <h3 className="text-2xl font-bold text-white mb-4">{t.pricing.paid.title}</h3>
+              <div className="text-5xl font-bold text-white mb-6">{t.pricing.paid.price}<span className="text-xl text-gray-400">{t.pricing.paid.period}</span></div>
               <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Alles van Gratis Account</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Investeer echt geld</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Geld storten en opnemen</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#28EBCF] text-xl">✓</span>
-                  <span className="text-gray-300">Portfolio tracking</span>
-                </li>
+                {t.pricing.paid.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <span className="text-[#28EBCF] text-xl">✓</span>
+                    <span className="text-gray-300">{feature}</span>
+                  </li>
+                ))}
               </ul>
               <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold mt-auto">
-                Upgrade Naar Belegger
+                {t.pricing.paid.cta}
               </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ETF Database Preview Section */}
+      <section id="etf-preview" className="py-20 bg-gray-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 text-center">{t.etfPreview.title}</h2>
+          <p className="text-lg text-gray-300 mb-10 text-center">{t.etfPreview.subtitle}</p>
+
+          <div className="bg-[#1A1B1F] rounded-2xl shadow-xl p-6 border border-gray-800 mb-8">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.name}</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm hidden md:table-cell">{t.etfPreview.isin}</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm hidden lg:table-cell">{t.etfPreview.category}</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.ter}</th>
+                    <th className="text-right py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.ytd}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SAMPLE_ETFS.slice(0, 5).map((etf, idx) => (
+                    <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="text-white font-medium text-sm">{etf.naam}</div>
+                        <div className="text-gray-500 text-xs md:hidden">{etf.isin}</div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-300 text-sm hidden md:table-cell">{etf.isin}</td>
+                      <td className="py-3 px-4 text-gray-300 text-sm hidden lg:table-cell">{etf.categorie}</td>
+                      <td className="py-3 px-4 text-right text-[#28EBCF] font-medium text-sm">{etf['ter p.a.']}</td>
+                      <td className={`py-3 px-4 text-right font-medium text-sm ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {etf.ytd}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setCurrentPage('register')}
+                className="px-8 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
+              >
+                {t.etfPreview.cta}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ETF Detail Preview Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 text-center">{t.etfDetail.title}</h2>
+          <p className="text-lg text-gray-300 mb-10 text-center">{t.etfDetail.subtitle}</p>
+
+          <div className="max-w-3xl mx-auto bg-[#1A1B1F] rounded-xl shadow-2xl border border-gray-800">
+            <div className="bg-[#1A1B1F] border-b border-gray-800 px-4 py-3 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-white">{SAMPLE_ETFS[0].naam}</h3>
+              <div className="text-2xl text-gray-400">×</div>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="font-semibold mb-2 text-white">{t.etfDetail.basicInfo}</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.isin}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].isin}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.category}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].categorie}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.ter}:</span><span className="text-[#28EBCF] font-medium">{SAMPLE_ETFS[0]['ter p.a.']}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.ytd}:</span><span className="text-green-500">{SAMPLE_ETFS[0].ytd}</span></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="font-semibold mb-2 text-white">{t.etfDetail.details}</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.fundSize}:</span><span className="text-gray-300">€{SAMPLE_ETFS[0]['fund size (in m €)']}M</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.vol1y}:</span><span className="text-gray-300">{SAMPLE_ETFS[0]['volatility 1y']}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.holdings}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].holdings}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.distribution}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].distribution}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="font-semibold mb-2 text-sm text-white">{t.etfDetail.historicalReturns}</div>
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={[
+                    { year: '2021', return: safeParseFloat(SAMPLE_ETFS[0]['2021']) },
+                    { year: '2022', return: safeParseFloat(SAMPLE_ETFS[0]['2022']) },
+                    { year: '2023', return: safeParseFloat(SAMPLE_ETFS[0]['2023']) },
+                    { year: '2024', return: safeParseFloat(SAMPLE_ETFS[0]['2024']) }
+                  ]}>
+                    <XAxis dataKey="year" tick={{fontSize: 12, fill: '#9CA3AF'}} />
+                    <YAxis tick={{fontSize: 12, fill: '#9CA3AF'}} />
+                    <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
+                    <Bar dataKey="return" fill="#28EBCF" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="text-center pt-2">
+                <button
+                  onClick={() => setCurrentPage('register')}
+                  className="px-8 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
+                >
+                  {t.etfDetail.cta}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2066,13 +2621,13 @@ useEffect(() => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Klaar om te beginnen?</h2>
-          <p className="text-xl text-gray-300 mb-10">Maak vandaag nog een gratis account aan en ontdek de mogelijkheden</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">{t.cta.title}</h2>
+          <p className="text-xl text-gray-300 mb-10">{t.cta.subtitle}</p>
           <button
             onClick={() => setCurrentPage('register')}
             className="px-12 py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-xl hover:bg-[#20D4BA] transition-all font-bold"
           >
-            Begin met beleggen →
+            {t.cta.button}
           </button>
         </div>
       </section>
@@ -2999,7 +3554,20 @@ useEffect(() => {
 
           {/* Mobile view - Cards */}
           <div className="block md:hidden space-y-3">
-            {filteredEtfs.map((etf, idx) => (
+            {etfPricesLastUpdated && (
+              <div className="text-xs text-gray-500 mb-2">
+                Prijzen bijgewerkt: {new Date(etfPricesLastUpdated).toLocaleString('nl-NL', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            )}
+            {filteredEtfs.map((etf, idx) => {
+              const priceData = etfPrices[etf.isin];
+              return (
               <div key={idx} className="bg-[#1A1B1F] rounded-lg shadow p-3 border border-gray-800">
                 <button
                   onClick={() => setSelectedETF(etf)}
@@ -3010,6 +3578,12 @@ useEffect(() => {
                 <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                   <div><span className="text-gray-500">ISIN:</span> <span className="font-medium text-gray-300">{etf.isin}</span></div>
                   <div><span className="text-gray-500">Cat:</span> <span className="font-medium text-gray-300">{etf.categorie}</span></div>
+                  {priceData && (
+                    <>
+                      <div><span className="text-gray-500">Price:</span> <span className="font-medium text-white">{priceData.currency} {priceData.price.toFixed(2)}</span></div>
+                      <div><span className="text-gray-500">Change:</span> <span className={`font-medium ${priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>{priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%</span></div>
+                    </>
+                  )}
                   <div><span className="text-gray-500">TER:</span> <span className="font-medium text-gray-300">{etf['ter p.a.']}</span></div>
                   <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</span></div>
                 </div>
@@ -3020,11 +3594,25 @@ useEffect(() => {
                   + Toevoegen aan Portfolio
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Desktop view - Table */}
           <div className="hidden md:block bg-[#1A1B1F] rounded-2xl shadow-lg overflow-hidden border border-gray-800">
+            {etfPricesLastUpdated && (
+              <div className="px-4 py-2 bg-gray-800/30 border-b border-gray-800">
+                <span className="text-xs text-gray-500">
+                  Prijzen bijgewerkt: {new Date(etfPricesLastUpdated).toLocaleString('nl-NL', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+              </div>
+            )}
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full">
                 <thead className="bg-gray-800/50 sticky top-0">
@@ -3032,14 +3620,18 @@ useEffect(() => {
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Current Price</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change %</th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">2024</th>
                     <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
-                  {filteredEtfs.map((etf, idx) => (
+                  {filteredEtfs.map((etf, idx) => {
+                    const priceData = etfPrices[etf.isin];
+                    return (
                     <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                       <td className="px-4 py-3">
                         <button
@@ -3051,12 +3643,18 @@ useEffect(() => {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
                       <td className="px-4 py-3 text-sm text-gray-300">{etf.categorie}</td>
+                      <td className="px-4 py-3 text-sm text-right text-white font-medium">
+                        {priceData ? `${priceData.currency} ${priceData.price.toFixed(2)}` : '-'}
+                      </td>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {priceData ? `${priceData.change >= 0 ? '+' : ''}${priceData.change.toFixed(2)}` : '-'}
+                      </td>
+                      <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {priceData ? `${priceData.changePercent >= 0 ? '+' : ''}${priceData.changePercent.toFixed(2)}%` : '-'}
+                      </td>
                       <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {etf.ytd}
-                      </td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {etf['2024']}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button
@@ -3067,7 +3665,8 @@ useEffect(() => {
                         </button>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -4667,6 +5266,7 @@ useEffect(() => {
     const [showWithdrawal, setShowWithdrawal] = useState(false);
     const [depositAmount, setDepositAmount] = useState('');
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
+    const [portfolioEvents, setPortfolioEvents] = useState([]); // Track deposits, withdrawals, profile changes
     const metrics = calculatePortfolioMetrics();
 
     const horizon = parseInt(investmentDetails.horizon) || 10;
@@ -5018,7 +5618,20 @@ useEffect(() => {
         
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
+              {investmentDetails.pricesLastUpdated && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              )}
+            </div>
             <div className="flex gap-3">
               <button onClick={() => setShowDeposit(true)} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
               <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
