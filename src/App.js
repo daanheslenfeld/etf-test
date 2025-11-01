@@ -292,6 +292,66 @@ const translations = {
       title: 'Klaar om te beginnen?',
       subtitle: 'Maak vandaag nog een gratis account aan en ontdek de mogelijkheden',
       button: 'Begin met beleggen →'
+    },
+    common: {
+      welcome: 'Welkom',
+      welcomeBack: 'Welkom terug',
+      logout: 'Uitloggen',
+      save: 'Opslaan',
+      cancel: 'Annuleren',
+      password: 'Wachtwoord',
+      email: 'E-mail',
+      name: 'Naam',
+      amount: 'Bedrag',
+      loading: 'laden...',
+      dashboard: 'Dashboard',
+      portfolio: 'Portfolio',
+      addToPortfolio: '+ Toevoegen aan Portfolio',
+      searchPlaceholder: 'Zoek op naam of ISIN...',
+      etfDataLoading: 'ETF data laden...',
+      dashboardLoading: 'Dashboard laden...'
+    },
+    portfolio: {
+      title: 'Portfolio',
+      overview: 'Portfolio Overzicht',
+      edit: 'Portfolio Aanpassen',
+      build: 'Portfolio Samenstellen',
+      balance: 'Portfolio Balanceren',
+      purchase: 'Portfolio Aankopen',
+      value: 'Portfolio Waarde',
+      metrics: 'Portfolio Metrices',
+      holdings: 'Portfolio Holdings',
+      addToPortfolio: 'Toevoegen aan Portfolio',
+      customBuild: 'Zelf Samenstellen',
+      customBuildDesc: 'Bouw je eigen portfolio stap voor stap',
+      premade: 'Kant-en-klaar',
+      premadeDesc: 'Kies uit onze kant-en-klare portfolio\'s',
+      yourCurrent: 'Je Huidige Portfolio',
+      viewPortfolio: 'Bekijk Portfolio',
+      etfsInPortfolio: 'ETF\'s in je portfolio',
+      monthlyDeposit: 'Maandelijkse Storting',
+      saveChanges: 'Wijzigingen Opslaan',
+      emptyPortfolio: 'Je portfolio is leeg. Voeg ETF\'s toe vanaf de ETF Database pagina.'
+    },
+    auth: {
+      login: 'Login',
+      register: 'Registreren',
+      password: 'Wachtwoord',
+      confirmPassword: 'Bevestig Wachtwoord',
+      repeatPassword: 'Herhaal Wachtwoord',
+      forgotPassword: 'Wachtwoord vergeten?',
+      resetPassword: 'Wachtwoord Resetten',
+      newPassword: 'Nieuw Wachtwoord',
+      confirmEmail: 'Bevestig je Email',
+      firstName: 'Voornaam',
+      lastName: 'Achternaam',
+      street: 'Straatnaam',
+      incorrectCredentials: 'Onjuiste email of wachtwoord',
+      passwordMismatch: 'Wachtwoorden komen niet overeen',
+      passwordMinLength: 'Wachtwoord moet minimaal 6 karakters zijn',
+      emailFound: 'Email gevonden! Voer een nieuw wachtwoord in.',
+      passwordChanged: 'Wachtwoord succesvol gewijzigd! Je wordt doorgestuurd naar de login pagina...',
+      enterEmailReset: 'Voer je email adres in om je wachtwoord te resetten.'
     }
   },
   en: {
@@ -366,6 +426,66 @@ const translations = {
       title: 'Ready to get started?',
       subtitle: 'Create a free account today and discover the possibilities',
       button: 'Start investing →'
+    },
+    common: {
+      welcome: 'Welcome',
+      welcomeBack: 'Welcome back',
+      logout: 'Logout',
+      save: 'Save',
+      cancel: 'Cancel',
+      password: 'Password',
+      email: 'Email',
+      name: 'Name',
+      amount: 'Amount',
+      loading: 'loading...',
+      dashboard: 'Dashboard',
+      portfolio: 'Portfolio',
+      addToPortfolio: '+ Add to Portfolio',
+      searchPlaceholder: 'Search by name or ISIN...',
+      etfDataLoading: 'Loading ETF data...',
+      dashboardLoading: 'Loading dashboard...'
+    },
+    portfolio: {
+      title: 'Portfolio',
+      overview: 'Portfolio Overview',
+      edit: 'Edit Portfolio',
+      build: 'Build Portfolio',
+      balance: 'Rebalance Portfolio',
+      purchase: 'Purchase Portfolio',
+      value: 'Portfolio Value',
+      metrics: 'Portfolio Metrics',
+      holdings: 'Portfolio Holdings',
+      addToPortfolio: 'Add to Portfolio',
+      customBuild: 'Build Your Own',
+      customBuildDesc: 'Build your own portfolio step by step',
+      premade: 'Ready-made',
+      premadeDesc: 'Choose from our ready-made portfolios',
+      yourCurrent: 'Your Current Portfolio',
+      viewPortfolio: 'View Portfolio',
+      etfsInPortfolio: 'ETFs in your portfolio',
+      monthlyDeposit: 'Monthly Deposit',
+      saveChanges: 'Save Changes',
+      emptyPortfolio: 'Your portfolio is empty. Add ETFs from the ETF Database page.'
+    },
+    auth: {
+      login: 'Login',
+      register: 'Register',
+      password: 'Password',
+      confirmPassword: 'Confirm Password',
+      repeatPassword: 'Repeat Password',
+      forgotPassword: 'Forgot password?',
+      resetPassword: 'Reset Password',
+      newPassword: 'New Password',
+      confirmEmail: 'Confirm your Email',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      street: 'Street',
+      incorrectCredentials: 'Incorrect email or password',
+      passwordMismatch: 'Passwords do not match',
+      passwordMinLength: 'Password must be at least 6 characters',
+      emailFound: 'Email found! Enter a new password.',
+      passwordChanged: 'Password successfully changed! You will be redirected to the login page...',
+      enterEmailReset: 'Enter your email address to reset your password.'
     }
   },
   de: {
@@ -440,6 +560,66 @@ const translations = {
       title: 'Bereit anzufangen?',
       subtitle: 'Erstellen Sie noch heute ein kostenloses Konto und entdecken Sie die Möglichkeiten',
       button: 'Mit Investieren beginnen →'
+    },
+    common: {
+      welcome: 'Willkommen',
+      welcomeBack: 'Willkommen zurück',
+      logout: 'Abmelden',
+      save: 'Speichern',
+      cancel: 'Abbrechen',
+      password: 'Passwort',
+      email: 'E-Mail',
+      name: 'Name',
+      amount: 'Betrag',
+      loading: 'lädt...',
+      dashboard: 'Dashboard',
+      portfolio: 'Portfolio',
+      addToPortfolio: '+ Zum Portfolio hinzufügen',
+      searchPlaceholder: 'Nach Name oder ISIN suchen...',
+      etfDataLoading: 'ETF-Daten werden geladen...',
+      dashboardLoading: 'Dashboard wird geladen...'
+    },
+    portfolio: {
+      title: 'Portfolio',
+      overview: 'Portfolio-Übersicht',
+      edit: 'Portfolio bearbeiten',
+      build: 'Portfolio erstellen',
+      balance: 'Portfolio ausgleichen',
+      purchase: 'Portfolio kaufen',
+      value: 'Portfolio-Wert',
+      metrics: 'Portfolio-Metriken',
+      holdings: 'Portfolio-Bestände',
+      addToPortfolio: 'Zum Portfolio hinzufügen',
+      customBuild: 'Selbst erstellen',
+      customBuildDesc: 'Erstellen Sie Ihr eigenes Portfolio Schritt für Schritt',
+      premade: 'Fertig',
+      premadeDesc: 'Wählen Sie aus unseren fertigen Portfolios',
+      yourCurrent: 'Ihr aktuelles Portfolio',
+      viewPortfolio: 'Portfolio anzeigen',
+      etfsInPortfolio: 'ETFs in Ihrem Portfolio',
+      monthlyDeposit: 'Monatliche Einzahlung',
+      saveChanges: 'Änderungen speichern',
+      emptyPortfolio: 'Ihr Portfolio ist leer. Fügen Sie ETFs von der ETF-Datenbankseite hinzu.'
+    },
+    auth: {
+      login: 'Anmelden',
+      register: 'Registrieren',
+      password: 'Passwort',
+      confirmPassword: 'Passwort bestätigen',
+      repeatPassword: 'Passwort wiederholen',
+      forgotPassword: 'Passwort vergessen?',
+      resetPassword: 'Passwort zurücksetzen',
+      newPassword: 'Neues Passwort',
+      confirmEmail: 'Bestätigen Sie Ihre E-Mail',
+      firstName: 'Vorname',
+      lastName: 'Nachname',
+      street: 'Straße',
+      incorrectCredentials: 'Falsche E-Mail oder Passwort',
+      passwordMismatch: 'Passwörter stimmen nicht überein',
+      passwordMinLength: 'Passwort muss mindestens 6 Zeichen lang sein',
+      emailFound: 'E-Mail gefunden! Geben Sie ein neues Passwort ein.',
+      passwordChanged: 'Passwort erfolgreich geändert! Sie werden zur Anmeldeseite weitergeleitet...',
+      enterEmailReset: 'Geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen.'
     }
   },
   fr: {
@@ -514,6 +694,66 @@ const translations = {
       title: 'Prêt à commencer?',
       subtitle: 'Créez un compte gratuit aujourd\'hui et découvrez les possibilités',
       button: 'Commencer à investir →'
+    },
+    common: {
+      welcome: 'Bienvenue',
+      welcomeBack: 'Bienvenue de retour',
+      logout: 'Déconnexion',
+      save: 'Enregistrer',
+      cancel: 'Annuler',
+      password: 'Mot de passe',
+      email: 'Email',
+      name: 'Nom',
+      amount: 'Montant',
+      loading: 'chargement...',
+      dashboard: 'Tableau de bord',
+      portfolio: 'Portefeuille',
+      addToPortfolio: '+ Ajouter au portefeuille',
+      searchPlaceholder: 'Rechercher par nom ou ISIN...',
+      etfDataLoading: 'Chargement des données ETF...',
+      dashboardLoading: 'Chargement du tableau de bord...'
+    },
+    portfolio: {
+      title: 'Portefeuille',
+      overview: 'Aperçu du portefeuille',
+      edit: 'Modifier le portefeuille',
+      build: 'Construire un portefeuille',
+      balance: 'Rééquilibrer le portefeuille',
+      purchase: 'Acheter le portefeuille',
+      value: 'Valeur du portefeuille',
+      metrics: 'Métriques du portefeuille',
+      holdings: 'Avoirs du portefeuille',
+      addToPortfolio: 'Ajouter au portefeuille',
+      customBuild: 'Créer le vôtre',
+      customBuildDesc: 'Construisez votre propre portefeuille étape par étape',
+      premade: 'Prêt à l\'emploi',
+      premadeDesc: 'Choisissez parmi nos portefeuilles prêts à l\'emploi',
+      yourCurrent: 'Votre portefeuille actuel',
+      viewPortfolio: 'Voir le portefeuille',
+      etfsInPortfolio: 'ETF dans votre portefeuille',
+      monthlyDeposit: 'Dépôt mensuel',
+      saveChanges: 'Enregistrer les modifications',
+      emptyPortfolio: 'Votre portefeuille est vide. Ajoutez des ETF depuis la page de base de données ETF.'
+    },
+    auth: {
+      login: 'Connexion',
+      register: 'S\'inscrire',
+      password: 'Mot de passe',
+      confirmPassword: 'Confirmer le mot de passe',
+      repeatPassword: 'Répéter le mot de passe',
+      forgotPassword: 'Mot de passe oublié?',
+      resetPassword: 'Réinitialiser le mot de passe',
+      newPassword: 'Nouveau mot de passe',
+      confirmEmail: 'Confirmez votre email',
+      firstName: 'Prénom',
+      lastName: 'Nom de famille',
+      street: 'Rue',
+      incorrectCredentials: 'Email ou mot de passe incorrect',
+      passwordMismatch: 'Les mots de passe ne correspondent pas',
+      passwordMinLength: 'Le mot de passe doit contenir au moins 6 caractères',
+      emailFound: 'Email trouvé! Entrez un nouveau mot de passe.',
+      passwordChanged: 'Mot de passe modifié avec succès! Vous allez être redirigé vers la page de connexion...',
+      enterEmailReset: 'Entrez votre adresse email pour réinitialiser votre mot de passe.'
     }
   },
   es: {
@@ -588,6 +828,66 @@ const translations = {
       title: '¿Listo para empezar?',
       subtitle: 'Crea una cuenta gratuita hoy y descubre las posibilidades',
       button: 'Empezar a invertir →'
+    },
+    common: {
+      welcome: 'Bienvenido',
+      welcomeBack: 'Bienvenido de nuevo',
+      logout: 'Cerrar sesión',
+      save: 'Guardar',
+      cancel: 'Cancelar',
+      password: 'Contraseña',
+      email: 'Email',
+      name: 'Nombre',
+      amount: 'Cantidad',
+      loading: 'cargando...',
+      dashboard: 'Panel',
+      portfolio: 'Cartera',
+      addToPortfolio: '+ Agregar a la cartera',
+      searchPlaceholder: 'Buscar por nombre o ISIN...',
+      etfDataLoading: 'Cargando datos de ETF...',
+      dashboardLoading: 'Cargando panel...'
+    },
+    portfolio: {
+      title: 'Cartera',
+      overview: 'Resumen de la cartera',
+      edit: 'Editar cartera',
+      build: 'Construir cartera',
+      balance: 'Reequilibrar cartera',
+      purchase: 'Comprar cartera',
+      value: 'Valor de la cartera',
+      metrics: 'Métricas de la cartera',
+      holdings: 'Tenencias de la cartera',
+      addToPortfolio: 'Agregar a la cartera',
+      customBuild: 'Crear la tuya',
+      customBuildDesc: 'Construye tu propia cartera paso a paso',
+      premade: 'Prediseñada',
+      premadeDesc: 'Elige entre nuestras carteras prediseñadas',
+      yourCurrent: 'Tu cartera actual',
+      viewPortfolio: 'Ver cartera',
+      etfsInPortfolio: 'ETFs en tu cartera',
+      monthlyDeposit: 'Depósito mensual',
+      saveChanges: 'Guardar cambios',
+      emptyPortfolio: 'Tu cartera está vacía. Agrega ETFs desde la página de base de datos de ETF.'
+    },
+    auth: {
+      login: 'Iniciar sesión',
+      register: 'Registrarse',
+      password: 'Contraseña',
+      confirmPassword: 'Confirmar contraseña',
+      repeatPassword: 'Repetir contraseña',
+      forgotPassword: '¿Olvidaste tu contraseña?',
+      resetPassword: 'Restablecer contraseña',
+      newPassword: 'Nueva contraseña',
+      confirmEmail: 'Confirma tu email',
+      firstName: 'Nombre',
+      lastName: 'Apellido',
+      street: 'Calle',
+      incorrectCredentials: 'Email o contraseña incorrectos',
+      passwordMismatch: 'Las contraseñas no coinciden',
+      passwordMinLength: 'La contraseña debe tener al menos 6 caracteres',
+      emailFound: '¡Email encontrado! Ingresa una nueva contraseña.',
+      passwordChanged: '¡Contraseña cambiada con éxito! Serás redirigido a la página de inicio de sesión...',
+      enterEmailReset: 'Ingresa tu dirección de email para restablecer tu contraseña.'
     }
   }
 };
@@ -1753,7 +2053,7 @@ useEffect(() => {
                 }}
                 className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
               >
-                Uitloggen
+                {t.common.logout}
               </button>
             </div>
           </div>
@@ -2110,29 +2410,37 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex gap-3 sm:gap-4 items-center">
+            <div className="flex gap-2 sm:gap-3 items-center">
               {/* Language Selector */}
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors"
-              >
-                <option value="nl">🇳🇱 NL</option>
-                <option value="en">🇬🇧 EN</option>
-                <option value="de">🇩🇪 DE</option>
-                <option value="fr">🇫🇷 FR</option>
-                <option value="es">🇪🇸 ES</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="pl-10 pr-8 py-2 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[140px]"
+                  style={{
+                    backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: '8px center',
+                    backgroundSize: '24px 18px'
+                  }}
+                >
+                  <option value="nl">Nederlands</option>
+                  <option value="en">English</option>
+                  <option value="de">Deutsch</option>
+                  <option value="fr">Français</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
 
               <button
                 onClick={() => setCurrentPage('login')}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base w-[80px] sm:w-[90px] text-center whitespace-nowrap"
               >
                 {t.nav.login}
               </button>
               <button
                 onClick={() => setCurrentPage('register')}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base w-[110px] sm:w-[140px] text-center whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {t.nav.startNow}
               </button>
@@ -2643,7 +2951,7 @@ useEffect(() => {
     const handleLoginClick = async () => {
       const result = await handleLogin(email, password);
       if (!result.success) {
-        setError(result.message || 'Onjuiste email of wachtwoord');
+        setError(result.message || t.auth.incorrectCredentials);
       }
     };
 
@@ -2671,7 +2979,7 @@ useEffect(() => {
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
           <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">Welkom terug</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">{t.common.welcomeBack}</h2>
 
             {error && (
               <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
@@ -2681,24 +2989,24 @@ useEffect(() => {
 
             <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Email</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                  placeholder="Email"
+                  placeholder={t.common.email}
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Wachtwoord</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                  placeholder="Wachtwoord"
+                  placeholder={t.auth.password}
                 />
               </div>
 
@@ -2712,7 +3020,7 @@ useEffect(() => {
 
             <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-400">
               <button onClick={() => setCurrentPage('resetPassword')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
-                Wachtwoord vergeten?
+                {t.auth.forgotPassword}
               </button>
             </div>
 
@@ -2749,7 +3057,7 @@ useEffect(() => {
       }
 
       setError('');
-      setSuccess('Email gevonden! Voer een nieuw wachtwoord in.');
+      setSuccess(t.auth.emailFound);
       setStep(2);
     };
 
@@ -2760,12 +3068,12 @@ useEffect(() => {
       }
 
       if (newPassword !== confirmPassword) {
-        setError('Wachtwoorden komen niet overeen');
+        setError(t.auth.passwordMismatch);
         return;
       }
 
       if (newPassword.length < 6) {
-        setError('Wachtwoord moet minimaal 6 karakters zijn');
+        setError(t.auth.passwordMinLength);
         return;
       }
 
@@ -2777,7 +3085,7 @@ useEffect(() => {
       ));
 
       setError('');
-      setSuccess('Wachtwoord succesvol gewijzigd! Je wordt doorgestuurd naar de login pagina...');
+      setSuccess(t.auth.passwordChanged);
 
       setTimeout(() => {
         setCurrentPage('login');
@@ -2809,7 +3117,7 @@ useEffect(() => {
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
           <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">
-              Wachtwoord Resetten
+              {t.auth.resetPassword}
             </h2>
 
             {error && (
@@ -2827,16 +3135,16 @@ useEffect(() => {
             {step === 1 ? (
               <div className="space-y-3 sm:space-y-4">
                 <p className="text-sm text-gray-400 mb-4">
-                  Voer je email adres in om je wachtwoord te resetten.
+                  {t.auth.enterEmailReset}
                 </p>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Email</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                    placeholder="Email"
+                    placeholder={t.common.email}
                   />
                 </div>
 
@@ -2850,24 +3158,24 @@ useEffect(() => {
             ) : (
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Nieuw Wachtwoord</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.newPassword}</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                    placeholder="Nieuw wachtwoord"
+                    placeholder={t.auth.newPassword}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">Bevestig Wachtwoord</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.confirmPassword}</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                    placeholder="Bevestig wachtwoord"
+                    placeholder={t.auth.confirmPassword}
                   />
                 </div>
 
@@ -2875,7 +3183,7 @@ useEffect(() => {
                   onClick={handlePasswordReset}
                   className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
                 >
-                  Wachtwoord Resetten
+                  {t.auth.resetPassword}
                 </button>
               </div>
             )}
@@ -4495,7 +4803,7 @@ useEffect(() => {
                 }}
                 className="text-gray-400 hover:text-gray-200 font-medium"
               >
-                Uitloggen
+                {t.common.logout}
               </button>
             </div>
           </div>
@@ -5610,7 +5918,7 @@ useEffect(() => {
                 }}
                 className="text-gray-400 hover:text-white font-medium"
               >
-                Uitloggen
+                {t.common.logout}
               </button>
             </div>
           </div>
@@ -6651,7 +6959,7 @@ useEffect(() => {
                 }}
                 className="text-gray-400 hover:text-white font-medium"
               >
-                Uitloggen
+                {t.common.logout}
               </button>
             </div>
           </div>
@@ -6870,7 +7178,7 @@ useEffect(() => {
                 }}
                 className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
               >
-                Uitloggen
+                {t.common.logout}
               </button>
             </div>
           </div>
