@@ -1124,6 +1124,7 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('language');
     return saved || 'nl';
   });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(() => {
     const saved = localStorage.getItem('selectedProfile');
     return saved || null;
@@ -2364,59 +2365,68 @@ useEffect(() => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation with Menu */}
       <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <div className="flex flex-col items-start gap-2">
-                <div className="flex items-center gap-3">
-                  {/* Logo - Simple Piggy Bank Icon */}
-                  <svg viewBox="0 0 48 48" fill="none" className="w-12 h-12 sm:w-14 sm:h-14">
-                    {/* Piggy bank body */}
-                    <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
-
-                    {/* Coin slot */}
-                    <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-
-                    {/* Coin */}
-                    <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-                    <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-
-                    {/* Handle on top */}
-                    <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-
-                    {/* Feet */}
-                    <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                    <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-                  </svg>
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                </div>
-                <div className="text-xs sm:text-sm text-gray-400">{t.tagline}</div>
-              </div>
-
-              {/* Menu Items */}
-              <div className="hidden md:flex gap-6">
-                <button onClick={() => scrollToSection('hero')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  {t.nav.home}
-                </button>
-                <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  {t.nav.features}
-                </button>
-                <button onClick={() => scrollToSection('how-it-works')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  {t.nav.howItWorks}
-                </button>
-                <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  {t.nav.pricing}
-                </button>
+            {/* Logo */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div>
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">PIGG</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 hidden sm:block">{t.tagline}</div>
               </div>
             </div>
 
-            <div className="flex gap-2 sm:gap-3 items-center">
+            {/* Desktop Menu Items */}
+            <div className="hidden lg:flex gap-6">
+              <button onClick={() => scrollToSection('hero')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                {t.nav.home}
+              </button>
+              <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                {t.nav.features}
+              </button>
+              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                {t.nav.howItWorks}
+              </button>
+              <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                {t.nav.pricing}
+              </button>
+            </div>
+
+            {/* Right side - Mobile: only language + hamburger | Desktop: full buttons */}
+            <div className="flex gap-2 items-center">
               {/* Language Selector */}
               <div className="relative">
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="pl-10 pr-8 py-2 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[140px]"
+                  className="lg:hidden pl-8 pr-2 py-2 bg-gray-800 border border-gray-700 rounded text-white text-xs hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[70px]"
+                  style={{
+                    backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: '6px center',
+                    backgroundSize: '18px 13px'
+                  }}
+                >
+                  <option value="nl">NL</option>
+                  <option value="en">EN</option>
+                  <option value="de">DE</option>
+                  <option value="fr">FR</option>
+                  <option value="es">ES</option>
+                </select>
+
+                {/* Desktop Language Selector */}
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="hidden lg:block pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[140px]"
                   style={{
                     backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
                     backgroundRepeat: 'no-repeat',
@@ -2432,20 +2442,84 @@ useEffect(() => {
                 </select>
               </div>
 
+              {/* Desktop only: Login and Start Now buttons */}
               <button
                 onClick={() => setCurrentPage('login')}
-                className="px-3 sm:px-4 py-2 sm:py-2.5 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm sm:text-base w-[80px] sm:w-[90px] text-center whitespace-nowrap"
+                className="hidden lg:block px-4 py-2 text-white hover:text-[#28EBCF] transition-colors font-medium"
               >
                 {t.nav.login}
               </button>
               <button
                 onClick={() => setCurrentPage('register')}
-                className="px-3 sm:px-4 py-2 sm:py-2.5 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm sm:text-base w-[110px] sm:w-[140px] text-center whitespace-nowrap overflow-hidden text-ellipsis"
+                className="hidden lg:block px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap"
               >
                 {t.nav.startNow}
               </button>
+
+              {/* Hamburger Menu Button - Mobile only */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden mt-4 pb-4 border-t border-gray-700 pt-4 animate-fadeIn">
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {scrollToSection('hero'); setMobileMenuOpen(false);}}
+                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                >
+                  {t.nav.home}
+                </button>
+                <button
+                  onClick={() => {scrollToSection('features'); setMobileMenuOpen(false);}}
+                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                >
+                  {t.nav.features}
+                </button>
+                <button
+                  onClick={() => {scrollToSection('how-it-works'); setMobileMenuOpen(false);}}
+                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                >
+                  {t.nav.howItWorks}
+                </button>
+                <button
+                  onClick={() => {scrollToSection('pricing'); setMobileMenuOpen(false);}}
+                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                >
+                  {t.nav.pricing}
+                </button>
+
+                {/* Mobile menu buttons */}
+                <div className="border-t border-gray-700 pt-3 mt-2 flex flex-col gap-2">
+                  <button
+                    onClick={() => {setCurrentPage('login'); setMobileMenuOpen(false);}}
+                    className="text-left text-white hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    {t.nav.login}
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('register'); setMobileMenuOpen(false);}}
+                    className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-center"
+                  >
+                    {t.nav.startNow}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -2529,7 +2603,7 @@ useEffect(() => {
                     </div>
 
                     {/* Performance Chart */}
-                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3 mb-3">
+                    <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-xl p-3 mb-3">
                       <div className="flex justify-between items-center mb-2">
                         <div className="text-white text-xs font-semibold">Performance</div>
                         <div className="flex gap-2 text-[8px]">
@@ -2589,7 +2663,7 @@ useEffect(() => {
                     </div>
 
                     {/* Portfolio Holdings - ETF Names */}
-                    <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-3 mb-3">
+                    <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-xl p-3 mb-3">
                       <div className="text-white text-xs font-semibold mb-2">Mijn ETF's</div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -2634,15 +2708,15 @@ useEffect(() => {
 
                     {/* Quick Stats */}
                     <div className="grid grid-cols-3 gap-2 mb-3">
-                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
                         <div className="text-[#28EBCF] text-xs font-bold">+12.5%</div>
                         <div className="text-gray-400 text-[8px]">Dit jaar</div>
                       </div>
-                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
                         <div className="text-[#28EBCF] text-xs font-bold">€450</div>
                         <div className="text-gray-400 text-[8px]">Dividend</div>
                       </div>
-                      <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-2 text-center">
+                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
                         <div className="text-[#28EBCF] text-xs font-bold">5</div>
                         <div className="text-gray-400 text-[8px]">ETF's</div>
                       </div>
