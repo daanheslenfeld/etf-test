@@ -19,7 +19,13 @@
       "Bash(node test-yahoo.js:*)",
       "Bash(netstat:*)",
       "Bash(timeout:*)",
-      "Bash(start http://localhost:3000)"
+      "Bash(start http://localhost:3000)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel --prod)",
+      "Bash(nul)",
+      "Bash(start https://github.com/daanheslenfeld/etf-test)",
+      "Bash(start https://etf-test-5r304yee1-daniels-projects-b00bc24a.vercel.app)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []
