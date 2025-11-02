@@ -21,14 +21,14 @@ const Footer = () => {
           </p>
           <p>
             Bekijk alsjeblieft onze risico-informatie over het veilig bewaren van kassaldi. Voor meer informatie over rente
-            zie <a href="https://scalable.capital/rente" className="text-[#28EBCF] hover:underline">scalable.capital/rente</a>.
+            zie <a href="https://scalable.capital/rente" className="text-[#28EBCF] hover:underline">PIGG.capital/rente</a>.
           </p>
         </div>
 
         {/* Links Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold text-white mb-3">Scalable Capital</h3>
+            <h3 className="font-semibold text-white mb-3">PIGG Capital</h3>
             <ul className="space-y-2">
               <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Status</a></li>
               <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Carrières</a></li>
@@ -59,7 +59,7 @@ const Footer = () => {
               <a href="#" className="hover:text-[#28EBCF] transition-colors">Juridische kennisgeving</a>
             </div>
             <div className="text-center md:text-right">
-              Copyright © Scalable Capital Bank GmbH | Alle rechten voorbehouden.
+              Copyright © PIGG Capital Bank GmbH | Alle rechten voorbehouden.
             </div>
           </div>
         </div>
