@@ -20,8 +20,7 @@ const Footer = () => {
             van de wettelijke depositogarantie de Europese regels ter bescherming van beleggers (ICBE's), ongeacht het bedrag.
           </p>
           <p>
-            Bekijk alsjeblieft onze risico-informatie over het veilig bewaren van kassaldi. Voor meer informatie over rente
-            zie <a href="https://scalable.capital/rente" className="text-[#28EBCF] hover:underline">PIGG.capital/rente</a>.
+            Bekijk alsjeblieft onze risico-informatie over het veilig bewaren van kassaldi.
           </p>
         </div>
 
