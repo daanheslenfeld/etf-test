@@ -3001,6 +3001,23 @@ useEffect(() => {
               </div>
 
               <div>
+                <div className="font-semibold mb-2 text-sm text-white">{t.etfDetail.historicalReturns}</div>
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={[
+                    { year: '2021', return: safeParseFloat(SAMPLE_ETFS[0]['2021']) },
+                    { year: '2022', return: safeParseFloat(SAMPLE_ETFS[0]['2022']) },
+                    { year: '2023', return: safeParseFloat(SAMPLE_ETFS[0]['2023']) },
+                    { year: '2024', return: safeParseFloat(SAMPLE_ETFS[0]['2024']) }
+                  ]}>
+                    <XAxis dataKey="year" tick={{fontSize: 12, fill: '#9CA3AF'}} />
+                    <YAxis tick={{fontSize: 12, fill: '#9CA3AF'}} />
+                    <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
+                    <Bar dataKey="return" fill="#28EBCF" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div>
                 <div className="font-semibold mb-3 text-sm text-white">{t.etfDetail.topHoldings}</div>
                 <div className="space-y-2">
                   {[
@@ -3024,23 +3041,6 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              <div>
-                <div className="font-semibold mb-2 text-sm text-white">{t.etfDetail.historicalReturns}</div>
-                <ResponsiveContainer width="100%" height={180}>
-                  <BarChart data={[
-                    { year: '2021', return: safeParseFloat(SAMPLE_ETFS[0]['2021']) },
-                    { year: '2022', return: safeParseFloat(SAMPLE_ETFS[0]['2022']) },
-                    { year: '2023', return: safeParseFloat(SAMPLE_ETFS[0]['2023']) },
-                    { year: '2024', return: safeParseFloat(SAMPLE_ETFS[0]['2024']) }
-                  ]}>
-                    <XAxis dataKey="year" tick={{fontSize: 12, fill: '#9CA3AF'}} />
-                    <YAxis tick={{fontSize: 12, fill: '#9CA3AF'}} />
-                    <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
-                    <Bar dataKey="return" fill="#28EBCF" />
-                  </BarChart>
-                </ResponsiveContainer>
               </div>
 
               <div className="text-center pt-2">
