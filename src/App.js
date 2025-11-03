@@ -936,6 +936,8 @@ const ETFPortal = () => {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  const [customerPortalTab, setCustomerPortalTab] = useState('customers');
+
   const [customers, setCustomers] = useState(() => {
     const saved = localStorage.getItem('customers');
     return saved ? JSON.parse(saved) : [
@@ -7301,7 +7303,6 @@ useEffect(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [activeTab, setActiveTab] = useState('customers'); // 'customers' or 'inquiries'
     const [chatInquiries, setChatInquiries] = useState([]);
 
     // Function to fetch customers
@@ -7431,9 +7432,9 @@ useEffect(() => {
           {/* Tabs */}
           <div className="flex gap-4 mb-8 border-b border-gray-700">
             <button
-              onClick={() => setActiveTab('customers')}
+              onClick={() => setCustomerPortalTab('customers')}
               className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'customers'
+                customerPortalTab === 'customers'
                   ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
                   : 'text-gray-400 hover:text-white'
               }`}
@@ -7441,9 +7442,9 @@ useEffect(() => {
               Klanten ({customers.length})
             </button>
             <button
-              onClick={() => setActiveTab('inquiries')}
+              onClick={() => setCustomerPortalTab('inquiries')}
               className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'inquiries'
+                customerPortalTab === 'inquiries'
                   ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
                   : 'text-gray-400 hover:text-white'
               }`}
@@ -7452,7 +7453,7 @@ useEffect(() => {
             </button>
           </div>
 
-          {activeTab === 'customers' && (
+          {customerPortalTab === 'customers' && (
             <>
               <div className="mb-6">
                 <input
@@ -7470,7 +7471,7 @@ useEffect(() => {
             </>
           )}
 
-          {activeTab === 'customers' && (
+          {customerPortalTab === 'customers' && (
             <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -7564,7 +7565,7 @@ useEffect(() => {
           )}
 
           {/* Chat Inquiries Tab */}
-          {activeTab === 'inquiries' && (
+          {customerPortalTab === 'inquiries' && (
             <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
