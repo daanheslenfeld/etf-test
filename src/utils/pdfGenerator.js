@@ -1,5 +1,5 @@
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // PIGG Kleuren
 const COLORS = {
@@ -21,14 +21,24 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     console.log('Metrics:', metrics);
     console.log('InvestmentDetails:', investmentDetails);
     console.log('PerformanceData:', performanceData);
+    console.log('autoTable import:', autoTable);
 
     const doc = new jsPDF();
+
+    // Manually add autoTable to doc if needed
+    if (typeof doc.autoTable !== 'function' && autoTable) {
+      console.log('Manually attaching autoTable to jsPDF instance...');
+      doc.autoTable = autoTable.bind(doc);
+    }
 
     // Check if autoTable is available
     if (typeof doc.autoTable !== 'function') {
       console.error('❌ autoTable is not available on jsPDF instance');
+      console.error('doc properties:', Object.keys(doc));
       throw new Error('PDF library niet correct geladen. Herlaad de pagina en probeer opnieuw.');
     }
+
+    console.log('✅ autoTable is available on doc');
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     let yPos = 20;
