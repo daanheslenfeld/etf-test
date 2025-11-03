@@ -7304,6 +7304,10 @@ useEffect(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedInquiry, setSelectedInquiry] = useState(null);
+    const [conversationMessages, setConversationMessages] = useState([]);
+    const [responseMessage, setResponseMessage] = useState('');
+    const [sendingMessage, setSendingMessage] = useState(false);
 
     // Function to fetch customers
     const fetchCustomers = async (showRefreshIndicator = false) => {
@@ -7371,6 +7375,69 @@ useEffect(() => {
       }
     };
 
+    // Function to fetch conversation messages for a specific inquiry
+    const fetchConversationMessages = async (inquiryId) => {
+      try {
+        const response = await fetch(`${API_URL}/chat-messages?inquiry_id=${inquiryId}`);
+        const data = await response.json();
+        if (data.success) {
+          setConversationMessages(data.messages || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch conversation messages:', error);
+      }
+    };
+
+    // Function to send a response message
+    const sendResponseMessage = async (e) => {
+      e.preventDefault();
+      if (!responseMessage.trim() || !selectedInquiry) return;
+
+      setSendingMessage(true);
+      try {
+        const response = await fetch(`${API_URL}/chat-messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inquiry_id: selectedInquiry.id,
+            sender: 'manager',
+            message: responseMessage
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          setResponseMessage('');
+          // Refresh conversation messages
+          await fetchConversationMessages(selectedInquiry.id);
+          // Refresh inquiries list to update status
+          await fetchChatInquiries();
+        } else {
+          alert('Failed to send message: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Error sending message');
+      } finally {
+        setSendingMessage(false);
+      }
+    };
+
+    // Function to open conversation modal
+    const openConversation = async (inquiry) => {
+      setSelectedInquiry(inquiry);
+      await fetchConversationMessages(inquiry.id);
+    };
+
+    // Function to close conversation modal
+    const closeConversation = () => {
+      setSelectedInquiry(null);
+      setConversationMessages([]);
+      setResponseMessage('');
+    };
+
     // Fetch customers on mount and every 10 seconds
     useEffect(() => {
       fetchCustomers();
@@ -7428,6 +7495,40 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          {/* Notification Alerts */}
+          {chatInquiries.filter(i => i.status === 'new').length > 0 && (
+            <div className="mb-6 bg-[#28EBCF]/10 border border-[#28EBCF] rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-[#28EBCF] rounded-full animate-pulse"></div>
+                <span className="text-[#28EBCF] font-semibold">
+                  {chatInquiries.filter(i => i.status === 'new').length} nieuwe chat {chatInquiries.filter(i => i.status === 'new').length === 1 ? 'vraag' : 'vragen'}
+                </span>
+              </div>
+              <button
+                onClick={() => setCustomerPortalTab('inquiries')}
+                className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
+              >
+                Bekijk
+              </button>
+            </div>
+          )}
+          {chatInquiries.filter(i => i.has_unread_response).length > 0 && (
+            <div className="mb-6 bg-red-500/10 border border-red-500 rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-red-400 font-semibold">
+                  {chatInquiries.filter(i => i.has_unread_response).length} {chatInquiries.filter(i => i.has_unread_response).length === 1 ? 'klant heeft' : 'klanten hebben'} gereageerd
+                </span>
+              </div>
+              <button
+                onClick={() => setCustomerPortalTab('inquiries')}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all"
+              >
+                Bekijk
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-white">Account Manager Portal</h1>
             <button
@@ -7588,7 +7689,7 @@ useEffect(() => {
                       <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Naam</th>
                       <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
                       <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Vraag</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Berichten</th>
                       <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
                     </tr>
                   </thead>
@@ -7614,7 +7715,15 @@ useEffect(() => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm font-medium text-white">{inquiry.name}</div>
+                            <button
+                              onClick={() => openConversation(inquiry)}
+                              className="text-sm font-medium text-[#28EBCF] hover:text-[#20D4BA] underline cursor-pointer transition-colors flex items-center gap-2"
+                            >
+                              {inquiry.name}
+                              {inquiry.has_unread_response && (
+                                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                              )}
+                            </button>
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-300">{inquiry.email}</div>
@@ -7623,15 +7732,19 @@ useEffect(() => {
                             <div className="text-sm text-gray-300">{inquiry.phone || '-'}</div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-300 max-w-md">{inquiry.question}</div>
+                            <div className="text-sm text-gray-300">
+                              {inquiry.response_count || 0} {inquiry.response_count === 1 ? 'bericht' : 'berichten'}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                               inquiry.status === 'new'
                                 ? 'bg-[#28EBCF]/20 text-[#28EBCF]'
+                                : inquiry.status === 'responded'
+                                ? 'bg-blue-500/20 text-blue-400'
                                 : 'bg-gray-700 text-gray-300'
                             }`}>
-                              {inquiry.status === 'new' ? 'Nieuw' : inquiry.status}
+                              {inquiry.status === 'new' ? 'Nieuw' : inquiry.status === 'responded' ? 'Beantwoord' : inquiry.status}
                             </span>
                           </td>
                         </tr>
@@ -7639,6 +7752,84 @@ useEffect(() => {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* Conversation Modal */}
+          {selectedInquiry && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col">
+                {/* Modal Header */}
+                <div className="flex justify-between items-start p-6 border-b border-gray-800">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Conversatie met {selectedInquiry.name}</h2>
+                    <div className="flex gap-4 text-sm text-gray-400">
+                      <span>{selectedInquiry.email}</span>
+                      {selectedInquiry.phone && <span>{selectedInquiry.phone}</span>}
+                    </div>
+                  </div>
+                  <button
+                    onClick={closeConversation}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Messages Area */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  {conversationMessages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex ${msg.sender === 'manager' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                          msg.sender === 'manager'
+                            ? 'bg-[#28EBCF] text-gray-900'
+                            : 'bg-gray-800 text-white'
+                        }`}
+                      >
+                        <div className="text-sm mb-1">
+                          <strong>{msg.sender === 'manager' ? 'Account Manager' : selectedInquiry.name}</strong>
+                        </div>
+                        <div className="text-sm whitespace-pre-wrap">{msg.message}</div>
+                        <div className={`text-xs mt-2 ${msg.sender === 'manager' ? 'text-gray-700' : 'text-gray-400'}`}>
+                          {new Date(msg.created_at).toLocaleDateString('nl-NL', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Response Input Area */}
+                <div className="p-6 border-t border-gray-800">
+                  <form onSubmit={sendResponseMessage} className="flex gap-3">
+                    <textarea
+                      value={responseMessage}
+                      onChange={(e) => setResponseMessage(e.target.value)}
+                      placeholder="Typ je antwoord..."
+                      className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent resize-none"
+                      rows="3"
+                    />
+                    <button
+                      type="submit"
+                      disabled={sendingMessage || !responseMessage.trim()}
+                      className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
+                    >
+                      {sendingMessage ? 'Verzenden...' : 'Verzenden'}
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           )}
