@@ -937,6 +937,7 @@ const ETFPortal = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [customerPortalTab, setCustomerPortalTab] = useState('customers');
+  const [chatInquiries, setChatInquiries] = useState([]);
 
   const [customers, setCustomers] = useState(() => {
     const saved = localStorage.getItem('customers');
@@ -7303,7 +7304,6 @@ useEffect(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [chatInquiries, setChatInquiries] = useState([]);
 
     // Function to fetch customers
     const fetchCustomers = async (showRefreshIndicator = false) => {
@@ -7332,7 +7332,13 @@ useEffect(() => {
             };
           });
           console.log('Transformed customers:', transformedCustomers);
-          setCustomers(transformedCustomers);
+          // Only update if data has changed to prevent unnecessary re-renders
+          setCustomers(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(transformedCustomers)) {
+              return transformedCustomers;
+            }
+            return prev;
+          });
         }
       } catch (error) {
         console.error('Failed to fetch customers:', error);
@@ -7349,7 +7355,14 @@ useEffect(() => {
         const response = await fetch(`${API_URL}/chat-inquiries`);
         const data = await response.json();
         if (data.success) {
-          setChatInquiries(data.inquiries || []);
+          const newInquiries = data.inquiries || [];
+          // Only update if data has changed to prevent unnecessary re-renders
+          setChatInquiries(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(newInquiries)) {
+              return newInquiries;
+            }
+            return prev;
+          });
         }
       } catch (error) {
         console.error('Failed to fetch chat inquiries:', error);
