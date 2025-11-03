@@ -14,10 +14,18 @@ const COLORS = {
 };
 
 export const generatePortfolioReport = (user, portfolio, metrics, investmentDetails, performanceData) => {
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.width;
-  const pageHeight = doc.internal.pageSize.height;
-  let yPos = 20;
+  try {
+    console.log('🔷 Generating PDF report...');
+    console.log('User:', user);
+    console.log('Portfolio:', portfolio);
+    console.log('Metrics:', metrics);
+    console.log('InvestmentDetails:', investmentDetails);
+    console.log('PerformanceData:', performanceData);
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    let yPos = 20;
 
   // Helper function voor euro formatting
   const formatEuro = (value) => {
@@ -258,5 +266,11 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
 
   // Download de PDF
   const fileName = `PIGG_Portfolio_Overzicht_${new Date().toISOString().split('T')[0]}.pdf`;
+  console.log('✅ PDF generated successfully, downloading:', fileName);
   doc.save(fileName);
+
+  } catch (error) {
+    console.error('❌ Error generating PDF:', error);
+    alert('Er is een fout opgetreden bij het genereren van het rapport. Probeer het opnieuw.');
+  }
 };

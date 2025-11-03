@@ -6143,7 +6143,15 @@ useEffect(() => {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => generatePortfolioReport(user, portfolio, metrics, investmentDetails, staticPerformanceData)}
+                onClick={() => {
+                  console.log('Button clicked!');
+                  try {
+                    generatePortfolioReport(user, portfolio, metrics, investmentDetails, staticPerformanceData);
+                  } catch (err) {
+                    console.error('Error in button click handler:', err);
+                    alert('Fout bij het genereren van het rapport: ' + err.message);
+                  }
+                }}
                 className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center gap-2"
               >
                 📄 Download Rapport
