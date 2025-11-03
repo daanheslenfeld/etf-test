@@ -33,7 +33,8 @@
       "WebFetch(domain:vermeervermogensbeheer.nl)",
       "Bash(node test-create-table.js:*)",
       "Bash(node test-conversation-system.js:*)",
-      "Bash(vercel logs:*)"
+      "Bash(vercel logs:*)",
+      "Bash(C:UsersDaanDesktopold_pdfGenerator.js)"
     ],
     "deny": [],
     "ask": []

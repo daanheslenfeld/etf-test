@@ -2082,10 +2082,7 @@ useEffect(() => {
                 {user?.name?.split(' ')[0]}
               </div>
               <button
-                onClick={() => {
-                  setUser(null);
-                  setCurrentPage('landing');
-                }}
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
               >
                 {t.common.logout}
@@ -3946,10 +3943,7 @@ useEffect(() => {
                   {user?.name?.split(' ')[0]}
                 </div>
                 <button
-                  onClick={() => {
-                    setUser(null);
-                    setCurrentPage('landing');
-                  }}
+                  onClick={handleLogout}
                   className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
@@ -4559,10 +4553,7 @@ useEffect(() => {
                 {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
                 <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
                 <button
-                  onClick={() => {
-                    setUser(null);
-                    setCurrentPage('landing');
-                  }}
+                  onClick={handleLogout}
                   className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
@@ -4964,10 +4955,7 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#28EBCF] font-medium">Portfolio Overzicht</button>
               <div className="text-sm text-gray-400">{user?.name}</div>
               <button
-                onClick={() => {
-                  setUser(null);
-                  setCurrentPage('landing');
-                }}
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-gray-200 font-medium"
               >
                 {t.common.logout}
@@ -5655,10 +5643,7 @@ useEffect(() => {
               <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
             </button>
             <button
-              onClick={() => {
-                setUser(null);
-                setCurrentPage('landing');
-              }}
+              onClick={handleLogout}
               className="text-gray-400 hover:text-gray-200 font-medium"
             >
               Uitloggen
@@ -5875,7 +5860,7 @@ useEffect(() => {
       const loadSimulationState = async () => {
         if (user && user.id) {
           try {
-            const response = await fetch(`${API_URL}/get-simulation-state?customer_id=${user.id}`);
+            const response = await fetch(`${API_URL}/simulation-state?customer_id=${user.id}`);
             const data = await response.json();
 
             if (data.success && data.state) {
@@ -5979,7 +5964,7 @@ useEffect(() => {
         if (!newAnimatingState && user && user.id) {
           try {
             // Save simulation state
-            await fetch(`${API_URL}/save-simulation-state`, {
+            await fetch(`${API_URL}/simulation-state`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -6020,13 +6005,14 @@ useEffect(() => {
       // Clear saved simulation state from database
       if (user && user.id) {
         try {
-          await fetch(`${API_URL}/clear-simulation-state`, {
+          await fetch(`${API_URL}/simulation-state`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              customer_id: user.id
+              customer_id: user.id,
+              action: 'clear'
             })
           });
         } catch (error) {
@@ -6034,7 +6020,34 @@ useEffect(() => {
         }
       }
     };
-    
+
+    // Handle logout with state saving
+    const handleLogout = async () => {
+      // Save current simulation state before logging out
+      if (user && user.id && staticPerformanceData && currentMonth > 0) {
+        try {
+          await fetch(`${API_URL}/simulation-state`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customer_id: user.id,
+              currentMonth: currentMonth,
+              performanceData: staticPerformanceData
+            })
+          });
+          console.log('✅ Simulation state saved before logout');
+        } catch (error) {
+          console.error('Error saving simulation state on logout:', error);
+        }
+      }
+
+      // Clear user and redirect to landing
+      setUser(null);
+      setCurrentPage('landing');
+    };
+
     // Check if portfolio is empty
     if (!portfolio || portfolio.length === 0) {
       return (
@@ -6113,10 +6126,7 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
               <div className="text-sm text-gray-400">{user?.name}</div>
               <button
-                onClick={() => {
-                  setUser(null);
-                  setCurrentPage('landing');
-                }}
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-white font-medium"
               >
                 {t.common.logout}
@@ -6146,13 +6156,13 @@ useEffect(() => {
                 onClick={() => {
                   console.log('Button clicked!');
                   try {
-                    generatePortfolioReport(user, portfolio, metrics, investmentDetails, staticPerformanceData);
+                    generatePortfolioReport(user, portfolio, metrics, investmentDetails, staticPerformanceData, currentMonth, animatedPortfolioValue);
                   } catch (err) {
                     console.error('Error in button click handler:', err);
                     alert('Fout bij het genereren van het rapport: ' + err.message);
                   }
                 }}
-                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center gap-2"
+                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex-semibold flex items-center gap-2"
               >
                 📄 Download Rapport
               </button>
@@ -6923,7 +6933,7 @@ useEffect(() => {
                           });
 
                           // Save simulation state
-                          await fetch(`${API_URL}/save-simulation-state`, {
+                          await fetch(`${API_URL}/simulation-state`, {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',
@@ -7207,10 +7217,7 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
               <div className="text-sm text-gray-400">{user?.name}</div>
               <button
-                onClick={() => {
-                  setUser(null);
-                  setCurrentPage('landing');
-                }}
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-white font-medium"
               >
                 {t.common.logout}
@@ -7552,8 +7559,7 @@ useEffect(() => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setUser(null);
-                  setCurrentPage('landing');
+                  handleLogout();
                 }}
                 className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
               >
@@ -7937,7 +7943,7 @@ useEffect(() => {
                 <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   ← Terug naar Database
                 </button>
-                <button onClick={() => { setUser(null); setCurrentPage('landing'); }} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   Uitloggen
                 </button>
               </div>
