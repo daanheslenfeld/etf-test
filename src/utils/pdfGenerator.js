@@ -273,10 +273,25 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
   // Download de PDF
   const fileName = `PIGG_Portfolio_Overzicht_${new Date().toISOString().split('T')[0]}.pdf`;
   console.log('✅ PDF generated successfully, downloading:', fileName);
-  doc.save(fileName);
+
+  // Use setTimeout to ensure the save happens after the console log
+  setTimeout(() => {
+    try {
+      doc.save(fileName);
+      console.log('✅ PDF download initiated successfully!');
+      // Show success message after a short delay
+      setTimeout(() => {
+        alert('Portfolio rapport succesvol gedownload! Check je Downloads map.');
+      }, 500);
+    } catch (saveError) {
+      console.error('❌ Error during PDF save:', saveError);
+      alert('Download gefaald. Probeer het opnieuw of gebruik een andere browser.');
+    }
+  }, 100);
 
   } catch (error) {
     console.error('❌ Error generating PDF:', error);
-    alert('Er is een fout opgetreden bij het genereren van het rapport. Probeer het opnieuw.');
+    console.error('Error stack:', error.stack);
+    alert('Er is een fout opgetreden bij het genereren van het rapport: ' + error.message);
   }
 };
