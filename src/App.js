@@ -1211,6 +1211,13 @@ const ETFPortal = () => {
   // Get current translations
   const t = translations[language] || translations.nl;
 
+  // Handle logout - save any state and log out
+  const handleLogout = async () => {
+    // Clear user and redirect to landing
+    setUser(null);
+    setCurrentPage('landing');
+  };
+
 useEffect(() => {
   const loadETFs = async () => {
     console.log('📥 LOADING ETFs FROM EXCEL FILE...');
@@ -6019,33 +6026,6 @@ useEffect(() => {
           console.error('Error clearing simulation state:', error);
         }
       }
-    };
-
-    // Handle logout with state saving
-    const handleLogout = async () => {
-      // Save current simulation state before logging out
-      if (user && user.id && staticPerformanceData && currentMonth > 0) {
-        try {
-          await fetch(`${API_URL}/simulation-state`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              customer_id: user.id,
-              currentMonth: currentMonth,
-              performanceData: staticPerformanceData
-            })
-          });
-          console.log('✅ Simulation state saved before logout');
-        } catch (error) {
-          console.error('Error saving simulation state on logout:', error);
-        }
-      }
-
-      // Clear user and redirect to landing
-      setUser(null);
-      setCurrentPage('landing');
     };
 
     // Check if portfolio is empty
