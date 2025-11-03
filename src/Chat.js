@@ -11,6 +11,12 @@ const Chat = ({ isOpen, onClose }) => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactFormData, setContactFormData] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -20,6 +26,48 @@ const Chat = ({ isOpen, onClose }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleContactFormSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('/api/chat-inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: contactFormData.name,
+          email: contactFormData.email,
+          phone: contactFormData.phone,
+          question: messages[messages.length - 2]?.text || '', // Get the user's last question
+          timestamp: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        const botResponse = {
+          id: messages.length + 1,
+          text: 'Bedankt! Ik heb je gegevens ontvangen en zal zo snel mogelijk met een antwoord terugkomen via e-mail.',
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+        setShowContactForm(false);
+        setContactFormData({ name: '', email: '', phone: '' });
+      } else {
+        throw new Error('Failed to submit');
+      }
+    } catch (error) {
+      const errorResponse = {
+        id: messages.length + 1,
+        text: 'Er ging iets mis bij het versturen. Probeer het nog eens of neem contact met ons op via de website.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -38,13 +86,26 @@ const Chat = ({ isOpen, onClose }) => {
 
     // Simulate bot response
     setTimeout(() => {
-      const botResponse = {
-        id: messages.length + 2,
-        text: getBotResponse(inputMessage),
-        sender: 'bot',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
+      const responseText = getBotResponse(inputMessage);
+
+      if (responseText === 'SHOW_CONTACT_FORM') {
+        const botResponse = {
+          id: messages.length + 2,
+          text: 'Hmmm, daar heb ik nu even geen antwoord op, dat ga ik dus voor je uitzoeken. Laat je emailadres achter en dan stuur ik jou het antwoord per e-mail toe.',
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+        setShowContactForm(true);
+      } else {
+        const botResponse = {
+          id: messages.length + 2,
+          text: responseText,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+      }
       setIsTyping(false);
     }, 1000);
   };
@@ -138,8 +199,8 @@ const Chat = ({ isOpen, onClose }) => {
       return 'Graag gedaan! Fijn dat ik je kon helpen. Heb je nog andere vragen over beleggen bij PIGG?';
     }
 
-    // Default response
-    return 'Dat is een goede vraag! Voor specifieke informatie raad ik je aan om onze uitgebreide FAQ te bekijken of contact op te nemen met ons team. Ze kunnen je nog beter helpen met gedetailleerde vragen. Is er nog iets anders waarmee ik je kan helpen?';
+    // Default response - trigger contact form
+    return 'SHOW_CONTACT_FORM';
   };
 
   if (!isOpen) return null;
@@ -201,6 +262,52 @@ const Chat = ({ isOpen, onClose }) => {
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Contact Form */}
+          {showContactForm && (
+            <div className="bg-gray-800/50 rounded-2xl p-4 border border-[#28EBCF]/30">
+              <form onSubmit={handleContactFormSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Naam *</label>
+                  <input
+                    type="text"
+                    required
+                    value={contactFormData.name}
+                    onChange={(e) => setContactFormData({...contactFormData, name: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="Je naam"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">E-mailadres *</label>
+                  <input
+                    type="email"
+                    required
+                    value={contactFormData.email}
+                    onChange={(e) => setContactFormData({...contactFormData, email: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="je@email.nl"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Telefoonnummer (optioneel)</label>
+                  <input
+                    type="tel"
+                    value={contactFormData.phone}
+                    onChange={(e) => setContactFormData({...contactFormData, phone: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="06 12345678"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#28EBCF] text-gray-900 font-semibold rounded-lg py-2 text-sm hover:bg-[#20D4BA] transition-colors"
+                >
+                  Verstuur
+                </button>
+              </form>
             </div>
           )}
 
