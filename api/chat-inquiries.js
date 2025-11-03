@@ -17,6 +17,38 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // GET - Fetch all inquiries
+  if (req.method === 'GET') {
+    try {
+      const { data: inquiries, error } = await supabase
+        .from('chat_inquiries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to fetch chat inquiries',
+          error: error.message
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        inquiries: inquiries || []
+      });
+    } catch (error) {
+      console.error('Error fetching chat inquiries:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch chat inquiries',
+        error: error.message
+      });
+    }
+  }
+
+  // POST - Create new inquiry
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

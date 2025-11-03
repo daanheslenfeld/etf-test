@@ -7345,7 +7345,7 @@ useEffect(() => {
     const fetchChatInquiries = async (showRefreshIndicator = false) => {
       if (showRefreshIndicator) setRefreshing(true);
       try {
-        const response = await fetch(`${API_URL}/get-chat-inquiries`);
+        const response = await fetch(`${API_URL}/chat-inquiries`);
         const data = await response.json();
         if (data.success) {
           setChatInquiries(data.inquiries || []);
