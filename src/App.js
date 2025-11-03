@@ -3933,8 +3933,8 @@ useEffect(() => {
                 <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
-                  Home
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
+                  Welkom
                 </button>
                 {portfolio.length > 0 && (
                   <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
@@ -6107,6 +6107,7 @@ useEffect(() => {
               <div className="text-2xl sm:text-3xl font-bold text-white">PIGG</div>
             </button>
             <div className="flex items-center gap-6">
+              <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white">Welkom</button>
               <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium">Dashboard</button>
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
               <div className="text-sm text-gray-400">{user?.name}</div>
