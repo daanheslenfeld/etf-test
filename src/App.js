@@ -7415,11 +7415,14 @@ useEffect(() => {
           // Refresh inquiries list to update status
           await fetchChatInquiries();
         } else {
-          alert('Failed to send message: ' + (data.error || 'Unknown error'));
+          // Show detailed error message including database error details
+          const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Unknown error');
+          alert('Failed to send message: ' + errorMsg);
+          console.error('Message send error:', data);
         }
       } catch (error) {
         console.error('Error sending message:', error);
-        alert('Error sending message');
+        alert('Error sending message: ' + error.message);
       } finally {
         setSendingMessage(false);
       }

@@ -172,10 +172,21 @@ module.exports = async (req, res) => {
           });
         }
 
+        // First, get the current inquiry to read the response_count
+        const { data: currentInquiry, error: fetchError } = await supabase
+          .from('chat_inquiries')
+          .select('response_count, name, email, question')
+          .eq('id', inquiry_id)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching inquiry:', fetchError);
+        }
+
         // Update the inquiry with response tracking
         const updates = {
           last_response_at: new Date().toISOString(),
-          response_count: supabase.raw('response_count + 1')
+          response_count: (currentInquiry?.response_count || 0) + 1
         };
 
         // If sender is customer, mark as having unread response
@@ -188,19 +199,12 @@ module.exports = async (req, res) => {
           updates.status = 'responded';
           updates.has_unread_response = false;
 
-          // Get inquiry details to send email
-          const { data: inquiryData } = await supabase
-            .from('chat_inquiries')
-            .select('name, email, question')
-            .eq('id', inquiry_id)
-            .single();
-
-          if (inquiryData) {
+          if (currentInquiry) {
             // Send email notification (don't wait for it to complete)
             sendEmailNotification(
-              inquiryData.email,
-              inquiryData.name,
-              inquiryData.question,
+              currentInquiry.email,
+              currentInquiry.name,
+              currentInquiry.question,
               message
             ).catch(err => console.error('Email send failed:', err));
           }
