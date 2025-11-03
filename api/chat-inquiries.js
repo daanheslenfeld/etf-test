@@ -1,7 +1,22 @@
-import { google } from 'googleapis';
+const { createClient } = require('@supabase/supabase-js');
 
-export default async function handler(req, res) {
-  // Only allow POST requests
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -14,39 +29,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Set up Google Sheets API
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from('chat_inquiries')
+      .insert([
+        {
+          name: name,
+          email: email,
+          phone: phone || null,
+          question: question,
+          created_at: timestamp || new Date().toISOString(),
+          status: 'new'
+        }
+      ])
+      .select();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        error: 'Failed to save inquiry',
+        details: error.message
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Inquiry saved successfully',
+      data: data
     });
-
-    const sheets = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-
-    // Append data to the sheet
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: 'Chat Inquiries!A:E', // Assuming sheet name is "Chat Inquiries"
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: [
-          [
-            timestamp || new Date().toISOString(),
-            name,
-            email,
-            phone || '',
-            question
-          ]
-        ]
-      }
-    });
-
-    return res.status(200).json({ success: true, message: 'Inquiry saved successfully' });
   } catch (error) {
     console.error('Error saving chat inquiry:', error);
-    return res.status(500).json({ error: 'Failed to save inquiry', details: error.message });
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to save inquiry',
+      details: error.message
+    });
   }
-}
+};
