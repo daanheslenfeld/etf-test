@@ -4,7 +4,7 @@ const Chat = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'Hallo! Ik ben Daan, je persoonlijke PIGG assistent. Waarmee kan ik je helpen?',
+      text: 'Hallo! Ik ben Daan. Waarmee kan ik je helpen?',
       sender: 'bot',
       timestamp: new Date()
     }
