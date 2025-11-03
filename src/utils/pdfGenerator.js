@@ -28,13 +28,17 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     // Manually add autoTable to doc if needed
     if (typeof doc.autoTable !== 'function' && autoTable) {
       console.log('Manually attaching autoTable to jsPDF instance...');
-      doc.autoTable = autoTable.bind(doc);
+      // Create wrapper function that properly passes context
+      doc.autoTable = function(options) {
+        return autoTable.call(this, options);
+      };
     }
 
     // Check if autoTable is available
     if (typeof doc.autoTable !== 'function') {
       console.error('❌ autoTable is not available on jsPDF instance');
       console.error('doc properties:', Object.keys(doc));
+      console.error('autoTable type:', typeof autoTable);
       throw new Error('PDF library niet correct geladen. Herlaad de pagina en probeer opnieuw.');
     }
 
