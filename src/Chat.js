@@ -73,24 +73,27 @@ const Chat = ({ isOpen, onClose }) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
+    const currentMessageCount = messages.length;
+    const userMessageText = inputMessage;
+
     const userMessage = {
-      id: messages.length + 1,
-      text: inputMessage,
+      id: currentMessageCount + 1,
+      text: userMessageText,
       sender: 'user',
       timestamp: new Date()
     };
 
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
 
     // Simulate bot response
     setTimeout(() => {
-      const responseText = getBotResponse(inputMessage);
+      const responseText = getBotResponse(userMessageText);
 
       if (responseText === 'SHOW_CONTACT_FORM') {
         const botResponse = {
-          id: messages.length + 2,
+          id: currentMessageCount + 2,
           text: 'Hmmm, daar heb ik nu even geen antwoord op, dat ga ik dus voor je uitzoeken. Laat je emailadres achter en dan stuur ik jou het antwoord per e-mail toe.',
           sender: 'bot',
           timestamp: new Date()
@@ -99,7 +102,7 @@ const Chat = ({ isOpen, onClose }) => {
         setShowContactForm(true);
       } else {
         const botResponse = {
-          id: messages.length + 2,
+          id: currentMessageCount + 2,
           text: responseText,
           sender: 'bot',
           timestamp: new Date()
