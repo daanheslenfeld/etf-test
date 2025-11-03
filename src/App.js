@@ -2045,7 +2045,18 @@ useEffect(() => {
       <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
-            <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
+            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+            </button>
             <div className="flex items-center gap-4 sm:gap-6">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
               <div className="text-sm text-gray-400 hidden sm:block">
@@ -2372,8 +2383,8 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+              <svg viewBox="0 0 48 48" fill="none" className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -2383,8 +2394,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div>
-                <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">PIGG</div>
-                <div className="text-[10px] sm:text-xs text-gray-400 hidden sm:block">{t.tagline}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-xs sm:text-sm md:text-base text-gray-400 hidden sm:block">{t.tagline}</div>
               </div>
             </div>
 
@@ -2585,7 +2596,7 @@ useEffect(() => {
                     {/* Header with Logo */}
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex items-center gap-2">
-                        <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
+                        <svg viewBox="0 0 48 48" fill="none" className="w-7 h-7">
                           <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                           <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                           <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -2594,7 +2605,7 @@ useEffect(() => {
                           <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                           <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                         </svg>
-                        <div className="text-white font-bold text-sm">PIGG</div>
+                        <div className="text-white font-bold text-base">PIGG</div>
                       </div>
                       <div className="text-gray-400 text-xs">Jan</div>
                     </div>
@@ -3037,8 +3048,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3048,8 +3059,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3174,8 +3185,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3185,8 +3196,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3282,8 +3293,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3293,8 +3304,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3381,8 +3392,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3392,8 +3403,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3478,8 +3489,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3489,8 +3500,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3736,8 +3747,8 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3747,8 +3758,8 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
@@ -3865,7 +3876,18 @@ useEffect(() => {
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
+                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
                   Home
@@ -4475,7 +4497,18 @@ useEffect(() => {
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
+                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
                 {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
@@ -4868,7 +4901,18 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+            </button>
             <div className="flex items-center gap-6">
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-300 hover:text-[#28EBCF]">ETF Database</button>
               <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-300 hover:text-[#28EBCF]">Portfolio Samenstellen</button>
@@ -5225,7 +5269,18 @@ useEffect(() => {
           <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+                  <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                    <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                    <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                    <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                    <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                    <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                    <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                    <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                  </svg>
+                  <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+                </button>
                 <button onClick={() => {
                   setSelectedCategory(null);
                   setCustomBuildStep('categories');
@@ -5542,7 +5597,18 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+            </button>
             <button
               onClick={() => {
                 setUser(null);
@@ -5984,7 +6050,18 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-white">PIGG</div>
+            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="text-2xl sm:text-3xl font-bold text-white">PIGG</div>
+            </button>
             <div className="flex items-center gap-6">
               <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium">Dashboard</button>
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
@@ -7024,7 +7101,18 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-white">PIGG</div>
+            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+              </svg>
+              <div className="text-2xl sm:text-3xl font-bold text-white">PIGG</div>
+            </button>
             <div className="flex items-center gap-6">
               <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium">Welkom</button>
               <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white">Dashboard</button>
@@ -7232,8 +7320,8 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+              <div className="flex items-center gap-4">
+                <svg viewBox="0 0 48 48" fill="none" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -7243,8 +7331,8 @@ useEffect(() => {
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
-                  <div className="text-xs text-gray-400">Account Manager Portal</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                  <div className="text-sm sm:text-base text-gray-400">Account Manager Portal</div>
                 </div>
               </div>
               <button
@@ -7394,8 +7482,8 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+              <div className="flex items-center gap-4">
+                <svg viewBox="0 0 48 48" fill="none" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -7405,8 +7493,8 @@ useEffect(() => {
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-white">PIGG</div>
-                  <div className="text-xs text-gray-400">Account Manager Portal</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                  <div className="text-sm sm:text-base text-gray-400">Account Manager Portal</div>
                 </div>
               </div>
               <div className="flex gap-4">
