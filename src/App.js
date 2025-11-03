@@ -7301,6 +7301,8 @@ useEffect(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [activeTab, setActiveTab] = useState('customers'); // 'customers' or 'inquiries'
+    const [chatInquiries, setChatInquiries] = useState([]);
 
     // Function to fetch customers
     const fetchCustomers = async (showRefreshIndicator = false) => {
@@ -7339,10 +7341,30 @@ useEffect(() => {
       }
     };
 
+    // Function to fetch chat inquiries
+    const fetchChatInquiries = async (showRefreshIndicator = false) => {
+      if (showRefreshIndicator) setRefreshing(true);
+      try {
+        const response = await fetch(`${API_URL}/get-chat-inquiries`);
+        const data = await response.json();
+        if (data.success) {
+          setChatInquiries(data.inquiries || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch chat inquiries:', error);
+      } finally {
+        if (showRefreshIndicator) setRefreshing(false);
+      }
+    };
+
     // Fetch customers on mount and every 10 seconds
     useEffect(() => {
       fetchCustomers();
-      const interval = setInterval(() => fetchCustomers(), 10000); // Refresh every 10 seconds
+      fetchChatInquiries();
+      const interval = setInterval(() => {
+        fetchCustomers();
+        fetchChatInquiries();
+      }, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }, []);
 
@@ -7393,9 +7415,12 @@ useEffect(() => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">Klanten Database</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white">Account Manager Portal</h1>
             <button
-              onClick={() => fetchCustomers(true)}
+              onClick={() => {
+                fetchCustomers(true);
+                fetchChatInquiries(true);
+              }}
               disabled={refreshing}
               className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50"
             >
@@ -7403,21 +7428,50 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="mb-6">
-            <input
-              type="text"
-              placeholder="Zoek op naam, email, telefoon of woonplaats..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-[#1A1B1F] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
-            />
+          {/* Tabs */}
+          <div className="flex gap-4 mb-8 border-b border-gray-700">
+            <button
+              onClick={() => setActiveTab('customers')}
+              className={`px-6 py-3 font-medium transition-colors ${
+                activeTab === 'customers'
+                  ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Klanten ({customers.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('inquiries')}
+              className={`px-6 py-3 font-medium transition-colors ${
+                activeTab === 'inquiries'
+                  ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Chat Vragen ({chatInquiries.length})
+            </button>
           </div>
 
-          <p className="text-gray-400 mb-6">
-            {searchTerm ? `${filteredCustomers.length} van ${customers.length} klanten` : `Totaal aantal klanten: ${customers.length}`}
-          </p>
+          {activeTab === 'customers' && (
+            <>
+              <div className="mb-6">
+                <input
+                  type="text"
+                  placeholder="Zoek op naam, email, telefoon of woonplaats..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#1A1B1F] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
+                />
+              </div>
 
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
+              <p className="text-gray-400 mb-6">
+                {searchTerm ? `${filteredCustomers.length} van ${customers.length} klanten` : `Totaal aantal klanten: ${customers.length}`}
+              </p>
+            </>
+          )}
+
+          {activeTab === 'customers' && (
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-900/50 border-b border-gray-800">
@@ -7507,6 +7561,73 @@ useEffect(() => {
               </table>
             </div>
           </div>
+          )}
+
+          {/* Chat Inquiries Tab */}
+          {activeTab === 'inquiries' && (
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-900/50 border-b border-gray-800">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Datum</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Naam</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Vraag</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800">
+                    {chatInquiries.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                          Nog geen chat vragen ontvangen
+                        </td>
+                      </tr>
+                    ) : (
+                      chatInquiries.map((inquiry) => (
+                        <tr key={inquiry.id} className="hover:bg-gray-800/30">
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-300">
+                              {new Date(inquiry.created_at).toLocaleDateString('nl-NL', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-white">{inquiry.name}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-300">{inquiry.email}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-300">{inquiry.phone || '-'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-300 max-w-md">{inquiry.question}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              inquiry.status === 'new'
+                                ? 'bg-[#28EBCF]/20 text-[#28EBCF]'
+                                : 'bg-gray-700 text-gray-300'
+                            }`}>
+                              {inquiry.status === 'new' ? 'Nieuw' : inquiry.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

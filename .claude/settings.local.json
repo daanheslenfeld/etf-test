@@ -25,7 +25,13 @@
       "Bash(nul)",
       "Bash(start https://github.com/daanheslenfeld/etf-test)",
       "Bash(start https://etf-test-5r304yee1-daniels-projects-b00bc24a.vercel.app)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(start https://etf-test-lyh7bq8p9-daniels-projects-b00bc24a.vercel.app)",
+      "WebSearch",
+      "WebFetch(domain:www.abnamro.nl)",
+      "WebFetch(domain:quintessencevermogensbeheer.nl)",
+      "WebFetch(domain:vermeervermogensbeheer.nl)",
+      "Bash(node test-create-table.js:*)"
     ],
     "deny": [],
     "ask": []
