@@ -287,6 +287,9 @@ const translations = {
       vol1y: 'Vol 1Y',
       holdings: 'Holdings',
       distribution: 'Uitkering',
+      topHoldings: 'Top 10 Posities',
+      holding: 'Holding',
+      weight: 'Gewicht',
       historicalReturns: 'Historisch Rendement',
       cta: 'Ontdek meer ETF\'s →'
     },
@@ -421,6 +424,9 @@ const translations = {
       vol1y: 'Vol 1Y',
       holdings: 'Holdings',
       distribution: 'Distribution',
+      topHoldings: 'Top 10 Holdings',
+      holding: 'Holding',
+      weight: 'Weight',
       historicalReturns: 'Historical Returns',
       cta: 'Discover more ETFs →'
     },
@@ -555,6 +561,9 @@ const translations = {
       vol1y: 'Vol 1J',
       holdings: 'Positionen',
       distribution: 'Ausschüttung',
+      topHoldings: 'Top 10 Positionen',
+      holding: 'Position',
+      weight: 'Gewichtung',
       historicalReturns: 'Historische Renditen',
       cta: 'Mehr ETFs entdecken →'
     },
@@ -689,6 +698,9 @@ const translations = {
       vol1y: 'Vol 1A',
       holdings: 'Positions',
       distribution: 'Distribution',
+      topHoldings: 'Top 10 Positions',
+      holding: 'Position',
+      weight: 'Poids',
       historicalReturns: 'Rendements historiques',
       cta: 'Découvrir plus d\'ETF →'
     },
@@ -823,6 +835,9 @@ const translations = {
       vol1y: 'Vol 1A',
       holdings: 'Posiciones',
       distribution: 'Distribución',
+      topHoldings: 'Top 10 Posiciones',
+      holding: 'Posición',
+      weight: 'Peso',
       historicalReturns: 'Rendimientos históricos',
       cta: 'Descubrir más ETFs →'
     },
@@ -2982,6 +2997,32 @@ useEffect(() => {
                     <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.holdings}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].holdings}</span></div>
                     <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.distribution}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].distribution}</span></div>
                   </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="font-semibold mb-3 text-sm text-white">{t.etfDetail.topHoldings}</div>
+                <div className="space-y-2">
+                  {[
+                    { name: 'Apple Inc.', weight: '7.2%' },
+                    { name: 'Microsoft Corp.', weight: '6.8%' },
+                    { name: 'NVIDIA Corp.', weight: '5.9%' },
+                    { name: 'Amazon.com Inc.', weight: '3.8%' },
+                    { name: 'Meta Platforms Inc.', weight: '2.6%' },
+                    { name: 'Alphabet Inc. Class A', weight: '2.1%' },
+                    { name: 'Alphabet Inc. Class C', weight: '1.8%' },
+                    { name: 'Berkshire Hathaway Inc.', weight: '1.7%' },
+                    { name: 'Tesla Inc.', weight: '1.5%' },
+                    { name: 'Eli Lilly and Co.', weight: '1.4%' }
+                  ].map((holding, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1.5 px-2 bg-gray-800/30 rounded">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500 text-xs font-mono">{idx + 1}.</span>
+                        <span className="text-gray-300 text-xs">{holding.name}</span>
+                      </div>
+                      <span className="text-[#28EBCF] text-xs font-semibold">{holding.weight}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
