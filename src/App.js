@@ -6125,7 +6125,7 @@ useEffect(() => {
         </nav>
         
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
               {investmentDetails.pricesLastUpdated && (
@@ -6142,20 +6142,34 @@ useEffect(() => {
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowDeposit(true)} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
-              <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
-              <button onClick={() => setShowEditChoice(true)} className="px-6 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
-              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-medium">Portfolio Balanceren</button>
+              <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-blue-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
+              <button onClick={() => setShowEditChoice(true)} className="px-6 py-3 border-2 border-blue-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-600 font-medium">Portfolio Balanceren</button>
             </div>
           </div>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO OVERZICHT</div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
           </div>
-          
-          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 mb-8 border border-gray-800">
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow p-4 md:p-6 border-2 border-blue-800 hover:border-blue-600 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow p-4 md:p-6 border-2 border-blue-800 hover:border-blue-600 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow p-4 md:p-6 border-2 border-blue-800 hover:border-blue-600 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow p-4 md:p-6 border-2 border-blue-800 hover:border-blue-600 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6 mt-10">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">WAARDEONTWIKKELING</div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow-lg p-6 mb-10 border-2 border-blue-800">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-bold text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar horizon)</h3>
@@ -6210,15 +6224,22 @@ useEffect(() => {
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-4 md:p-6 border border-gray-800">
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO ANALYSE</div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-10">
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-blue-800 hover:border-blue-600 transition-all">
               <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
               <ResponsiveContainer width="100%" height={200}>
-                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
+                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#1e3a8a', border: '2px solid #1e40af', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
+            <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow-lg p-6 border-2 border-blue-800 hover:border-blue-600 transition-all">
               <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
@@ -6228,8 +6249,15 @@ useEffect(() => {
               </div>
             </div>
           </div>
-          
-          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO HOLDINGS</div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-700 to-transparent"></div>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-950 to-blue-900 rounded-lg shadow-lg p-6 border-2 border-blue-800">
             <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
             <div className="space-y-4">
               {(() => {
@@ -6256,17 +6284,17 @@ useEffect(() => {
                   const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
 
                   return (
-                  <div key={category} className="border border-gray-700 rounded-lg overflow-hidden">
-                    <div className="bg-gray-800/50 px-4 py-3">
+                  <div key={category} className="border-2 border-blue-700 rounded-lg overflow-hidden">
+                    <div className="bg-blue-900/70 px-4 py-3">
                       <h4 className="font-bold text-white">{category}</h4>
                     </div>
-                    <div className="bg-[#1A1B1F]">
+                    <div className="bg-blue-950/50">
                       <table className="w-full">
                         <tbody>
                           {etfs.map((etf, idx) => {
                             const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
                             return (
-                              <tr key={idx} className="border-t border-gray-800 hover:bg-gray-900/30">
+                              <tr key={idx} className="border-t border-blue-800 hover:bg-blue-900/40">
                                 <td className="px-4 py-3">
                                   <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-sm">
                                     {etf.naam}
@@ -6277,7 +6305,7 @@ useEffect(() => {
                               </tr>
                             );
                           })}
-                          <tr className="border-t-2 border-gray-700 bg-gray-800/30">
+                          <tr className="border-t-2 border-blue-700 bg-blue-900/50">
                             <td className="px-4 py-3 text-sm font-bold text-white">Totaal {category}</td>
                             <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-24">{categoryWeight.toFixed(1)}%</td>
                             <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-32">{formatEuro(categoryValue)}</td>
