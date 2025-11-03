@@ -57,6 +57,12 @@ const Chat = ({ isOpen, onClose }) => {
       return 'Hallo! Fijn dat je er bent. Ik ben Daan en help je graag met al je vragen over beleggen bij PIGG. Hoe kan ik je vandaag helpen?';
     }
 
+    // Opening an account
+    if (input.includes('account') || input.includes('rekening') || input.includes('aanmelden') || input.includes('registreer') || input.includes('inschrijv') ||
+        (input.includes('hoe') && (input.includes('open') || input.includes('start') || input.includes('begin')))) {
+      return 'Door op de "Start nu" button te klikken opent een kort vragen programma. Wanneer je alle vragen beantwoord hebt, heb je gratis toegang tot het PIGG platform en kun je jouw portefeuille samenstellen of kiezen voor een door ons samengestelde portefeuille. Wanneer je dan vervolgens wilt gaan beleggen, dan stellen wij jou nog een aantal vragen, kun je geld storten en wordt jouw geld belegd.';
+    }
+
     // Minimum investment amount
     if (input.includes('minimum') || input.includes('minimaal') || input.includes('hoeveel') && (input.includes('geld') || input.includes('bedrag') || input.includes('nodig'))) {
       return 'Bij PIGG kun je al starten met beleggen vanaf een klein bedrag. In tegenstelling tot traditionele vermogensbeheerders die vaak € 50.000 tot € 200.000 vereisen, is PIGG toegankelijk voor iedereen die wil beginnen met vermogensopbouw.';
