@@ -1,9 +1,70 @@
 const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
 
 const supabase = createClient(
   'https://rfmbhdgfovnglegqxjnj.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
 );
+
+// Email transporter setup (using Gmail as example - you can change this)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER || 'noreply@pigg.com',
+    pass: process.env.EMAIL_PASSWORD || ''
+  }
+});
+
+// Function to send email notification
+async function sendEmailNotification(to, name, question, response) {
+  try {
+    const mailOptions = {
+      from: '"PIGG Support" <noreply@pigg.com>',
+      to: to,
+      subject: 'Antwoord op jouw vraag - PIGG',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #28EBCF 0%, #20D4BA 100%); padding: 30px; text-align: center;">
+            <h1 style="color: #1A1B1F; margin: 0;">PIGG</h1>
+            <p style="color: #1A1B1F; margin: 5px 0 0 0;">Your digital Piggy Bank for global Investing</p>
+          </div>
+
+          <div style="background: #f5f5f5; padding: 30px;">
+            <p style="color: #333; font-size: 16px;">Hallo ${name},</p>
+
+            <p style="color: #333; font-size: 16px;">We hebben je vraag ontvangen en beantwoord!</p>
+
+            <div style="background: white; border-left: 4px solid #28EBCF; padding: 15px; margin: 20px 0;">
+              <p style="color: #666; font-size: 14px; margin: 0 0 5px 0;"><strong>Jouw vraag:</strong></p>
+              <p style="color: #333; font-size: 14px; margin: 0;">${question}</p>
+            </div>
+
+            <div style="background: white; border-left: 4px solid #20D4BA; padding: 15px; margin: 20px 0;">
+              <p style="color: #666; font-size: 14px; margin: 0 0 5px 0;"><strong>Ons antwoord:</strong></p>
+              <p style="color: #333; font-size: 14px; margin: 0; white-space: pre-wrap;">${response}</p>
+            </div>
+
+            <p style="color: #333; font-size: 16px;">Heb je nog meer vragen? Beantwoord gewoon deze email!</p>
+
+            <p style="color: #333; font-size: 16px;">Met vriendelijke groet,<br>Het PIGG Team</p>
+          </div>
+
+          <div style="background: #1A1B1F; padding: 20px; text-align: center;">
+            <p style="color: #999; font-size: 12px; margin: 0;">
+              © ${new Date().getFullYear()} PIGG - Your digital Piggy Bank for global Investing
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+}
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -122,10 +183,27 @@ module.exports = async (req, res) => {
           updates.has_unread_response = true;
         }
 
-        // If sender is manager, update status to 'responded'
+        // If sender is manager, update status to 'responded' and send email
         if (sender === 'manager') {
           updates.status = 'responded';
           updates.has_unread_response = false;
+
+          // Get inquiry details to send email
+          const { data: inquiryData } = await supabase
+            .from('chat_inquiries')
+            .select('name, email, question')
+            .eq('id', inquiry_id)
+            .single();
+
+          if (inquiryData) {
+            // Send email notification (don't wait for it to complete)
+            sendEmailNotification(
+              inquiryData.email,
+              inquiryData.name,
+              inquiryData.question,
+              message
+            ).catch(err => console.error('Email send failed:', err));
+          }
         }
 
         const { error: updateError } = await supabase
@@ -169,7 +247,8 @@ module.exports = async (req, res) => {
             phone: phone || null,
             question: question,
             created_at: timestamp || new Date().toISOString(),
-            status: 'new'
+            status: 'new',
+            response_count: 1
           }
         ])
         .select();
@@ -181,6 +260,25 @@ module.exports = async (req, res) => {
           error: 'Failed to save inquiry',
           details: error.message
         });
+      }
+
+      // Also insert the initial question as a message
+      if (data && data[0]) {
+        const { error: messageError } = await supabase
+          .from('chat_messages')
+          .insert([
+            {
+              inquiry_id: data[0].id,
+              sender: 'customer',
+              message: question,
+              created_at: timestamp || new Date().toISOString()
+            }
+          ]);
+
+        if (messageError) {
+          console.error('Error saving initial message:', messageError);
+          // Don't fail the whole request if message insert fails
+        }
       }
 
       return res.status(200).json({
