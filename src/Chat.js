@@ -4,7 +4,7 @@ const Chat = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'Hallo! Waarmee kan ik je helpen?',
+      text: 'Hallo! Ik ben Daan, je persoonlijke PIGG assistent. Waarmee kan ik je helpen?',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -52,26 +52,88 @@ const Chat = ({ isOpen, onClose }) => {
   const getBotResponse = (userInput) => {
     const input = userInput.toLowerCase();
 
-    // Simple keyword-based responses
-    if (input.includes('help') || input.includes('hulp')) {
-      return 'Ik kan je helpen met vragen over ETFs, portfolios, beleggen en je account. Wat wil je weten?';
-    } else if (input.includes('etf')) {
-      return 'ETFs zijn beleggingsfondsen die verhandeld worden zoals aandelen. Je kunt onze ETF database bekijken om meer te leren over beschikbare ETFs.';
-    } else if (input.includes('portfolio')) {
-      return 'Je kunt een portfolio samenstellen door naar de Portfolio Builder te gaan. Daar kun je ETFs selecteren en je gewenste allocatie instellen.';
-    } else if (input.includes('risico') || input.includes('risk')) {
-      return 'Beleggen brengt risico\'s met zich mee. De waarde van je investering kan dalen of stijgen. Raadpleeg altijd onze risico-informatie voordat je belegt.';
-    } else if (input.includes('kosten') || input.includes('cost') || input.includes('ter')) {
-      return 'De kosten van ETFs worden uitgedrukt in de TER (Total Expense Ratio). Dit varieert per ETF, meestal tussen 0.07% en 0.50% per jaar.';
-    } else if (input.includes('contact')) {
-      return 'Je kunt contact met ons opnemen via de Contact pagina in de footer, of bel ons tijdens kantooruren.';
-    } else if (input.includes('hoi') || input.includes('hallo') || input.includes('hey')) {
-      return 'Hallo! Fijn dat je er bent. Hoe kan ik je vandaag helpen?';
-    } else if (input.includes('bedankt') || input.includes('dank')) {
-      return 'Graag gedaan! Is er nog iets anders waarmee ik je kan helpen?';
-    } else {
-      return 'Bedankt voor je vraag. Voor specifieke vragen kun je contact opnemen met onze klantenservice. Is er iets anders waarmee ik je kan helpen?';
+    // Greeting responses
+    if (input.includes('hoi') || input.includes('hallo') || input.includes('hey') || input.includes('dag')) {
+      return 'Hallo! Fijn dat je er bent. Ik ben Daan en help je graag met al je vragen over beleggen bij PIGG. Hoe kan ik je vandaag helpen?';
     }
+
+    // Minimum investment amount
+    if (input.includes('minimum') || input.includes('minimaal') || input.includes('hoeveel') && (input.includes('geld') || input.includes('bedrag') || input.includes('nodig'))) {
+      return 'Bij PIGG kun je al starten met beleggen vanaf een klein bedrag. In tegenstelling tot traditionele vermogensbeheerders die vaak € 50.000 tot € 200.000 vereisen, is PIGG toegankelijk voor iedereen die wil beginnen met vermogensopbouw.';
+    }
+
+    // Costs and fees
+    if (input.includes('kosten') || input.includes('cost') || input.includes('fee') || input.includes('tarief') || input.includes('prijs')) {
+      return 'Bij PIGG betaal je € 200 per jaar voor een betaald account. Dit geeft je toegang tot de volledige ETF database en portfolio tools. Daarnaast zijn er de gebruikelijke ETF kosten (TER), die meestal tussen 0.07% en 0.50% per jaar liggen. Geen verborgen kosten of hoge beheervergoedingen!';
+    }
+
+    // Risk questions
+    if (input.includes('risico') || input.includes('risk') || input.includes('veilig') || input.includes('gevaarlijk')) {
+      return 'Beleggen kent altijd risico\'s. De waarde van je investering kan dalen of stijgen. Bij PIGG analyseren we je persoonlijke risicoprofiel en stellen we een passende portefeuille samen. We helpen je om bewuste keuzes te maken die bij jouw situatie passen.';
+    }
+
+    // Cancellation/termination
+    if (input.includes('opzeggen') || input.includes('stop') || input.includes('beëindig') || input.includes('annuleer')) {
+      return 'Bij PIGG heb je volledige flexibiliteit. Je kunt je account op elk moment stopzetten zonder opzegtermijn of boetes. Jouw vermogen blijft altijd van jou en je hebt er dagelijks toegang toe.';
+    }
+
+    // Safety and security
+    if (input.includes('veilig') || input.includes('faillissement') || input.includes('bescherm') || input.includes('garantie')) {
+      return 'Je vermogen bij PIGG is goed beschermd. Je beleggingen staan op jouw naam bij de depotbank en zijn gescheiden van het bedrijfsvermogen. Mocht PIGG ooit failliet gaan, dan blijft jouw geld gewoon van jou. PIGG staat onder toezicht van de AFM en DNB.';
+    }
+
+    // Investment options
+    if (input.includes('etf') || input.includes('waarin') && input.includes('beleg')) {
+      return 'Bij PIGG kun je beleggen in meer dan 3000 ETF\'s wereldwijd. ETFs zijn beleggingsfondsen die verhandeld worden zoals aandelen. Je kunt kiezen uit verschillende categorieën zoals aandelen, obligaties, vastgoed en meer. Bekijk onze ETF database voor alle mogelijkheden!';
+    }
+
+    // Portfolio building
+    if (input.includes('portfolio') || input.includes('portefeuille') || input.includes('samenstel')) {
+      return 'Je kunt bij PIGG op twee manieren een portfolio samenstellen: kies een van onze vooraf samengestelde portefeuilles op basis van je risicoprofiel, of stel zelf je eigen portfolio samen met onze Portfolio Builder. Beide opties geven je volledige controle over je beleggingen.';
+    }
+
+    // Why invest
+    if (input.includes('waarom') && (input.includes('beleg') || input.includes('investeer'))) {
+      return 'Door te beleggen kun je je vermogen laten groeien door middel van rente-op-rente effect. Je ontvangt rendementen die je opnieuw belegt, waardoor je vermogen cumulatief kan groeien. Dit is vooral voordelig op de lange termijn en helpt je financiële doelen te bereiken.';
+    }
+
+    // Inheritance/starting capital
+    if (input.includes('erfenis') || input.includes('geërfd') || input.includes('ontvangen')) {
+      return 'Als je een erfenis hebt ontvangen en het geld niet direct nodig hebt, is beleggen een uitstekende optie. Het voorkomt dat je vermogen waarde verliest door inflatie en kan zelfs groeien. PIGG helpt je om dit vermogen verstandig te beheren.';
+    }
+
+    // Children/long term
+    if (input.includes('kind') || input.includes('kleinkinderen') || input.includes('lange termijn')) {
+      return 'Ja, beleggen voor kinderen of kleinkinderen is een geweldige manier om een financieel fundament te leggen. Een lange beleggingshorizon is juist voordelig voor cumulatieve rendementen. Hoe eerder je begint, hoe meer tijd je vermogen heeft om te groeien!';
+    }
+
+    // Supervision/regulation
+    if (input.includes('toezicht') || input.includes('afm') || input.includes('vergunning') || input.includes('dnb')) {
+      return 'PIGG is een erkend platform en houdt zich aan alle financiële regelgeving. We opereren transparant en staan onder toezicht van de relevante autoriteiten. Jouw veiligheid en vertrouwen zijn onze prioriteit.';
+    }
+
+    // Help/support
+    if (input.includes('help') || input.includes('hulp') || input.includes('vraag')) {
+      return 'Ik kan je helpen met vragen over: beleggen bij PIGG, kosten en tarieven, risico\'s, ETF\'s, portfolio samenstellen, opzeggen, veiligheid en veel meer. Stel gerust je vraag!';
+    }
+
+    // Contact
+    if (input.includes('contact') || input.includes('bellen') || input.includes('mail') || input.includes('bereik')) {
+      return 'Je kunt contact met ons opnemen via de contactgegevens in de footer van de website. We helpen je graag verder met al je vragen over beleggen bij PIGG!';
+    }
+
+    // Complaint
+    if (input.includes('klacht') || input.includes('ontevreden') || input.includes('probleem')) {
+      return 'Het spijt me dat je niet tevreden bent. Laat het ons weten via onze contactpagina, dan kijken we hoe we het kunnen oplossen. Mocht je niet tevreden zijn met de afhandeling, dan kun je ook een klacht indienen bij de Ombudsman van het Kifid.';
+    }
+
+    // Thanks
+    if (input.includes('bedankt') || input.includes('dank') || input.includes('thanks')) {
+      return 'Graag gedaan! Fijn dat ik je kon helpen. Heb je nog andere vragen over beleggen bij PIGG?';
+    }
+
+    // Default response
+    return 'Dat is een goede vraag! Voor specifieke informatie raad ik je aan om onze uitgebreide FAQ te bekijken of contact op te nemen met ons team. Ze kunnen je nog beter helpen met gedetailleerde vragen. Is er nog iets anders waarmee ik je kan helpen?';
   };
 
   if (!isOpen) return null;
@@ -88,7 +150,7 @@ const Chat = ({ isOpen, onClose }) => {
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-white">Chat Support</h3>
+              <h3 className="font-bold text-white">Daan - PIGG Assistent</h3>
               <p className="text-xs text-white/80">Online nu</p>
             </div>
           </div>
