@@ -31,7 +31,9 @@
       "WebFetch(domain:www.abnamro.nl)",
       "WebFetch(domain:quintessencevermogensbeheer.nl)",
       "WebFetch(domain:vermeervermogensbeheer.nl)",
-      "Bash(node test-create-table.js:*)"
+      "Bash(node test-create-table.js:*)",
+      "Bash(node test-conversation-system.js:*)",
+      "Bash(vercel logs:*)"
     ],
     "deny": [],
     "ask": []

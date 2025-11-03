@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import Footer from './Footer';
 import Chat from './Chat';
+import { generatePortfolioReport } from './utils/pdfGenerator';
 
 // API URL - works with Vercel Dev and production
 const API_URL = '/api';
@@ -6141,7 +6142,13 @@ useEffect(() => {
               )}
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowDeposit(true)} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold">Geld Storten</button>
+              <button
+                onClick={() => generatePortfolioReport(user, portfolio, metrics, investmentDetails, staticPerformanceData)}
+                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center gap-2"
+              >
+                📄 Download Rapport
+              </button>
+              <button onClick={() => setShowDeposit(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Storten</button>
               <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
               <button onClick={() => setShowEditChoice(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
               <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 font-medium">Portfolio Balanceren</button>
