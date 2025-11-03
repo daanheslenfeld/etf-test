@@ -7189,42 +7189,42 @@ useEffect(() => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-xl p-6 text-left transition-all group border border-[#28EBCF]/50"
+              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-4 text-left transition-all group border border-[#28EBCF]/50"
             >
-              <div className="text-4xl mb-3">📊</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Mijn Portfolio</h3>
-              <p className="text-gray-800">Bekijk en beheer je beleggingen</p>
-              <div className="mt-4 text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
+              <div className="text-3xl mb-2">📊</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
+              <p className="text-sm text-gray-800">Bekijk en beheer je beleggingen</p>
+              <div className="mt-3 text-sm text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Ga naar dashboard →
               </div>
             </button>
 
             <button
               onClick={() => setCurrentPage('etfDatabase')}
-              className="bg-[#1A1B1F] border-2 border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-xl p-6 text-left transition-all group"
+              className="bg-[#1A1B1F] border-2 border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-4 text-left transition-all group"
             >
-              <div className="text-4xl mb-3">🔍</div>
-              <h3 className="text-xl font-bold text-white mb-2">ETF Database</h3>
-              <p className="text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
-              <div className="mt-4 text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+              <div className="text-3xl mb-2">🔍</div>
+              <h3 className="text-lg font-bold text-white mb-1">ETF Database</h3>
+              <p className="text-sm text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
+              <div className="mt-3 text-sm text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Verken ETFs →
               </div>
             </button>
 
-            <div className="bg-[#1A1B1F] border-2 border-gray-800 rounded-xl p-6 shadow-md">
-              <div className="text-4xl mb-3">💼</div>
-              <h3 className="text-xl font-bold text-white mb-2">Je Portfolio</h3>
-              <div className="space-y-3 mt-4">
-                <div className="flex justify-between items-center py-2 border-b border-gray-800">
-                  <span className="text-gray-400">ETFs:</span>
-                  <span className="text-[#28EBCF] font-bold text-lg">{portfolio?.length || 0}</span>
+            <div className="bg-[#1A1B1F] border-2 border-gray-800 rounded-lg p-4 shadow-md">
+              <div className="text-3xl mb-2">💼</div>
+              <h3 className="text-lg font-bold text-white mb-1">Je Portfolio</h3>
+              <div className="space-y-2 mt-3">
+                <div className="flex justify-between items-center py-1.5 border-b border-gray-800">
+                  <span className="text-sm text-gray-400">ETFs:</span>
+                  <span className="text-[#28EBCF] font-bold">{portfolio?.length || 0}</span>
                 </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-400">Account Type:</span>
-                  <span className="text-white font-medium">
+                <div className="flex justify-between items-center py-1.5">
+                  <span className="text-sm text-gray-400">Account Type:</span>
+                  <span className="text-white text-sm font-medium">
                     {user?.account_type === 'betaald' ? '✅ Betaald' : user?.account_type === 'fictief' ? '🎭 Fictief' : '🆓 Gratis'}
                   </span>
                 </div>
