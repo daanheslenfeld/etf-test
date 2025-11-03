@@ -2829,7 +2829,7 @@ useEffect(() => {
             <div className="text-white md:order-2">
               <h3 className="text-3xl font-bold mb-6">Maak een account en begin</h3>
               <p className="text-lg text-gray-300 leading-relaxed">
-                Maak eenvoudig een account aan en ontdek de wereld van beleggen.
+                Maak een account aan en begin met beleggen.
                 Toegang tot de hele database aan ETF's en alle tools om je eigen modelportefeuille te maken.
               </p>
             </div>
