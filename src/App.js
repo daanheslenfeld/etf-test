@@ -7378,7 +7378,7 @@ useEffect(() => {
     // Function to fetch conversation messages for a specific inquiry
     const fetchConversationMessages = async (inquiryId) => {
       try {
-        const response = await fetch(`${API_URL}/chat-messages?inquiry_id=${inquiryId}`);
+        const response = await fetch(`${API_URL}/chat-inquiries?inquiry_id=${inquiryId}`);
         const data = await response.json();
         if (data.success) {
           setConversationMessages(data.messages || []);
@@ -7395,7 +7395,7 @@ useEffect(() => {
 
       setSendingMessage(true);
       try {
-        const response = await fetch(`${API_URL}/chat-messages`, {
+        const response = await fetch(`${API_URL}/chat-inquiries`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
