@@ -146,13 +146,15 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     yPos = addHeader();
 
     // Samenvatting Section Header
+    const headerHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
-    doc.rect(15, yPos, pageWidth - 30, 7, 'F');
+    doc.rect(15, yPos, pageWidth - 30, headerHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    doc.text('Samenvatting', 17, yPos + 5);
-    yPos += 10;
+    // Center text vertically in the bar: yPos + (headerHeight / 2) + (fontSize / 3)
+    doc.text('Samenvatting', 17, yPos + (headerHeight / 2) + 2);
+    yPos += headerHeight + 2;
 
     // Resultaten Box (left column)
     doc.setFontSize(11);
@@ -299,13 +301,15 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     yPos = 35;
 
     // Portefeuille Section Header
+    const portfolioHeaderHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background
-    doc.rect(15, yPos, pageWidth - 30, 7, 'F');
+    doc.rect(15, yPos, pageWidth - 30, portfolioHeaderHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    doc.text('Portefeuille', 17, yPos + 5);
-    yPos += 10;
+    // Center text vertically in the bar
+    doc.text('Portefeuille', 17, yPos + (portfolioHeaderHeight / 2) + 2);
+    yPos += portfolioHeaderHeight + 2;
 
     doc.setFontSize(11);
     doc.setTextColor(40, 235, 207); // PIGG green
