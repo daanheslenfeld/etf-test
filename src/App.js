@@ -1469,8 +1469,10 @@ useEffect(() => {
           }
         }
       }
-    } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register')) {
-      // If no user is logged in and we're on a protected page, redirect to landing
+    } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register' && currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending' && currentPage !== 'resetPassword' && currentPage !== 'verify-code')) {
+      // Only redirect to landing if no user AND on a protected page
+      // Don't redirect if we're already on a public page
+      console.log('No user detected, redirecting to landing from:', currentPage);
       setCurrentPage('landing');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
