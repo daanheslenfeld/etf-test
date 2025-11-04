@@ -3186,10 +3186,14 @@ useEffect(() => {
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
                 <input
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onTouchStart={(e) => e.target.focus()}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.common.email}
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                 />
               </div>
 
@@ -3197,10 +3201,13 @@ useEffect(() => {
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
                 <input
                   type="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onTouchStart={(e) => e.target.focus()}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.auth.password}
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                 />
               </div>
 
