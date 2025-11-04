@@ -3171,8 +3171,8 @@ useEffect(() => {
           </div>
         </nav>
 
-        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4 relative z-10">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 relative z-10">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">{t.common.welcomeBack}</h2>
 
             {error && (
@@ -3181,29 +3181,31 @@ useEffect(() => {
               </div>
             )}
 
-            <div className="space-y-3 sm:space-y-4">
-              <div>
+            <div className="space-y-3 sm:space-y-4 relative z-10">
+              <div className="relative z-10">
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500 relative z-10"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500 touch-manipulation"
                   placeholder={t.common.email}
                   autoComplete="email"
                   inputMode="email"
+                  required
                 />
               </div>
 
-              <div>
+              <div className="relative z-10">
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500 relative z-10"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500 touch-manipulation"
                   placeholder={t.auth.password}
                   autoComplete="current-password"
+                  required
                 />
               </div>
 
