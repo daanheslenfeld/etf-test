@@ -1238,6 +1238,28 @@ const ETFPortal = () => {
     localStorage.setItem('language', language);
   }, [language]);
 
+  // iOS PWA INPUT FIX - Force all inputs to be focusable
+  useEffect(() => {
+    const fixIOSInputs = () => {
+      const inputs = document.querySelectorAll('input, textarea, select');
+      inputs.forEach(input => {
+        // Add touch event handler to force focus
+        input.addEventListener('touchstart', function(e) {
+          this.focus();
+          e.stopPropagation();
+        }, { passive: true });
+      });
+    };
+
+    // Run on mount
+    fixIOSInputs();
+
+    // Re-run whenever page changes (inputs get re-rendered)
+    const timer = setInterval(fixIOSInputs, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentPage]);
+
   // Get current translations
   const t = translations[language] || translations.nl;
 
