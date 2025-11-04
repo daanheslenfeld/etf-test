@@ -145,17 +145,24 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     // Start first page
     yPos = addHeader();
 
-    // Samenvatting Section Header - with "Samenvatting" and "Resultaten" side by side
+    // Samenvatting Section Header - with "Samenvatting" on left and "Beleggingsmix" on right
     const headerHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
     doc.rect(15, yPos, pageWidth - 30, headerHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    // Put "Samenvatting" and "Resultaten" side by side in the green bar
+    // "Samenvatting" on left, "Beleggingsmix" on right in the green bar
     doc.text('Samenvatting', 17, yPos + (headerHeight / 2) + 2);
-    doc.text('Resultaten', 120, yPos + (headerHeight / 2) + 2);
+    doc.text('Beleggingsmix', 120, yPos + (headerHeight / 2) + 2);
     yPos += headerHeight + 2;
+
+    // Resultaten heading for left column
+    doc.setFontSize(11);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    doc.text('Resultaten', 17, yPos);
+    yPos += 2;
 
     // Calculate values
     const initialInvestment = parseFloat(investmentDetails.amount) || 10000;
@@ -227,16 +234,10 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     const rightColStart = 120;
     let rightYPos = 60;
 
-    doc.setFontSize(11);
-    doc.setTextColor(40, 235, 207); // PIGG green
-    doc.setFont('helvetica', 'bold');
-    doc.text('Beleggingsmix', rightColStart, rightYPos);
-    rightYPos += 2;
-
+    // Start directly with table headers (no separate "Beleggingsmix" heading)
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
-    rightYPos += 6;
     doc.text('Beleggingscategorie', rightColStart, rightYPos);
     doc.text('Waarde', rightColStart + 50, rightYPos);
     doc.text('Belang', rightColStart + 70, rightYPos);
