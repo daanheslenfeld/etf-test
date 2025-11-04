@@ -2144,14 +2144,14 @@ useEffect(() => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <button
             onClick={() => setCurrentPage('etfDatabase')}
-            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-4xl sm:text-5xl mb-4">📊</div>
-            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">ETF Database</h3>
-            <p className="text-sm sm:text-base text-gray-400">
+            <div className="text-3xl sm:text-4xl mb-3">📊</div>
+            <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">ETF Database</h3>
+            <p className="text-xs sm:text-sm text-gray-400">
               Ontdek en filter alle beschikbare ETF's
             </p>
           </button>
@@ -2163,11 +2163,11 @@ useEffect(() => {
               setPortfolioType('custom');
               setCurrentPage('customPortfolioBuilder');
             }}
-            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-4xl sm:text-5xl mb-4">🔧</div>
-            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">Zelf Samenstellen</h3>
-            <p className="text-sm sm:text-base text-gray-400">
+            <div className="text-3xl sm:text-4xl mb-3">🔧</div>
+            <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Zelf Samenstellen</h3>
+            <p className="text-xs sm:text-sm text-gray-400">
               Bouw je eigen portfolio stap voor stap
             </p>
           </button>
@@ -2177,20 +2177,20 @@ useEffect(() => {
               setPortfolioType('premade');
               setCurrentPage('portfolioBuilder');
             }}
-            className="bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8 hover:border-[#28EBCF] transition-all group text-left"
+            className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
           >
-            <div className="text-4xl sm:text-5xl mb-4">✨</div>
-            <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
-            <p className="text-sm sm:text-base text-gray-400">
+            <div className="text-3xl sm:text-4xl mb-3">✨</div>
+            <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
+            <p className="text-xs sm:text-sm text-gray-400">
               Kies uit onze kant-en-klare portfolio's
             </p>
           </button>
         </div>
 
         {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (
-          <div className="mt-8 sm:mt-12 bg-[#1A1B1F] border border-gray-800 rounded-2xl p-6 sm:p-8">
-            <div className="flex justify-between items-start mb-3">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Je Huidige Portfolio</h2>
+          <div className="mt-6 sm:mt-8 bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5">
+            <div className="flex justify-between items-start mb-2">
+              <h2 className="text-lg sm:text-xl font-bold text-white">Je Huidige Portfolio</h2>
               {investmentDetails.pricesLastUpdated && (
                 <div className="text-xs text-gray-500">
                   Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
@@ -2203,10 +2203,10 @@ useEffect(() => {
                 </div>
               )}
             </div>
-            <p className="text-sm sm:text-base text-gray-400 mb-6">Je hebt {portfolio.length} ETF's in je portfolio</p>
+            <p className="text-xs sm:text-sm text-gray-400 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="px-6 py-3 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+              className="px-5 py-2.5 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm"
             >
               Bekijk Portfolio
             </button>
