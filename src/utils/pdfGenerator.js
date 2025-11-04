@@ -145,23 +145,17 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     // Start first page
     yPos = addHeader();
 
-    // Samenvatting Section Header
+    // Samenvatting Section Header - with "Samenvatting" and "Resultaten" side by side
     const headerHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
     doc.rect(15, yPos, pageWidth - 30, headerHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    // Center text vertically in the bar: yPos + (headerHeight / 2) + (fontSize / 3)
+    // Put "Samenvatting" and "Resultaten" side by side in the green bar
     doc.text('Samenvatting', 17, yPos + (headerHeight / 2) + 2);
+    doc.text('Resultaten', 120, yPos + (headerHeight / 2) + 2);
     yPos += headerHeight + 2;
-
-    // Resultaten Box (left column)
-    doc.setFontSize(11);
-    doc.setTextColor(40, 235, 207); // PIGG green
-    doc.setFont('helvetica', 'bold');
-    doc.text('Resultaten', 17, yPos);
-    yPos += 2;
 
     // Calculate values
     const initialInvestment = parseFloat(investmentDetails.amount) || 10000;
@@ -300,21 +294,17 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
 
     yPos = 35;
 
-    // Portefeuille Section Header
+    // Portefeuille Section Header - with "Portefeuille" and "Overzicht van de portefeuille" side by side
     const portfolioHeaderHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background
     doc.rect(15, yPos, pageWidth - 30, portfolioHeaderHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    // Center text vertically in the bar
+    // Put "Portefeuille" and "Overzicht van de portefeuille" side by side in the green bar
     doc.text('Portefeuille', 17, yPos + (portfolioHeaderHeight / 2) + 2);
-    yPos += portfolioHeaderHeight + 2;
-
-    doc.setFontSize(11);
-    doc.setTextColor(40, 235, 207); // PIGG green
-    doc.text('Overzicht van de portefeuille', 17, yPos);
-    yPos += 8;
+    doc.text('Overzicht van de portefeuille', 120, yPos + (portfolioHeaderHeight / 2) + 2);
+    yPos += portfolioHeaderHeight + 8;
 
     // Build portfolio table data grouped by category
     const portfolioByCategory = {};
