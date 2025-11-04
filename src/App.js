@@ -7431,42 +7431,42 @@ useEffect(() => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-4 text-left transition-all group border border-[#28EBCF]/50"
+              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-3 text-left transition-all group border border-[#28EBCF]/50"
             >
-              <div className="text-3xl mb-2">📊</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
-              <p className="text-sm text-gray-800">Bekijk en beheer je beleggingen</p>
-              <div className="mt-3 text-sm text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
+              <div className="text-2xl mb-1.5">📊</div>
+              <h3 className="text-base font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
+              <p className="text-xs text-gray-800">Bekijk en beheer je beleggingen</p>
+              <div className="mt-2 text-xs text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Ga naar dashboard →
               </div>
             </button>
 
             <button
               onClick={() => setCurrentPage('etfDatabase')}
-              className="bg-[#1A1B1F] border-2 border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-4 text-left transition-all group"
+              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
             >
-              <div className="text-3xl mb-2">🔍</div>
-              <h3 className="text-lg font-bold text-white mb-1">ETF Database</h3>
-              <p className="text-sm text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
-              <div className="mt-3 text-sm text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+              <div className="text-2xl mb-1.5">🔍</div>
+              <h3 className="text-base font-bold text-white mb-1">ETF Database</h3>
+              <p className="text-xs text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
+              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Verken ETFs →
               </div>
             </button>
 
-            <div className="bg-[#1A1B1F] border-2 border-gray-800 rounded-lg p-4 shadow-md">
-              <div className="text-3xl mb-2">💼</div>
-              <h3 className="text-lg font-bold text-white mb-1">Je Portfolio</h3>
-              <div className="space-y-2 mt-3">
-                <div className="flex justify-between items-center py-1.5 border-b border-gray-800">
-                  <span className="text-sm text-gray-400">ETFs:</span>
-                  <span className="text-[#28EBCF] font-bold">{portfolio?.length || 0}</span>
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-3 shadow-md">
+              <div className="text-2xl mb-1.5">💼</div>
+              <h3 className="text-base font-bold text-white mb-1">Je Portfolio</h3>
+              <div className="space-y-1.5 mt-2">
+                <div className="flex justify-between items-center py-1 border-b border-gray-800">
+                  <span className="text-xs text-gray-400">ETFs:</span>
+                  <span className="text-[#28EBCF] font-bold text-sm">{portfolio?.length || 0}</span>
                 </div>
-                <div className="flex justify-between items-center py-1.5">
-                  <span className="text-sm text-gray-400">Account Type:</span>
-                  <span className="text-white text-sm font-medium">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-xs text-gray-400">Account Type:</span>
+                  <span className="text-white text-xs font-medium">
                     {user?.account_type === 'betaald' ? '✅ Betaald' : user?.account_type === 'fictief' ? '🎭 Fictief' : '🆓 Gratis'}
                   </span>
                 </div>
@@ -7482,15 +7482,15 @@ useEffect(() => {
           </div>
 
           {/* Market Indices */}
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold text-white mb-4">📈 Beursindices</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-3">📈 Beursindices</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               {marketData.indices.map((index, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-4 transition-all hover:shadow-md">
-                  <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{index.name}</div>
-                  <div className="text-lg font-bold text-white mb-2">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className="h-px bg-gray-800 mb-2"></div>
-                  <div className={`text-sm font-bold ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 transition-all hover:shadow-md">
+                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{index.name}</div>
+                  <div className="text-base font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className="h-px bg-gray-800 mb-1"></div>
+                  <div className={`text-xs font-bold ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {index.positive ? '▲' : '▼'} {index.positive ? '+' : ''}{index.change.toFixed(2)}%
                   </div>
                 </div>
@@ -7499,15 +7499,15 @@ useEffect(() => {
           </div>
 
           {/* Currencies */}
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold text-white mb-4">💱 Valuta</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-3">💱 Valuta</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {marketData.currencies.map((currency, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-4 transition-all hover:shadow-md">
-                  <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{currency.name}</div>
-                  <div className="text-lg font-bold text-white mb-2">{currency.value.toFixed(4)}</div>
-                  <div className="h-px bg-gray-800 mb-2"></div>
-                  <div className={`text-sm font-bold ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 transition-all hover:shadow-md">
+                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{currency.name}</div>
+                  <div className="text-base font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
+                  <div className="h-px bg-gray-800 mb-1"></div>
+                  <div className={`text-xs font-bold ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {currency.positive ? '▲' : '▼'} {currency.positive ? '+' : ''}{currency.change.toFixed(2)}%
                   </div>
                 </div>
@@ -7516,25 +7516,25 @@ useEffect(() => {
           </div>
 
           {/* Commodities */}
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold text-white mb-4">🪙 Grondstoffen & Crypto</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-3">🪙 Grondstoffen & Crypto</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               {marketData.commodities.map((commodity, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-6 transition-all hover:shadow-lg">
-                  <div className="flex items-center justify-between mb-3">
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-3 transition-all hover:shadow-lg">
+                  <div className="flex items-center justify-between mb-2">
                     <div>
                       <div className="text-sm font-semibold text-white">{commodity.name}</div>
                       <div className="text-xs text-gray-500 uppercase tracking-wider">{commodity.symbol}</div>
                     </div>
-                    <div className="text-4xl">
+                    <div className="text-2xl">
                       {commodity.name === 'Gold' && '🥇'}
                       {commodity.name === 'Bitcoin' && '₿'}
                       {commodity.name === 'Ethereum' && 'Ξ'}
                     </div>
                   </div>
-                  <div className="h-px bg-gray-800 mb-3"></div>
-                  <div className="text-2xl font-bold text-white mb-2">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-base font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className="h-px bg-gray-800 mb-2"></div>
+                  <div className="text-lg font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className={`text-sm font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {commodity.positive ? '▲' : '▼'} {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
                   </div>
                 </div>
