@@ -1115,6 +1115,9 @@ const ETFPortal = () => {
     securitiesLending: ''
   });
   const [selectedMainCategory, setSelectedMainCategory] = useState(''); // For step-by-step filtering
+  const [filterStep, setFilterStep] = useState('category'); // 'category' | 'filterSelect' | 'filterOptions'
+  const [currentFilter, setCurrentFilter] = useState(''); // Which filter is currently being selected
+  const [activeFilters, setActiveFilters] = useState({}); // Store selected filter values
   const [customBuilderFilters, setCustomBuilderFilters] = useState({
     subcategorie: '',
     currency: '',
@@ -1280,39 +1283,32 @@ useEffect(() => {
    useEffect(() => {
     let filtered = [...etfs];
 
-    if (filters.category) {
-      filtered = filtered.filter(etf => etf.categorie === filters.category);
+    // Apply main category filter
+    if (selectedMainCategory) {
+      filtered = filtered.filter(etf => etf.categorie === selectedMainCategory);
     }
-    if (filters.subcategory) {
-      filtered = filtered.filter(etf => etf.subcategorie === filters.subcategory);
+
+    // Apply activeFilters from step-by-step filtering
+    if (activeFilters.region) {
+      filtered = filtered.filter(etf => etf.subcategorie === activeFilters.region);
     }
-    if (filters.currency) {
-      filtered = filtered.filter(etf => etf['fund ccy'] === filters.currency);
+    if (activeFilters.soort) {
+      filtered = filtered.filter(etf => etf.subcategorie === activeFilters.soort);
     }
-    if (filters.distribution) {
-      filtered = filtered.filter(etf => etf.distribution === filters.distribution);
+    if (activeFilters.valuta) {
+      filtered = filtered.filter(etf => etf['fund ccy'] === activeFilters.valuta);
     }
-    if (filters.region) {
-      filtered = filtered.filter(etf => etf.subcategorie === filters.region);
+    if (activeFilters.sustainability) {
+      filtered = filtered.filter(etf => etf.sustainability === activeFilters.sustainability);
     }
-    if (filters.provider) {
-      filtered = filtered.filter(etf => {
-        const name = etf.naam || '';
-        return name.toLowerCase().includes(filters.provider.toLowerCase());
-      });
+    if (activeFilters.dividend) {
+      filtered = filtered.filter(etf => etf.distribution === activeFilters.dividend);
     }
-    if (filters.sustainability) {
-      filtered = filtered.filter(etf => etf.sustainability === filters.sustainability);
+    if (activeFilters.replication) {
+      filtered = filtered.filter(etf => etf.replication === activeFilters.replication);
     }
-    if (filters.dividend) {
-      filtered = filtered.filter(etf => etf.distribution === filters.dividend);
-    }
-    if (filters.replication) {
-      filtered = filtered.filter(etf => etf.replication === filters.replication);
-    }
-    if (filters.securitiesLending) {
-      filtered = filtered.filter(etf => etf['securities lending'] === filters.securitiesLending);
-    }
+
+    // Apply search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(etf =>
@@ -1322,7 +1318,7 @@ useEffect(() => {
     }
 
     setFilteredEtfs(filtered);
-  }, [filters, etfs]);
+  }, [filters.search, activeFilters, selectedMainCategory, etfs]);
 
   // Save user to sessionStorage (cleared when browser closes) and currentPage to localStorage
   useEffect(() => {
@@ -3934,10 +3930,70 @@ useEffect(() => {
   };
 
   const ETFDatabasePage = () => {
-    const categories = [...new Set(etfs.map(e => e.categorie).filter(Boolean))];
-    const subcategories = [...new Set(etfs.map(e => e.subcategorie).filter(Boolean))];
-    const currencies = [...new Set(etfs.map(e => e['fund ccy']).filter(Boolean))];
-    
+    // Reset filters when component mounts
+    useEffect(() => {
+      setFilterStep('category');
+      setSelectedMainCategory('');
+      setActiveFilters({});
+      setCurrentFilter('');
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Get available filter options based on current category
+    const getFilterOptions = (filterType) => {
+      let currentEtfs = etfs.filter(e => e.categorie === selectedMainCategory);
+
+      // Apply existing active filters
+      Object.keys(activeFilters).forEach(key => {
+        if (activeFilters[key] && key !== filterType) {
+          if (key === 'region') {
+            currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
+          } else if (key === 'soort') {
+            currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
+          } else if (key === 'valuta') {
+            currentEtfs = currentEtfs.filter(e => e['fund ccy'] === activeFilters[key]);
+          } else if (key === 'sustainability') {
+            currentEtfs = currentEtfs.filter(e => e.sustainability === activeFilters[key]);
+          } else if (key === 'dividend') {
+            currentEtfs = currentEtfs.filter(e => e.distribution === activeFilters[key]);
+          } else if (key === 'replication') {
+            currentEtfs = currentEtfs.filter(e => e.replication === activeFilters[key]);
+          }
+        }
+      });
+
+      if (filterType === 'region' || filterType === 'soort') {
+        return [...new Set(currentEtfs.map(e => e.subcategorie).filter(Boolean))];
+      } else if (filterType === 'valuta') {
+        return [...new Set(currentEtfs.map(e => e['fund ccy']).filter(Boolean))];
+      } else if (filterType === 'sustainability') {
+        return ['Yes', 'No'];
+      } else if (filterType === 'dividend') {
+        return [...new Set(currentEtfs.map(e => e.distribution).filter(Boolean))];
+      } else if (filterType === 'replication') {
+        return [...new Set(currentEtfs.map(e => e.replication).filter(Boolean))];
+      }
+      return [];
+    };
+
+    // Define filters per category
+    const categoryFiltersMap = {
+      'Aandelen': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+      'Obligaties': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
+      'Commodities': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
+      'Vastgoed': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+      'Money market': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+      'Crypto': ['soort', 'valuta', 'sustainability', 'dividend', 'replication']
+    };
+
+    const filterLabels = {
+      'region': 'Regio',
+      'soort': 'Soort',
+      'valuta': 'Valuta',
+      'sustainability': 'Sustainability',
+      'dividend': 'Dividend',
+      'replication': 'Replication'
+    };
+
     if (loading) {
       return (
         <div className="min-h-screen bg-[#0A0B0D] flex items-center justify-center">
@@ -4004,143 +4060,152 @@ useEffect(() => {
               />
             </div>
 
-            {/* Step 1: Category Selection Buttons */}
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Selecteer Categorie</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                {['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto'].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => {
-                      if (selectedMainCategory === cat) {
-                        // Deselect
-                        setSelectedMainCategory('');
-                        setFilters({...filters, category: '', subcategory: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
-                      } else {
-                        // Select new category
+            {/* Step 1: Category Selection - Only show if no category selected or in filterSelect step */}
+            {(filterStep === 'category' || !selectedMainCategory) && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-400 mb-2">Selecteer Categorie</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                  {['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto'].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => {
                         setSelectedMainCategory(cat);
-                        setFilters({...filters, category: cat, subcategory: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
-                      }
-                    }}
-                    className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                      selectedMainCategory === cat
-                        ? 'bg-[#28EBCF] text-gray-900'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                        setFilterStep('filterSelect');
+                        setActiveFilters({});
+                      }}
+                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Step 2: Category-Specific Filters */}
-            {selectedMainCategory && (
+            {/* Step 2: Filter Selection - Show available filters for selected category */}
+            {selectedMainCategory && filterStep === 'filterSelect' && (
               <div className="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                <h3 className="text-sm font-semibold text-[#28EBCF] mb-3">Verfijn je selectie voor {selectedMainCategory}</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {/* Regio filter (for Aandelen, Vastgoed, Money market) */}
-                  {['Aandelen', 'Vastgoed', 'Money market'].includes(selectedMainCategory) && (
-                    <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Regio</label>
-                      <select
-                        value={filters.region}
-                        onChange={(e) => setFilters({...filters, region: e.target.value})}
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                      >
-                        <option value="">Alle Regio's</option>
-                        {subcategories.filter(sub =>
-                          etfs.some(etf => etf.categorie === selectedMainCategory && etf.subcategorie === sub)
-                        ).map(sub => <option key={sub} value={sub}>{sub}</option>)}
-                      </select>
-                    </div>
-                  )}
-
-                  {/* Soort filter (for Obligaties, Commodities, Crypto) */}
-                  {['Obligaties', 'Commodities', 'Crypto'].includes(selectedMainCategory) && (
-                    <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Soort</label>
-                      <select
-                        value={filters.subcategory}
-                        onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
-                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                      >
-                        <option value="">Alle Soorten</option>
-                        {subcategories.filter(sub =>
-                          etfs.some(etf => etf.categorie === selectedMainCategory && etf.subcategorie === sub)
-                        ).map(sub => <option key={sub} value={sub}>{sub}</option>)}
-                      </select>
-                    </div>
-                  )}
-
-                  {/* Valuta filter */}
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Valuta</label>
-                    <select
-                      value={filters.currency}
-                      onChange={(e) => setFilters({...filters, currency: e.target.value})}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                    >
-                      <option value="">Alle Valuta's</option>
-                      {currencies.filter(curr =>
-                        etfs.some(etf => etf.categorie === selectedMainCategory && etf['fund ccy'] === curr)
-                      ).map(curr => <option key={curr} value={curr}>{curr}</option>)}
-                    </select>
-                  </div>
-
-                  {/* Sustainability filter */}
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Sustainability</label>
-                    <select
-                      value={filters.sustainability}
-                      onChange={(e) => setFilters({...filters, sustainability: e.target.value})}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                    >
-                      <option value="">Alle</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </div>
-
-                  {/* Dividend/Distribution filter */}
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Dividend</label>
-                    <select
-                      value={filters.dividend}
-                      onChange={(e) => setFilters({...filters, dividend: e.target.value})}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                    >
-                      <option value="">Alle</option>
-                      <option value="Distributing">Distributing</option>
-                      <option value="Accumulating">Accumulating</option>
-                    </select>
-                  </div>
-
-                  {/* Replication filter */}
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Replication</label>
-                    <select
-                      value={filters.replication}
-                      onChange={(e) => setFilters({...filters, replication: e.target.value})}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
-                    >
-                      <option value="">Alle</option>
-                      <option value="Full replication">Full replication</option>
-                      <option value="Optimized">Optimized</option>
-                      <option value="Swap-based">Swap-based</option>
-                    </select>
-                  </div>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-semibold text-[#28EBCF]">
+                    Filters voor {selectedMainCategory}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setSelectedMainCategory('');
+                      setFilterStep('category');
+                      setActiveFilters({});
+                      setCurrentFilter('');
+                    }}
+                    className="text-xs text-gray-400 hover:text-white transition-colors"
+                  >
+                    ← Terug naar categorieën
+                  </button>
                 </div>
 
-                {/* Clear filters button */}
+                {/* Show selected category */}
+                <div className="mb-3 p-3 bg-gray-900/50 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-2">Geselecteerde categorie:</p>
+                  <span className="px-3 py-1 bg-[#28EBCF] text-gray-900 rounded-full text-xs font-medium">
+                    {selectedMainCategory}
+                  </span>
+                </div>
+
+                {/* Show active filters */}
+                {Object.keys(activeFilters).length > 0 && (
+                  <div className="mb-3 p-3 bg-gray-900/50 rounded-lg">
+                    <p className="text-xs text-gray-400 mb-2">Actieve filters (klik om te verwijderen):</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(activeFilters).map(([key, value]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            const newFilters = {...activeFilters};
+                            delete newFilters[key];
+                            setActiveFilters(newFilters);
+                          }}
+                          className="px-3 py-1 bg-[#28EBCF] text-gray-900 rounded-full text-xs font-medium hover:bg-[#20D4BA] transition-colors"
+                        >
+                          {filterLabels[key]}: {value} ✕
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Show available filters as buttons */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                  {categoryFiltersMap[selectedMainCategory]
+                    .filter(f => !activeFilters[f]) // Only show filters that haven't been selected
+                    .map(filterType => (
+                      <button
+                        key={filterType}
+                        onClick={() => {
+                          setCurrentFilter(filterType);
+                          setFilterStep('filterOptions');
+                        }}
+                        className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                      >
+                        {filterLabels[filterType]}
+                      </button>
+                    ))}
+                </div>
+
                 <button
                   onClick={() => {
                     setSelectedMainCategory('');
-                    setFilters({category: '', subcategory: '', currency: '', distribution: '', search: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
+                    setFilterStep('category');
+                    setActiveFilters({});
+                    setCurrentFilter('');
                   }}
-                  className="mt-3 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
                 >
-                  Reset alle filters
+                  Klaar
+                </button>
+              </div>
+            )}
+
+            {/* Step 3: Filter Options - Show options for selected filter */}
+            {selectedMainCategory && filterStep === 'filterOptions' && currentFilter && (
+              <div className="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-semibold text-[#28EBCF]">
+                    Selecteer {filterLabels[currentFilter]}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setFilterStep('filterSelect');
+                      setCurrentFilter('');
+                    }}
+                    className="text-xs text-gray-400 hover:text-white transition-colors"
+                  >
+                    ← Terug
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                  {getFilterOptions(currentFilter).map(option => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setActiveFilters({...activeFilters, [currentFilter]: option});
+                        setFilterStep('filterSelect');
+                        setCurrentFilter('');
+                      }}
+                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white text-sm"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => {
+                    setFilterStep('filterSelect');
+                    setCurrentFilter('');
+                  }}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  Klaar
                 </button>
               </div>
             )}
