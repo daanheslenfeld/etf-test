@@ -1105,8 +1105,16 @@ const ETFPortal = () => {
     subcategory: '',
     currency: '',
     distribution: '',
-    search: ''
+    search: '',
+    // New filter fields
+    region: '',
+    provider: '',
+    sustainability: '',
+    dividend: '',
+    replication: '',
+    securitiesLending: ''
   });
+  const [selectedMainCategory, setSelectedMainCategory] = useState(''); // For step-by-step filtering
   const [customBuilderFilters, setCustomBuilderFilters] = useState({
     subcategorie: '',
     currency: '',
@@ -1271,7 +1279,7 @@ useEffect(() => {
 
    useEffect(() => {
     let filtered = [...etfs];
-    
+
     if (filters.category) {
       filtered = filtered.filter(etf => etf.categorie === filters.category);
     }
@@ -1284,14 +1292,35 @@ useEffect(() => {
     if (filters.distribution) {
       filtered = filtered.filter(etf => etf.distribution === filters.distribution);
     }
+    if (filters.region) {
+      filtered = filtered.filter(etf => etf.subcategorie === filters.region);
+    }
+    if (filters.provider) {
+      filtered = filtered.filter(etf => {
+        const name = etf.naam || '';
+        return name.toLowerCase().includes(filters.provider.toLowerCase());
+      });
+    }
+    if (filters.sustainability) {
+      filtered = filtered.filter(etf => etf.sustainability === filters.sustainability);
+    }
+    if (filters.dividend) {
+      filtered = filtered.filter(etf => etf.distribution === filters.dividend);
+    }
+    if (filters.replication) {
+      filtered = filtered.filter(etf => etf.replication === filters.replication);
+    }
+    if (filters.securitiesLending) {
+      filtered = filtered.filter(etf => etf['securities lending'] === filters.securitiesLending);
+    }
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(etf => 
+      filtered = filtered.filter(etf =>
         etf.naam?.toLowerCase().includes(searchLower) ||
         etf.isin?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     setFilteredEtfs(filtered);
   }, [filters, etfs]);
 
@@ -3964,42 +3993,157 @@ useEffect(() => {
           <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">ETF Database</h1>
 
           <div className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-800">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4">
+            {/* Search bar */}
+            <div className="mb-4">
               <input
                 type="text"
                 placeholder="Zoek op naam of ISIN..."
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
-                className="sm:col-span-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
               />
-
-              <select
-                value={filters.category}
-                onChange={(e) => setFilters({...filters, category: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
-              >
-                <option value="">Alle Categorieën</option>
-                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-              </select>
-
-              <select
-                value={filters.subcategory}
-                onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
-              >
-                <option value="">Alle Subcategorieën</option>
-                {subcategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
-              </select>
-
-              <select
-                value={filters.currency}
-                onChange={(e) => setFilters({...filters, currency: e.target.value})}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-800 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white"
-              >
-                <option value="">Alle Valuta's</option>
-                {currencies.map(curr => <option key={curr} value={curr}>{curr}</option>)}
-              </select>
             </div>
+
+            {/* Step 1: Category Selection Buttons */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-gray-400 mb-2">Selecteer Categorie</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                {['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      if (selectedMainCategory === cat) {
+                        // Deselect
+                        setSelectedMainCategory('');
+                        setFilters({...filters, category: '', subcategory: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
+                      } else {
+                        // Select new category
+                        setSelectedMainCategory(cat);
+                        setFilters({...filters, category: cat, subcategory: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
+                      }
+                    }}
+                    className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                      selectedMainCategory === cat
+                        ? 'bg-[#28EBCF] text-gray-900'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2: Category-Specific Filters */}
+            {selectedMainCategory && (
+              <div className="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                <h3 className="text-sm font-semibold text-[#28EBCF] mb-3">Verfijn je selectie voor {selectedMainCategory}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* Regio filter (for Aandelen, Vastgoed, Money market) */}
+                  {['Aandelen', 'Vastgoed', 'Money market'].includes(selectedMainCategory) && (
+                    <div>
+                      <label className="text-xs text-gray-400 mb-1 block">Regio</label>
+                      <select
+                        value={filters.region}
+                        onChange={(e) => setFilters({...filters, region: e.target.value})}
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                      >
+                        <option value="">Alle Regio's</option>
+                        {subcategories.filter(sub =>
+                          etfs.some(etf => etf.categorie === selectedMainCategory && etf.subcategorie === sub)
+                        ).map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Soort filter (for Obligaties, Commodities, Crypto) */}
+                  {['Obligaties', 'Commodities', 'Crypto'].includes(selectedMainCategory) && (
+                    <div>
+                      <label className="text-xs text-gray-400 mb-1 block">Soort</label>
+                      <select
+                        value={filters.subcategory}
+                        onChange={(e) => setFilters({...filters, subcategory: e.target.value})}
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                      >
+                        <option value="">Alle Soorten</option>
+                        {subcategories.filter(sub =>
+                          etfs.some(etf => etf.categorie === selectedMainCategory && etf.subcategorie === sub)
+                        ).map(sub => <option key={sub} value={sub}>{sub}</option>)}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Valuta filter */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Valuta</label>
+                    <select
+                      value={filters.currency}
+                      onChange={(e) => setFilters({...filters, currency: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                    >
+                      <option value="">Alle Valuta's</option>
+                      {currencies.filter(curr =>
+                        etfs.some(etf => etf.categorie === selectedMainCategory && etf['fund ccy'] === curr)
+                      ).map(curr => <option key={curr} value={curr}>{curr}</option>)}
+                    </select>
+                  </div>
+
+                  {/* Sustainability filter */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Sustainability</label>
+                    <select
+                      value={filters.sustainability}
+                      onChange={(e) => setFilters({...filters, sustainability: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                    >
+                      <option value="">Alle</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+
+                  {/* Dividend/Distribution filter */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Dividend</label>
+                    <select
+                      value={filters.dividend}
+                      onChange={(e) => setFilters({...filters, dividend: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                    >
+                      <option value="">Alle</option>
+                      <option value="Distributing">Distributing</option>
+                      <option value="Accumulating">Accumulating</option>
+                    </select>
+                  </div>
+
+                  {/* Replication filter */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Replication</label>
+                    <select
+                      value={filters.replication}
+                      onChange={(e) => setFilters({...filters, replication: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-[#28EBCF] text-white text-sm"
+                    >
+                      <option value="">Alle</option>
+                      <option value="Full replication">Full replication</option>
+                      <option value="Optimized">Optimized</option>
+                      <option value="Swap-based">Swap-based</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Clear filters button */}
+                <button
+                  onClick={() => {
+                    setSelectedMainCategory('');
+                    setFilters({category: '', subcategory: '', currency: '', distribution: '', search: '', region: '', provider: '', sustainability: '', dividend: '', replication: '', securitiesLending: ''});
+                  }}
+                  className="mt-3 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  Reset alle filters
+                </button>
+              </div>
+            )}
 
             <div className="text-sm text-gray-400">
               Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-[#28EBCF]">(Sample data - upload Excel voor volledige database)</span>}
