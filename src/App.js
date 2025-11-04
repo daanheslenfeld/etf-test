@@ -963,6 +963,43 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('customers');
     return saved ? JSON.parse(saved) : [
     {
+      id: 0,
+      name: 'Demo Investor',
+      firstName: 'Demo',
+      email: 'demo@pigg.nl',
+      password: 'demo123',
+      address: 'Damrak 1',
+      street: 'Damrak',
+      houseNumber: '1',
+      postalCode: '1012 LG',
+      city: 'Amsterdam',
+      phone: '+31 20 123 4567',
+      birthDate: '1990-01-01',
+      registeredAt: '2024-01-01T10:00:00.000Z',
+      account_type: 'betaald',
+      investmentDetails: {
+        goal: 'Vermogensopbouw',
+        horizon: '15',
+        amount: '75000',
+        monthlyContribution: '750',
+        riskProfile: 'Offensief'
+      },
+      portfolio: [
+        { naam: 'iShares Core MSCI World UCITS ETF', isin: 'IE00B4L5Y983', categorie: 'Aandelen', weight: 60, 'ter p.a.': '0.20%' },
+        { naam: 'Xtrackers MSCI Emerging Markets UCITS ETF', isin: 'IE00BTJRMP35', categorie: 'Aandelen', weight: 20, 'ter p.a.': '0.18%' },
+        { naam: 'iShares Physical Gold ETC', isin: 'IE00B579F325', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.25%' },
+        { naam: 'iShares Developed Markets Property Yield UCITS ETF', isin: 'IE00B1FZS350', categorie: 'Vastgoed', weight: 10, 'ter p.a.': '0.59%' }
+      ],
+      transactions: [
+        { date: '2024-01-01', type: 'Storting', amount: 75000, description: 'Initiële storting' },
+        { date: '2024-02-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' },
+        { date: '2024-03-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' },
+        { date: '2024-04-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' }
+      ],
+      portfolioValue: 78500,
+      totalReturn: 5.85
+    },
+    {
       id: 1,
       name: 'Jan Pietersen',
       email: 'jan.pietersen@email.nl',
@@ -3160,12 +3197,21 @@ useEffect(() => {
   };
 
   const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('demo@pigg.nl');
+    const [password, setPassword] = useState('demo123');
     const [error, setError] = useState('');
 
     const handleLoginClick = async () => {
       const result = await handleLogin(email, password);
+      if (!result.success) {
+        setError(result.message || t.auth.incorrectCredentials);
+      }
+    };
+
+    const handleDemoLogin = async () => {
+      setEmail('demo@pigg.nl');
+      setPassword('demo123');
+      const result = await handleLogin('demo@pigg.nl', 'demo123');
       if (!result.success) {
         setError(result.message || t.auth.incorrectCredentials);
       }
@@ -3238,6 +3284,13 @@ useEffect(() => {
                 className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
+              </button>
+
+              <button
+                onClick={handleDemoLogin}
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-white border-2 border-[#28EBCF] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-3"
+              >
+                🚀 Probeer Demo Account
               </button>
             </div>
 
