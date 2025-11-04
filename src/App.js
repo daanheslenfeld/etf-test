@@ -1554,6 +1554,20 @@ useEffect(() => {
       return { success: true };
     }
 
+    // Check if demo account login
+    if (email === 'demo@pigg.nl' && password === 'demo123') {
+      const demoUser = customers.find(c => c.email === 'demo@pigg.nl');
+      if (demoUser) {
+        setUser({
+          ...demoUser,
+          email_verified: true,
+          role: 'user'
+        });
+        setCurrentPage('welcome');
+        return { success: true };
+      }
+    }
+
     // Regular user login via API
     try {
       const response = await fetch(`${API_URL}/login`, {
