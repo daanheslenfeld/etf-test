@@ -2124,7 +2124,7 @@ useEffect(() => {
 
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
@@ -2458,7 +2458,7 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -2536,7 +2536,7 @@ useEffect(() => {
                 </select>
               </div>
 
-              {/* Login and Start Now buttons - visible on all screen sizes */}
+              {/* Login and Start Now buttons - visible on all screens */}
               <button
                 onClick={() => setCurrentPage('login')}
                 className="px-3 py-2 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm lg:text-base lg:px-4"
@@ -3151,10 +3151,10 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-2">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+            <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
+              <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
@@ -3163,14 +3163,17 @@ useEffect(() => {
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
-              <div className="text-xl font-bold text-white">PIGG</div>
+              <div className="flex flex-col">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+              </div>
             </button>
           </div>
         </nav>
 
-        <div className="max-w-md mx-auto mt-8 px-4" style={{ position: 'relative', zIndex: 100 }}>
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6" style={{ position: 'relative', zIndex: 100 }}>
-            <h2 className="text-2xl font-bold mb-6 text-[#28EBCF]">{t.common.welcomeBack}</h2>
+        <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
+          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">{t.common.welcomeBack}</h2>
 
             {error && (
               <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
@@ -3178,33 +3181,26 @@ useEffect(() => {
               </div>
             )}
 
-            <div className="space-y-4" style={{ position: 'relative', zIndex: 100 }}>
-              <div style={{ position: 'relative', zIndex: 100 }}>
-                <label className="block text-sm font-semibold mb-2 text-gray-300">{t.common.email}</label>
+            <div className="space-y-3 sm:space-y-4">
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 text-base bg-gray-900 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                  style={{ WebkitAppearance: 'none', appearance: 'none', position: 'relative', zIndex: 100, pointerEvents: 'auto', touchAction: 'manipulation' }}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.common.email}
-                  autoComplete="email"
-                  inputMode="email"
-                  required
                 />
               </div>
 
-              <div style={{ position: 'relative', zIndex: 100 }}>
-                <label className="block text-sm font-semibold mb-2 text-gray-300">{t.auth.password}</label>
+              <div>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 text-base bg-gray-900 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                  style={{ WebkitAppearance: 'none', appearance: 'none', position: 'relative', zIndex: 100, pointerEvents: 'auto', touchAction: 'manipulation' }}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.auth.password}
-                  autoComplete="current-password"
-                  required
                 />
               </div>
 
@@ -3292,7 +3288,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3400,7 +3396,7 @@ useEffect(() => {
   const EmailVerificationPendingPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3499,7 +3495,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3596,7 +3592,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3854,7 +3850,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4034,7 +4030,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -4776,7 +4772,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -5178,7 +5174,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -5340,7 +5336,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -5414,7 +5410,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -5542,7 +5538,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
@@ -5746,7 +5742,7 @@ useEffect(() => {
     const renderAccountTypeSelection = () => {
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -5871,7 +5867,7 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -6322,7 +6318,7 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -7415,7 +7411,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -7757,7 +7753,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -8141,7 +8137,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 relative z-10 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
