@@ -53,74 +53,91 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
       return `${value >= 0 ? '' : ''}${value.toFixed(2)} %`;
     };
 
-    // Load logo
-    const logoImg = new Image();
-    logoImg.src = '/logo192.png';
+    // Create PIGG pig logo as SVG data URI
+    const createPigLogoDataUri = () => {
+      const svg = `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+        <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+        <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+        <text x="24" y="8.5" font-size="5" fill="#B8860B" font-weight="bold" text-anchor="middle">€</text>
+        <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" stroke-width="1.5" fill="none"/>
+        <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+        <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+      </svg>`;
+      return 'data:image/svg+xml;base64,' + btoa(svg);
+    };
 
     // Header met PIGG branding (Rabobank-style)
     const addHeader = () => {
-      // Title
-      doc.setFontSize(18);
-      doc.setTextColor(59, 130, 246); // Blue color like Rabobank
-      doc.setFont('helvetica', 'normal');
-      doc.text('Periode-overzicht beleggingsportefeuille', 15, yPos);
-
-      yPos += 8;
-      doc.setFontSize(14);
-      doc.setTextColor(40, 235, 207); // PIGG color
-      doc.setFont('helvetica', 'bold');
-      doc.text('PIGG', 15, yPos);
-
-      // Add logo (top right)
+      // Add PIGG pig logo (top left)
       try {
-        doc.addImage(logoImg, 'PNG', pageWidth - 35, 10, 20, 20);
+        const pigLogo = createPigLogoDataUri();
+        doc.addImage(pigLogo, 'SVG', 15, 10, 15, 15);
       } catch (e) {
-        console.log('Could not load logo:', e);
+        console.log('Could not load pig logo:', e);
       }
 
-      // Contact info (right side)
-      doc.setFontSize(9);
-      doc.setTextColor(59, 130, 246);
-      doc.setFont('helvetica', 'normal');
-      const contactX = pageWidth - 80;
-      doc.text('Voor vragen over uw beleggingen', contactX, 15);
-      doc.text('neem contact op met', contactX, 19);
-
-      doc.setFontSize(10);
+      // Title
+      doc.setFontSize(18);
+      doc.setTextColor(40, 235, 207); // PIGG green color
       doc.setFont('helvetica', 'bold');
-      doc.text('PIGG Support', contactX, 25);
+      doc.text('Periode-overzicht beleggingsportefeuille', 35, 18);
+
+      doc.setFontSize(12);
+      doc.setTextColor(40, 235, 207); // PIGG color
+      doc.setFont('helvetica', 'bold');
+      doc.text('PIGG', 35, 24);
+
+      // Contact info (right side) - adjusted positioning
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont('helvetica', 'normal');
+      const contactX = pageWidth - 75;
+      doc.text('Voor vragen over uw beleggingen', contactX, 12);
+      doc.text('neem contact op met', contactX, 16);
 
       doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.text('E-mail support@pigg.nl', contactX, 29);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40, 235, 207);
+      doc.text('PIGG Support', contactX, 21);
 
-      // Client info (left side below title)
-      yPos += 8;
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 100, 100);
+      doc.text('E-mail: support@pigg.nl', contactX, 25);
+
+      // Client info (left side below logo) - better spacing
+      yPos = 32;
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('helvetica', 'bold');
       doc.text(`${user.firstName || user.name}`, 15, yPos);
 
-      // Right side info
+      yPos += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Account: ${user.account_type === 'betaald' ? 'Betaald' : user.account_type === 'fictief' ? 'Fictief' : 'Gratis'}`, 15, yPos);
+
+      // Right side info - better alignment
+      const rightInfoX = pageWidth - 75;
       doc.setFont('helvetica', 'bold');
-      doc.text('Datum overzicht', contactX, yPos);
+      doc.setFontSize(9);
+      doc.text('Datum overzicht', rightInfoX, 32);
+
       doc.setFont('helvetica', 'normal');
       const today = new Date().toLocaleDateString('nl-NL', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       });
-      doc.text(today, contactX + 35, yPos);
-
-      yPos += 5;
-      doc.text(`Account Type: ${user.account_type === 'betaald' ? 'Betaald' : user.account_type === 'fictief' ? 'Fictief' : 'Gratis'}`, 15, yPos);
+      doc.text(today, rightInfoX, 37);
 
       doc.setFont('helvetica', 'bold');
-      doc.text('Portefeuillewaarde', contactX, yPos);
+      doc.text('Portefeuillewaarde', rightInfoX, 44);
       doc.setFont('helvetica', 'normal');
-      doc.text(formatEuro(animatedPortfolioValue), contactX + 35, yPos);
+      doc.text(formatEuro(animatedPortfolioValue), rightInfoX, 49);
 
-      yPos += 10;
+      yPos = 55;
 
       return yPos;
     };
@@ -129,17 +146,17 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     yPos = addHeader();
 
     // Samenvatting Section Header
-    doc.setFillColor(220, 230, 240); // Light blue background
+    doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
     doc.rect(15, yPos, pageWidth - 30, 7, 'F');
     doc.setFontSize(12);
-    doc.setTextColor(59, 130, 246);
+    doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
     doc.text('Samenvatting', 17, yPos + 5);
     yPos += 10;
 
     // Resultaten Box (left column)
     doc.setFontSize(11);
-    doc.setTextColor(59, 130, 246);
+    doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
     doc.text('Resultaten', 17, yPos);
     yPos += 2;
@@ -215,7 +232,7 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     let rightYPos = 60;
 
     doc.setFontSize(11);
-    doc.setTextColor(59, 130, 246);
+    doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
     doc.text('Beleggingsmix', rightColStart, rightYPos);
     rightYPos += 2;
@@ -261,35 +278,37 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     doc.addPage();
     yPos = 15;
 
-    // Header on new page
-    doc.setFontSize(18);
-    doc.setTextColor(59, 130, 246);
-    doc.text('Periode-overzicht beleggingsportefeuille', 15, yPos);
-    yPos += 8;
-    doc.setFontSize(14);
-    doc.setTextColor(40, 235, 207);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PIGG', 15, yPos);
-
-    // Add logo on second page too
+    // Header on new page - use same header function
+    // Add PIGG pig logo (top left)
     try {
-      doc.addImage(logoImg, 'PNG', pageWidth - 35, 10, 20, 20);
+      const pigLogo = createPigLogoDataUri();
+      doc.addImage(pigLogo, 'SVG', 15, 10, 15, 15);
     } catch (e) {
-      console.log('Could not load logo:', e);
+      console.log('Could not load pig logo:', e);
     }
 
-    yPos += 10;
+    // Title
+    doc.setFontSize(18);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    doc.text('Periode-overzicht beleggingsportefeuille', 35, 18);
+
+    doc.setFontSize(12);
+    doc.text('PIGG', 35, 24);
+
+    yPos = 35;
 
     // Portefeuille Section Header
-    doc.setFillColor(220, 230, 240);
+    doc.setFillColor(200, 250, 240); // Light green/cyan background
     doc.rect(15, yPos, pageWidth - 30, 7, 'F');
     doc.setFontSize(12);
-    doc.setTextColor(59, 130, 246);
+    doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
     doc.text('Portefeuille', 17, yPos + 5);
     yPos += 10;
 
     doc.setFontSize(11);
+    doc.setTextColor(40, 235, 207); // PIGG green
     doc.text('Overzicht van de portefeuille', 17, yPos);
     yPos += 8;
 
@@ -314,7 +333,7 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
       .forEach(([category, etfs]) => {
         // Category header
         doc.setFontSize(10);
-        doc.setTextColor(59, 130, 246);
+        doc.setTextColor(40, 235, 207); // PIGG green
         doc.setFont('helvetica', 'italic');
         doc.text(category, 17, yPos);
         yPos += 6;
@@ -325,29 +344,38 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
           .map(etf => {
             const etfValue = (currentValue * (etf.weight || 0) / 100);
 
-            // Get current price - from ytd field or calculate
-            let currentPrice = 'N/A';
+            // Get current price - use reasonable price based on ETF value
+            // Most ETFs trade between 20-150 EUR/USD
+            let pricePerShare = 100; // default
+
             if (etf.ytd) {
-              // Parse ytd percentage
+              // Parse ytd percentage and calculate estimated current price
               const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
               const ytdNum = parseFloat(ytdStr);
-              if (!isNaN(ytdNum)) {
-                // Assume a base price of 100 and calculate current
-                currentPrice = (100 * (1 + ytdNum / 100)).toFixed(2);
+              if (!isNaN(ytdNum) && ytdNum !== 0) {
+                // Use YTD to estimate a reasonable price range
+                pricePerShare = 100 * (1 + ytdNum / 100);
               }
             }
 
-            // Calculate number of shares (assuming price per share)
-            const pricePerShare = currentPrice !== 'N/A' ? parseFloat(currentPrice) : 100;
+            // Calculate number of shares
             const numberOfShares = Math.round(etfValue / pricePerShare);
 
-            // YTD return in euros
-            const ytdReturnEuro = etfValue * (parseFloat(String(etf.ytd || '0').replace('%', '').replace(',', '.')) / 100);
+            // YTD return in euros - calculate based on current value and YTD percentage
+            let ytdReturnEuro = 0;
+            if (etf.ytd) {
+              const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
+              const ytdNum = parseFloat(ytdStr);
+              if (!isNaN(ytdNum)) {
+                // Calculate the gain/loss amount
+                ytdReturnEuro = (etfValue * ytdNum) / (100 + ytdNum);
+              }
+            }
 
             return [
               etf.naam || 'Onbekend',
               numberOfShares.toString(),
-              currentPrice !== 'N/A' ? currentPrice : '-',
+              pricePerShare.toFixed(2),
               formatEuro(etfValue),
               formatEuro(ytdReturnEuro)
             ];
@@ -395,7 +423,14 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
             .filter(etf => (etf.weight || 0) > 0)
             .reduce((sum, etf) => {
               const etfValue = (currentValue * (etf.weight || 0) / 100);
-              const ytdReturnEuro = etfValue * (parseFloat(String(etf.ytd || '0').replace('%', '').replace(',', '.')) / 100);
+              let ytdReturnEuro = 0;
+              if (etf.ytd) {
+                const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
+                const ytdNum = parseFloat(ytdStr);
+                if (!isNaN(ytdNum)) {
+                  ytdReturnEuro = (etfValue * ytdNum) / (100 + ytdNum);
+                }
+              }
               return sum + ytdReturnEuro;
             }, 0);
 
