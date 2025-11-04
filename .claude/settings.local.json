@@ -34,7 +34,13 @@
       "Bash(node test-create-table.js:*)",
       "Bash(node test-conversation-system.js:*)",
       "Bash(vercel logs:*)",
-      "Bash(C:UsersDaanDesktopold_pdfGenerator.js)"
+      "Bash(C:UsersDaanDesktopold_pdfGenerator.js)",
+      "Bash(npx cap init)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(copy publiclogo512.png assetsicon.png)",
+      "Bash(copy:*)",
+      "Bash(npx @capacitor/assets:*)"
     ],
     "deny": [],
     "ask": []
