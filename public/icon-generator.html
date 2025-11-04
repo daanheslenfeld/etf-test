@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIGG Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+        }
+        h1 {
+            color: #28EBCF;
+        }
+        .icon-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        canvas {
+            border: 2px solid #28EBCF;
+            margin: 10px 0;
+            display: block;
+        }
+        button {
+            background: #28EBCF;
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #20D4BA;
+        }
+        .instructions {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions ol {
+            line-height: 1.8;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐷 PIGG Icon Generator</h1>
+    <p>Generate your PIGG app icons for PWA installation on iPhone.</p>
+
+    <div class="icon-container">
+        <h2>192x192 Icon</h2>
+        <canvas id="icon192" width="192" height="192"></canvas>
+        <button onclick="downloadIcon('icon192', 'logo192.png')">Download logo192.png</button>
+    </div>
+
+    <div class="icon-container">
+        <h2>512x512 Icon</h2>
+        <canvas id="icon512" width="512" height="512"></canvas>
+        <button onclick="downloadIcon('icon512', 'logo512.png')">Download logo512.png</button>
+    </div>
+
+    <button onclick="downloadAllIcons()" style="background: #FFD700; font-size: 18px;">
+        📥 Download All Icons
+    </button>
+
+    <div class="instructions">
+        <h2>📱 How to Install PIGG on Your iPhone:</h2>
+        <ol>
+            <li>Click "Download All Icons" above</li>
+            <li>Replace the files in <code>public/logo192.png</code> and <code>public/logo512.png</code></li>
+            <li>Deploy your app: <code>vercel --prod</code></li>
+            <li>Open the deployed URL in Safari on your iPhone</li>
+            <li>Tap the Share button (square with arrow pointing up)</li>
+            <li>Scroll down and tap "Add to Home Screen"</li>
+            <li>Tap "Add" - the PIGG icon will appear on your home screen!</li>
+        </ol>
+    </div>
+
+    <script>
+        function drawPigIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const scale = size / 48;
+
+            function s(val) {
+                return val * scale;
+            }
+
+            // Background - PIGG dark color
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw pig body (rounded rectangle shape)
+            ctx.fillStyle = '#28EBCF';
+            ctx.beginPath();
+            ctx.moveTo(s(12), s(20));
+            ctx.quadraticCurveTo(s(12), s(14), s(18), s(14));
+            ctx.lineTo(s(30), s(14));
+            ctx.quadraticCurveTo(s(36), s(14), s(36), s(20));
+            ctx.lineTo(s(36), s(28));
+            ctx.quadraticCurveTo(s(36), s(34), s(30), s(34));
+            ctx.lineTo(s(18), s(34));
+            ctx.quadraticCurveTo(s(12), s(34), s(12), s(28));
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw coin slot (rectangle on top)
+            ctx.fillStyle = '#1a5f54';
+            ctx.beginPath();
+            ctx.roundRect(s(20), s(10), s(8), s(2), s(1));
+            ctx.fill();
+
+            // Draw golden coin
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(s(24), s(6), s(4), 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw euro symbol on coin
+            ctx.fillStyle = '#B8860B';
+            ctx.font = `bold ${s(5)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('€', s(24), s(6));
+
+            // Draw connector from coin to pig body
+            ctx.strokeStyle = '#1a5f54';
+            ctx.lineWidth = s(1.5);
+            ctx.beginPath();
+            ctx.moveTo(s(20), s(14));
+            ctx.quadraticCurveTo(s(20), s(10), s(24), s(10));
+            ctx.quadraticCurveTo(s(28), s(10), s(28), s(14));
+            ctx.stroke();
+
+            // Draw pig feet (circles)
+            ctx.fillStyle = '#20D4BA';
+            ctx.beginPath();
+            ctx.arc(s(18), s(34), s(2), 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(s(30), s(34), s(2), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert(`✅ ${filename} downloaded successfully!`);
+            }, 'image/png');
+        }
+
+        function downloadAllIcons() {
+            // Download 192x192
+            downloadIcon('icon192', 'logo192.png');
+
+            // Download 512x512 after a short delay
+            setTimeout(() => {
+                downloadIcon('icon512', 'logo512.png');
+            }, 500);
+        }
+
+        // Generate icons on page load
+        window.addEventListener('load', function() {
+            drawPigIcon('icon192', 192);
+            drawPigIcon('icon512', 512);
+            console.log('✅ PIGG icons generated successfully!');
+        });
+    </script>
+</body>
+</html>

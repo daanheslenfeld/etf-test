@@ -145,17 +145,22 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     // Start first page
     yPos = addHeader();
 
-    // Samenvatting Section Header - with "Samenvatting" and "Resultaten" side by side in green bar
+    // Samenvatting Section Header - only "Samenvatting" in green bar, then "Resultaten" as regular header below
     const headerHeight = 8;
     doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
     doc.rect(15, yPos, pageWidth - 30, headerHeight, 'F');
     doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    // "Samenvatting" and "Resultaten" side by side in the green bar
+    // Only "Samenvatting" in the green bar
     doc.text('Samenvatting', 17, yPos + (headerHeight / 2) + 2);
-    doc.text('Resultaten', 70, yPos + (headerHeight / 2) + 2);
     yPos += headerHeight + 2;
+
+    // "Resultaten" as separate section header next to Samenvatting data
+    doc.setFontSize(11);
+    doc.setTextColor(40, 235, 207);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Resultaten', 70, yPos + 4);
 
     // Calculate values
     const initialInvestment = parseFloat(investmentDetails.amount) || 10000;
@@ -223,20 +228,24 @@ export const generatePortfolioReport = (user, portfolio, metrics, investmentDeta
     doc.setTextColor(ytdReturn >= 0 ? 0 : 255, ytdReturn >= 0 ? 128 : 0, 0);
     doc.text(formatPercent(ytdReturn - metrics.avgTER), valueCol, yPos);
 
-    // Beleggingsmix Section (right column)
+    // Beleggingsmix Section (right column) with green bar
     const rightColStart = 120;
-    let rightYPos = 60;
+    let rightYPos = 55; // Start at same height as left column green bar
 
-    doc.setFontSize(11);
+    // Green bar for Beleggingsmix
+    const beleggingsmixBarHeight = 8;
+    doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
+    doc.rect(rightColStart - 2, rightYPos, pageWidth - rightColStart - 13, beleggingsmixBarHeight, 'F');
+    doc.setFontSize(12);
     doc.setTextColor(40, 235, 207); // PIGG green
     doc.setFont('helvetica', 'bold');
-    doc.text('Beleggingsmix', rightColStart, rightYPos);
-    rightYPos += 2;
+    doc.text('Beleggingsmix', rightColStart, rightYPos + (beleggingsmixBarHeight / 2) + 2);
+    rightYPos += beleggingsmixBarHeight + 4;
 
+    // Table header BELOW the green bar
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'bold');
-    rightYPos += 6;
     doc.text('Beleggingscategorie', rightColStart, rightYPos);
     doc.text('Waarde', rightColStart + 50, rightYPos);
     doc.text('Belang', rightColStart + 70, rightYPos);

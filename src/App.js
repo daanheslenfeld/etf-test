@@ -928,8 +928,8 @@ const ETFPortal = () => {
   });
 
   const [user, setUser] = useState(() => {
-    // Use sessionStorage instead of localStorage so user is logged out when browser closes
-    const saved = sessionStorage.getItem('user');
+    // Use localStorage for persistent login (stays logged in after closing app)
+    const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -1320,12 +1320,12 @@ useEffect(() => {
     setFilteredEtfs(filtered);
   }, [filters.search, activeFilters, selectedMainCategory, etfs]);
 
-  // Save user to sessionStorage (cleared when browser closes) and currentPage to localStorage
+  // Save user to localStorage for persistent login (stays logged in after closing app)
   useEffect(() => {
     if (user) {
-      sessionStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
     } else {
-      sessionStorage.removeItem('user');
+      localStorage.removeItem('user');
     }
   }, [user]);
 
@@ -6298,40 +6298,42 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
-                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-              </svg>
-              <div className="text-2xl sm:text-3xl font-bold text-white">PIGG</div>
-            </button>
-            <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white">Home</button>
-              <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium">Dashboard</button>
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
-              <div className="text-sm text-gray-400">{user?.name}</div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-400 hover:text-white font-medium"
-              >
-                {t.common.logout}
+          <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+            <div className="flex justify-between items-center">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
+                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
+                >
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </div>
         </nav>
-        
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
+
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white">Mijn Dashboard</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Mijn Dashboard</h1>
               {investmentDetails.pricesLastUpdated && (
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
                     day: '2-digit',
                     month: '2-digit',
@@ -6342,7 +6344,7 @@ useEffect(() => {
                 </p>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={() => {
                   console.log('Button clicked!');
@@ -6353,14 +6355,14 @@ useEffect(() => {
                     alert('Fout bij het genereren van het rapport: ' + err.message);
                   }
                 }}
-                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex-semibold flex items-center gap-2"
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                📄 Download Rapport
+                📄 <span className="hidden sm:inline">Download Rapport</span><span className="sm:hidden">Rapport</span>
               </button>
-              <button onClick={() => setShowDeposit(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Storten</button>
-              <button onClick={() => setShowWithdrawal(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold">Geld Opnemen</button>
-              <button onClick={() => setShowEditChoice(true)} className="px-6 py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium">Portfolio Aanpassen</button>
-              <button onClick={() => setShowRebalance(true)} className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 font-medium">Portfolio Balanceren</button>
+              <button onClick={() => setShowDeposit(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Storten</button>
+              <button onClick={() => setShowWithdrawal(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Opnemen</button>
+              <button onClick={() => setShowEditChoice(true)} className="hidden md:block px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium text-sm sm:text-base">Aanpassen</button>
+              <button onClick={() => setShowRebalance(true)} className="hidden lg:block px-3 sm:px-6 py-2 sm:py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 font-medium text-sm sm:text-base">Balanceren</button>
             </div>
           </div>
 
@@ -7389,38 +7391,40 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
-              <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
-                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-              </svg>
-              <div className="text-2xl sm:text-3xl font-bold text-white">PIGG</div>
-            </button>
-            <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium">Home</button>
-              <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white">Dashboard</button>
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white">ETF Database</button>
-              <div className="text-sm text-gray-400">{user?.name}</div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-400 hover:text-white font-medium"
-              >
-                {t.common.logout}
+          <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+            <div className="flex justify-between items-center">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
+                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
+                >
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold text-white mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
-            <p className="text-gray-400">Bekijk de laatste marktgegevens en beheer je portfolio</p>
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
+          <div className="mb-6 sm:mb-8 md:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
+            <p className="text-sm sm:text-base text-gray-400">Bekijk de laatste marktgegevens en beheer je portfolio</p>
           </div>
 
           {/* Divider */}
@@ -7482,13 +7486,13 @@ useEffect(() => {
           </div>
 
           {/* Market Indices */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-3">📈 Beursindices</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">📈 Beursindices</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {marketData.indices.map((index, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 transition-all hover:shadow-md">
-                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{index.name}</div>
-                  <div className="text-base font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
+                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide truncate">{index.name}</div>
+                  <div className="text-sm sm:text-base font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   <div className="h-px bg-gray-800 mb-1"></div>
                   <div className={`text-xs font-bold ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {index.positive ? '▲' : '▼'} {index.positive ? '+' : ''}{index.change.toFixed(2)}%
@@ -7499,13 +7503,13 @@ useEffect(() => {
           </div>
 
           {/* Currencies */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-3">💱 Valuta</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">💱 Valuta</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {marketData.currencies.map((currency, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 transition-all hover:shadow-md">
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
                   <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{currency.name}</div>
-                  <div className="text-base font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
+                  <div className="text-sm sm:text-base font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
                   <div className="h-px bg-gray-800 mb-1"></div>
                   <div className={`text-xs font-bold ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {currency.positive ? '▲' : '▼'} {currency.positive ? '+' : ''}{currency.change.toFixed(2)}%
@@ -7516,25 +7520,25 @@ useEffect(() => {
           </div>
 
           {/* Commodities */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-3">🪙 Grondstoffen & Crypto</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">🪙 Grondstoffen & Crypto</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
               {marketData.commodities.map((commodity, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-3 transition-all hover:shadow-lg">
+                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 sm:p-3 transition-all hover:shadow-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <div className="text-sm font-semibold text-white">{commodity.name}</div>
                       <div className="text-xs text-gray-500 uppercase tracking-wider">{commodity.symbol}</div>
                     </div>
-                    <div className="text-2xl">
+                    <div className="text-xl sm:text-2xl">
                       {commodity.name === 'Gold' && '🥇'}
                       {commodity.name === 'Bitcoin' && '₿'}
                       {commodity.name === 'Ethereum' && 'Ξ'}
                     </div>
                   </div>
                   <div className="h-px bg-gray-800 mb-2"></div>
-                  <div className="text-lg font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-sm font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className="text-base sm:text-lg font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className={`text-xs sm:text-sm font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {commodity.positive ? '▲' : '▼'} {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
                   </div>
                 </div>
@@ -7543,17 +7547,17 @@ useEffect(() => {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 mb-8 mt-12">
+          <div className="flex items-center gap-4 mb-6 sm:mb-8 mt-8 sm:mt-12">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#28EBCF]/50 to-transparent"></div>
           </div>
 
           {/* Call to Action */}
-          <div className="bg-gradient-to-r from-[#28EBCF]/20 to-blue-600/20 border-2 border-[#28EBCF]/50 rounded-xl p-8 text-center shadow-lg shadow-[#28EBCF]/10">
-            <h3 className="text-2xl font-bold text-white mb-4">Klaar om te beleggen?</h3>
-            <p className="text-gray-300 mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
+          <div className="bg-gradient-to-r from-[#28EBCF]/20 to-blue-600/20 border-2 border-[#28EBCF]/50 rounded-xl p-4 sm:p-6 md:p-8 text-center shadow-lg shadow-[#28EBCF]/10">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">Klaar om te beleggen?</h3>
+            <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-lg transition-all inline-flex items-center gap-2"
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-base sm:text-lg transition-all inline-flex items-center gap-2"
             >
               Naar Mijn Dashboard
               <span>→</span>
