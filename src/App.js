@@ -2536,16 +2536,16 @@ useEffect(() => {
                 </select>
               </div>
 
-              {/* Desktop only: Login and Start Now buttons */}
+              {/* Login and Start Now buttons - visible on all screen sizes */}
               <button
                 onClick={() => setCurrentPage('login')}
-                className="hidden lg:block px-4 py-2 text-white hover:text-[#28EBCF] transition-colors font-medium"
+                className="px-3 py-2 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm lg:text-base lg:px-4"
               >
                 {t.nav.login}
               </button>
               <button
                 onClick={() => setCurrentPage('register')}
-                className="hidden lg:block px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap"
+                className="px-3 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap text-sm lg:text-base lg:px-4"
               >
                 {t.nav.startNow}
               </button>
