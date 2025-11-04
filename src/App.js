@@ -923,11 +923,20 @@ const ETFPortal = () => {
       return 'verify-email';
     }
 
+    // Check URL path for direct navigation (e.g., /login)
+    const path = window.location.pathname;
+    if (path === '/login') {
+      return 'login';
+    }
+    if (path === '/register') {
+      return 'register';
+    }
+
     // Check if user is logged in
     const savedUser = localStorage.getItem('user');
     const saved = localStorage.getItem('currentPage');
 
-    console.log('Initializing app - saved page:', saved, 'has user:', !!savedUser);
+    console.log('Initializing app - path:', path, 'saved page:', saved, 'has user:', !!savedUser);
 
     // If user is logged in and no saved page, go to welcome instead of landing
     if (savedUser && !saved) {
