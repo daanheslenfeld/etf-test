@@ -922,8 +922,18 @@ const ETFPortal = () => {
       localStorage.removeItem('currentPage');
       return 'verify-email';
     }
+
+    // Check if user is logged in
+    const savedUser = localStorage.getItem('user');
     const saved = localStorage.getItem('currentPage');
-    console.log('No token, using saved page:', saved);
+
+    console.log('Initializing app - saved page:', saved, 'has user:', !!savedUser);
+
+    // If user is logged in and no saved page, go to welcome instead of landing
+    if (savedUser && !saved) {
+      return 'welcome';
+    }
+
     return saved || 'landing';
   });
 
