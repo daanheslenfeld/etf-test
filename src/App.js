@@ -1357,6 +1357,16 @@ useEffect(() => {
     localStorage.setItem('portfolio', JSON.stringify(portfolio));
   }, [portfolio]);
 
+  // Reset ETF database filters when entering the page
+  useEffect(() => {
+    if (currentPage === 'etfDatabase') {
+      setFilterStep('category');
+      setSelectedMainCategory('');
+      setActiveFilters({});
+      setCurrentFilter('');
+    }
+  }, [currentPage]);
+
   useEffect(() => {
     if (portfolioType) {
       localStorage.setItem('portfolioType', portfolioType);
@@ -3930,14 +3940,6 @@ useEffect(() => {
   };
 
   const ETFDatabasePage = () => {
-    // Reset filters when component mounts
-    useEffect(() => {
-      setFilterStep('category');
-      setSelectedMainCategory('');
-      setActiveFilters({});
-      setCurrentFilter('');
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
     // Get available filter options based on current category
     const getFilterOptions = (filterType) => {
       let currentEtfs = etfs.filter(e => e.categorie === selectedMainCategory);
