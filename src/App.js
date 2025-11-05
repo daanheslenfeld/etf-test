@@ -1275,16 +1275,26 @@ const ETFPortal = () => {
     localStorage.setItem('language', language);
   }, [language]);
 
-  // iOS PWA INPUT FIX - Force all inputs to be focusable
+  // iOS Capacitor INPUT FIX - Force all inputs to be focusable
   useEffect(() => {
+    const handleTouchStart = function(e) {
+      // Don't prevent default, just ensure this input can receive focus
+      if (this.disabled) return;
+
+      // Small delay to ensure iOS processes the touch
+      setTimeout(() => {
+        this.focus();
+        this.click();
+      }, 10);
+    };
+
     const fixIOSInputs = () => {
       const inputs = document.querySelectorAll('input, textarea, select');
       inputs.forEach(input => {
+        // Remove old listener to prevent duplicates
+        input.removeEventListener('touchstart', handleTouchStart);
         // Add touch event handler to force focus
-        input.addEventListener('touchstart', function(e) {
-          this.focus();
-          e.stopPropagation();
-        }, { passive: true });
+        input.addEventListener('touchstart', handleTouchStart, { passive: false });
       });
     };
 
@@ -2202,11 +2212,34 @@ useEffect(() => {
           <div className="flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -2537,11 +2570,34 @@ useEffect(() => {
             {/* Logo */}
             <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
               <svg viewBox="0 0 48 48" fill="none" className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3237,11 +3293,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3388,11 +3467,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3496,11 +3598,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3595,11 +3720,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3692,11 +3840,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -3950,11 +4121,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -4131,11 +4325,34 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                  {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                  {/* Gold coin */}
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                   <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                  {/* Pig face - Eyes */}
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                  {/* Pig snout */}
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                  {/* Pig ears */}
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                  {/* Smile */}
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                  {/* Legs/feet */}
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
@@ -4873,11 +5090,34 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                  {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                  {/* Gold coin */}
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                   <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                  {/* Pig face - Eyes */}
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                  {/* Pig snout */}
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                  {/* Pig ears */}
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                  {/* Smile */}
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                  {/* Legs/feet */}
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
@@ -5274,11 +5514,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -5967,11 +6230,34 @@ useEffect(() => {
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
+                {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                {/* Gold coin */}
                 <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                 <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                 <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                {/* Pig face - Eyes */}
+                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                {/* Pig snout */}
+                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                {/* Pig ears */}
+                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                {/* Smile */}
+                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                {/* Legs/feet */}
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
@@ -6419,11 +6705,34 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                  {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                  {/* Gold coin */}
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                   <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                  {/* Pig face - Eyes */}
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                  {/* Pig snout */}
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                  {/* Pig ears */}
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                  {/* Smile */}
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                  {/* Legs/feet */}
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
@@ -7512,11 +7821,34 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                  {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                  {/* Gold coin */}
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                   <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                  {/* Pig face - Eyes */}
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                  {/* Pig snout */}
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                  {/* Pig ears */}
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                  {/* Smile */}
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                  {/* Legs/feet */}
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
@@ -7854,11 +8186,34 @@ useEffect(() => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <svg viewBox="0 0 48 48" fill="none" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                  {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+                  {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+                  {/* Gold coin */}
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
                   <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+                  {/* Pig face - Eyes */}
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+                  {/* Pig snout */}
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+                  {/* Pig ears */}
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+                  {/* Smile */}
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+                  {/* Legs/feet */}
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
