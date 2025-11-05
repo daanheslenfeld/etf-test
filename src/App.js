@@ -1189,6 +1189,56 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('portfolio');
     return saved ? JSON.parse(saved) : [];
   });
+  const [financialNews] = useState([
+    {
+      id: 1,
+      title: 'Federal Reserve Maintains Interest Rates Amid Economic Uncertainty',
+      source: 'Financial Times',
+      time: '2 hours ago',
+      category: 'Central Banking',
+      summary: 'The Federal Reserve has decided to keep interest rates steady as policymakers assess the impact of previous hikes on inflation and employment.'
+    },
+    {
+      id: 2,
+      title: 'European Markets Rally on Strong Corporate Earnings',
+      source: 'Bloomberg',
+      time: '4 hours ago',
+      category: 'Markets',
+      summary: 'Major European indices posted significant gains as companies across sectors reported better-than-expected quarterly results.'
+    },
+    {
+      id: 3,
+      title: 'Bitcoin Surges Past $98,000 on Institutional Adoption',
+      source: 'Reuters',
+      time: '5 hours ago',
+      category: 'Cryptocurrency',
+      summary: 'Bitcoin reached new highs following announcements from major financial institutions expanding their digital asset offerings.'
+    },
+    {
+      id: 4,
+      title: 'Oil Prices Stabilize After OPEC+ Production Decision',
+      source: 'Wall Street Journal',
+      time: '6 hours ago',
+      category: 'Commodities',
+      summary: 'Crude oil prices found support as OPEC+ members agreed to maintain current production levels through the next quarter.'
+    },
+    {
+      id: 5,
+      title: 'Tech Sector Leads Global Stock Market Recovery',
+      source: 'CNBC',
+      time: '8 hours ago',
+      category: 'Technology',
+      summary: 'Technology stocks drove global markets higher with AI-related companies showing particularly strong performance.'
+    },
+    {
+      id: 6,
+      title: 'Gold Reaches Record High Amid Geopolitical Tensions',
+      source: 'MarketWatch',
+      time: '1 day ago',
+      category: 'Commodities',
+      summary: 'Safe-haven assets like gold attracted investor interest as global geopolitical uncertainties continue to mount.'
+    }
+  ]);
   const [portfolioType, setPortfolioType] = useState(() => {
     const saved = localStorage.getItem('portfolioType');
     return saved || null;
@@ -2208,8 +2258,8 @@ useEffect(() => {
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Green spacer bar for mobile - pushes nav down below status bar */}
-      <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+      <div className="sm:hidden bg-[#28EBCF] h-3 sticky top-0 z-50"></div>
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
@@ -2566,9 +2616,9 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Green spacer bar for mobile - pushes nav down below status bar */}
-      <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
+      <div className="sm:hidden bg-[#28EBCF] h-3 sticky top-0 z-50"></div>
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '20px' : '0'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -2774,7 +2824,7 @@ useEffect(() => {
             {/* iPhone Mockup */}
             <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
               {/* iPhone Frame with realistic bezels */}
-              <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3.5rem] p-3 shadow-2xl" style={{boxShadow: '0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1)'}}>
+              <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3.5rem] p-3 shadow-2xl phone-float" style={{boxShadow: '0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1)'}}>
                 {/* Status bar indicators */}
                 <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
                   <div className="text-white text-[10px] font-semibold">9:41</div>
@@ -3294,8 +3344,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3470,8 +3520,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3603,8 +3653,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3727,8 +3777,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4130,8 +4180,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4335,8 +4385,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -5102,8 +5152,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -5529,8 +5579,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -6247,8 +6297,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -6723,8 +6773,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -7841,8 +7891,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -7935,22 +7985,17 @@ useEffect(() => {
               </div>
             </button>
 
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-lg p-3 shadow-md">
-              <div className="text-2xl mb-1.5">💼</div>
-              <h3 className="text-base font-bold text-white mb-1">Je Portfolio</h3>
-              <div className="space-y-1.5 mt-2">
-                <div className="flex justify-between items-center py-1 border-b border-gray-800">
-                  <span className="text-xs text-gray-400">ETFs:</span>
-                  <span className="text-[#28EBCF] font-bold text-sm">{portfolio?.length || 0}</span>
-                </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-xs text-gray-400">Account Type:</span>
-                  <span className="text-white text-xs font-medium">
-                    {user?.account_type === 'betaald' ? '✅ Betaald' : user?.account_type === 'fictief' ? '🎭 Fictief' : '🆓 Gratis'}
-                  </span>
-                </div>
+            <button
+              onClick={() => setCurrentPage('financialNews')}
+              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+            >
+              <div className="text-2xl mb-1.5">📰</div>
+              <h3 className="text-base font-bold text-white mb-1">Financieel Nieuws</h3>
+              <p className="text-xs text-gray-400">Blijf op de hoogte van marktontwikkelingen</p>
+              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+                Bekijk nieuws →
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Divider */}
@@ -8021,11 +8066,6 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-6 sm:mb-8 mt-8 sm:mt-12">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#28EBCF]/50 to-transparent"></div>
-          </div>
-
           {/* Call to Action */}
           <div className="bg-gradient-to-r from-[#28EBCF]/20 to-blue-600/20 border-2 border-[#28EBCF]/50 rounded-xl p-4 sm:p-6 md:p-8 text-center shadow-lg shadow-[#28EBCF]/10">
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">Klaar om te beleggen?</h3>
@@ -8038,6 +8078,138 @@ useEffect(() => {
               <span>→</span>
             </button>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const FinancialNewsPage = () => {
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    const categories = [
+      { id: 'all', name: 'Alles', icon: '📰' },
+      { id: 'markets', name: 'Markten', icon: '📈' },
+      { id: 'crypto', name: 'Crypto', icon: '₿' },
+      { id: 'commodities', name: 'Grondstoffen', icon: '🛢️' },
+      { id: 'tech', name: 'Technologie', icon: '💻' },
+      { id: 'banking', name: 'Banking', icon: '🏦' }
+    ];
+
+    const categoryMap = {
+      'Markets': 'markets',
+      'Cryptocurrency': 'crypto',
+      'Commodities': 'commodities',
+      'Technology': 'tech',
+      'Central Banking': 'banking'
+    };
+
+    const filteredNews = selectedCategory === 'all'
+      ? financialNews
+      : financialNews.filter(news => categoryMap[news.category] === selectedCategory);
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* Green spacer bar for mobile */}
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
+          <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+            <div className="flex justify-between items-center">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
+                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+              </button>
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={handleLogout} className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base">
+                  Uitloggen
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+          {/* Header */}
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">📰 Financieel Nieuws</h1>
+            <p className="text-sm sm:text-base text-gray-400">Blijf op de hoogte van de laatste ontwikkelingen op de financiële markten</p>
+          </div>
+
+          {/* Category Filter */}
+          <div className="mb-6 sm:mb-8">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                    selectedCategory === cat.id
+                      ? 'bg-[#28EBCF] text-gray-900'
+                      : 'bg-[#1A1B1F] text-gray-300 border border-gray-800 hover:border-[#28EBCF]'
+                  }`}
+                >
+                  {cat.icon} {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* News Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredNews.map((news) => (
+              <div
+                key={news.id}
+                className="bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-slate-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF]/50 transition-all cursor-pointer group shadow-lg hover:shadow-[#28EBCF]/10"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <span className="text-xs font-semibold text-[#28EBCF] bg-[#28EBCF]/10 px-2 py-1 rounded">
+                    {news.category}
+                  </span>
+                  <span className="text-xs text-gray-500">{news.time}</span>
+                </div>
+
+                <h3 className="text-white font-bold text-base sm:text-lg mb-3 group-hover:text-[#28EBCF] transition-colors">
+                  {news.title}
+                </h3>
+
+                <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                  {news.summary}
+                </p>
+
+                <div className="flex items-center justify-between pt-3 border-t border-gray-800">
+                  <span className="text-xs font-medium text-gray-500">{news.source}</span>
+                  <span className="text-[#28EBCF] text-sm font-medium group-hover:translate-x-1 transition-transform">Lees meer →</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredNews.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">📰</div>
+              <p className="text-gray-400 text-lg">Geen nieuws beschikbaar in deze categorie</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -8208,8 +8380,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -8617,8 +8789,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Green spacer bar for mobile - pushes nav down below status bar */}
-        <div className="sm:hidden bg-[#28EBCF] h-8 sticky top-0 z-50"></div>
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '32px' : '0'}}>
+        <div className="sm:hidden bg-[#28EBCF] h-5 sticky top-0 z-50"></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky sm:top-0 z-50 shadow-lg" style={{top: typeof window !== 'undefined' && window.innerWidth < 640 ? '12px' : '0'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -8875,8 +9047,23 @@ useEffect(() => {
   };
 
   return (
-    <div className="font-sans">
-      {currentPage === 'landing' && <LandingPage />}
+    <>
+      <style>{`
+        @keyframes phone-float {
+          0%, 100% {
+            box-shadow: 0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1);
+          }
+          50% {
+            box-shadow: 0 0 0 2px #0f1e3a, 0 0 0 12px #1a3555, 0 20px 40px rgba(40, 235, 207, 0.3), 0 0 100px rgba(40, 235, 207, 0.3);
+          }
+        }
+
+        .phone-float {
+          animation: phone-float 3s ease-in-out infinite;
+        }
+      `}</style>
+      <div className="font-sans">
+        {currentPage === 'landing' && <LandingPage />}
       {currentPage === 'login' && <LoginPage />}
       {currentPage === 'register' && <RegisterPage />}
       {currentPage === 'verify-code' && <VerifyCodePage />}
@@ -8890,6 +9077,7 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'welcome' && <WelcomePage />}
+      {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
@@ -8911,7 +9099,8 @@ useEffect(() => {
       )}
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 
