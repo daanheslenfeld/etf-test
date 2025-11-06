@@ -7867,30 +7867,8 @@ useEffect(() => {
       ]
     });
 
-    // Navbar scroll behavior state
-    const [showNavbar, setShowNavbar] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
-    // Handle scroll for navbar visibility
-    useEffect(() => {
-      const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-
-        // Show navbar when scrolling up or at the top
-        if (currentScrollY < lastScrollY || currentScrollY < 10) {
-          setShowNavbar(true);
-        }
-        // Hide navbar when scrolling down (after 100px)
-        else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          setShowNavbar(false);
-        }
-
-        setLastScrollY(currentScrollY);
-      };
-
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    // Navbar is always visible - removed auto-hide functionality
+    const showNavbar = true;
 
     // Simulate real-time price updates
     useEffect(() => {
