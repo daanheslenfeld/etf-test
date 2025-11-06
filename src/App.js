@@ -1712,9 +1712,9 @@ useEffect(() => {
           // Has paid account → go to welcome page
           setCurrentPage('welcome');
         } else {
-          console.log('➡️ Redirecting to mainDashboard (no portfolio)');
-          // New user or fictitious account without portfolio → go to main dashboard
-          setCurrentPage('mainDashboard');
+          console.log('➡️ Redirecting to firstTimeWelcome (no portfolio)');
+          // New user or fictitious account without portfolio → go to first-time welcome
+          setCurrentPage('firstTimeWelcome');
         }
         return { success: true };
       } else {
