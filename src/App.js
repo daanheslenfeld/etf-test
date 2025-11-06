@@ -6970,148 +6970,243 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Rotating 3D Globe */}
+          {/* Realistic 3D Globe */}
           <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all mb-10">
             <h3 className="font-bold text-base md:text-lg mb-4 text-white text-center">Wereldwijde Investeringen</h3>
-            <div className="relative flex items-center justify-center" style={{ height: '400px' }}>
-              {/* Rotating Globe */}
-              <div className="relative" style={{ width: '300px', height: '300px', perspective: '1000px' }}>
-                <div className="absolute inset-0" style={{
-                  animation: 'rotateGlobe 20s linear infinite',
-                  transformStyle: 'preserve-3d'
-                }}>
-                  {/* Globe sphere with gradient */}
-                  <div className="absolute inset-0 rounded-full" style={{
-                    background: 'radial-gradient(circle at 30% 30%, #28EBCF, #1a8f7d, #0f4a3e)',
-                    boxShadow: 'inset -25px -25px 40px rgba(0,0,0,0.5), 0 0 50px rgba(40, 235, 207, 0.3)',
-                    transform: 'rotateX(0deg)'
-                  }}>
-                    {/* Grid lines for 3D effect */}
-                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 300">
-                      {/* Horizontal lines (latitude) */}
-                      {[...Array(8)].map((_, i) => {
-                        const y = 37.5 + (i * 225 / 7);
-                        const rx = 150 - Math.abs(150 - y);
+            <div className="relative flex items-center justify-center" style={{ height: '450px', overflow: 'hidden' }}>
+              <div className="relative" style={{
+                width: '350px',
+                height: '350px',
+                perspective: '1200px',
+                perspectiveOrigin: '50% 50%'
+              }}>
+                {/* Main rotating globe container */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    animation: 'rotateGlobe 30s linear infinite',
+                    transform: 'rotateX(-10deg)'
+                  }}
+                >
+                  {/* Earth sphere with realistic coloring */}
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: `
+                        radial-gradient(circle at 35% 35%, #4dd0e1 0%, #26a69a 25%, #00796b 50%, #004d40 75%, #00251a 100%),
+                        linear-gradient(90deg,
+                          #1a237e 0%,
+                          #0d47a1 10%,
+                          #01579b 20%,
+                          #006064 30%,
+                          #00695c 40%,
+                          #2e7d32 50%,
+                          #33691e 60%,
+                          #827717 70%,
+                          #f57f17 80%,
+                          #e65100 90%,
+                          #bf360c 100%
+                        )
+                      `,
+                      backgroundBlendMode: 'overlay',
+                      boxShadow: `
+                        inset -40px -40px 80px rgba(0, 0, 0, 0.8),
+                        inset 20px 20px 40px rgba(77, 208, 225, 0.2),
+                        0 0 60px rgba(40, 235, 207, 0.4),
+                        0 0 100px rgba(40, 235, 207, 0.2)
+                      `,
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {/* Latitude lines */}
+                    <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.3 }}>
+                      {[30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((y) => {
+                        const centerY = 175;
+                        const yPos = (y / 360) * 350;
+                        const distFromCenter = Math.abs(centerY - yPos);
+                        const rx = Math.sqrt(Math.max(0, 175 * 175 - distFromCenter * distFromCenter));
                         return (
                           <ellipse
-                            key={`h${i}`}
-                            cx="150"
-                            cy={y}
+                            key={`lat-${y}`}
+                            cx="175"
+                            cy={yPos}
                             rx={rx}
-                            ry="8"
+                            ry={rx * 0.15}
                             fill="none"
-                            stroke="rgba(255,255,255,0.2)"
-                            strokeWidth="1"
-                            opacity={i === 0 || i === 7 ? "0.3" : "0.5"}
+                            stroke="rgba(255, 255, 255, 0.25)"
+                            strokeWidth="1.5"
                           />
                         );
                       })}
-                      {/* Vertical lines (longitude) */}
-                      {[...Array(12)].map((_, i) => (
+                    </svg>
+
+                    {/* Longitude lines */}
+                    <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.3 }}>
+                      {[0, 30, 60, 90, 120, 150].map((angle) => (
                         <ellipse
-                          key={`v${i}`}
-                          cx="150"
-                          cy="150"
-                          rx="150"
-                          ry="150"
+                          key={`lon-${angle}`}
+                          cx="175"
+                          cy="175"
+                          rx="175"
+                          ry="175"
                           fill="none"
-                          stroke="rgba(255,255,255,0.2)"
-                          strokeWidth="1"
-                          opacity="0.4"
-                          style={{ transform: `rotate(${i * 15}deg)`, transformOrigin: 'center' }}
+                          stroke="rgba(255, 255, 255, 0.25)"
+                          strokeWidth="1.5"
+                          style={{
+                            transform: `rotate(${angle}deg)`,
+                            transformOrigin: 'center'
+                          }}
                         />
                       ))}
                     </svg>
 
-                    {/* Continents - simplified shapes */}
-                    <svg className="absolute inset-0 w-full h-full opacity-60" viewBox="0 0 300 300" style={{
-                      animation: 'scrollContinents 20s linear infinite'
-                    }}>
-                      {/* North America */}
-                      <path d="M60,80 L50,100 L55,130 L70,145 L90,140 L95,120 L85,90 Z" fill="#0a3d2e" opacity="0.8"/>
-                      {/* South America */}
-                      <path d="M85,160 L75,190 L85,210 L100,200 L95,170 Z" fill="#0a3d2e" opacity="0.8"/>
-                      {/* Europe */}
-                      <path d="M140,75 L145,85 L155,90 L160,85 L155,75 Z" fill="#0a3d2e" opacity="0.8"/>
-                      {/* Africa */}
-                      <path d="M145,110 L140,150 L155,170 L165,150 L160,115 Z" fill="#0a3d2e" opacity="0.8"/>
-                      {/* Asia */}
-                      <path d="M180,70 L170,95 L185,115 L210,120 L220,100 L210,75 Z" fill="#0a3d2e" opacity="0.8"/>
-                      {/* Australia */}
-                      <path d="M220,170 L215,185 L230,190 L235,175 Z" fill="#0a3d2e" opacity="0.8"/>
-                    </svg>
+                    {/* Continents layer with animation */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        animation: 'scrollWorld 30s linear infinite',
+                        width: '700px',
+                        height: '350px',
+                        left: '0'
+                      }}
+                    >
+                      <svg width="700" height="350" viewBox="0 0 700 350" style={{ opacity: 0.7 }}>
+                        {/* North America */}
+                        <path d="M120,100 Q110,90 100,95 L85,110 L80,130 L85,150 L95,165 L110,170 L125,165 L135,150 L138,130 L130,110 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
 
-                    {/* Sparkle/Stars effect */}
-                    {[...Array(15)].map((_, i) => {
-                      const angle = (i * 360) / 15;
-                      const radius = 120 + Math.random() * 30;
-                      const x = 150 + radius * Math.cos(angle * Math.PI / 180);
-                      const y = 150 + radius * Math.sin(angle * Math.PI / 180);
-                      return (
-                        <div
-                          key={`star${i}`}
-                          className="absolute w-1 h-1 bg-white rounded-full"
-                          style={{
-                            left: `${x}px`,
-                            top: `${y}px`,
-                            animation: `twinkle ${1 + Math.random() * 2}s ease-in-out infinite`,
-                            animationDelay: `${Math.random() * 2}s`
-                          }}
-                        />
-                      );
-                    })}
+                        {/* Central America */}
+                        <path d="M110,170 L105,185 L110,195 L120,192 L118,175 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="1.5"/>
+
+                        {/* South America */}
+                        <path d="M120,195 L115,210 L110,230 L115,255 L125,275 L140,280 L150,270 L155,250 L150,225 L145,205 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+
+                        {/* Europe */}
+                        <path d="M280,85 L270,80 L265,90 L270,105 L280,110 L295,108 L305,100 L300,85 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="1.5"/>
+
+                        {/* Africa */}
+                        <path d="M285,120 L275,130 L270,150 L275,180 L285,210 L300,225 L315,220 L325,200 L328,170 L325,145 L315,125 L300,118 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+
+                        {/* Asia */}
+                        <path d="M340,70 L330,80 L325,95 L330,120 L345,135 L365,145 L390,148 L415,145 L435,135 L445,120 L448,100 L440,80 L420,70 L395,68 L370,70 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+
+                        {/* Australia */}
+                        <path d="M450,220 L440,230 L438,245 L445,260 L460,268 L480,265 L490,250 L488,235 L475,225 Z"
+                          fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+
+                        {/* Repeated continents for seamless loop */}
+                        <g transform="translate(350, 0)">
+                          <path d="M120,100 Q110,90 100,95 L85,110 L80,130 L85,150 L95,165 L110,170 L125,165 L135,150 L138,130 L130,110 Z"
+                            fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+                          <path d="M110,170 L105,185 L110,195 L120,192 L118,175 Z"
+                            fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="1.5"/>
+                          <path d="M120,195 L115,210 L110,230 L115,255 L125,275 L140,280 L150,270 L155,250 L150,225 L145,205 Z"
+                            fill="#1a5d1a" stroke="#0d3d0d" strokeWidth="2"/>
+                        </g>
+                      </svg>
+                    </div>
+
+                    {/* Clouds layer */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        animation: 'scrollClouds 40s linear infinite',
+                        width: '700px',
+                        height: '350px',
+                        opacity: 0.15
+                      }}
+                    >
+                      {[...Array(12)].map((_, i) => {
+                        const x = (i * 60) + Math.random() * 40;
+                        const y = 50 + Math.random() * 250;
+                        const width = 30 + Math.random() * 40;
+                        return (
+                          <div
+                            key={`cloud-${i}`}
+                            className="absolute bg-white rounded-full blur-sm"
+                            style={{
+                              left: `${x}px`,
+                              top: `${y}px`,
+                              width: `${width}px`,
+                              height: `${width * 0.6}px`
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+
+                    {/* Atmospheric glow */}
+                    <div
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      style={{
+                        background: 'radial-gradient(circle at 35% 35%, rgba(77, 208, 225, 0.3) 0%, transparent 60%)',
+                        mixBlendMode: 'screen'
+                      }}
+                    />
                   </div>
 
-                  {/* Glow effect around globe */}
-                  <div className="absolute inset-0 rounded-full" style={{
-                    background: 'radial-gradient(circle, transparent 60%, rgba(40, 235, 207, 0.1) 70%, transparent 100%)',
-                    filter: 'blur(20px)',
-                    transform: 'scale(1.1)'
-                  }}></div>
+                  {/* Outer atmosphere glow */}
+                  <div
+                    className="absolute inset-0 rounded-full pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle, transparent 45%, rgba(40, 235, 207, 0.15) 50%, rgba(40, 235, 207, 0.05) 65%, transparent 75%)',
+                      transform: 'scale(1.15)',
+                      filter: 'blur(15px)'
+                    }}
+                  />
                 </div>
 
-                {/* Orbital ring */}
-                <div className="absolute" style={{
-                  top: '50%',
-                  left: '50%',
-                  width: '380px',
-                  height: '100px',
-                  marginLeft: '-190px',
-                  marginTop: '-50px',
-                  transform: 'rotateX(75deg)',
-                  transformStyle: 'preserve-3d',
-                  animation: 'rotateOrbit 15s linear infinite'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    border: '2px solid rgba(40, 235, 207, 0.3)',
-                    borderRadius: '50%',
-                    boxShadow: '0 0 20px rgba(40, 235, 207, 0.2)'
-                  }}></div>
+                {/* Stars in background */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(30)].map((_, i) => {
+                    const x = Math.random() * 100;
+                    const y = Math.random() * 100;
+                    const size = 1 + Math.random() * 2;
+                    return (
+                      <div
+                        key={`star-${i}`}
+                        className="absolute bg-white rounded-full"
+                        style={{
+                          left: `${x}%`,
+                          top: `${y}%`,
+                          width: `${size}px`,
+                          height: `${size}px`,
+                          animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+                          animationDelay: `${Math.random() * 3}s`,
+                          opacity: 0.6
+                        }}
+                      />
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* CSS Animations */}
               <style>{`
                 @keyframes rotateGlobe {
-                  from { transform: rotateY(0deg); }
-                  to { transform: rotateY(360deg); }
+                  from { transform: rotateY(0deg) rotateX(-10deg); }
+                  to { transform: rotateY(360deg) rotateX(-10deg); }
                 }
 
-                @keyframes scrollContinents {
+                @keyframes scrollWorld {
                   from { transform: translateX(0); }
-                  to { transform: translateX(-600px); }
+                  to { transform: translateX(-350px); }
                 }
 
-                @keyframes rotateOrbit {
-                  from { transform: rotateX(75deg) rotateZ(0deg); }
-                  to { transform: rotateX(75deg) rotateZ(360deg); }
+                @keyframes scrollClouds {
+                  from { transform: translateX(0); }
+                  to { transform: translateX(-350px); }
                 }
 
                 @keyframes twinkle {
-                  0%, 100% { opacity: 0.3; transform: scale(1); }
-                  50% { opacity: 1; transform: scale(1.5); }
+                  0%, 100% { opacity: 0.3; }
+                  50% { opacity: 1; }
                 }
               `}</style>
             </div>
