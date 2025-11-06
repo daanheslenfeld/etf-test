@@ -6970,178 +6970,152 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* World Map - Geographic Distribution */}
+          {/* Rotating 3D Globe */}
           <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all mb-10">
-            <h3 className="font-bold text-base md:text-lg mb-4 text-white">Geografische Spreiding</h3>
-            <div className="relative">
-              {/* World Map SVG */}
-              <svg viewBox="0 0 1000 500" className="w-full h-auto">
-                {/* Background */}
-                <rect width="1000" height="500" fill="#0f172a" />
-
-                {/* Simplified world regions */}
-                {(() => {
-                  // Calculate regional allocation
-                  const regionMap = {
-                    'Verenigde Staten': { name: 'Noord-Amerika', color: '#28EBCF', path: 'M150,150 L150,300 L300,300 L300,150 Z' },
-                    'Europa': { name: 'Europa', color: '#60A5FA', path: 'M450,120 L450,250 L580,250 L580,120 Z' },
-                    'Opkomende markten': { name: 'Opkomende Markten', color: '#F59E0B', path: 'M600,200 L600,350 L850,350 L850,200 Z' },
-                    'Wereldwijd': { name: 'Wereldwijd', color: '#10B981', path: 'M0,0 L1000,0 L1000,500 L0,500 Z' },
-                    'Japan': { name: 'Azië-Pacific', color: '#8B5CF6', path: 'M750,150 L750,280 L900,280 L900,150 Z' }
-                  };
-
-                  const regionAllocations = {};
-                  let worldwideAllocation = 0;
-
-                  portfolio.forEach(etf => {
-                    const weight = etf.weight || 0;
-                    const subcat = etf.subcategorie;
-
-                    if (subcat === 'Wereldwijd') {
-                      worldwideAllocation += weight;
-                    } else if (regionMap[subcat]) {
-                      regionAllocations[subcat] = (regionAllocations[subcat] || 0) + weight;
-                    }
-                  });
-
-                  // Distribute worldwide allocation proportionally
-                  const totalSpecific = Object.values(regionAllocations).reduce((a, b) => a + b, 0);
-                  if (worldwideAllocation > 0 && totalSpecific > 0) {
-                    Object.keys(regionAllocations).forEach(region => {
-                      const proportion = regionAllocations[region] / totalSpecific;
-                      regionAllocations[region] += worldwideAllocation * proportion;
-                    });
-                  } else if (worldwideAllocation > 0) {
-                    // If no specific regions, distribute worldwide equally
-                    regionAllocations['Verenigde Staten'] = worldwideAllocation * 0.6;
-                    regionAllocations['Europa'] = worldwideAllocation * 0.2;
-                    regionAllocations['Opkomende markten'] = worldwideAllocation * 0.15;
-                    regionAllocations['Japan'] = worldwideAllocation * 0.05;
-                  }
-
-                  // Map regions to coordinates for visualization
-                  const regionData = [
-                    { name: 'Noord-Amerika', x: 180, y: 180, weight: regionAllocations['Verenigde Staten'] || 0, color: '#28EBCF' },
-                    { name: 'Europa', x: 500, y: 160, weight: regionAllocations['Europa'] || 0, color: '#60A5FA' },
-                    { name: 'Azië-Pacific', x: 780, y: 200, weight: regionAllocations['Japan'] || 0, color: '#8B5CF6' },
-                    { name: 'Opkomende Markten', x: 700, y: 300, weight: regionAllocations['Opkomende markten'] || 0, color: '#F59E0B' }
-                  ].filter(r => r.weight > 0);
-
-                  return (
-                    <>
-                      {/* World map base */}
-                      <g opacity="0.15">
-                        {/* North America */}
-                        <path d="M120,140 L120,300 L320,300 L320,240 L280,200 L240,180 L180,140 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                        {/* South America */}
-                        <path d="M220,320 L220,420 L300,440 L320,400 L300,340 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                        {/* Europe */}
-                        <path d="M440,100 L480,80 L540,90 L580,110 L590,160 L560,200 L520,210 L480,190 L450,160 L440,120 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                        {/* Africa */}
-                        <path d="M480,220 L480,380 L580,400 L620,380 L620,280 L580,240 L540,220 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                        {/* Asia */}
-                        <path d="M600,80 L650,70 L720,90 L780,120 L820,140 L860,180 L880,220 L860,280 L800,300 L740,280 L680,260 L640,240 L600,200 L590,150 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                        {/* Australia */}
-                        <path d="M760,340 L820,330 L870,350 L880,390 L850,420 L800,420 L760,400 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
-                      </g>
-
-                      {/* Investment markers */}
-                      {regionData.map((region, idx) => {
-                        const radius = Math.max(15, Math.min(50, region.weight * 2));
+            <h3 className="font-bold text-base md:text-lg mb-4 text-white text-center">Wereldwijde Investeringen</h3>
+            <div className="relative flex items-center justify-center" style={{ height: '400px' }}>
+              {/* Rotating Globe */}
+              <div className="relative" style={{ width: '300px', height: '300px', perspective: '1000px' }}>
+                <div className="absolute inset-0" style={{
+                  animation: 'rotateGlobe 20s linear infinite',
+                  transformStyle: 'preserve-3d'
+                }}>
+                  {/* Globe sphere with gradient */}
+                  <div className="absolute inset-0 rounded-full" style={{
+                    background: 'radial-gradient(circle at 30% 30%, #28EBCF, #1a8f7d, #0f4a3e)',
+                    boxShadow: 'inset -25px -25px 40px rgba(0,0,0,0.5), 0 0 50px rgba(40, 235, 207, 0.3)',
+                    transform: 'rotateX(0deg)'
+                  }}>
+                    {/* Grid lines for 3D effect */}
+                    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 300">
+                      {/* Horizontal lines (latitude) */}
+                      {[...Array(8)].map((_, i) => {
+                        const y = 37.5 + (i * 225 / 7);
+                        const rx = 150 - Math.abs(150 - y);
                         return (
-                          <g key={idx}>
-                            {/* Glow effect */}
-                            <circle
-                              cx={region.x}
-                              cy={region.y}
-                              r={radius + 5}
-                              fill={region.color}
-                              opacity="0.2"
-                            />
-                            {/* Main circle */}
-                            <circle
-                              cx={region.x}
-                              cy={region.y}
-                              r={radius}
-                              fill={region.color}
-                              opacity="0.8"
-                              stroke={region.color}
-                              strokeWidth="2"
-                            >
-                              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
-                            </circle>
-                            {/* Percentage text */}
-                            <text
-                              x={region.x}
-                              y={region.y}
-                              textAnchor="middle"
-                              dy="0.35em"
-                              fill="white"
-                              fontSize="14"
-                              fontWeight="bold"
-                            >
-                              {region.weight.toFixed(0)}%
-                            </text>
-                          </g>
+                          <ellipse
+                            key={`h${i}`}
+                            cx="150"
+                            cy={y}
+                            rx={rx}
+                            ry="8"
+                            fill="none"
+                            stroke="rgba(255,255,255,0.2)"
+                            strokeWidth="1"
+                            opacity={i === 0 || i === 7 ? "0.3" : "0.5"}
+                          />
                         );
                       })}
-                    </>
-                  );
-                })()}
-              </svg>
+                      {/* Vertical lines (longitude) */}
+                      {[...Array(12)].map((_, i) => (
+                        <ellipse
+                          key={`v${i}`}
+                          cx="150"
+                          cy="150"
+                          rx="150"
+                          ry="150"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.2)"
+                          strokeWidth="1"
+                          opacity="0.4"
+                          style={{ transform: `rotate(${i * 15}deg)`, transformOrigin: 'center' }}
+                        />
+                      ))}
+                    </svg>
 
-              {/* Legend */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                {(() => {
-                  const regionMap = {
-                    'Verenigde Staten': { name: 'Noord-Amerika', color: '#28EBCF' },
-                    'Europa': { name: 'Europa', color: '#60A5FA' },
-                    'Japan': { name: 'Azië-Pacific', color: '#8B5CF6' },
-                    'Opkomende markten': { name: 'Opkomende Markten', color: '#F59E0B' }
-                  };
+                    {/* Continents - simplified shapes */}
+                    <svg className="absolute inset-0 w-full h-full opacity-60" viewBox="0 0 300 300" style={{
+                      animation: 'scrollContinents 20s linear infinite'
+                    }}>
+                      {/* North America */}
+                      <path d="M60,80 L50,100 L55,130 L70,145 L90,140 L95,120 L85,90 Z" fill="#0a3d2e" opacity="0.8"/>
+                      {/* South America */}
+                      <path d="M85,160 L75,190 L85,210 L100,200 L95,170 Z" fill="#0a3d2e" opacity="0.8"/>
+                      {/* Europe */}
+                      <path d="M140,75 L145,85 L155,90 L160,85 L155,75 Z" fill="#0a3d2e" opacity="0.8"/>
+                      {/* Africa */}
+                      <path d="M145,110 L140,150 L155,170 L165,150 L160,115 Z" fill="#0a3d2e" opacity="0.8"/>
+                      {/* Asia */}
+                      <path d="M180,70 L170,95 L185,115 L210,120 L220,100 L210,75 Z" fill="#0a3d2e" opacity="0.8"/>
+                      {/* Australia */}
+                      <path d="M220,170 L215,185 L230,190 L235,175 Z" fill="#0a3d2e" opacity="0.8"/>
+                    </svg>
 
-                  const regionAllocations = {};
-                  let worldwideAllocation = 0;
+                    {/* Sparkle/Stars effect */}
+                    {[...Array(15)].map((_, i) => {
+                      const angle = (i * 360) / 15;
+                      const radius = 120 + Math.random() * 30;
+                      const x = 150 + radius * Math.cos(angle * Math.PI / 180);
+                      const y = 150 + radius * Math.sin(angle * Math.PI / 180);
+                      return (
+                        <div
+                          key={`star${i}`}
+                          className="absolute w-1 h-1 bg-white rounded-full"
+                          style={{
+                            left: `${x}px`,
+                            top: `${y}px`,
+                            animation: `twinkle ${1 + Math.random() * 2}s ease-in-out infinite`,
+                            animationDelay: `${Math.random() * 2}s`
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
 
-                  portfolio.forEach(etf => {
-                    const weight = etf.weight || 0;
-                    const subcat = etf.subcategorie;
+                  {/* Glow effect around globe */}
+                  <div className="absolute inset-0 rounded-full" style={{
+                    background: 'radial-gradient(circle, transparent 60%, rgba(40, 235, 207, 0.1) 70%, transparent 100%)',
+                    filter: 'blur(20px)',
+                    transform: 'scale(1.1)'
+                  }}></div>
+                </div>
 
-                    if (subcat === 'Wereldwijd') {
-                      worldwideAllocation += weight;
-                    } else if (regionMap[subcat]) {
-                      regionAllocations[subcat] = (regionAllocations[subcat] || 0) + weight;
-                    }
-                  });
-
-                  // Distribute worldwide allocation
-                  const totalSpecific = Object.values(regionAllocations).reduce((a, b) => a + b, 0);
-                  if (worldwideAllocation > 0 && totalSpecific > 0) {
-                    Object.keys(regionAllocations).forEach(region => {
-                      const proportion = regionAllocations[region] / totalSpecific;
-                      regionAllocations[region] += worldwideAllocation * proportion;
-                    });
-                  } else if (worldwideAllocation > 0) {
-                    regionAllocations['Verenigde Staten'] = (regionAllocations['Verenigde Staten'] || 0) + worldwideAllocation * 0.6;
-                    regionAllocations['Europa'] = (regionAllocations['Europa'] || 0) + worldwideAllocation * 0.2;
-                    regionAllocations['Opkomende markten'] = (regionAllocations['Opkomende markten'] || 0) + worldwideAllocation * 0.15;
-                    regionAllocations['Japan'] = (regionAllocations['Japan'] || 0) + worldwideAllocation * 0.05;
-                  }
-
-                  return Object.entries(regionMap)
-                    .filter(([key]) => (regionAllocations[key] || 0) > 0)
-                    .map(([key, region]) => (
-                      <div key={key} className="flex items-center gap-2 bg-slate-800/50 rounded px-3 py-2">
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: region.color }}></div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs text-gray-400 truncate">{region.name}</div>
-                          <div className="text-sm font-bold text-white">{(regionAllocations[key] || 0).toFixed(1)}%</div>
-                        </div>
-                      </div>
-                    ));
-                })()}
+                {/* Orbital ring */}
+                <div className="absolute" style={{
+                  top: '50%',
+                  left: '50%',
+                  width: '380px',
+                  height: '100px',
+                  marginLeft: '-190px',
+                  marginTop: '-50px',
+                  transform: 'rotateX(75deg)',
+                  transformStyle: 'preserve-3d',
+                  animation: 'rotateOrbit 15s linear infinite'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    border: '2px solid rgba(40, 235, 207, 0.3)',
+                    borderRadius: '50%',
+                    boxShadow: '0 0 20px rgba(40, 235, 207, 0.2)'
+                  }}></div>
+                </div>
               </div>
+
+              {/* CSS Animations */}
+              <style>{`
+                @keyframes rotateGlobe {
+                  from { transform: rotateY(0deg); }
+                  to { transform: rotateY(360deg); }
+                }
+
+                @keyframes scrollContinents {
+                  from { transform: translateX(0); }
+                  to { transform: translateX(-600px); }
+                }
+
+                @keyframes rotateOrbit {
+                  from { transform: rotateX(75deg) rotateZ(0deg); }
+                  to { transform: rotateX(75deg) rotateZ(360deg); }
+                }
+
+                @keyframes twinkle {
+                  0%, 100% { opacity: 0.3; transform: scale(1); }
+                  50% { opacity: 1; transform: scale(1.5); }
+                }
+              `}</style>
             </div>
+            <p className="text-center text-sm text-gray-400 mt-4">Jouw portfolio wereldwijd belegd</p>
           </div>
 
           {/* Divider */}
