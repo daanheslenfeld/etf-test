@@ -1593,7 +1593,8 @@ useEffect(() => {
           } else if (user.account_type && user.account_type !== 'fictief') {
             setCurrentPage('welcome');
           } else {
-            setCurrentPage('mainDashboard');
+            // First-time user with no portfolio - show FirstTimeWelcome
+            setCurrentPage('firstTimeWelcome');
           }
         }
       }
@@ -2257,7 +2258,7 @@ useEffect(() => {
 
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
@@ -2614,7 +2615,7 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -3339,7 +3340,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3513,7 +3514,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3644,7 +3645,7 @@ useEffect(() => {
   const EmailVerificationPendingPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3766,7 +3767,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3886,7 +3887,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4167,7 +4168,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4370,7 +4371,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -5135,7 +5136,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
@@ -5560,7 +5561,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -5745,7 +5746,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -5819,7 +5820,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -5947,7 +5948,7 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
@@ -6151,7 +6152,7 @@ useEffect(() => {
     const renderAccountTypeSelection = () => {
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
               <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
@@ -6276,7 +6277,7 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
@@ -6750,7 +6751,7 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -7866,7 +7867,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
@@ -8057,6 +8058,131 @@ useEffect(() => {
     );
   };
 
+  // First-time user welcome page (no portfolio yet)
+  const FirstTimeWelcome = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+        <div className="max-w-3xl w-full">
+          {/* Logo at the top */}
+          <div className="flex justify-center mb-12">
+            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
+              {/* Piggy bank body */}
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+
+              {/* Coin slot on top */}
+              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+
+              {/* Gold coin */}
+              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+
+              {/* Pig face - Eyes */}
+              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+
+              {/* Pig snout */}
+              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+
+              {/* Pig ears */}
+              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+
+              {/* Smile */}
+              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+
+              {/* Legs/feet */}
+              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+            </svg>
+          </div>
+
+          {/* Welcome content */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              Invest your money
+              <br />
+              <span className="bg-gradient-to-r from-[#28EBCF] to-blue-500 bg-clip-text text-transparent">
+                in the world!
+              </span>
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
+              Start building your investment portfolio today and watch your wealth grow with smart ETF investments.
+            </p>
+          </div>
+
+          {/* Shiny Invest Now button */}
+          <div className="flex justify-center">
+            <button
+              onClick={() => setCurrentPage('mainDashboard')}
+              className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#28EBCF]/50"
+              style={{
+                background: 'linear-gradient(135deg, #28EBCF 0%, #20D4BA 50%, #28EBCF 100%)',
+                backgroundSize: '200% 100%',
+                animation: 'shimmer 3s ease-in-out infinite'
+              }}
+            >
+              {/* Shine effect overlay */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                  animation: 'shine 2s ease-in-out infinite'
+                }}
+              />
+
+              <span className="relative z-10 flex items-center gap-3">
+                Invest Now
+                <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-2xl opacity-75 blur-xl"
+                style={{
+                  background: 'linear-gradient(135deg, #28EBCF, #20D4BA)',
+                  zIndex: -1
+                }}
+              />
+            </button>
+          </div>
+
+          {/* Additional info */}
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div className="p-4">
+              <div className="text-3xl mb-2">🌍</div>
+              <div className="text-sm text-gray-400">Global ETF Access</div>
+            </div>
+            <div className="p-4">
+              <div className="text-3xl mb-2">📊</div>
+              <div className="text-sm text-gray-400">Smart Portfolio Building</div>
+            </div>
+            <div className="p-4">
+              <div className="text-3xl mb-2">🔒</div>
+              <div className="text-sm text-gray-400">Secure & Reliable</div>
+            </div>
+          </div>
+        </div>
+
+        {/* CSS animations */}
+        <style jsx>{`
+          @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            50% { background-position: 0% 0; }
+            100% { background-position: -200% 0; }
+          }
+
+          @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        `}</style>
+      </div>
+    );
+  };
+
   const FinancialNewsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -8083,7 +8209,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
@@ -8350,7 +8476,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -8757,7 +8883,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -9044,6 +9170,7 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'welcome' && <WelcomePage />}
+      {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
