@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import Footer from './Footer';
 import Chat from './Chat';
@@ -1189,6 +1189,13 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('portfolio');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Performance optimization: Create a Set of portfolio ISINs for O(1) lookup
+  // This prevents O(n*m) complexity when checking if ETFs are in portfolio
+  const portfolioIsinSet = useMemo(() => {
+    return new Set(portfolio.map(p => p.isin));
+  }, [portfolio]);
+
   const [financialNews] = useState([
     {
       id: 1,
@@ -4617,7 +4624,7 @@ useEffect(() => {
             )}
             {filteredEtfs.map((etf, idx) => {
               const priceData = etfPrices[etf.isin];
-              const isAdded = portfolio.some(p => p.isin === etf.isin);
+              const isAdded = portfolioIsinSet.has(etf.isin);
               return (
               <div key={idx} className="bg-[#1A1B1F] rounded-lg shadow p-3 border border-gray-800">
                 <button
@@ -4691,7 +4698,7 @@ useEffect(() => {
                 <tbody className="divide-y divide-gray-800">
                   {filteredEtfs.map((etf, idx) => {
                     const priceData = etfPrices[etf.isin];
-                    const isAdded = portfolio.some(p => p.isin === etf.isin);
+                    const isAdded = portfolioIsinSet.has(etf.isin);
                     return (
                     <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                       <td className="px-4 py-3">
@@ -5512,7 +5519,7 @@ useEffect(() => {
                         if (categoryFilters.distribution && etf.distribution !== categoryFilters.distribution) return false;
                         return true;
                       }).map((etf, idx) => {
-                        const isAdded = portfolio.some(p => p.isin === etf.isin);
+                        const isAdded = portfolioIsinSet.has(etf.isin);
                         return (
                           <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                             <td className="px-4 py-3">
