@@ -6970,6 +6970,180 @@ useEffect(() => {
             </div>
           </div>
 
+          {/* World Map - Geographic Distribution */}
+          <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all mb-10">
+            <h3 className="font-bold text-base md:text-lg mb-4 text-white">Geografische Spreiding</h3>
+            <div className="relative">
+              {/* World Map SVG */}
+              <svg viewBox="0 0 1000 500" className="w-full h-auto">
+                {/* Background */}
+                <rect width="1000" height="500" fill="#0f172a" />
+
+                {/* Simplified world regions */}
+                {(() => {
+                  // Calculate regional allocation
+                  const regionMap = {
+                    'Verenigde Staten': { name: 'Noord-Amerika', color: '#28EBCF', path: 'M150,150 L150,300 L300,300 L300,150 Z' },
+                    'Europa': { name: 'Europa', color: '#60A5FA', path: 'M450,120 L450,250 L580,250 L580,120 Z' },
+                    'Opkomende markten': { name: 'Opkomende Markten', color: '#F59E0B', path: 'M600,200 L600,350 L850,350 L850,200 Z' },
+                    'Wereldwijd': { name: 'Wereldwijd', color: '#10B981', path: 'M0,0 L1000,0 L1000,500 L0,500 Z' },
+                    'Japan': { name: 'Azië-Pacific', color: '#8B5CF6', path: 'M750,150 L750,280 L900,280 L900,150 Z' }
+                  };
+
+                  const regionAllocations = {};
+                  let worldwideAllocation = 0;
+
+                  portfolio.forEach(etf => {
+                    const weight = etf.weight || 0;
+                    const subcat = etf.subcategorie;
+
+                    if (subcat === 'Wereldwijd') {
+                      worldwideAllocation += weight;
+                    } else if (regionMap[subcat]) {
+                      regionAllocations[subcat] = (regionAllocations[subcat] || 0) + weight;
+                    }
+                  });
+
+                  // Distribute worldwide allocation proportionally
+                  const totalSpecific = Object.values(regionAllocations).reduce((a, b) => a + b, 0);
+                  if (worldwideAllocation > 0 && totalSpecific > 0) {
+                    Object.keys(regionAllocations).forEach(region => {
+                      const proportion = regionAllocations[region] / totalSpecific;
+                      regionAllocations[region] += worldwideAllocation * proportion;
+                    });
+                  } else if (worldwideAllocation > 0) {
+                    // If no specific regions, distribute worldwide equally
+                    regionAllocations['Verenigde Staten'] = worldwideAllocation * 0.6;
+                    regionAllocations['Europa'] = worldwideAllocation * 0.2;
+                    regionAllocations['Opkomende markten'] = worldwideAllocation * 0.15;
+                    regionAllocations['Japan'] = worldwideAllocation * 0.05;
+                  }
+
+                  // Map regions to coordinates for visualization
+                  const regionData = [
+                    { name: 'Noord-Amerika', x: 180, y: 180, weight: regionAllocations['Verenigde Staten'] || 0, color: '#28EBCF' },
+                    { name: 'Europa', x: 500, y: 160, weight: regionAllocations['Europa'] || 0, color: '#60A5FA' },
+                    { name: 'Azië-Pacific', x: 780, y: 200, weight: regionAllocations['Japan'] || 0, color: '#8B5CF6' },
+                    { name: 'Opkomende Markten', x: 700, y: 300, weight: regionAllocations['Opkomende markten'] || 0, color: '#F59E0B' }
+                  ].filter(r => r.weight > 0);
+
+                  return (
+                    <>
+                      {/* World map base */}
+                      <g opacity="0.15">
+                        {/* North America */}
+                        <path d="M120,140 L120,300 L320,300 L320,240 L280,200 L240,180 L180,140 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                        {/* South America */}
+                        <path d="M220,320 L220,420 L300,440 L320,400 L300,340 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                        {/* Europe */}
+                        <path d="M440,100 L480,80 L540,90 L580,110 L590,160 L560,200 L520,210 L480,190 L450,160 L440,120 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                        {/* Africa */}
+                        <path d="M480,220 L480,380 L580,400 L620,380 L620,280 L580,240 L540,220 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                        {/* Asia */}
+                        <path d="M600,80 L650,70 L720,90 L780,120 L820,140 L860,180 L880,220 L860,280 L800,300 L740,280 L680,260 L640,240 L600,200 L590,150 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                        {/* Australia */}
+                        <path d="M760,340 L820,330 L870,350 L880,390 L850,420 L800,420 L760,400 Z" fill="#475569" stroke="#64748b" strokeWidth="1" />
+                      </g>
+
+                      {/* Investment markers */}
+                      {regionData.map((region, idx) => {
+                        const radius = Math.max(15, Math.min(50, region.weight * 2));
+                        return (
+                          <g key={idx}>
+                            {/* Glow effect */}
+                            <circle
+                              cx={region.x}
+                              cy={region.y}
+                              r={radius + 5}
+                              fill={region.color}
+                              opacity="0.2"
+                            />
+                            {/* Main circle */}
+                            <circle
+                              cx={region.x}
+                              cy={region.y}
+                              r={radius}
+                              fill={region.color}
+                              opacity="0.8"
+                              stroke={region.color}
+                              strokeWidth="2"
+                            >
+                              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+                            </circle>
+                            {/* Percentage text */}
+                            <text
+                              x={region.x}
+                              y={region.y}
+                              textAnchor="middle"
+                              dy="0.35em"
+                              fill="white"
+                              fontSize="14"
+                              fontWeight="bold"
+                            >
+                              {region.weight.toFixed(0)}%
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </>
+                  );
+                })()}
+              </svg>
+
+              {/* Legend */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                {(() => {
+                  const regionMap = {
+                    'Verenigde Staten': { name: 'Noord-Amerika', color: '#28EBCF' },
+                    'Europa': { name: 'Europa', color: '#60A5FA' },
+                    'Japan': { name: 'Azië-Pacific', color: '#8B5CF6' },
+                    'Opkomende markten': { name: 'Opkomende Markten', color: '#F59E0B' }
+                  };
+
+                  const regionAllocations = {};
+                  let worldwideAllocation = 0;
+
+                  portfolio.forEach(etf => {
+                    const weight = etf.weight || 0;
+                    const subcat = etf.subcategorie;
+
+                    if (subcat === 'Wereldwijd') {
+                      worldwideAllocation += weight;
+                    } else if (regionMap[subcat]) {
+                      regionAllocations[subcat] = (regionAllocations[subcat] || 0) + weight;
+                    }
+                  });
+
+                  // Distribute worldwide allocation
+                  const totalSpecific = Object.values(regionAllocations).reduce((a, b) => a + b, 0);
+                  if (worldwideAllocation > 0 && totalSpecific > 0) {
+                    Object.keys(regionAllocations).forEach(region => {
+                      const proportion = regionAllocations[region] / totalSpecific;
+                      regionAllocations[region] += worldwideAllocation * proportion;
+                    });
+                  } else if (worldwideAllocation > 0) {
+                    regionAllocations['Verenigde Staten'] = (regionAllocations['Verenigde Staten'] || 0) + worldwideAllocation * 0.6;
+                    regionAllocations['Europa'] = (regionAllocations['Europa'] || 0) + worldwideAllocation * 0.2;
+                    regionAllocations['Opkomende markten'] = (regionAllocations['Opkomende markten'] || 0) + worldwideAllocation * 0.15;
+                    regionAllocations['Japan'] = (regionAllocations['Japan'] || 0) + worldwideAllocation * 0.05;
+                  }
+
+                  return Object.entries(regionMap)
+                    .filter(([key]) => (regionAllocations[key] || 0) > 0)
+                    .map(([key, region]) => (
+                      <div key={key} className="flex items-center gap-2 bg-slate-800/50 rounded px-3 py-2">
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: region.color }}></div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-gray-400 truncate">{region.name}</div>
+                          <div className="text-sm font-bold text-white">{(regionAllocations[key] || 0).toFixed(1)}%</div>
+                        </div>
+                      </div>
+                    ));
+                })()}
+              </div>
+            </div>
+          </div>
+
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
