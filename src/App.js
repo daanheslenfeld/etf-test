@@ -4308,62 +4308,63 @@ useEffect(() => {
     );
   };
 
-  const ETFDatabasePage = () => {
-    // Get available filter options based on current category
-    const getFilterOptions = (filterType) => {
-      let currentEtfs = etfs.filter(e => e.categorie === selectedMainCategory);
+  // Define filters per category (moved outside component for performance)
+  const categoryFiltersMap = useMemo(() => ({
+    'Aandelen': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+    'Obligaties': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
+    'Commodities': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
+    'Vastgoed': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+    'Money market': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
+    'Crypto': ['soort', 'valuta', 'sustainability', 'dividend', 'replication']
+  }), []);
 
-      // Apply existing active filters
-      Object.keys(activeFilters).forEach(key => {
-        if (activeFilters[key] && key !== filterType) {
-          if (key === 'region') {
-            currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
-          } else if (key === 'soort') {
-            currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
-          } else if (key === 'valuta') {
-            currentEtfs = currentEtfs.filter(e => e['fund ccy'] === activeFilters[key]);
-          } else if (key === 'sustainability') {
-            currentEtfs = currentEtfs.filter(e => e.sustainability === activeFilters[key]);
-          } else if (key === 'dividend') {
-            currentEtfs = currentEtfs.filter(e => e.distribution === activeFilters[key]);
-          } else if (key === 'replication') {
-            currentEtfs = currentEtfs.filter(e => e.replication === activeFilters[key]);
-          }
+  const filterLabels = useMemo(() => ({
+    'region': 'Regio',
+    'soort': 'Soort',
+    'valuta': 'Valuta',
+    'sustainability': 'Sustainability',
+    'dividend': 'Dividend',
+    'replication': 'Replication'
+  }), []);
+
+  // Memoize filter options calculation for performance
+  const getFilterOptions = useCallback((filterType) => {
+    let currentEtfs = etfs.filter(e => e.categorie === selectedMainCategory);
+
+    // Apply existing active filters
+    Object.keys(activeFilters).forEach(key => {
+      if (activeFilters[key] && key !== filterType) {
+        if (key === 'region') {
+          currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
+        } else if (key === 'soort') {
+          currentEtfs = currentEtfs.filter(e => e.subcategorie === activeFilters[key]);
+        } else if (key === 'valuta') {
+          currentEtfs = currentEtfs.filter(e => e['fund ccy'] === activeFilters[key]);
+        } else if (key === 'sustainability') {
+          currentEtfs = currentEtfs.filter(e => e.sustainability === activeFilters[key]);
+        } else if (key === 'dividend') {
+          currentEtfs = currentEtfs.filter(e => e.distribution === activeFilters[key]);
+        } else if (key === 'replication') {
+          currentEtfs = currentEtfs.filter(e => e.replication === activeFilters[key]);
         }
-      });
-
-      if (filterType === 'region' || filterType === 'soort') {
-        return [...new Set(currentEtfs.map(e => e.subcategorie).filter(Boolean))];
-      } else if (filterType === 'valuta') {
-        return [...new Set(currentEtfs.map(e => e['fund ccy']).filter(Boolean))];
-      } else if (filterType === 'sustainability') {
-        return ['Yes', 'No'];
-      } else if (filterType === 'dividend') {
-        return [...new Set(currentEtfs.map(e => e.distribution).filter(Boolean))];
-      } else if (filterType === 'replication') {
-        return [...new Set(currentEtfs.map(e => e.replication).filter(Boolean))];
       }
-      return [];
-    };
+    });
 
-    // Define filters per category
-    const categoryFiltersMap = {
-      'Aandelen': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-      'Obligaties': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
-      'Commodities': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
-      'Vastgoed': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-      'Money market': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-      'Crypto': ['soort', 'valuta', 'sustainability', 'dividend', 'replication']
-    };
+    if (filterType === 'region' || filterType === 'soort') {
+      return [...new Set(currentEtfs.map(e => e.subcategorie).filter(Boolean))];
+    } else if (filterType === 'valuta') {
+      return [...new Set(currentEtfs.map(e => e['fund ccy']).filter(Boolean))];
+    } else if (filterType === 'sustainability') {
+      return ['Yes', 'No'];
+    } else if (filterType === 'dividend') {
+      return [...new Set(currentEtfs.map(e => e.distribution).filter(Boolean))];
+    } else if (filterType === 'replication') {
+      return [...new Set(currentEtfs.map(e => e.replication).filter(Boolean))];
+    }
+    return [];
+  }, [etfs, selectedMainCategory, activeFilters]);
 
-    const filterLabels = {
-      'region': 'Regio',
-      'soort': 'Soort',
-      'valuta': 'Valuta',
-      'sustainability': 'Sustainability',
-      'dividend': 'Dividend',
-      'replication': 'Replication'
-    };
+  const ETFDatabasePage = () => {
 
     if (loading) {
       return (
