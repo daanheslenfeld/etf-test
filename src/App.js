@@ -7867,6 +7867,31 @@ useEffect(() => {
       ]
     });
 
+    // Navbar scroll behavior state
+    const [showNavbar, setShowNavbar] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    // Handle scroll for navbar visibility
+    useEffect(() => {
+      const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+
+        // Show navbar when scrolling up or at the top
+        if (currentScrollY < lastScrollY || currentScrollY < 10) {
+          setShowNavbar(true);
+        }
+        // Hide navbar when scrolling down (after 100px)
+        else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          setShowNavbar(false);
+        }
+
+        setLastScrollY(currentScrollY);
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
+
     // Simulate real-time price updates
     useEffect(() => {
       const interval = setInterval(() => {
@@ -7900,7 +7925,15 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        {/* Spacer to prevent content from going under fixed navbar */}
+        <div style={{ height: '72px' }}></div>
+
+        <nav
+          className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed top-0 left-0 right-0 z-50 transition-transform duration-300"
+          style={{
+            transform: showNavbar ? 'translateY(0)' : 'translateY(-100%)'
+          }}
+        >
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
