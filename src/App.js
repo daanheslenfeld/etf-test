@@ -4617,6 +4617,7 @@ useEffect(() => {
             )}
             {filteredEtfs.map((etf, idx) => {
               const priceData = etfPrices[etf.isin];
+              const isAdded = portfolio.some(p => p.isin === etf.isin);
               return (
               <div key={idx} className="bg-[#1A1B1F] rounded-lg shadow p-3 border border-gray-800">
                 <button
@@ -4637,12 +4638,21 @@ useEffect(() => {
                   <div><span className="text-gray-500">TER:</span> <span className="font-medium text-gray-300">{etf['ter p.a.']}</span></div>
                   <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</span></div>
                 </div>
-                <button
-                  onClick={() => addToPortfolio(etf)}
-                  className="w-full px-3 py-2 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
-                >
-                  + Toevoegen aan Portfolio
-                </button>
+                {isAdded ? (
+                  <button
+                    disabled
+                    className="w-full px-3 py-2 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default flex items-center justify-center gap-2"
+                  >
+                    <span>✓</span> Toegevoegd
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => addToPortfolio(etf)}
+                    className="w-full px-3 py-2 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                  >
+                    + Toevoegen aan Portfolio
+                  </button>
+                )}
               </div>
               );
             })}
@@ -4681,6 +4691,7 @@ useEffect(() => {
                 <tbody className="divide-y divide-gray-800">
                   {filteredEtfs.map((etf, idx) => {
                     const priceData = etfPrices[etf.isin];
+                    const isAdded = portfolio.some(p => p.isin === etf.isin);
                     return (
                     <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                       <td className="px-4 py-3">
@@ -4707,12 +4718,21 @@ useEffect(() => {
                         {etf.ytd}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => addToPortfolio(etf)}
-                          className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
-                        >
-                          + Portfolio
-                        </button>
+                        {isAdded ? (
+                          <button
+                            disabled
+                            className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
+                          >
+                            <span>✓</span> Added
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => addToPortfolio(etf)}
+                            className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                          >
+                            + Portfolio
+                          </button>
+                        )}
                       </td>
                     </tr>
                     );
@@ -5510,7 +5530,12 @@ useEffect(() => {
                             </td>
                             <td className="px-4 py-3 text-center">
                               {isAdded ? (
-                                <span className="text-xs text-green-500 font-medium">✓ Toegevoegd</span>
+                                <button
+                                  disabled
+                                  className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
+                                >
+                                  <span>✓</span> Toegevoegd
+                                </button>
                               ) : (
                                 <button
                                   onClick={() => addToPortfolio(etf, 10)}
