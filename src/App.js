@@ -1625,16 +1625,59 @@ useEffect(() => {
 
     // Check if demo account login
     if (email === 'demo@pigg.nl' && password === 'demo123') {
-      const demoUser = customers.find(c => c.email === 'demo@pigg.nl');
-      if (demoUser) {
-        setUser({
-          ...demoUser,
+      let demoUser = customers.find(c => c.email === 'demo@pigg.nl');
+
+      // If demo user doesn't exist in customers array, create it
+      if (!demoUser) {
+        demoUser = {
+          id: 0,
+          name: 'Demo Investor',
+          firstName: 'Demo',
+          email: 'demo@pigg.nl',
+          password: 'demo123',
+          address: 'Damrak 1',
+          street: 'Damrak',
+          houseNumber: '1',
+          postalCode: '1012 LG',
+          city: 'Amsterdam',
+          phone: '+31 20 123 4567',
+          birthDate: '1990-01-01',
+          registeredAt: '2024-01-01T10:00:00.000Z',
+          account_type: 'betaald',
           email_verified: true,
-          role: 'user'
-        });
-        setCurrentPage('welcome');
-        return { success: true };
+          investmentDetails: {
+            goal: 'Vermogensopbouw',
+            horizon: '15',
+            amount: '75000',
+            monthlyContribution: '750',
+            riskProfile: 'Offensief'
+          },
+          portfolio: [
+            { naam: 'iShares Core MSCI World UCITS ETF', isin: 'IE00B4L5Y983', categorie: 'Aandelen', weight: 60, 'ter p.a.': '0.20%' },
+            { naam: 'Xtrackers MSCI Emerging Markets UCITS ETF', isin: 'IE00BTJRMP35', categorie: 'Aandelen', weight: 20, 'ter p.a.': '0.18%' },
+            { naam: 'iShares Physical Gold ETC', isin: 'IE00B579F325', categorie: 'Commodities', weight: 10, 'ter p.a.': '0.25%' },
+            { naam: 'iShares Developed Markets Property Yield UCITS ETF', isin: 'IE00B1FZS350', categorie: 'Vastgoed', weight: 10, 'ter p.a.': '0.59%' }
+          ],
+          transactions: [
+            { date: '2024-01-01', type: 'Storting', amount: 75000, description: 'Initiële storting' },
+            { date: '2024-02-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' },
+            { date: '2024-03-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' },
+            { date: '2024-04-01', type: 'Storting', amount: 750, description: 'Maandelijkse storting' }
+          ],
+          portfolioValue: 78500,
+          totalReturn: 5.85
+        };
+        // Add demo user to customers array
+        setCustomers([demoUser, ...customers]);
       }
+
+      setUser({
+        ...demoUser,
+        email_verified: true,
+        role: 'user'
+      });
+      setCurrentPage('welcome');
+      return { success: true };
     }
 
     // Regular user login via API
