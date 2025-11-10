@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, 
 import Footer from './Footer';
 import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
+import IncomeCalculator from './IncomeCalculator';
 
 // API URL - works with Vercel Dev and production
 const API_URL = '/api';
@@ -7975,7 +7976,7 @@ useEffect(() => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
             <button
               onClick={() => setCurrentPage('dashboard')}
               className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-3 text-left transition-all group border border-[#28EBCF]/50"
@@ -7985,6 +7986,18 @@ useEffect(() => {
               <p className="text-xs text-gray-800">Bekijk en beheer je beleggingen</p>
               <div className="mt-2 text-xs text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Ga naar dashboard →
+              </div>
+            </button>
+
+            <button
+              onClick={() => setCurrentPage('incomeCalculator')}
+              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+            >
+              <div className="text-2xl mb-1.5">🧮</div>
+              <h3 className="text-base font-bold text-white mb-1">Inkomsten Calculator</h3>
+              <p className="text-xs text-gray-400">Bereken je potentiële dividenduitkeringen</p>
+              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+                Start berekening →
               </div>
             </button>
 
@@ -9215,6 +9228,7 @@ useEffect(() => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
+      {currentPage === 'incomeCalculator' && <IncomeCalculator />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Chat Widget */}
