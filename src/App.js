@@ -2690,7 +2690,7 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700" style={{ paddingTop: 'max(env(safe-area-inset-top), 12px)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -3415,7 +3415,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3589,7 +3589,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3720,7 +3720,7 @@ useEffect(() => {
   const EmailVerificationPendingPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3842,7 +3842,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4243,7 +4243,7 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
