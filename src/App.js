@@ -6453,7 +6453,7 @@ useEffect(() => {
     const [showWithdrawal, setShowWithdrawal] = useState(false);
     const [depositAmount, setDepositAmount] = useState('');
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
-    const [portfolioEvents, setPortfolioEvents] = useState([]); // Track deposits, withdrawals, profile changes
+    // const [portfolioEvents, setPortfolioEvents] = useState([]); // Track deposits, withdrawals, profile changes
     const metrics = calculatePortfolioMetrics();
 
     const horizon = parseInt(investmentDetails.horizon) || 10;
@@ -7868,7 +7868,6 @@ useEffect(() => {
     });
 
     // Navbar is always visible - removed auto-hide functionality
-    const showNavbar = true;
 
     // Simulate real-time price updates
     useEffect(() => {
