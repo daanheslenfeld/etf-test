@@ -956,6 +956,8 @@ const ETFPortal = () => {
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const [customerPortalTab, setCustomerPortalTab] = useState('customers');
   const [chatInquiries, setChatInquiries] = useState([]);
@@ -1332,6 +1334,28 @@ const ETFPortal = () => {
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
+
+  // PWA Install Prompt Handler
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+
+      // Don't show immediately if user just logged in
+      setTimeout(() => {
+        // Only show if user is logged in and hasn't dismissed it recently
+        const lastDismissed = localStorage.getItem('installPromptDismissed');
+        const now = Date.now();
+        if (!lastDismissed || (now - parseInt(lastDismissed)) > 7 * 24 * 60 * 60 * 1000) {
+          setShowInstallPrompt(true);
+        }
+      }, 10000); // Show after 10 seconds
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   // iOS Capacitor INPUT FIX - Force all inputs to be focusable
   useEffect(() => {
@@ -9235,6 +9259,28 @@ useEffect(() => {
     );
   };
 
+  // Handle PWA Install
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    }
+
+    setDeferredPrompt(null);
+    setShowInstallPrompt(false);
+  };
+
+  const handleDismissInstall = () => {
+    setShowInstallPrompt(false);
+    localStorage.setItem('installPromptDismissed', Date.now().toString());
+  };
+
   return (
     <>
       <style>{`
@@ -9273,6 +9319,48 @@ useEffect(() => {
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
+
+      {/* PWA Install Prompt */}
+      {showInstallPrompt && user && (
+        <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-20 md:w-96 z-50 bg-gradient-to-br from-[#1A1B1F] to-[#252630] border border-[#28EBCF]/30 rounded-2xl shadow-2xl p-5 animate-slideUp">
+          <button
+            onClick={handleDismissInstall}
+            className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="flex items-start gap-4">
+            <div className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl p-3 flex-shrink-0">
+              <svg className="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-white mb-1">Add PIGG to Home Screen</h3>
+              <p className="text-sm text-gray-400 mb-4">Install our app for quick access and a better experience!</p>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleInstallClick}
+                  className="flex-1 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-gray-900 font-bold py-2.5 rounded-lg hover:shadow-lg hover:shadow-[#28EBCF]/30 transition-all"
+                >
+                  Install Now
+                </button>
+                <button
+                  onClick={handleDismissInstall}
+                  className="px-4 py-2.5 border border-gray-700 text-gray-400 rounded-lg hover:border-gray-600 hover:text-white transition-all"
+                >
+                  Later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Chat Widget */}
       <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />

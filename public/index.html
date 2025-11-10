@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#28EBCF" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
       content="PIGG Investment Portfolio - Manage your investments easily"
@@ -92,6 +93,57 @@
       /* Fix for Capacitor WebView - allow inputs to receive events */
       .bg-gray-900, .bg-\[#1A1B1F\] {
         isolation: auto !important;
+      }
+
+      /* Mobile Optimizations */
+      @media (max-width: 768px) {
+        /* Better mobile scrolling */
+        body {
+          -webkit-overflow-scrolling: touch;
+          overflow-x: hidden;
+        }
+
+        /* Prevent text size adjustment on orientation change */
+        html {
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
+
+        /* Better button touch targets */
+        button, a {
+          min-height: 44px;
+          min-width: 44px;
+        }
+
+        /* Smooth scrolling */
+        * {
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Prevent double-tap zoom */
+        * {
+          touch-action: manipulation;
+        }
+
+        /* Better form inputs on mobile */
+        input, textarea, select {
+          font-size: 16px !important; /* Prevents iOS zoom on focus */
+        }
+      }
+
+      /* Hide scrollbars but keep functionality */
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+
+      /* Ensure app takes full height on mobile */
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
       }
     </style>
   </head>
