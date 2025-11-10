@@ -39,15 +39,9 @@
     <!-- iOS PWA Input Fix -->
     <style>
       /* iOS Safe Area Support - Green bar for standalone mode */
-      html {
-        padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-        padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
-      }
-
-      body {
-        padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-        padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
-        position: relative;
+      html, body {
+        margin: 0;
+        padding: 0;
       }
 
       /* Green bar at the very top in standalone mode */
@@ -61,10 +55,12 @@
         height: env(safe-area-inset-top); /* iOS 11.2+ */
         background-color: #28EBCF;
         z-index: 9999;
+        pointer-events: none;
       }
 
-      /* Ensure root container respects safe area */
+      /* Ensure root container accounts for safe area */
       #root {
+        position: relative;
         min-height: 100vh;
         padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
         padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
