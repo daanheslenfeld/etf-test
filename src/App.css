@@ -51,20 +51,3 @@
 .phone-float {
   animation: phone-float 3s ease-in-out infinite;
 }
-
-/* iOS Safe Area Support - Green border at top for notch */
-body {
-  padding-top: env(safe-area-inset-top);
-}
-
-/* Add green bar at the very top for iOS safe area */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top);
-  background-color: #28EBCF;
-  z-index: 9999;
-}
