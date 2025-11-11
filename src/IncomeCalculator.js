@@ -10,7 +10,7 @@ const InvestmentProfiles = {
     'Zeer offensief': 0.08
 };
 
-function IncomePreservationCalculator() {
+function IncomePreservationCalculator({ onNavigate, onLogout }) {
             // Step management
             const [currentStep, setCurrentStep] = useState(0);
 
@@ -1496,12 +1496,82 @@ function IncomePreservationCalculator() {
             };
 
             return (
-                <div className="min-h-screen bg-gradient-to-br from-[#0a1e3d] via-[#0d2347] to-[#051023] p-4">
-                    <div className={`mx-auto ${currentStep === 3 ? 'max-w-[95%]' : 'max-w-5xl'}`}>
-                        {/* Header */}
-                        <div className="mb-4">
-                            <h1 className="text-3xl font-bold text-white mb-1">Vermogensbehoud Calculator</h1>
-                            <p className="text-blue-200 text-sm">Plan uw spaar- en opnamestrategie met precisie</p>
+                <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                    {/* Spacer to prevent content from going under fixed navbar */}
+                    <div style={{ height: '72px' }}></div>
+
+                    {/* Fixed Navigation Bar - Same as other pages */}
+                    <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed top-0 left-0 right-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+                            <div className="flex justify-between items-center">
+                                {onNavigate ? (
+                                    <button onClick={() => onNavigate('welcome')} className="flex items-center gap-2 sm:gap-3">
+                                        <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                                            <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                                            <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                                            <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                                            <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                                            <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                                            <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                                            <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+                                            <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                                            <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                                            <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+                                            <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                                            <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                                            <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                                            <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                                            <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                                        </svg>
+                                        <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                                            <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                                            <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                                            <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                                            <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                                            <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+                                            <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                                            <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+                                            <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                                            <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                                            <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+                                            <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                                            <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                                            <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+                                            <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                                            <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                                        </svg>
+                                        <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                                    {onNavigate && (
+                                        <>
+                                            <button onClick={() => onNavigate('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                                            <button onClick={() => onNavigate('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
+                                            <button onClick={() => onNavigate('incomeCalculator')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Jouw Plan</button>
+                                            <button onClick={() => onNavigate('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
+                                            <button onClick={() => onNavigate('financialNews')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Nieuws</button>
+                                        </>
+                                    )}
+                                    {onLogout && (
+                                        <button onClick={onLogout} className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base">
+                                            Uitloggen
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className={`mx-auto px-4 py-4 ${currentStep === 3 ? 'max-w-[95%]' : 'max-w-5xl'}`}>
+                        {/* Page Title */}
+                        <div className="mb-6">
+                            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Vermogensbehoud Calculator</h1>
+                            <p className="text-sm sm:text-base text-gray-400">Plan uw spaar- en opnamestrategie met precisie</p>
                         </div>
 
                         <div className="bg-[#1a2332] rounded-2xl shadow-2xl overflow-hidden border border-slate-700">

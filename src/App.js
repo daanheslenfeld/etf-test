@@ -2373,9 +2373,6 @@ useEffect(() => {
             </button>
             <div className="flex items-center gap-4 sm:gap-6">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
-              <div className="text-sm text-gray-400 hidden sm:block">
-                {user?.name?.split(' ')[0]}
-              </div>
               <button
                 onClick={handleLogout}
                 className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
@@ -4486,20 +4483,14 @@ useEffect(() => {
                 <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
-                  Home
-                </button>
-                {portfolio.length > 0 && (
-                  <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
-                    Portfolio ({portfolio.length})
-                  </button>
-                )}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">
-                  {user?.name?.split(' ')[0]}
-                </div>
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
+                <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">ETF Database</button>
+                <button onClick={() => setCurrentPage('financialNews')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Nieuws</button>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
+                  className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -5273,7 +5264,6 @@ useEffect(() => {
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
                 {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
                 <button
                   onClick={handleLogout}
                   className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
@@ -5703,7 +5693,6 @@ useEffect(() => {
               <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-300 hover:text-[#28EBCF]">ETF Database</button>
               <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-300 hover:text-[#28EBCF]">Portfolio Samenstellen</button>
               <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#28EBCF] font-medium">Portfolio Overzicht</button>
-              <div className="text-sm text-gray-400">{user?.name}</div>
               <button
                 onClick={handleLogout}
                 className="text-gray-400 hover:text-gray-200 font-medium"
@@ -5850,9 +5839,14 @@ useEffect(() => {
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
-                ← Terug naar Dashboard
-              </button>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
+                  ← Dashboard
+                </button>
+                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF]">
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </nav>
 
@@ -5924,9 +5918,14 @@ useEffect(() => {
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
-                ← Terug naar Profiel Selectie
-              </button>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
+                  ← Profiel
+                </button>
+                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF]">
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </nav>
 
@@ -6069,7 +6068,10 @@ useEffect(() => {
                   setCustomBuildStep('categories');
                   setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
                 }} className="text-gray-300 hover:text-[#28EBCF]">
-                  ← Terug naar Categorieën
+                  ← Categorieën
+                </button>
+                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF]">
+                  Uitloggen
                 </button>
               </div>
               {selectedInCategory.length > 0 && (
@@ -6256,9 +6258,14 @@ useEffect(() => {
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
-                ← Terug naar Categorieën
-              </button>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
+                  ← Categorieën
+                </button>
+                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF]">
+                  Uitloggen
+                </button>
+              </div>
             </div>
           </nav>
 
@@ -6891,10 +6898,11 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
+                <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
+                <button onClick={() => setCurrentPage('financialNews')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Nieuws</button>
                 <button
                   onClick={handleLogout}
                   className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
@@ -8015,9 +8023,10 @@ useEffect(() => {
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
+                <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
+                <button onClick={() => setCurrentPage('financialNews')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Nieuws</button>
                 <button
                   onClick={handleLogout}
                   className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
@@ -8043,52 +8052,125 @@ useEffect(() => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <style>
+            {`
+              @keyframes waveShimmer {
+                0%, 100% {
+                  transform: translateX(-100%) scaleY(1);
+                  opacity: 0;
+                }
+                10% {
+                  opacity: 0.6;
+                  transform: translateX(-50%) scaleY(1.1);
+                }
+                30% {
+                  opacity: 1;
+                  transform: translateX(0%) scaleY(1.2);
+                }
+                50% {
+                  opacity: 1;
+                  transform: translateX(50%) scaleY(1.1);
+                }
+                70% {
+                  opacity: 0.6;
+                  transform: translateX(100%) scaleY(1);
+                }
+                80%, 100% {
+                  opacity: 0;
+                  transform: translateX(150%) scaleY(1);
+                }
+              }
+              .shimmer-effect::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 80%;
+                height: 100%;
+                background: radial-gradient(ellipse at center, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.3) 40%, transparent 70%);
+                animation: waveShimmer 10s infinite ease-in-out;
+                transform-origin: center;
+              }
+              .shimmer-effect:nth-child(1)::before {
+                animation-delay: 0s;
+              }
+              .shimmer-effect:nth-child(2)::before {
+                animation-delay: 0.4s;
+              }
+              .shimmer-effect:nth-child(3)::before {
+                animation-delay: 0.8s;
+              }
+              .shimmer-effect:nth-child(4)::before {
+                animation-delay: 1.2s;
+              }
+            `}
+          </style>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-3 text-left transition-all group border border-[#28EBCF]/50"
+              className="shimmer-effect relative overflow-hidden rounded-xl p-4 text-center transition-all transform hover:scale-105 hover:-translate-y-1 active:translate-y-0 border-t-2 border-l border-white/30 group"
+              style={{
+                background: 'radial-gradient(circle at center, #6FFFF0 0%, #3FFFD9 30%, #28EBCF 60%, #20D4BA 100%)',
+                boxShadow: '0 8px 16px rgba(40,235,207,0.3), 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)'
+              }}
             >
-              <div className="text-2xl mb-1.5">📊</div>
-              <h3 className="text-base font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
-              <p className="text-xs text-gray-800">Bekijk en beheer je beleggingen</p>
-              <div className="mt-2 text-xs text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Ga naar dashboard →
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{background: 'radial-gradient(circle at center, #5FFFD9 0%, #3FFFCF 30%, #20E5B5 60%, #10C9A0 100%)'}}
+              ></div>
+              <div className="relative z-10">
+                <div className="text-2xl mb-2 drop-shadow-lg">📊</div>
+                <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm">Mijn Portfolio</h3>
               </div>
             </button>
 
             <button
               onClick={() => setCurrentPage('incomeCalculator')}
-              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+              className="shimmer-effect relative overflow-hidden rounded-xl p-4 text-center transition-all transform hover:scale-105 hover:-translate-y-1 active:translate-y-0 border-t-2 border-l border-white/30 group"
+              style={{
+                background: 'radial-gradient(circle at center, #6FFFF0 0%, #3FFFD9 30%, #28EBCF 60%, #20D4BA 100%)',
+                boxShadow: '0 8px 16px rgba(40,235,207,0.3), 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)'
+              }}
             >
-              <div className="text-2xl mb-1.5">🧮</div>
-              <h3 className="text-base font-bold text-white mb-1">Inkomsten Calculator</h3>
-              <p className="text-xs text-gray-400">Bereken je potentiële dividenduitkeringen</p>
-              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Start berekening →
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{background: 'radial-gradient(circle at center, #5FFFD9 0%, #3FFFCF 30%, #20E5B5 60%, #10C9A0 100%)'}}
+              ></div>
+              <div className="relative z-10">
+                <div className="text-2xl mb-2 drop-shadow-lg">🧮</div>
+                <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm">Jouw Plan</h3>
               </div>
             </button>
 
             <button
               onClick={() => setCurrentPage('etfDatabase')}
-              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+              className="shimmer-effect relative overflow-hidden rounded-xl p-4 text-center transition-all transform hover:scale-105 hover:-translate-y-1 active:translate-y-0 border-t-2 border-l border-white/30 group"
+              style={{
+                background: 'radial-gradient(circle at center, #6FFFF0 0%, #3FFFD9 30%, #28EBCF 60%, #20D4BA 100%)',
+                boxShadow: '0 8px 16px rgba(40,235,207,0.3), 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)'
+              }}
             >
-              <div className="text-2xl mb-1.5">🔍</div>
-              <h3 className="text-base font-bold text-white mb-1">ETF Database</h3>
-              <p className="text-xs text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
-              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Verken ETFs →
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{background: 'radial-gradient(circle at center, #5FFFD9 0%, #3FFFCF 30%, #20E5B5 60%, #10C9A0 100%)'}}
+              ></div>
+              <div className="relative z-10">
+                <div className="text-2xl mb-2 drop-shadow-lg">🔍</div>
+                <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm">ETF Database</h3>
               </div>
             </button>
 
             <button
               onClick={() => setCurrentPage('financialNews')}
-              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+              className="shimmer-effect relative overflow-hidden rounded-xl p-4 text-center transition-all transform hover:scale-105 hover:-translate-y-1 active:translate-y-0 border-t-2 border-l border-white/30 group"
+              style={{
+                background: 'radial-gradient(circle at center, #6FFFF0 0%, #3FFFD9 30%, #28EBCF 60%, #20D4BA 100%)',
+                boxShadow: '0 8px 16px rgba(40,235,207,0.3), 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2)'
+              }}
             >
-              <div className="text-2xl mb-1.5">📰</div>
-              <h3 className="text-base font-bold text-white mb-1">Financieel Nieuws</h3>
-              <p className="text-xs text-gray-400">Blijf op de hoogte van marktontwikkelingen</p>
-              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Bekijk nieuws →
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{background: 'radial-gradient(circle at center, #5FFFD9 0%, #3FFFCF 30%, #20E5B5 60%, #10C9A0 100%)'}}
+              ></div>
+              <div className="relative z-10">
+                <div className="text-2xl mb-2 drop-shadow-lg">📰</div>
+                <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm">Nieuws</h3>
               </div>
             </button>
           </div>
@@ -8182,6 +8264,14 @@ useEffect(() => {
   const FirstTimeWelcome = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+        {/* Logout button in top-right corner */}
+        <button
+          onClick={handleLogout}
+          className="fixed top-4 right-4 px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium"
+        >
+          Uitloggen
+        </button>
+
         <div className="max-w-3xl w-full">
           {/* Logo at the top */}
           <div className="flex justify-center mb-12">
@@ -8354,9 +8444,10 @@ useEffect(() => {
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
+                <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
+                <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
+                <button onClick={() => setCurrentPage('financialNews')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Nieuws</button>
                 <button onClick={handleLogout} className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base">
                   Uitloggen
                 </button>
@@ -8368,7 +8459,7 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
           {/* Header */}
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">📰 Financieel Nieuws</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">📰 Nieuws</h1>
             <p className="text-sm sm:text-base text-gray-400">Blijf op de hoogte van de laatste ontwikkelingen op de financiële markten</p>
           </div>
 
@@ -8637,16 +8728,24 @@ useEffect(() => {
                   <div className="text-sm sm:text-base text-gray-400">Account Manager Portal</div>
                 </div>
               </div>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleLogout();
-                }}
-                className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
-              >
-                {t.common.logout}
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setCurrentPage('welcome')}
+                  className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleLogout();
+                  }}
+                  className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
+                >
+                  {t.common.logout}
+                </button>
+              </div>
             </div>
           </div>
         </nav>
@@ -9022,8 +9121,11 @@ useEffect(() => {
                 </div>
               </div>
               <div className="flex gap-4">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                  Home
+                </button>
                 <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
-                  ← Terug naar Database
+                  ← Database
                 </button>
                 <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   Uitloggen
@@ -9317,7 +9419,7 @@ useEffect(() => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
-      {currentPage === 'incomeCalculator' && <IncomeCalculator />}
+      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* PWA Install Prompt */}
