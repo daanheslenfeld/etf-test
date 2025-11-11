@@ -2387,10 +2387,10 @@ useEffect(() => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="mb-12 sm:mb-16">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white">
-            Welkom, {user?.name?.split(' ')[0]}
+            WELKOM {user?.name?.split(' ')[0].toUpperCase()}... BE AN INVESTOR!
           </h1>
           <p className="text-base sm:text-lg text-gray-400">
-            Wat wil je vandaag doen?
+            Stel je eigen portefeuille samen of kijk rond in de wereld van ETF's en analyseer en vergelijk ETF's.
           </p>
         </div>
 
@@ -4483,7 +4483,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -6898,7 +6898,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -8022,11 +8022,11 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
-                <button onClick={() => setCurrentPage('financialNews')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Nieuws</button>
+                <button onClick={() => setCurrentPage('financialNews')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Nieuws</button>
                 <button
                   onClick={handleLogout}
                   className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
@@ -8422,7 +8422,7 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8443,7 +8443,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -8730,7 +8730,7 @@ useEffect(() => {
               </div>
               <div className="flex items-center gap-4">
                 <button
-                  onClick={() => setCurrentPage('welcome')}
+                  onClick={() => setCurrentPage('mainDashboard')}
                   className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
                 >
                   Home
@@ -9121,7 +9121,7 @@ useEffect(() => {
                 </div>
               </div>
               <div className="flex gap-4">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   Home
                 </button>
                 <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
