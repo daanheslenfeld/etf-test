@@ -5838,7 +5838,7 @@ useEffect(() => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
               <div className="flex items-center gap-4">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
                   ← Dashboard
@@ -5917,7 +5917,7 @@ useEffect(() => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
               <div className="flex items-center gap-4">
                 <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
                   ← Profiel
@@ -6257,7 +6257,7 @@ useEffect(() => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
               <div className="flex items-center gap-4">
                 <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
                   ← Categorieën
@@ -6807,15 +6807,15 @@ useEffect(() => {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
           <div className="text-center bg-[#1A1B1F] rounded-2xl shadow-lg p-12 max-w-md border border-gray-800">
             <div className="text-6xl mb-6">📊</div>
-            <h2 className="text-2xl font-bold mb-4 text-white">Geen Portfolio</h2>
+            <h2 className="text-2xl font-bold mb-4 text-white">Geen Portefeuille</h2>
             <p className="text-gray-400 mb-6">
-              Je hebt nog geen portfolio samengesteld. Ga terug om een portfolio te maken.
+              Je hebt nog geen portefeuille samengesteld. Ga terug om een portefeuille te maken.
             </p>
             <button
               onClick={() => setCurrentPage('mainDashboard')}
               className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
             >
-              Terug naar Dashboard
+              Ga naar Dashboard
             </button>
           </div>
         </div>
