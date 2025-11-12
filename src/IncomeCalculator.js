@@ -10,12 +10,12 @@ const InvestmentProfiles = {
     'Zeer offensief': 0.08
 };
 
-function IncomePreservationCalculator({ onNavigate, onLogout }) {
+function IncomePreservationCalculator({ onNavigate, onLogout, user }) {
             // Step management
             const [currentStep, setCurrentStep] = useState(0);
 
             // Personal information (Step 0)
-            const [name, setName] = useState('');
+            const [name, setName] = useState(user ? `${user.firstName} ${user.lastName}` : '');
             const [birthDate, setBirthDate] = useState('');
             const [aowAge, setAowAge] = useState(null);
             const [aowDate, setAowDate] = useState(null);
@@ -1643,8 +1643,8 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                     <div className={`mx-auto px-4 py-4 ${currentStep === 3 ? 'max-w-[95%]' : 'max-w-5xl'}`}>
                         {/* Page Title */}
                         <div className="mb-6">
-                            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Vermogensbehoud Calculator</h1>
-                            <p className="text-sm sm:text-base text-gray-400">Plan uw spaar- en opnamestrategie met precisie</p>
+                            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Maak jouw plan</h1>
+                            <p className="text-sm sm:text-base text-gray-400">Plan je spaar- en opnamestrategie met precisie</p>
                         </div>
 
                         <div className="bg-[#1a2332] rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
@@ -1688,10 +1688,11 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                                                 <input
                                                     type="text"
                                                     value={name}
-                                                    onChange={(e) => setName(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
-                                                    placeholder="Bijv. Henk"
+                                                    readOnly
+                                                    className="w-full px-3 py-2 text-sm bg-slate-700 border border-slate-600 rounded-lg text-gray-300 cursor-not-allowed"
+                                                    title="Naam wordt automatisch gebruikt van je account"
                                                 />
+                                                <p className="text-xs text-slate-500 mt-1">Van je account</p>
                                             </div>
 
                                             <div>
@@ -2476,6 +2477,12 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                                                 <h2 className="text-2xl font-bold text-white">Dashboard - {name}</h2>
                                                 <div className="flex gap-3">
                                                     <button
+                                                        onClick={handleBack}
+                                                        className="px-4 py-2 text-sm text-slate-400 hover:text-white font-semibold transition-colors"
+                                                    >
+                                                        ← Terug
+                                                    </button>
+                                                    <button
                                                         onClick={generatePDFReport}
                                                         className="px-4 py-2 text-sm bg-teal-500 text-slate-900 font-bold rounded-lg hover:bg-teal-400 transition-colors shadow-lg"
                                                     >
@@ -2485,7 +2492,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                                                         onClick={handleRestart}
                                                         className="px-4 py-2 text-sm bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-600 transition-colors border border-slate-600 shadow-sm"
                                                     >
-                                                        ← Opnieuw Beginnen
+                                                        ↻ Opnieuw Beginnen
                                                     </button>
                                                 </div>
                                             </div>

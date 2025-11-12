@@ -9707,7 +9707,7 @@ useEffect(() => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
-      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} />}
+      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} user={user} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* PWA Install Prompt */}
