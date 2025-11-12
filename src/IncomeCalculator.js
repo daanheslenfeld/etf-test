@@ -82,6 +82,9 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
             // Calculated values
             const [results, setResults] = useState(null);
 
+            // Mobile menu state
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
             // Format number to EU style (1.000.000,50)
             const formatNumber = (value) => {
                 if (!value && value !== 0) return '';
@@ -1497,11 +1500,14 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-                    {/* Spacer to prevent content from going under fixed navbar */}
-                    <div style={{ height: '72px' }}></div>
+                    {/* iOS Status Bar Spacer - Fixed position */}
+                    <div className="bg-[#28EBCF] fixed top-0 left-0 right-0 z-50" style={{ height: 'env(safe-area-inset-top)' }}></div>
+
+                    {/* Spacer to prevent content from going under fixed navbar and iOS status bar */}
+                    <div style={{ height: 'calc(72px + env(safe-area-inset-top))' }}></div>
 
                     {/* Fixed Navigation Bar - Same as other pages */}
-                    <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed top-0 left-0 right-0 z-50">
+                    <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed left-0 right-0 z-40" style={{ top: 'env(safe-area-inset-top)' }}>
                         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
                             <div className="flex justify-between items-center">
                                 {onNavigate ? (
@@ -1547,7 +1553,9 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                                         <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
                                     </div>
                                 )}
-                                <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+
+                                {/* Desktop Menu */}
+                                <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-6">
                                     {onNavigate && (
                                         <>
                                             <button onClick={() => onNavigate('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
@@ -1563,7 +1571,72 @@ function IncomePreservationCalculator({ onNavigate, onLogout }) {
                                         </button>
                                     )}
                                 </div>
+
+                                {/* Mobile Hamburger Menu Button */}
+                                <button
+                                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                    className="md:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                                    aria-label="Menu"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {mobileMenuOpen ? (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        ) : (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        )}
+                                    </svg>
+                                </button>
                             </div>
+
+                            {/* Mobile Menu Dropdown */}
+                            {mobileMenuOpen && (
+                                <div className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
+                                    <div className="flex flex-col gap-3">
+                                        {onNavigate && (
+                                            <>
+                                                <button
+                                                    onClick={() => {onNavigate('welcome'); setMobileMenuOpen(false);}}
+                                                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                                                >
+                                                    Home
+                                                </button>
+                                                <button
+                                                    onClick={() => {onNavigate('dashboard'); setMobileMenuOpen(false);}}
+                                                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                                                >
+                                                    Mijn Portefeuille
+                                                </button>
+                                                <button
+                                                    onClick={() => {onNavigate('incomeCalculator'); setMobileMenuOpen(false);}}
+                                                    className="text-left text-[#28EBCF] hover:text-[#20D4BA] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                                                >
+                                                    Jouw Plan
+                                                </button>
+                                                <button
+                                                    onClick={() => {onNavigate('etfDatabase'); setMobileMenuOpen(false);}}
+                                                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                                                >
+                                                    ETF Database
+                                                </button>
+                                                <button
+                                                    onClick={() => {onNavigate('financialNews'); setMobileMenuOpen(false);}}
+                                                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                                                >
+                                                    Nieuws
+                                                </button>
+                                            </>
+                                        )}
+                                        {onLogout && (
+                                            <button
+                                                onClick={() => {onLogout(); setMobileMenuOpen(false);}}
+                                                className="text-left text-gray-300 hover:text-white transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50 border-t border-gray-700 mt-2 pt-4"
+                                            >
+                                                Uitloggen
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </nav>
 
