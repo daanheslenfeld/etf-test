@@ -2333,6 +2333,8 @@ useEffect(() => {
 
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* iOS Status Bar Spacer */}
+      <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
       <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
@@ -2686,8 +2688,10 @@ useEffect(() => {
 
     return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* iOS Status Bar Spacer */}
+      <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700" style={{ paddingTop: 'max(env(safe-area-inset-top), 12px)' }}>
+      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700" style={{ paddingTop: '12px' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -3412,7 +3416,9 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3586,7 +3592,9 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3717,7 +3725,9 @@ useEffect(() => {
   const EmailVerificationPendingPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3839,7 +3849,9 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -3959,6 +3971,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
@@ -4240,7 +4254,9 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg" style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}>
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
@@ -4444,6 +4460,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -5284,6 +5302,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -5713,6 +5733,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
@@ -5897,6 +5919,8 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          {/* iOS Status Bar Spacer */}
+          <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
@@ -5976,6 +6000,8 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          {/* iOS Status Bar Spacer */}
+          <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
@@ -6109,6 +6135,8 @@ useEffect(() => {
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          {/* iOS Status Bar Spacer */}
+          <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -6316,6 +6344,8 @@ useEffect(() => {
     const renderAccountTypeSelection = () => {
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          {/* iOS Status Bar Spacer */}
+          <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
@@ -6446,6 +6476,8 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
@@ -6920,6 +6952,8 @@ useEffect(() => {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -8100,11 +8134,15 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        {/* Spacer to prevent content from going under fixed navbar */}
-        <div style={{ height: '72px' }}></div>
+        {/* iOS Status Bar Spacer - Fixed position */}
+        <div className="bg-[#28EBCF] fixed top-0 left-0 right-0 z-50" style={{ height: 'env(safe-area-inset-top)' }}></div>
+
+        {/* Spacer to prevent content from going under fixed navbar and iOS status bar */}
+        <div style={{ height: 'calc(72px + env(safe-area-inset-top))' }}></div>
 
         <nav
-          className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed top-0 left-0 right-0 z-50"
+          className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed left-0 right-0 z-40"
+          style={{ top: 'env(safe-area-inset-top)' }}
         >
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -8602,6 +8640,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -8931,6 +8971,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
@@ -9346,6 +9388,8 @@ useEffect(() => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* iOS Status Bar Spacer */}
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
