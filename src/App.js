@@ -2336,7 +2336,7 @@ useEffect(() => {
       <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+            <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -2372,7 +2372,7 @@ useEffect(() => {
               <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
             </button>
             <div className="flex items-center gap-4 sm:gap-6">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
+              <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
               <button
                 onClick={handleLogout}
                 className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
@@ -4447,7 +4447,7 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -4482,8 +4482,10 @@ useEffect(() => {
                 </svg>
                 <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
               </button>
-              <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center gap-2 sm:gap-3 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -4495,7 +4497,66 @@ useEffect(() => {
                   Uitloggen
                 </button>
               </div>
+
+              {/* Mobile Hamburger Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {mobileMenuOpen && (
+              <div className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {setCurrentPage('welcome'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('dashboard'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Mijn Portefeuille
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('incomeCalculator'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Jouw Plan
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('etfDatabase'); setMobileMenuOpen(false);}}
+                    className="text-left text-[#28EBCF] hover:text-[#20D4BA] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    ETF Database
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('financialNews'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Nieuws
+                  </button>
+                  <button
+                    onClick={() => {handleLogout(); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-white transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50 border-t border-gray-700 mt-2 pt-4"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -5226,7 +5287,7 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -5654,7 +5715,7 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+            <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -6051,7 +6112,7 @@ useEffect(() => {
           <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+                <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
                   <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                     <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                     <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -6387,7 +6448,7 @@ useEffect(() => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
+            <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
                 <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -6862,7 +6923,7 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -6897,8 +6958,10 @@ useEffect(() => {
                 </svg>
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -6910,7 +6973,66 @@ useEffect(() => {
                   Uitloggen
                 </button>
               </div>
+
+              {/* Mobile Hamburger Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {mobileMenuOpen && (
+              <div className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {setCurrentPage('welcome'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('dashboard'); setMobileMenuOpen(false);}}
+                    className="text-left text-[#28EBCF] hover:text-[#20D4BA] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Mijn Portefeuille
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('incomeCalculator'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Jouw Plan
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('etfDatabase'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    ETF Database
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('financialNews'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Nieuws
+                  </button>
+                  <button
+                    onClick={() => {handleLogout(); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-white transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50 border-t border-gray-700 mt-2 pt-4"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -7986,7 +8108,7 @@ useEffect(() => {
         >
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
@@ -8021,8 +8143,10 @@ useEffect(() => {
                 </svg>
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -8034,7 +8158,66 @@ useEffect(() => {
                   Uitloggen
                 </button>
               </div>
+
+              {/* Mobile Hamburger Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {mobileMenuOpen && (
+              <div className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {setCurrentPage('welcome'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('dashboard'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Mijn Portefeuille
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('incomeCalculator'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Jouw Plan
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('etfDatabase'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    ETF Database
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('financialNews'); setMobileMenuOpen(false);}}
+                    className="text-left text-[#28EBCF] hover:text-[#20D4BA] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Nieuws
+                  </button>
+                  <button
+                    onClick={() => {handleLogout(); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-white transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50 border-t border-gray-700 mt-2 pt-4"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -8422,7 +8605,7 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
+              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8442,8 +8625,10 @@ useEffect(() => {
                 </svg>
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
               </button>
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center gap-2 sm:gap-4 md:gap-6">
+                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Mijn Portefeuille</button>
                 <button onClick={() => setCurrentPage('incomeCalculator')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Jouw Plan</button>
                 <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETF Database</button>
@@ -8452,7 +8637,66 @@ useEffect(() => {
                   Uitloggen
                 </button>
               </div>
+
+              {/* Mobile Hamburger Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                aria-label="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {mobileMenuOpen && (
+              <div className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {setCurrentPage('welcome'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Home
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('dashboard'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Mijn Portefeuille
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('incomeCalculator'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Jouw Plan
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('etfDatabase'); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    ETF Database
+                  </button>
+                  <button
+                    onClick={() => {setCurrentPage('financialNews'); setMobileMenuOpen(false);}}
+                    className="text-left text-[#28EBCF] hover:text-[#20D4BA] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  >
+                    Nieuws
+                  </button>
+                  <button
+                    onClick={() => {handleLogout(); setMobileMenuOpen(false);}}
+                    className="text-left text-gray-300 hover:text-white transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50 border-t border-gray-700 mt-2 pt-4"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </nav>
 
