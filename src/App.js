@@ -2303,22 +2303,22 @@ useEffect(() => {
               </div>
             )}
             
-            <div className="flex gap-4 pt-4 border-t">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t">
               <button
                 onClick={() => setCurrentPage('etfDatabase')}
-                className="flex-1 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium"
+                className="flex-1 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium text-sm sm:text-base"
               >
                 + ETF Toevoegen
               </button>
               <button
                 onClick={saveChanges}
-                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm sm:text-base"
               >
                 Wijzigingen Opslaan
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+                className="flex-1 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium text-sm sm:text-base"
               >
                 Annuleren
               </button>
@@ -3048,10 +3048,10 @@ useEffect(() => {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2 mb-3">
-                      <button className="flex-1 bg-[#28EBCF] text-gray-900 rounded-lg py-2 text-[10px] font-semibold">
+                      <button className="flex-1 bg-[#28EBCF] text-gray-900 rounded-lg py-2 text-xs font-semibold">
                         Geld Storten
                       </button>
-                      <button className="flex-1 border border-gray-700 text-white rounded-lg py-2 text-[10px] font-semibold">
+                      <button className="flex-1 border border-gray-700 text-white rounded-lg py-2 text-xs font-semibold">
                         Geld Opnemen
                       </button>
                     </div>
@@ -4597,7 +4597,7 @@ useEffect(() => {
             {(filterStep === 'category' || !selectedMainCategory) && (
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-400 mb-2">Selecteer Categorie</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                   {['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto'].map(cat => (
                     <button
                       key={cat}
@@ -4606,7 +4606,7 @@ useEffect(() => {
                         setFilterStep('filterSelect');
                         setActiveFilters({});
                       }}
-                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-medium transition-all bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white text-xs sm:text-sm"
                     >
                       {cat}
                     </button>
@@ -4676,7 +4676,7 @@ useEffect(() => {
                           setCurrentFilter(filterType);
                           setFilterStep('filterOptions');
                         }}
-                        className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                        className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white text-xs sm:text-sm"
                       >
                         {filterLabels[filterType]}
                       </button>
@@ -4724,7 +4724,7 @@ useEffect(() => {
                         setFilterStep('filterSelect');
                         setCurrentFilter('');
                       }}
-                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white text-sm"
+                      className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white text-xs sm:text-sm"
                     >
                       {option}
                     </button>
@@ -5259,13 +5259,13 @@ useEffect(() => {
               </div>
             )}
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
               <button
                 onClick={() => {
                   addToPortfolio(etf);
                   onClose();
                 }}
-                className="flex-1 py-2 bg-[#28EBCF] text-gray-900 rounded hover:bg-[#20D4BA] text-xs font-medium"
+                className="flex-1 py-2.5 bg-[#28EBCF] text-gray-900 rounded hover:bg-[#20D4BA] text-xs sm:text-sm font-medium"
               >
                 + Portfolio
               </button>
@@ -5789,8 +5789,8 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-white">Portfolio Overzicht</h1>
-            <div className="flex gap-3">
-              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-[#28EBCF] text-[#28EBCF] rounded-lg hover:bg-[#28EBCF]/10 font-medium">Portfolio Aanpassen</button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={() => setShowEditPortfolio(true)} className="w-full sm:w-auto px-4 sm:px-6 py-3 border-2 border-[#28EBCF] text-[#28EBCF] rounded-lg hover:bg-[#28EBCF]/10 font-medium text-sm sm:text-base whitespace-nowrap">Portfolio Aanpassen</button>
               <button
                 onClick={async () => {
                   // Set demo investment details for fictive portfolio
@@ -5809,11 +5809,11 @@ useEffect(() => {
 
                   setCurrentPage('dashboard');
                 }}
-                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm sm:text-base"
               >
                 Fictieve Portfolio Behouden
               </button>
-              <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
+              <button onClick={() => setCurrentPage('purchase')} className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm sm:text-base">Portfolio Aankopen →</button>
             </div>
           </div>
 
