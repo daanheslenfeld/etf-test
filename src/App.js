@@ -5395,13 +5395,13 @@ useEffect(() => {
                     className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]"
                   >
                     <h4 className="font-bold text-base sm:text-lg mb-2 text-white">{config.name}</h4>
-                    <div className="text-xs sm:text-sm text-gray-400 mb-3">
+                    <div className="hidden sm:block text-xs sm:text-sm text-gray-400 mb-3">
                       {Object.entries(config.allocation).map(([cat, pct]) => (
                         <div key={cat}>{cat}: {pct}%</div>
                       ))}
                     </div>
-                    <div className="text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                    <div className="hidden sm:block text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="hidden sm:block text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                   </button>
                 ))}
               </div>
@@ -5709,11 +5709,11 @@ useEffect(() => {
                 {Object.entries(premadePortfolios).map(([key, config]) => (
                   <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]">
                     <h4 className="font-bold text-lg mb-2 text-white">{config.name}</h4>
-                    <div className="text-sm text-gray-400 mb-2">
+                    <div className="hidden sm:block text-sm text-gray-400 mb-2">
                       {Object.entries(config.allocation).map(([cat, pct]) => <div key={cat}>{cat}: {pct}%</div>)}
                     </div>
-                    <div className="text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                    <div className="hidden sm:block text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                    <div className="hidden sm:block text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                   </button>
                 ))}
               </div>
