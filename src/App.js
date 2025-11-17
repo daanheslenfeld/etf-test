@@ -6577,7 +6577,7 @@ useEffect(() => {
                   {Object.entries(premadePortfolios).map(([key, config]) => (
                     <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>
                       <div>{config.name}</div>
-                      <div className="text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
+                      <div className="hidden sm:block text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
                     </button>
                   ))}
                 </div>
