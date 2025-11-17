@@ -5392,9 +5392,9 @@ useEffect(() => {
                       setSelectedProfile(key);
                       setCustomBuildStep('categories');
                     }}
-                    className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]"
+                    className="bg-gradient-to-br from-[#28EBCF]/20 to-[#1FA89B]/20 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-center sm:text-left border-2 border-[#28EBCF]/40 hover:border-[#28EBCF]"
                   >
-                    <h4 className="font-bold text-base sm:text-lg mb-2 text-white">{config.name}</h4>
+                    <h4 className="font-bold text-base sm:text-lg mb-2 text-[#28EBCF]">{config.name}</h4>
                     <div className="hidden sm:block text-xs sm:text-sm text-gray-400 mb-3">
                       {Object.entries(config.allocation).map(([cat, pct]) => (
                         <div key={cat}>{cat}: {pct}%</div>
@@ -5707,8 +5707,8 @@ useEffect(() => {
               <h2 className="text-2xl font-bold mb-6 text-white">Risicoprofielen</h2>
               <div className="grid grid-cols-3 gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => (
-                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]">
-                    <h4 className="font-bold text-lg mb-2 text-white">{config.name}</h4>
+                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-gradient-to-br from-[#28EBCF]/20 to-[#1FA89B]/20 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-center sm:text-left border-2 border-[#28EBCF]/40 hover:border-[#28EBCF]">
+                    <h4 className="font-bold text-lg mb-2 text-[#28EBCF]">{config.name}</h4>
                     <div className="hidden sm:block text-sm text-gray-400 mb-2">
                       {Object.entries(config.allocation).map(([cat, pct]) => <div key={cat}>{cat}: {pct}%</div>)}
                     </div>
@@ -6575,7 +6575,7 @@ useEffect(() => {
                 <label className="block text-lg font-bold mb-4 text-white">Risicoprofiel</label>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(premadePortfolios).map(([key, config]) => (
-                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>
+                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition text-center sm:text-left ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-gradient-to-br from-[#28EBCF]/30 to-[#1FA89B]/30 text-[#28EBCF]' : 'bg-gradient-to-br from-[#28EBCF]/10 to-[#1FA89B]/10 border-[#28EBCF]/40 text-[#28EBCF]/80 hover:border-[#28EBCF] hover:text-[#28EBCF]'}`}>
                       <div>{config.name}</div>
                       <div className="hidden sm:block text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
                     </button>
