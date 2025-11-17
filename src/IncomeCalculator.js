@@ -10,7 +10,7 @@ const InvestmentProfiles = {
     'Zeer offensief': 0.08
 };
 
-function IncomePreservationCalculator({ onNavigate, onLogout, user }) {
+function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDetails, setInvestmentDetails }) {
             // Step management
             const [currentStep, setCurrentStep] = useState(0);
 
@@ -22,7 +22,13 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user }) {
             const [ageAtWithdrawal, setAgeAtWithdrawal] = useState(null);
 
             // Build-up period inputs
-            const [buildUpProfile, setBuildUpProfile] = useState('Defensief');
+            // If user has a portfolio with a risk profile, use that. Otherwise default to 'Defensief'
+            const [buildUpProfile, setBuildUpProfile] = useState(() => {
+                if (investmentDetails && investmentDetails.riskProfile) {
+                    return investmentDetails.riskProfile;
+                }
+                return 'Defensief';
+            });
             const [period, setPeriod] = useState('');
             const [periodicDeposit, setPeriodicDeposit] = useState('');
             const [lumpSum, setLumpSum] = useState('');
@@ -84,6 +90,23 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user }) {
 
             // Mobile menu state
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+            // Sync buildUpProfile with investmentDetails.riskProfile when it changes
+            useEffect(() => {
+                if (investmentDetails && investmentDetails.riskProfile && investmentDetails.riskProfile !== buildUpProfile) {
+                    setBuildUpProfile(investmentDetails.riskProfile);
+                }
+            }, [investmentDetails]);
+
+            // Sync investmentDetails.riskProfile when buildUpProfile changes (bidirectional)
+            useEffect(() => {
+                if (setInvestmentDetails && buildUpProfile && investmentDetails && investmentDetails.riskProfile !== buildUpProfile) {
+                    setInvestmentDetails({
+                        ...investmentDetails,
+                        riskProfile: buildUpProfile
+                    });
+                }
+            }, [buildUpProfile]);
 
             // Format number to EU style (1.000.000,50)
             const formatNumber = (value) => {

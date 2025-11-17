@@ -1564,6 +1564,19 @@ useEffect(() => {
     }
   }, [currentPage]);
 
+  // When entering custom portfolio build, pre-select profile if it exists in investmentDetails
+  useEffect(() => {
+    if (portfolioType === 'custom' && customBuildStep === 'profile' && investmentDetails && investmentDetails.riskProfile && !selectedProfile) {
+      // Find the profile key that matches the risk profile name
+      const profileKey = Object.keys(premadePortfolios).find(
+        key => premadePortfolios[key].name === investmentDetails.riskProfile
+      );
+      if (profileKey) {
+        setSelectedProfile(profileKey);
+      }
+    }
+  }, [portfolioType, customBuildStep, investmentDetails]);
+
   // Helper function to calculate current portfolio value
   const calculateCurrentPortfolioValue = (details) => {
     if (!details || !details.amount || !details.riskProfile) return 0;
@@ -2031,6 +2044,11 @@ useEffect(() => {
     if (selectedETFs.length > 0) {
       setPortfolio(selectedETFs);
       setSelectedProfile(type); // Store the selected profile type
+      // Sync profile selection to investmentDetails
+      setInvestmentDetails({
+        ...investmentDetails,
+        riskProfile: config.name
+      });
       setCurrentPage('portfolioOverview');
     } else {
       console.error('❌ NO ETFs SELECTED - etfs array might be empty!');
@@ -5390,6 +5408,11 @@ useEffect(() => {
                     key={key}
                     onClick={() => {
                       setSelectedProfile(key);
+                      // Sync profile selection to investmentDetails
+                      setInvestmentDetails({
+                        ...investmentDetails,
+                        riskProfile: config.name
+                      });
                       setCustomBuildStep('categories');
                     }}
                     className="bg-gradient-to-br from-[#28EBCF]/20 to-[#1FA89B]/20 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-center sm:text-left border-2 border-[#28EBCF]/40 hover:border-[#28EBCF]"
@@ -9707,7 +9730,7 @@ useEffect(() => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
-      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} user={user} />}
+      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} user={user} investmentDetails={investmentDetails} setInvestmentDetails={setInvestmentDetails} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* PWA Install Prompt */}
