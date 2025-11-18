@@ -7137,9 +7137,9 @@ useEffect(() => {
               >
                 📄 <span className="hidden sm:inline">Download Rapport</span><span className="sm:hidden">Rapport</span>
               </button>
-              <button onClick={() => setShowDeposit(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Storten</button>
-              <button onClick={() => setShowWithdrawal(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Opnemen</button>
-              <button onClick={() => setShowEditChoice(true)} className="hidden md:block px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium text-sm sm:text-base">Aanpassen</button>
+              <button onClick={() => setShowDeposit(true)} className="flex-1 sm:flex-none px-2 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-xs sm:text-base">Storten</button>
+              <button onClick={() => setShowWithdrawal(true)} className="flex-1 sm:flex-none px-2 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-xs sm:text-base">Opnemen</button>
+              <button onClick={() => setShowEditChoice(true)} className="flex-1 sm:flex-none px-2 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium text-xs sm:text-base">Aanpassen</button>
               <button onClick={() => setShowRebalance(true)} className="hidden lg:block px-3 sm:px-6 py-2 sm:py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 font-medium text-sm sm:text-base">Balanceren</button>
             </div>
           </div>
@@ -7165,15 +7165,15 @@ useEffect(() => {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
-          <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 mb-10 border-2 border-slate-800">
-            <div className="flex justify-between items-start mb-4">
+          <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-3 sm:p-6 mb-10 border-2 border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-3">
               <div>
-                <h3 className="font-bold text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar horizon)</h3>
-                <div className="text-sm text-gray-400">
-                  Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
+                <h3 className="font-bold text-base sm:text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar)</h3>
+                <div className="text-xs sm:text-sm text-gray-400">
+                  Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% rendement en {(stdDev * 100).toFixed(1)}% risico
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="hidden md:flex gap-2">
                 <button
                   onClick={toggleAnimation}
                   className={`px-4 py-2 rounded-lg font-medium transition ${
@@ -7209,11 +7209,11 @@ useEffect(() => {
                   formatter={(value) => [`${value.toFixed(2)}%`, '']}
                   labelFormatter={(label) => `Datum: ${label}`}
                 />
-                <Legend />
-                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name="Slecht Scenario (P10)" dot={false} />
-                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name="Jouw Portfolio (Median)" dot={false} connectNulls />
-                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name="Verwacht Scenario (Median)" dot={false} opacity={0.3} />
-                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name="Goed Scenario (P90)" dot={false} />
+                <Legend wrapperStyle={{fontSize: window.innerWidth < 640 ? '10px' : '12px', paddingTop: '10px'}} iconSize={window.innerWidth < 640 ? 8 : 14} />
+                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Slecht (P10)" : "Slecht Scenario (P10)"} dot={false} />
+                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name={window.innerWidth < 640 ? "Portfolio" : "Jouw Portfolio (Median)"} dot={false} connectNulls />
+                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Verwacht" : "Verwacht Scenario (Median)"} dot={false} opacity={0.3} />
+                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Goed (P90)" : "Goed Scenario (P90)"} dot={false} />
               </LineChart>
             </ResponsiveContainer>
             <div className="mt-4 text-sm text-gray-400 text-center">
@@ -7291,13 +7291,13 @@ useEffect(() => {
                             const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
                             return (
                               <tr key={idx} className="border-t border-slate-800 hover:bg-slate-800/40">
-                                <td className="px-4 py-3">
-                                  <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-sm">
-                                    {etf.naam}
+                                <td className="px-2 sm:px-4 py-2 sm:py-3">
+                                  <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-xs sm:text-sm break-words max-w-full">
+                                    <span className="line-clamp-2 sm:line-clamp-none">{etf.naam}</span>
                                   </button>
                                 </td>
-                                <td className="px-4 py-3 text-right text-gray-300 text-sm w-24">{(etf.weight || 0).toFixed(1)}%</td>
-                                <td className="px-4 py-3 text-right text-white font-medium text-sm w-32">{formatEuro(etfValue)}</td>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-gray-300 text-xs sm:text-sm w-16 sm:w-24">{(etf.weight || 0).toFixed(1)}%</td>
+                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-white font-medium text-xs sm:text-sm w-20 sm:w-32">{formatEuro(etfValue)}</td>
                               </tr>
                             );
                           })}
