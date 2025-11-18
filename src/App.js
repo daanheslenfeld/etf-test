@@ -957,6 +957,9 @@ const ETFPortal = () => {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
+  // Responsive chart heights
+  const [chartHeight, setChartHeight] = useState(() => window.innerWidth < 640 ? 200 : window.innerWidth < 768 ? 250 : 300);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const [customerPortalTab, setCustomerPortalTab] = useState('customers');
@@ -1334,6 +1337,16 @@ const ETFPortal = () => {
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
+
+  // Responsive chart heights - update on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setChartHeight(width < 640 ? 200 : width < 768 ? 250 : 300);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // PWA Install Prompt Handler
   useEffect(() => {
@@ -3340,7 +3353,7 @@ useEffect(() => {
 
               <div>
                 <div className="font-semibold mb-2 text-sm text-white">{t.etfDetail.historicalReturns}</div>
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={chartHeight}>
                   <BarChart data={[
                     { year: '2021', return: safeParseFloat(SAMPLE_ETFS[0]['2021']) },
                     { year: '2022', return: safeParseFloat(SAMPLE_ETFS[0]['2022']) },
@@ -4837,19 +4850,19 @@ useEffect(() => {
                 </span>
               </div>
             )}
-            <div className="overflow-x-auto max-h-[600px]">
-              <table className="w-full">
+            <div className="overflow-x-auto max-h-[400px] sm:max-h-[500px] md:max-h-[600px]">
+              <table className="w-full text-xs sm:text-sm">
                 <thead className="bg-gray-800/50 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Current Price</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change %</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-sm font-semibold text-gray-300">Naam</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-sm font-semibold text-gray-300">ISIN</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-sm font-semibold text-gray-300">Categorie</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-sm font-semibold text-gray-300">Prijs</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-sm font-semibold text-gray-300 hidden md:table-cell">Change</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-sm font-semibold text-gray-300">Change %</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-sm font-semibold text-gray-300 hidden lg:table-cell">TER</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-sm font-semibold text-gray-300 hidden sm:table-cell">YTD</th>
+                    <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-[11px] sm:text-sm font-semibold text-gray-300">Actie</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
@@ -4858,43 +4871,43 @@ useEffect(() => {
                     const isAdded = portfolioIsinSet.has(etf.isin);
                     return (
                     <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
-                      <td className="px-4 py-3">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3">
                         <button
                           onClick={() => setSelectedETF(etf)}
-                          className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline"
+                          className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline text-xs sm:text-sm"
                         >
                           {etf.naam}
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
-                      <td className="px-4 py-3 text-sm text-gray-300">{etf.categorie}</td>
-                      <td className="px-4 py-3 text-sm text-right text-white font-medium">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-gray-400">{etf.isin}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-gray-300">{etf.categorie}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-right text-white font-medium">
                         {priceData ? `${priceData.currency} ${priceData.price.toFixed(2)}` : '-'}
                       </td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <td className={`px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-right font-medium ${priceData && priceData.change >= 0 ? 'text-green-500' : 'text-red-500'} hidden md:table-cell`}>
                         {priceData ? `${priceData.change >= 0 ? '+' : ''}${priceData.change.toFixed(2)}` : '-'}
                       </td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <td className={`px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-right font-medium ${priceData && priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {priceData ? `${priceData.changePercent >= 0 ? '+' : ''}${priceData.changePercent.toFixed(2)}%` : '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
-                      <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-right text-gray-300 hidden lg:table-cell">{etf['ter p.a.']}</td>
+                      <td className={`px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'} hidden sm:table-cell`}>
                         {etf.ytd}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-center">
                         {isAdded ? (
                           <button
                             disabled
-                            className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
+                            className="px-2 sm:px-4 py-1 sm:py-1.5 bg-green-600 text-white text-[10px] sm:text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1"
                           >
-                            <span>✓</span> Added
+                            <span className="hidden sm:inline">✓</span> <span className="sm:hidden">✓</span><span className="hidden sm:inline">Added</span>
                           </button>
                         ) : (
                           <button
                             onClick={() => addToPortfolio(etf)}
-                            className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                            className="px-2 sm:px-4 py-1 sm:py-1.5 bg-[#28EBCF] text-gray-900 text-[10px] sm:text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium whitespace-nowrap"
                           >
-                            + Portfolio
+                            <span className="sm:hidden">+</span><span className="hidden sm:inline">+ Portfolio</span>
                           </button>
                         )}
                       </td>
@@ -5245,7 +5258,7 @@ useEffect(() => {
 
             <div>
               <div className="font-semibold mb-1 text-xs text-white">Historisch Rendement</div>
-              <ResponsiveContainer width="100%" height={140}>
+              <ResponsiveContainer width="100%" height={chartHeight}>
                 <BarChart data={historicalData}>
                   <XAxis dataKey="year" tick={{fontSize: 10, fill: '#9CA3AF'}} />
                   <YAxis tick={{fontSize: 10, fill: '#9CA3AF'}} />
@@ -5849,7 +5862,7 @@ useEffect(() => {
 
           <div className="bg-[#1A1B1F] rounded-lg shadow p-6 mb-8 border border-gray-800">
             <h3 className="font-bold text-lg mb-4 text-white">Asset Allocatie</h3>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={chartHeight}>
               <PieChart>
                 <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
                   {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
@@ -7182,7 +7195,7 @@ useEffect(() => {
             <div className="text-xs text-gray-500 mb-4">
               Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
             </div>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={chartHeight}>
               <LineChart data={performanceData}>
                 <XAxis
                   dataKey="date"
@@ -7218,7 +7231,7 @@ useEffect(() => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-10">
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
               <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={chartHeight}>
                 <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#0f172a', border: '2px solid #334155', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
               </ResponsiveContainer>
             </div>

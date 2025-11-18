@@ -209,8 +209,8 @@ const Chat = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl w-96 h-[600px] flex flex-col overflow-hidden">
+    <div className="fixed bottom-2 right-2 left-2 sm:bottom-4 sm:right-4 sm:left-auto z-50 max-w-md sm:max-w-none">
+      <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl w-full sm:w-96 h-[500px] sm:h-[600px] max-h-[85vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] p-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
@@ -279,7 +279,7 @@ const Chat = ({ isOpen, onClose }) => {
                     required
                     value={contactFormData.name}
                     onChange={(e) => setContactFormData({...contactFormData, name: e.target.value})}
-                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#28EBCF]"
                     placeholder="Je naam"
                   />
                 </div>
@@ -290,7 +290,7 @@ const Chat = ({ isOpen, onClose }) => {
                     required
                     value={contactFormData.email}
                     onChange={(e) => setContactFormData({...contactFormData, email: e.target.value})}
-                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#28EBCF]"
                     placeholder="je@email.nl"
                   />
                 </div>
@@ -300,7 +300,7 @@ const Chat = ({ isOpen, onClose }) => {
                     type="tel"
                     value={contactFormData.phone}
                     onChange={(e) => setContactFormData({...contactFormData, phone: e.target.value})}
-                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#28EBCF]"
                     placeholder="06 12345678"
                   />
                 </div>
@@ -325,7 +325,7 @@ const Chat = ({ isOpen, onClose }) => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Typ je bericht..."
-              className="flex-1 bg-[#0F1014] text-white border border-gray-700 rounded-full px-4 py-2 focus:outline-none focus:border-[#28EBCF] transition-colors"
+              className="flex-1 bg-[#0F1014] text-white border border-gray-700 rounded-full px-4 py-2 text-base focus:outline-none focus:border-[#28EBCF] transition-colors"
             />
             <button
               type="submit"

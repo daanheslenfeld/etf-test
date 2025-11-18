@@ -1712,7 +1712,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={name}
                                                     readOnly
-                                                    className="w-full px-3 py-2 text-sm bg-slate-700 border border-slate-600 rounded-lg text-gray-300 cursor-not-allowed"
+                                                    className="w-full px-3 py-2 text-base bg-slate-700 border border-slate-600 rounded-lg text-gray-300 cursor-not-allowed"
                                                     title="Naam wordt automatisch gebruikt van je account"
                                                 />
                                                 <p className="text-xs text-slate-500 mt-1">Van je account</p>
@@ -1724,7 +1724,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="date"
                                                     value={birthDate}
                                                     onChange={(e) => setBirthDate(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 />
                                             </div>
                                         </div>
@@ -1800,7 +1800,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={reverseYearsUntilRetirement}
                                                     onChange={(e) => setReverseYearsUntilRetirement(Number(e.target.value))}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="0"
                                                     max="50"
                                                     placeholder="bijv. 15"
@@ -1815,7 +1815,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={formatNumber(reverseTargetIncome)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setReverseTargetIncome)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 50.000"
                                                 />
                                             </div>
@@ -1828,7 +1828,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={reverseWithdrawalDuration}
                                                     onChange={(e) => setReverseWithdrawalDuration(Number(e.target.value))}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="1"
                                                     max="50"
                                                     placeholder="bijv. 20"
@@ -1840,7 +1840,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <select
                                                     value={reverseInvestmentProfile}
                                                     onChange={(e) => setReverseInvestmentProfile(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 >
                                                     {Object.keys(InvestmentProfiles).map(profile => (
                                                         <option key={profile} value={profile}>
@@ -1858,7 +1858,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={formatNumber(reverseCurrentCapital)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setReverseCurrentCapital)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 100.000 (optioneel)"
                                                 />
                                             </div>
@@ -1868,7 +1868,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <select
                                                     value={reverseBuildUpProfile}
                                                     onChange={(e) => setReverseBuildUpProfile(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 >
                                                     {Object.keys(InvestmentProfiles).map(profile => (
                                                         <option key={profile} value={profile}>
@@ -1961,7 +1961,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <select
                                                     value={buildUpProfile}
                                                     onChange={(e) => setBuildUpProfile(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 >
                                                     {Object.keys(InvestmentProfiles).map(profile => (
                                                         <option key={profile} value={profile}>
@@ -1977,7 +1977,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={period}
                                                     onChange={(e) => setPeriod(Number(e.target.value))}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="1"
                                                     max="50"
                                                     placeholder="bijv. 12"
@@ -1990,7 +1990,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={formatNumber(periodicDeposit)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setPeriodicDeposit)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 2.000"
                                                 />
                                             </div>
@@ -2001,7 +2001,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={formatNumber(lumpSum)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setLumpSum)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 300.000"
                                                 />
                                             </div>
@@ -2068,7 +2068,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="text"
                                                     value={formatNumber(withdrawalAmount)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setWithdrawalAmount)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 50.000"
                                                 />
                                             </div>
@@ -2078,7 +2078,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <select
                                                     value={withdrawalProfile}
                                                     onChange={(e) => setWithdrawalProfile(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 >
                                                     {Object.keys(InvestmentProfiles).map(profile => (
                                                         <option key={profile} value={profile}>
@@ -2100,7 +2100,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={withdrawalDuration}
                                                     onChange={(e) => setWithdrawalDuration(Number(e.target.value))}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="1"
                                                     max="50"
                                                     placeholder="bijv. 20"
@@ -2118,7 +2118,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={savingsPeriod}
                                                     onChange={(e) => setSavingsPeriod(Number(e.target.value))}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="0"
                                                     placeholder="bijv. 2"
                                                 />
@@ -2130,7 +2130,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <select
                                                     value={discountProfile}
                                                     onChange={(e) => setDiscountProfile(e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                 >
                                                     {Object.keys(InvestmentProfiles).map(profile => (
                                                         <option key={profile} value={profile}>
@@ -2147,7 +2147,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     type="number"
                                                     value={inflationCorrection * 100}
                                                     onChange={(e) => setInflationCorrection(Number(e.target.value) / 100)}
-                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     min="0"
                                                     max="20"
                                                     step="0.1"
@@ -2322,7 +2322,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                                 type="text"
                                                                 value={formatNumber(aowAmount)}
                                                                 onChange={(e) => handleNumberChange(e.target.value, setAowAmount)}
-                                                                className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                                className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                                 placeholder={hasPartner ? "13248" : "19349"}
                                                             />
                                                         </div>
@@ -2367,7 +2367,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                                     type="date"
                                                                     value={partnerBirthDate}
                                                                     onChange={(e) => setPartnerBirthDate(e.target.value)}
-                                                                    className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                                    className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                                 />
                                                             </div>
 
@@ -2390,7 +2390,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                                         type="text"
                                                                         value={formatNumber(partnerAowAmount)}
                                                                         onChange={(e) => handleNumberChange(e.target.value, setPartnerAowAmount)}
-                                                                        className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                                                        className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                                         placeholder="13248"
                                                                     />
                                                                 </div>
@@ -2789,8 +2789,8 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                             <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2">
                                                 <h2 className="text-sm font-bold text-white mb-2">Jaarlijkse Planning & Onttrekkingen</h2>
                                             </div>
-                                            <div className="overflow-auto max-h-[500px]">
-                                                <table className="w-full text-xs">
+                                            <div className="overflow-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px]">
+                                                <table className="w-full text-[10px] sm:text-xs">
                                                     <thead className="sticky top-0 z-10">
                                                         <tr className="bg-gradient-to-r from-slate-700 to-slate-600">
                                                             <th className="text-left py-1 px-3">
@@ -2866,11 +2866,11 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                             <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-3">
                                                 <h2 className="text-lg font-bold text-white">Jaarlijkse Planning</h2>
                                             </div>
-                                            <div className="overflow-auto p-4 max-h-[600px]">
-                                                <table className="w-full text-xs min-w-max">
+                                            <div className="overflow-auto p-2 sm:p-4 max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px]">
+                                                <table className="w-full text-[10px] sm:text-xs">
                                                     <thead>
                                                         <tr className="border-b-2 border-slate-600">
-                                                            <th className="text-left py-2 px-3 font-bold text-slate-400 min-w-[200px]"></th>
+                                                            <th className="text-left py-2 px-2 sm:px-3 font-bold text-slate-400"></th>
                                                             {results.yearByYear.map((row, idx) => {
                                                                 // Check if this is first year of user AOW
                                                                 const isFirstUserAOW = row.userAowActive && (idx === 0 || !results.yearByYear[idx - 1].userAowActive);
@@ -3020,20 +3020,20 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                         <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-3">
                                             <h2 className="text-lg font-bold text-white">Vermogensontwikkeling</h2>
                                         </div>
-                                        <div className="p-8">
-                                            {/* Horizontal Flow Diagram */}
-                                            <div className="flex items-center justify-between px-4 py-6">
+                                        <div className="p-4 sm:p-8">
+                                            {/* Horizontal Flow Diagram - Vertical on mobile */}
+                                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between px-2 sm:px-4 py-4 sm:py-6 gap-4">
                                                 {/* Start Amount */}
-                                                <div className="text-center">
+                                                <div className="text-center flex-shrink-0">
                                                     <div className="bg-slate-800 rounded-lg px-4 py-3 border border-slate-600 shadow-lg">
                                                         <div className="text-xs text-slate-400 mb-1">Start</div>
-                                                        <div className="text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(lumpSum)}</div>
+                                                        <div className="text-base sm:text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(lumpSum)}</div>
                                                     </div>
                                                 </div>
 
                                                 {/* Arrow 1 */}
-                                                <div className="flex-1 mx-4 min-w-[250px]">
-                                                    <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-6 py-4 border border-slate-600 shadow-lg" style={{clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)'}}>
+                                                <div className="flex-1 mx-0 lg:mx-4 min-w-0">
+                                                    <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 sm:px-6 py-3 sm:py-4 border border-slate-600 shadow-lg rounded-lg lg:rounded-none" style={{clipPath: window.innerWidth >= 1024 ? 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)' : 'none'}}>
                                                         <div className="text-xs text-slate-200 font-semibold text-center">
                                                             Doelrendement: {formatPercent(results.buildUpReturn)}
                                                         </div>
@@ -3044,18 +3044,18 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 </div>
 
                                                 {/* Future Value */}
-                                                <div className="text-center">
+                                                <div className="text-center flex-shrink-0">
                                                     <div className="bg-slate-800 rounded-lg px-4 py-3 border border-slate-600 shadow-lg">
                                                         <div className="text-xs text-slate-400 mb-1">Na opbouw</div>
-                                                        <div className="text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.futureValue)}</div>
+                                                        <div className="text-base sm:text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.futureValue)}</div>
                                                     </div>
                                                 </div>
 
                                                 {/* Split Arrows */}
-                                                <div className="flex flex-col items-start justify-center ml-6 gap-8">
+                                                <div className="flex flex-col items-stretch lg:items-start justify-center lg:ml-6 gap-4 lg:gap-8">
                                                     {/* Upper arrow - Withdrawals */}
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2 border border-slate-600 shadow-md w-[100px]" style={{clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%)'}}>
+                                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                                        <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2 border border-slate-600 shadow-md rounded-lg lg:rounded-none lg:w-[100px]">
                                                             <div className="text-xs text-slate-200 font-semibold text-center">Opnames</div>
                                                         </div>
                                                         <div className="bg-slate-800 rounded-lg px-3 py-2 border border-slate-600 shadow-lg">
@@ -3064,17 +3064,19 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     </div>
 
                                                     {/* Lower arrow - Remaining */}
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2 border border-slate-600 shadow-md w-[100px]" style={{clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%)'}}>
-                                                            <div className="text-xs text-slate-200 font-semibold text-center">Restant</div>
-                                                        </div>
-                                                        <div className="bg-slate-800 rounded-lg px-3 py-2 border border-slate-600 shadow-lg">
-                                                            <div className="text-sm font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.remainingAfterWithdrawals)}</div>
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                                            <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2 border border-slate-600 shadow-md rounded-lg lg:rounded-none lg:w-[100px]">
+                                                                <div className="text-xs text-slate-200 font-semibold text-center">Restant</div>
+                                                            </div>
+                                                            <div className="bg-slate-800 rounded-lg px-3 py-2 border border-slate-600 shadow-lg">
+                                                                <div className="text-sm font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.remainingAfterWithdrawals)}</div>
+                                                            </div>
                                                         </div>
 
                                                         {/* Arrow 2 - inline with lower path */}
-                                                        <div className="flex-1 mx-4 min-w-[250px]">
-                                                            <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-6 py-4 border border-slate-600 shadow-lg" style={{clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)'}}>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 sm:px-6 py-3 sm:py-4 border border-slate-600 shadow-lg rounded-lg">
                                                                 <div className="text-xs text-slate-200 font-semibold text-center">
                                                                     Doelrendement {formatPercent(results.withdrawalReturn)}
                                                                 </div>
@@ -3088,7 +3090,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                         <div className="text-center">
                                                             <div className="bg-slate-800 rounded-lg px-4 py-3 border border-slate-600 shadow-lg">
                                                                 <div className="text-xs text-slate-400 mb-1">Eindwaarde</div>
-                                                                <div className="text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.finalValue)}</div>
+                                                                <div className="text-base sm:text-lg font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.finalValue)}</div>
                                                             </div>
                                                         </div>
                                                     </div>
