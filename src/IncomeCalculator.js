@@ -11,7 +11,7 @@ const InvestmentProfiles = {
     'Zeer offensief': 0.08
 };
 
-function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDetails, setInvestmentDetails }) {
+function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDetails, setInvestmentDetails, portfolio, portfolioValue }) {
             // Step management
             const [currentStep, setCurrentStep] = useState(0);
 
@@ -32,7 +32,13 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
             });
             const [period, setPeriod] = useState('');
             const [periodicDeposit, setPeriodicDeposit] = useState('');
-            const [lumpSum, setLumpSum] = useState('');
+            // Initialize lumpSum with portfolioValue if user has a portfolio
+            const [lumpSum, setLumpSum] = useState(() => {
+                if (portfolio && portfolio.length > 0 && portfolioValue > 0) {
+                    return portfolioValue.toString();
+                }
+                return '';
+            });
             const [beginEnd, setBeginEnd] = useState(1);
             const [enableWithdrawals, setEnableWithdrawals] = useState(null);
             const [year, setYear] = useState(null); // End year of build-up period
@@ -108,6 +114,13 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                     });
                 }
             }, [buildUpProfile]);
+
+            // Sync lumpSum with portfolioValue when user has a portfolio
+            useEffect(() => {
+                if (portfolio && portfolio.length > 0 && portfolioValue > 0 && !lumpSum) {
+                    setLumpSum(portfolioValue.toString());
+                }
+            }, [portfolio, portfolioValue]);
 
             // Format number to EU style (1.000.000,50)
             const formatNumber = (value) => {
@@ -3032,6 +3045,14 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     </div>
                                                 </div>
 
+                                                {/* Downward Arrow - Mobile only */}
+                                                <div className="flex justify-center lg:hidden">
+                                                    <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                        <path d="M12 20l-4-4h8l-4 4z"/>
+                                                    </svg>
+                                                </div>
+
                                                 {/* Arrow 1 */}
                                                 <div className="flex-1 mx-0 lg:mx-4 min-w-0">
                                                     <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 sm:px-6 py-3 sm:py-4 border border-slate-600 shadow-lg rounded-lg lg:rounded-none" style={{clipPath: window.innerWidth >= 1024 ? 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)' : 'none'}}>
@@ -3044,6 +3065,14 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     </div>
                                                 </div>
 
+                                                {/* Downward Arrow - Mobile only */}
+                                                <div className="flex justify-center lg:hidden">
+                                                    <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                        <path d="M12 20l-4-4h8l-4 4z"/>
+                                                    </svg>
+                                                </div>
+
                                                 {/* Future Value */}
                                                 <div className="text-center flex-shrink-0">
                                                     <div className="bg-slate-800 rounded-lg px-4 py-3 border border-slate-600 shadow-lg">
@@ -3052,16 +3081,29 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     </div>
                                                 </div>
 
+                                                {/* Downward Arrow pointing to split - Mobile only */}
+                                                <div className="flex justify-center lg:hidden">
+                                                    <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                        <path d="M12 20l-4-4h8l-4 4z"/>
+                                                    </svg>
+                                                </div>
+
                                                 {/* Split Arrows */}
                                                 <div className="flex flex-col items-stretch lg:items-start justify-center lg:ml-6 gap-4 lg:gap-8">
                                                     {/* Upper arrow - Withdrawals */}
                                                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                                        <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 py-2 border border-slate-600 shadow-md rounded-lg lg:rounded-none lg:w-[100px]">
-                                                            <div className="text-xs text-slate-200 font-semibold text-center">Opnames</div>
+                                                        <div className="bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 border border-red-500 shadow-md rounded-lg lg:rounded-none lg:w-[100px]">
+                                                            <div className="text-xs text-white font-semibold text-center">- Opnames</div>
                                                         </div>
-                                                        <div className="bg-slate-800 rounded-lg px-3 py-2 border border-slate-600 shadow-lg">
-                                                            <div className="text-sm font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.totalPresentValue)}</div>
+                                                        <div className="bg-red-900/30 border-2 border-red-500 rounded-lg px-3 py-2 shadow-lg">
+                                                            <div className="text-sm font-bold text-red-400">- {new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.totalPresentValue)}</div>
                                                         </div>
+                                                    </div>
+
+                                                    {/* Equals sign - Mobile only */}
+                                                    <div className="flex justify-center lg:hidden my-1">
+                                                        <div className="text-slate-400 text-lg font-bold">=</div>
                                                     </div>
 
                                                     {/* Lower arrow - Remaining */}
@@ -3075,6 +3117,14 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                             </div>
                                                         </div>
 
+                                                        {/* Downward Arrow - Mobile only */}
+                                                        <div className="flex justify-center lg:hidden my-1">
+                                                            <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                                <path d="M12 20l-4-4h8l-4 4z"/>
+                                                            </svg>
+                                                        </div>
+
                                                         {/* Arrow 2 - inline with lower path */}
                                                         <div className="flex-1 min-w-0">
                                                             <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-4 sm:px-6 py-3 sm:py-4 border border-slate-600 shadow-lg rounded-lg">
@@ -3085,6 +3135,14 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                                     {results.withdrawalPeriod} Jaar
                                                                 </div>
                                                             </div>
+                                                        </div>
+
+                                                        {/* Downward Arrow - Mobile only */}
+                                                        <div className="flex justify-center lg:hidden my-1">
+                                                            <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                                <path d="M12 20l-4-4h8l-4 4z"/>
+                                                            </svg>
                                                         </div>
 
                                                         {/* Final Value - inline with lower path */}

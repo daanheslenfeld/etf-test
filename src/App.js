@@ -6981,6 +6981,28 @@ useEffect(() => {
     const animatedPortfolioValue = staticPerformanceData[currentMonth]?.portfolioValue || initialValue;
     const totalInvestedAtCurrentMonth = initialValue + (monthlyContribution * currentMonth);
     const totalReturn = ((animatedPortfolioValue - totalInvestedAtCurrentMonth) / totalInvestedAtCurrentMonth * 100).toFixed(2);
+
+    // Calculate required return to achieve goal
+    const targetAmount = parseFloat(investmentDetails.amount) || 0;
+    const remainingMonths = months - currentMonth;
+    const remainingYears = remainingMonths / 12;
+    const futureInvestments = monthlyContribution * remainingMonths;
+    let requiredTotalReturn = 0;
+    let requiredAnnualReturn = 0;
+
+    if (targetAmount > 0 && remainingMonths > 0) {
+      // Calculate required future value growth
+      const requiredGrowth = targetAmount - animatedPortfolioValue - futureInvestments;
+
+      if (requiredGrowth > 0 && animatedPortfolioValue > 0) {
+        // Using compound interest formula: FV = PV * (1 + r)^n + PMT * [((1+r)^n - 1) / r]
+        // Simplified approach: required return on current portfolio value
+        requiredTotalReturn = ((requiredGrowth / animatedPortfolioValue) * 100).toFixed(2);
+        requiredAnnualReturn = (Math.pow(1 + requiredGrowth / animatedPortfolioValue, 1 / remainingYears) - 1) * 100;
+        requiredAnnualReturn = requiredAnnualReturn.toFixed(2);
+      }
+    }
+
     const categoryData = Object.entries(metrics.categories)
       .filter(([name, value]) => value > 0) // Filter out 0% categories
       .map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }))
@@ -7158,6 +7180,47 @@ useEffect(() => {
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
           </div>
 
+          {/* Goal Progress Section - Only show if target amount is set */}
+          {targetAmount > 0 && (
+            <>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+                <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">DOELVOORTGANG</div>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 mb-8">
+                <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-[#28EBCF] transition-all">
+                  <div className="text-xs md:text-sm text-gray-400 mb-1">Doelbedrag</div>
+                  <div className="text-xl md:text-2xl font-bold text-[#28EBCF]">{formatEuro(targetAmount)}</div>
+                  <div className="text-xs md:text-sm mt-2 text-gray-400">Over {remainingYears.toFixed(1)} jaar</div>
+                </div>
+                <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-[#28EBCF] transition-all">
+                  <div className="text-xs md:text-sm text-gray-400 mb-1">Benodigde groei</div>
+                  <div className={`text-xl md:text-2xl font-bold ${requiredTotalReturn > 0 ? 'text-orange-400' : 'text-green-400'}`}>
+                    {requiredTotalReturn > 0 ? `+${requiredTotalReturn}%` : 'Doel bereikt! 🎉'}
+                  </div>
+                  <div className="text-xs md:text-sm mt-2 text-gray-400">
+                    {requiredTotalReturn > 0 ? 'Totaal benodigd' : animatedPortfolioValue >= targetAmount ? 'Je hebt je doel al bereikt!' : 'Op schema'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-[#28EBCF] transition-all">
+                  <div className="text-xs md:text-sm text-gray-400 mb-1">Benodigde rendement/jaar</div>
+                  <div className={`text-xl md:text-2xl font-bold ${requiredAnnualReturn > 0 && requiredAnnualReturn <= avgReturn * 100 ? 'text-green-400' : requiredAnnualReturn > avgReturn * 100 ? 'text-orange-400' : 'text-green-400'}`}>
+                    {requiredAnnualReturn > 0 ? `${requiredAnnualReturn}%` : '-'}
+                  </div>
+                  <div className="text-xs md:text-sm mt-2 text-gray-400">
+                    {requiredAnnualReturn > 0 ? (
+                      requiredAnnualReturn <= avgReturn * 100
+                        ? '✓ Haalbaar met huidig profiel'
+                        : '⚠ Hoger dan verwacht rendement'
+                    ) : 'Geen rendement nodig'}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6 mt-10">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
@@ -7196,7 +7259,7 @@ useEffect(() => {
               Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
             </div>
             <ResponsiveContainer width="100%" height={chartHeight}>
-              <LineChart data={performanceData}>
+              <LineChart data={performanceData} margin={{ top: 5, right: 50, left: 0, bottom: 5 }}>
                 <XAxis
                   dataKey="date"
                   interval={Math.floor(months / 10)}
@@ -7210,10 +7273,10 @@ useEffect(() => {
                   labelFormatter={(label) => `Datum: ${label}`}
                 />
                 <Legend wrapperStyle={{fontSize: window.innerWidth < 640 ? '10px' : '12px', paddingTop: '10px'}} iconSize={window.innerWidth < 640 ? 8 : 14} />
-                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Slecht (P10)" : "Slecht Scenario (P10)"} dot={false} />
-                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name={window.innerWidth < 640 ? "Portfolio" : "Jouw Portfolio (Median)"} dot={false} connectNulls />
-                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Verwacht" : "Verwacht Scenario (Median)"} dot={false} opacity={0.3} />
-                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Goed (P90)" : "Goed Scenario (P90)"} dot={false} />
+                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Slecht (P10)" : "Slecht Scenario (P10)"} dot={false} label={window.innerWidth >= 640 ? { position: 'right', fill: '#EF4444', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
+                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name={window.innerWidth < 640 ? "Portfolio" : "Jouw Portfolio (Median)"} dot={false} connectNulls label={window.innerWidth >= 640 ? { position: 'right', fill: '#0088FE', fontSize: 11, fontWeight: 'bold', formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
+                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Verwacht" : "Verwacht Scenario (Median)"} dot={false} opacity={0.3} label={window.innerWidth >= 640 ? { position: 'right', fill: '#FBBF24', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
+                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Goed (P90)" : "Goed Scenario (P90)"} dot={false} label={window.innerWidth >= 640 ? { position: 'right', fill: '#10B981', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
               </LineChart>
             </ResponsiveContainer>
             <div className="mt-4 text-sm text-gray-400 text-center">
@@ -8790,13 +8853,14 @@ useEffect(() => {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                  className={`px-3 py-2 rounded-lg font-medium text-sm transition-all flex flex-col sm:flex-row items-center gap-1 sm:gap-2 min-w-[70px] sm:whitespace-nowrap ${
                     selectedCategory === cat.id
                       ? 'bg-[#28EBCF] text-gray-900'
                       : 'bg-[#1A1B1F] text-gray-300 border border-gray-800 hover:border-[#28EBCF]'
                   }`}
                 >
-                  {cat.icon} {cat.name}
+                  <span className="text-base sm:text-sm">{cat.icon}</span>
+                  <span className="text-xs sm:text-sm">{cat.name}</span>
                 </button>
               ))}
             </div>
@@ -9743,7 +9807,7 @@ useEffect(() => {
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
-      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} user={user} investmentDetails={investmentDetails} setInvestmentDetails={setInvestmentDetails} />}
+      {currentPage === 'incomeCalculator' && <IncomeCalculator onNavigate={setCurrentPage} onLogout={handleLogout} user={user} investmentDetails={investmentDetails} setInvestmentDetails={setInvestmentDetails} portfolio={portfolio} portfolioValue={portfolioValue} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* PWA Install Prompt */}
