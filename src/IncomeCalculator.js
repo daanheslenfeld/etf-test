@@ -2013,8 +2013,11 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                 <label className="block text-xs font-semibold text-slate-400 mb-1">Eenmalige Storting (€)</label>
                                                 <input
                                                     type="text"
+                                                    inputMode="numeric"
                                                     value={formatNumber(lumpSum)}
                                                     onChange={(e) => handleNumberChange(e.target.value, setLumpSum)}
+                                                    onFocus={(e) => e.stopPropagation()}
+                                                    onClick={(e) => e.stopPropagation()}
                                                     className="w-full px-3 py-2 text-base bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                                     placeholder="bijv. 300.000"
                                                 />
