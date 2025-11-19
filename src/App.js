@@ -9853,7 +9853,7 @@ useEffect(() => {
       )}
 
       {/* Chat Widget */}
-      <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} user={user} />
 
       {/* Chat Toggle Button */}
       {!isChatOpen && (
