@@ -3094,16 +3094,22 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                     {/* Upper arrow - Withdrawals */}
                                                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                                         <div className="bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 border border-red-500 shadow-md rounded-lg lg:rounded-none lg:w-[100px]">
-                                                            <div className="text-xs text-white font-semibold text-center">- Opnames</div>
+                                                            <div className="text-xs text-white font-semibold text-center">Opnames</div>
                                                         </div>
-                                                        <div className="bg-red-900/30 border-2 border-red-500 rounded-lg px-3 py-2 shadow-lg">
-                                                            <div className="text-sm font-bold text-red-400">- {new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.totalPresentValue)}</div>
+                                                        <div
+                                                            onClick={showWithdrawalsBreakdown}
+                                                            className="bg-red-900/30 border-2 border-red-500 rounded-lg px-3 py-2 shadow-lg cursor-pointer hover:bg-red-900/50 active:bg-red-900/60 transition-all touch-manipulation"
+                                                        >
+                                                            <div className="text-sm font-bold text-red-400 text-center">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.totalPresentValue)}</div>
                                                         </div>
                                                     </div>
 
-                                                    {/* Equals sign - Mobile only */}
+                                                    {/* Vertical downward arrow - Mobile only */}
                                                     <div className="flex justify-center lg:hidden my-1">
-                                                        <div className="text-slate-400 text-lg font-bold">=</div>
+                                                        <svg className="w-6 h-8 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                                            <path d="M12 20l-4-4h8l-4 4z"/>
+                                                        </svg>
                                                     </div>
 
                                                     {/* Lower arrow - Remaining */}
@@ -3113,7 +3119,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                                                 <div className="text-xs text-slate-200 font-semibold text-center">Restant</div>
                                                             </div>
                                                             <div className="bg-slate-800 rounded-lg px-3 py-2 border border-slate-600 shadow-lg">
-                                                                <div className="text-sm font-bold text-white">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.remainingAfterWithdrawals)}</div>
+                                                                <div className="text-sm font-bold text-white text-center">{new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(results.remainingAfterWithdrawals)}</div>
                                                             </div>
                                                         </div>
 
