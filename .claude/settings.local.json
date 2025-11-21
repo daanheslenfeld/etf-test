@@ -42,7 +42,11 @@
       "Bash(copy:*)",
       "Bash(npx @capacitor/assets:*)",
       "Bash(vercel env add:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(start https://etf-test-5e4xn60dc-daniels-projects-b00bc24a.vercel.app)",
+      "Bash(vercel project:*)",
+      "Bash(vercel:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
