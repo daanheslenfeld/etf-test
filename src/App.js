@@ -8580,6 +8580,566 @@ useEffect(() => {
     );
   };
 
+  // Risk Profiling Questionnaire
+  const RiskProfilingPage = () => {
+    const [step, setStep] = useState(1);
+    const [answers, setAnswers] = useState({
+      investmentPercentage: '',
+      riskTolerance: '',
+      returnExpectation: '',
+      personalPreference: '',
+      investmentGoal: '',
+      investmentGoalOther: '',
+      wealthOrigin: '',
+      wealthOriginOther: '',
+      experienceStocks: '',
+      experienceBonds: '',
+      experienceFunds: '',
+      experienceETFs: '',
+      experienceAlternatives: '',
+      experienceDerivatives: '',
+      employmentStatus: '',
+      employer: '',
+      jobTitle: ''
+    });
+
+    const updateAnswer = (field, value) => {
+      setAnswers(prev => ({ ...prev, [field]: value }));
+    };
+
+    const goToNextStep = () => {
+      setStep(prev => prev + 1);
+    };
+
+    const goToPrevStep = () => {
+      setStep(prev => prev - 1);
+    };
+
+    const calculateRiskProfile = () => {
+      // Calculate risk profile based on answers
+      const profiles = {
+        'obligaties': 0,
+        'defensief': 1,
+        'neutraal': 2,
+        'offensief': 3,
+        'zeer-offensief': 4,
+        'aandelen': 5
+      };
+
+      let score = 0;
+      let count = 0;
+
+      // Investment percentage contributes to risk score
+      const percentageMap = { '0-25': 0, '25-50': 1, '50-75': 2, '75-100': 3 };
+      if (answers.investmentPercentage) {
+        score += percentageMap[answers.investmentPercentage] || 0;
+        count++;
+      }
+
+      // Risk tolerance
+      if (answers.riskTolerance) {
+        score += profiles[answers.riskTolerance] || 0;
+        count++;
+      }
+
+      // Return expectation
+      if (answers.returnExpectation) {
+        score += profiles[answers.returnExpectation] || 0;
+        count++;
+      }
+
+      // Personal preference
+      const preferenceMap = { 'risico-mijden': 0, 'beide': 2, 'winst-behalen': 4 };
+      if (answers.personalPreference) {
+        score += preferenceMap[answers.personalPreference] || 0;
+        count++;
+      }
+
+      const avgScore = count > 0 ? score / count : 2;
+
+      if (avgScore <= 0.5) return 'Obligaties';
+      if (avgScore <= 1.5) return 'Defensief';
+      if (avgScore <= 2.5) return 'Neutraal';
+      if (avgScore <= 3.5) return 'Offensief';
+      if (avgScore <= 4.5) return 'Zeer Offensief';
+      return 'Aandelen';
+    };
+
+    const handleComplete = async () => {
+      const riskProfile = calculateRiskProfile();
+
+      // Save risk profile to database
+      try {
+        await fetch(`${API_URL}/save-risk-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customer_id: user.id,
+            risk_profile: riskProfile,
+            answers: answers
+          })
+        });
+      } catch (error) {
+        console.error('Error saving risk profile:', error);
+      }
+
+      // Continue to main dashboard
+      setCurrentPage('mainDashboard');
+    };
+
+    const getWealthOriginFollowUp = () => {
+      const followUps = {
+        'inkomen-arbeid': 'Je hebt inkomen uit arbeid aangegeven. Graag ontvangen wij van jou een aangifte IB van het meest recente jaar.',
+        'verkoop-vastgoed': 'Je hebt verkoop vastgoed aangegeven. Graag ontvangen wij van jou een verkoopakte van het vastgoed en een stortingsbewijs van het betreffende bedrag.',
+        'verkoop-onderneming': 'Je hebt verkoop onderneming aangegeven. Graag ontvangen wij van jou de verkoopakte van de onderneming en een stortingsbewijs van het betreffende bedrag, of verklaring van de notaris.',
+        'erfenis': 'Je hebt een erfenis aangegeven. Graag ontvangen wij van jou de verklaring van erfrecht en een stortingsbewijs van het betreffende bedrag, of verklaring van de notaris.',
+        'schenking': 'Je hebt een schenking aangegeven. Graag ontvangen wij van jou een stortingsbewijs van de schenking.',
+        'sparen-beleggen': 'Je hebt sparen en beleggen aangegeven. Graag ontvangen wij van jou een overzicht van het spaar/beleggingssaldo en een aangifte IB van het meest recente jaar.'
+      };
+      return followUps[answers.wealthOrigin] || '';
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div>
+                  <div className="text-2xl font-bold text-white">PIGG</div>
+                  <div className="text-sm text-gray-400">Risicoprofiel</div>
+                </div>
+              </div>
+              <button onClick={handleLogout} className="text-gray-400 hover:text-white transition-colors">
+                Uitloggen
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-3xl mx-auto px-4 py-8">
+          {/* Progress bar */}
+          <div className="mb-8">
+            <div className="flex justify-between mb-2">
+              <span className="text-sm text-gray-400">Stap {step} van 5</span>
+              <span className="text-sm text-[#28EBCF]">{Math.round((step / 5) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-[#28EBCF] h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(step / 5) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Step 1: Investment Percentage & Risk Tolerance */}
+          {step === 1 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Beleggingsvoorkeur</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Hoeveel % van jouw beschikbare vermogen ga je beleggen?
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {['0-25', '25-50', '50-75', '75-100'].map(option => (
+                      <button
+                        key={option}
+                        onClick={() => updateAnswer('investmentPercentage', option)}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          answers.investmentPercentage === option
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Welke stelling kies je?
+                  </label>
+                  <p className="text-sm text-gray-400 mb-4">Ik wil dat mijn vermogen beweegt tussen de:</p>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'defensief', label: 'EUR 95.000 en 110.000 (defensief)' },
+                      { value: 'neutraal', label: 'EUR 90.000 en 120.000 (neutraal)' },
+                      { value: 'offensief', label: 'EUR 80.000 en 135.000 (offensief)' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('riskTolerance', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          answers.riskTolerance === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={goToNextStep}
+                disabled={!answers.investmentPercentage || !answers.riskTolerance}
+                className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+              >
+                Volgende
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: Return Expectations & Personal Preference */}
+          {step === 2 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Rendementsverwachtingen</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Welk rendement streef je na?
+                  </label>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'obligaties', label: '3% - 4% per jaar', range: '-10% tot 15%', type: 'Obligaties' },
+                      { value: 'defensief', label: '4% - 5% per jaar', range: '-15% tot 20%', type: 'Defensief' },
+                      { value: 'neutraal', label: '5% - 6% per jaar', range: '-20% tot 25%', type: 'Neutraal' },
+                      { value: 'offensief', label: '6% - 7% per jaar', range: '-25% tot 30%', type: 'Offensief' },
+                      { value: 'zeer-offensief', label: '7% - 8% per jaar', range: '-30% tot 35%', type: 'Zeer Offensief' },
+                      { value: 'aandelen', label: '8% - 9% per jaar', range: '-35% tot 40%', type: 'Aandelen' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('returnExpectation', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          answers.returnExpectation === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10'
+                            : 'border-gray-600 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className={`font-bold mb-1 ${answers.returnExpectation === option.value ? 'text-[#28EBCF]' : 'text-gray-300'}`}>
+                          {option.type}: {option.label}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          Jaarlijkse bandbreedte: {option.range}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-lg text-gray-300 mb-4">
+                    De nadruk van mijn beleggingen ligt op:
+                  </label>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'risico-mijden', label: 'Risico mijden (obligaties en defensief)' },
+                      { value: 'beide', label: 'Beide (defensief en neutraal)' },
+                      { value: 'winst-behalen', label: 'Winst behalen (offensief, zeer offensief en aandelen)' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('personalPreference', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          answers.personalPreference === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Vorige
+                </button>
+                <button
+                  onClick={goToNextStep}
+                  disabled={!answers.returnExpectation || !answers.personalPreference}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Volgende
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Investment Goal */}
+          {step === 3 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Doelstelling</h2>
+
+                <label className="block text-lg text-gray-300 mb-4">
+                  Wat is je beleggingsdoelstelling?
+                </label>
+                <div className="space-y-3">
+                  {[
+                    { value: 'vermogensgroei', label: 'Vermogensgroei' },
+                    { value: 'inkomen-niet-noodzakelijk', label: 'Aanvulling op inkomen (niet noodzakelijk)' },
+                    { value: 'inkomen-noodzakelijk', label: 'Aanvulling op inkomen (noodzakelijk)' },
+                    { value: 'anders', label: 'Anders' }
+                  ].map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => updateAnswer('investmentGoal', option.value)}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                        answers.investmentGoal === option.value
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                          : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                {answers.investmentGoal === 'anders' && (
+                  <input
+                    type="text"
+                    placeholder="Beschrijf je doelstelling..."
+                    value={answers.investmentGoalOther}
+                    onChange={(e) => updateAnswer('investmentGoalOther', e.target.value)}
+                    className="mt-4 w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Vorige
+                </button>
+                <button
+                  onClick={goToNextStep}
+                  disabled={!answers.investmentGoal || (answers.investmentGoal === 'anders' && !answers.investmentGoalOther)}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Volgende
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Wealth Origin */}
+          {step === 4 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Herkomst vermogen</h2>
+
+                <label className="block text-lg text-gray-300 mb-4">
+                  Wat is de herkomst van je vermogen?
+                </label>
+                <div className="space-y-3">
+                  {[
+                    { value: 'inkomen-arbeid', label: 'Inkomen uit arbeid' },
+                    { value: 'verkoop-vastgoed', label: 'Verkoop vastgoed' },
+                    { value: 'verkoop-onderneming', label: 'Verkoop onderneming' },
+                    { value: 'erfenis', label: 'Erfenis' },
+                    { value: 'schenking', label: 'Schenking' },
+                    { value: 'sparen-beleggen', label: 'Sparen en beleggen' },
+                    { value: 'anders', label: 'Anders' }
+                  ].map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => updateAnswer('wealthOrigin', option.value)}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                        answers.wealthOrigin === option.value
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                          : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                {answers.wealthOrigin === 'anders' && (
+                  <input
+                    type="text"
+                    placeholder="Beschrijf de herkomst..."
+                    value={answers.wealthOriginOther}
+                    onChange={(e) => updateAnswer('wealthOriginOther', e.target.value)}
+                    className="mt-4 w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                  />
+                )}
+
+                {answers.wealthOrigin && answers.wealthOrigin !== 'anders' && getWealthOriginFollowUp() && (
+                  <div className="mt-4 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                    <p className="text-sm text-blue-300">
+                      {getWealthOriginFollowUp()}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Vorige
+                </button>
+                <button
+                  onClick={goToNextStep}
+                  disabled={!answers.wealthOrigin || (answers.wealthOrigin === 'anders' && !answers.wealthOriginOther)}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Volgende
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Experience & Employment */}
+          {step === 5 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Ervaring & Werkstatus</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Beleggingservaring
+                  </label>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-700">
+                          <th className="text-left py-3 text-gray-400">Categorie</th>
+                          <th className="text-center py-3 text-gray-400">Veel</th>
+                          <th className="text-center py-3 text-gray-400">Gemiddeld</th>
+                          <th className="text-center py-3 text-gray-400">Weinig/Geen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { key: 'experienceStocks', label: 'Aandelen' },
+                          { key: 'experienceBonds', label: 'Obligaties' },
+                          { key: 'experienceFunds', label: 'Beleggingsfondsen' },
+                          { key: 'experienceETFs', label: "ETF's / Indexfondsen" },
+                          { key: 'experienceAlternatives', label: 'Alternatieven' },
+                          { key: 'experienceDerivatives', label: 'Derivaten' }
+                        ].map(item => (
+                          <tr key={item.key} className="border-b border-gray-700/50">
+                            <td className="py-3 text-gray-300">{item.label}</td>
+                            {['veel', 'gemiddeld', 'weinig'].map(level => (
+                              <td key={level} className="text-center py-3">
+                                <button
+                                  onClick={() => updateAnswer(item.key, level)}
+                                  className={`w-6 h-6 rounded-full border-2 transition-all ${
+                                    answers[item.key] === level
+                                      ? 'border-[#28EBCF] bg-[#28EBCF]'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-300 mb-2">Wat is jouw werkstatus?</label>
+                    <select
+                      value={answers.employmentStatus}
+                      onChange={(e) => updateAnswer('employmentStatus', e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                    >
+                      <option value="">Selecteer...</option>
+                      <option value="loondienst">In loondienst</option>
+                      <option value="zelfstandig">Zelfstandig</option>
+                      <option value="pensioen">Pensioen</option>
+                      <option value="anders">Anders</option>
+                    </select>
+                  </div>
+
+                  {answers.employmentStatus && answers.employmentStatus !== 'pensioen' && (
+                    <>
+                      <div>
+                        <label className="block text-gray-300 mb-2">Waar werk je?</label>
+                        <input
+                          type="text"
+                          value={answers.employer}
+                          onChange={(e) => updateAnswer('employer', e.target.value)}
+                          placeholder="Naam werkgever/bedrijf"
+                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 mb-2">Wat is jouw functie?</label>
+                        <input
+                          type="text"
+                          value={answers.jobTitle}
+                          onChange={(e) => updateAnswer('jobTitle', e.target.value)}
+                          placeholder="Functietitel"
+                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Vorige
+                </button>
+                <button
+                  onClick={handleComplete}
+                  disabled={!answers.employmentStatus || Object.keys(answers).filter(k => k.startsWith('experience')).some(k => !answers[k])}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Voltooien
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // First-time user welcome page (no portfolio yet)
   const FirstTimeWelcome = () => {
     return (
@@ -8646,7 +9206,7 @@ useEffect(() => {
           {/* Shiny Invest Now button */}
           <div className="flex justify-center">
             <button
-              onClick={() => setCurrentPage('mainDashboard')}
+              onClick={() => setCurrentPage('riskProfiling')}
               className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#28EBCF]/50"
               style={{
                 background: 'linear-gradient(135deg, #28EBCF 0%, #20D4BA 50%, #28EBCF 100%)',
@@ -8663,7 +9223,7 @@ useEffect(() => {
               />
 
               <span className="relative z-10 flex items-center gap-3">
-                Invest Now
+                Start Risicoprofiel
                 <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -9803,6 +10363,7 @@ useEffect(() => {
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'welcome' && <WelcomePage />}
       {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
+      {currentPage === 'riskProfiling' && <RiskProfilingPage />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
