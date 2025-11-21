@@ -41,7 +41,8 @@
       "Bash(copy publiclogo512.png assetsicon.png)",
       "Bash(copy:*)",
       "Bash(npx @capacitor/assets:*)",
-      "Bash(vercel env add:*)"
+      "Bash(vercel env add:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

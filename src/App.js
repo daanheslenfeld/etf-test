@@ -8668,22 +8668,9 @@ useEffect(() => {
     const handleComplete = async () => {
       const riskProfile = calculateRiskProfile();
 
-      // Save risk profile to database
-      try {
-        await fetch(`${API_URL}/save-risk-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            customer_id: user.id,
-            risk_profile: riskProfile,
-            answers: answers
-          })
-        });
-      } catch (error) {
-        console.error('Error saving risk profile:', error);
-      }
+      // Save risk profile to database (temporarily disabled due to Vercel function limit)
+      // TODO: Re-enable when API endpoint is available
+      console.log('Risk profile completed:', riskProfile, answers);
 
       // Continue to main dashboard
       setCurrentPage('mainDashboard');
