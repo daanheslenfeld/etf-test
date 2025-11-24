@@ -955,6 +955,36 @@ const ETFPortal = () => {
 
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
 
+  // Onboarding state
+  const [onboardingData, setOnboardingData] = useState(() => {
+    const saved = localStorage.getItem('onboardingData');
+    return saved ? JSON.parse(saved) : {
+      portfolioOnboardingComplete: false,
+      realMoneyOnboardingComplete: false,
+      investmentPercentage: '',
+      riskTolerance: '',
+      returnExpectation: '',
+      personalPreference: '',
+      investmentGoal: '',
+      investmentGoalOther: '',
+      wealthOrigin: '',
+      wealthOriginOther: '',
+      experienceStocks: '',
+      experienceBonds: '',
+      experienceFunds: '',
+      experienceETFs: '',
+      experienceAlternatives: '',
+      experienceDerivatives: '',
+      usPersonStatus: '',
+      taxResidence: '',
+      additionalTaxCountry: '',
+      additionalTaxCountryName: '',
+      pepStatus: '',
+      pepExplanation: '',
+      documentsUploaded: false
+    };
+  });
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
@@ -1512,6 +1542,11 @@ useEffect(() => {
     }
   }, [user]);
 
+  // Save onboarding data to localStorage
+  useEffect(() => {
+    localStorage.setItem('onboardingData', JSON.stringify(onboardingData));
+  }, [onboardingData]);
+
   useEffect(() => {
     // Don't save 'verify-email' or 'emailVerificationPending' to localStorage as they're temporary
     if (currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending') {
@@ -1813,9 +1848,9 @@ useEffect(() => {
           // Has paid account → go to welcome page
           setCurrentPage('welcome');
         } else {
-          console.log('➡️ Redirecting to mainDashboard');
-          // New user or fictitious account without portfolio → go to main dashboard
-          setCurrentPage('mainDashboard');
+          console.log('➡️ Redirecting to InitialChoicePage');
+          // New user → show initial choice page
+          setCurrentPage('initialChoice');
         }
         return { success: true };
       } else {
@@ -8163,6 +8198,104 @@ useEffect(() => {
     );
   };
 
+  // Initial Choice Page - First page after registration
+  const InitialChoicePage = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+        {/* Logout button in top-right corner */}
+        <button
+          onClick={handleLogout}
+          className="fixed top-4 right-4 px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium z-50"
+        >
+          Uitloggen
+        </button>
+
+        <div className="max-w-5xl w-full">
+          {/* Logo at the top */}
+          <div className="flex justify-center mb-8">
+            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+            </svg>
+          </div>
+
+          {/* Welcome content */}
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              Welkom bij PIGG!
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
+              Kies wat je wilt doen
+            </p>
+          </div>
+
+          {/* 3 Choice Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Option 1: Browse ETF Database */}
+            <button
+              onClick={() => setCurrentPage('etfDatabase')}
+              className="group bg-gray-800 rounded-2xl p-8 hover:bg-gray-750 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#28EBCF]/20 border-2 border-gray-700 hover:border-[#28EBCF]"
+            >
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#28EBCF] transition-colors">
+                Bekijk ETF Database
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Verken onze database met honderden ETFs en ontdek beleggingsmogelijkheden
+              </p>
+            </button>
+
+            {/* Option 2: Build Own Portfolio */}
+            <button
+              onClick={() => setCurrentPage('portfolioOnboarding')}
+              className="group bg-gray-800 rounded-2xl p-8 hover:bg-gray-750 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#28EBCF]/20 border-2 border-gray-700 hover:border-[#28EBCF]"
+            >
+              <div className="text-6xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#28EBCF] transition-colors">
+                Bouw Eigen Portefeuille
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Stel je eigen portefeuille samen op basis van jouw voorkeuren en doelen
+              </p>
+            </button>
+
+            {/* Option 3: Choose Pre-made Portfolio */}
+            <button
+              onClick={() => setCurrentPage('portfolioOnboarding')}
+              className="group bg-gray-800 rounded-2xl p-8 hover:bg-gray-750 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#28EBCF]/20 border-2 border-gray-700 hover:border-[#28EBCF]"
+            >
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#28EBCF] transition-colors">
+                Kies Samengestelde Portefeuille
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Selecteer een professioneel samengestelde portefeuille die bij jou past
+              </p>
+            </button>
+          </div>
+
+          {/* Additional info */}
+          <div className="text-center text-gray-500 text-sm">
+            Je kunt later altijd wisselen tussen deze opties
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const WelcomePage = () => {
     const [marketData, setMarketData] = useState({
       indices: [
@@ -10204,6 +10337,7 @@ useEffect(() => {
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
+      {currentPage === 'initialChoice' && <InitialChoicePage />}
       {currentPage === 'welcome' && <WelcomePage />}
       {currentPage === 'riskProfiling' && <RiskProfilingPage />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
