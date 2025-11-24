@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIGG - Risicoprofiel Onboarding</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1b1f 0%, #2d3748 50%, #1a1b1f 100%);
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="text-white">
+  <div id="app" class="min-h-screen pb-8">
+    <!-- Navigation -->
+    <nav class="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-4">
+            <svg viewBox="0 0 48 48" fill="none" class="w-16 h-16">
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+              <text x="24" y="8.5" font-size="5" fill="#B8860B" font-weight="bold" text-anchor="middle">€</text>
+              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+            </svg>
+            <div>
+              <div class="text-2xl font-bold">PIGG</div>
+              <div class="text-sm text-gray-400">Risicoprofiel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-3xl mx-auto px-4 py-8">
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between mb-2">
+          <span class="text-sm text-gray-400">Stap <span id="current-step">1</span> van 5</span>
+          <span class="text-sm text-[#28EBCF]"><span id="progress-percent">20</span>%</span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+          <div id="progress-bar" class="bg-[#28EBCF] h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <!-- Step Content -->
+      <div id="step-content" class="bg-gray-800 rounded-xl p-6">
+        <!-- Steps will be dynamically inserted here -->
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div id="nav-buttons" class="mt-6 flex gap-4">
+        <button id="prev-btn" class="hidden flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold">
+          Vorige
+        </button>
+        <button id="next-btn" class="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed">
+          Volgende
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+      <div class="bg-gray-800 rounded-2xl p-8 max-w-lg w-full">
+        <div class="text-center">
+          <div class="text-6xl mb-4">🎯</div>
+          <h2 class="text-3xl font-bold mb-4">Jouw Risicoprofiel</h2>
+          <div class="bg-[#28EBCF]/20 p-6 rounded-xl border-2 border-[#28EBCF] mb-6">
+            <div id="risk-profile-result" class="text-4xl font-bold text-[#28EBCF]"></div>
+          </div>
+          <p class="text-gray-400 mb-8">Je risicoprofiel is berekend op basis van je antwoorden.</p>
+          <button onclick="window.location.href='https://etf-test.vercel.app'" class="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold text-lg">
+            Ga naar Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentStep = 1;
+    const answers = {
+      investmentPercentage: '',
+      riskTolerance: '',
+      returnExpectation: '',
+      personalPreference: '',
+      investmentGoal: '',
+      investmentGoalOther: '',
+      wealthOrigin: '',
+      wealthOriginOther: '',
+      experienceStocks: '',
+      experienceBonds: '',
+      experienceFunds: '',
+      experienceETFs: '',
+      experienceAlternatives: '',
+      experienceDerivatives: '',
+      employmentStatus: '',
+      employer: '',
+      jobTitle: ''
+    };
+
+    // Update progress
+    function updateProgress() {
+      const percent = (currentStep / 5) * 100;
+      document.getElementById('current-step').textContent = currentStep;
+      document.getElementById('progress-percent').textContent = Math.round(percent);
+      document.getElementById('progress-bar').style.width = percent + '%';
+    }
+
+    // Calculate risk profile
+    function calculateRiskProfile() {
+      const profiles = {
+        'obligaties': 0,
+        'defensief': 1,
+        'neutraal': 2,
+        'offensief': 3,
+        'zeer-offensief': 4,
+        'aandelen': 5
+      };
+
+      let score = 0;
+      let count = 0;
+
+      const percentageMap = { '0-25': 0, '25-50': 1, '50-75': 2, '75-100': 3 };
+      if (answers.investmentPercentage) {
+        score += percentageMap[answers.investmentPercentage] || 0;
+        count++;
+      }
+
+      if (answers.riskTolerance) {
+        score += profiles[answers.riskTolerance] || 0;
+        count++;
+      }
+
+      if (answers.returnExpectation) {
+        score += profiles[answers.returnExpectation] || 0;
+        count++;
+      }
+
+      const preferenceMap = { 'risico-mijden': 0, 'beide': 2, 'winst-behalen': 4 };
+      if (answers.personalPreference) {
+        score += preferenceMap[answers.personalPreference] || 0;
+        count++;
+      }
+
+      const avgScore = count > 0 ? score / count : 2;
+
+      if (avgScore <= 0.5) return 'Obligaties';
+      if (avgScore <= 1.5) return 'Defensief';
+      if (avgScore <= 2.5) return 'Neutraal';
+      if (avgScore <= 3.5) return 'Offensief';
+      if (avgScore <= 4.5) return 'Zeer Offensief';
+      return 'Aandelen';
+    }
+
+    // Show results
+    function showResults() {
+      const profile = calculateRiskProfile();
+      document.getElementById('risk-profile-result').textContent = profile;
+      document.getElementById('results-modal').classList.remove('hidden');
+    }
+
+    // Render steps
+    function renderStep() {
+      const content = document.getElementById('step-content');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      // Show/hide previous button
+      if (currentStep > 1) {
+        prevBtn.classList.remove('hidden');
+      } else {
+        prevBtn.classList.add('hidden');
+      }
+
+      // Update next button text
+      if (currentStep === 5) {
+        nextBtn.textContent = 'Voltooien';
+      } else {
+        nextBtn.textContent = 'Volgende';
+      }
+
+      updateProgress();
+
+      // Render step content
+      if (currentStep === 1) {
+        content.innerHTML = `
+          <div class="space-y-8">
+            <h2 class="text-2xl font-bold mb-6">Beleggingsvoorkeur</h2>
+
+            <div class="mb-8">
+              <label class="block text-lg text-gray-300 mb-4">
+                Hoeveel % van jouw beschikbare vermogen ga je beleggen?
+              </label>
+              <div class="grid grid-cols-2 gap-4">
+                ${['0-25', '25-50', '50-75', '75-100'].map(opt => `
+                  <button onclick="selectAnswer('investmentPercentage', '${opt}')"
+                    id="btn-investmentPercentage-${opt}"
+                    class="p-4 rounded-lg border-2 transition-all border-gray-600 text-gray-300 hover:border-gray-500">
+                    ${opt}%
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-lg text-gray-300 mb-4">
+                Welke stelling kies je?
+              </label>
+              <p class="text-sm text-gray-400 mb-4">Ik wil dat mijn vermogen beweegt tussen de:</p>
+              <div class="space-y-3">
+                ${[
+                  { value: 'defensief', label: 'EUR 95.000 en 110.000 (defensief)' },
+                  { value: 'neutraal', label: 'EUR 90.000 en 120.000 (neutraal)' },
+                  { value: 'offensief', label: 'EUR 80.000 en 135.000 (offensief)' }
+                ].map(opt => `
+                  <button onclick="selectAnswer('riskTolerance', '${opt.value}')"
+                    id="btn-riskTolerance-${opt.value}"
+                    class="w-full p-4 rounded-lg border-2 text-left transition-all border-gray-600 text-gray-300 hover:border-gray-500">
+                    ${opt.label}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 2) {
+        content.innerHTML = `
+          <div class="space-y-8">
+            <h2 class="text-2xl font-bold mb-6">Rendementsverwachtingen</h2>
+
+            <div class="mb-8">
+              <label class="block text-lg text-gray-300 mb-4">
+                Welk rendement streef je na?
+              </label>
+              <div class="space-y-3">
+                ${[
+                  { value: 'obligaties', label: '3% - 4% per jaar', range: '-10% tot 15%', type: 'Obligaties' },
+                  { value: 'defensief', label: '4% - 5% per jaar', range: '-15% tot 20%', type: 'Defensief' },
+                  { value: 'neutraal', label: '5% - 6% per jaar', range: '-20% tot 25%', type: 'Neutraal' },
+                  { value: 'offensief', label: '6% - 7% per jaar', range: '-25% tot 30%', type: 'Offensief' },
+                  { value: 'zeer-offensief', label: '7% - 8% per jaar', range: '-30% tot 35%', type: 'Zeer Offensief' },
+                  { value: 'aandelen', label: '8% - 9% per jaar', range: '-35% tot 40%', type: 'Aandelen' }
+                ].map(opt => `
+                  <button onclick="selectAnswer('returnExpectation', '${opt.value}')"
+                    id="btn-returnExpectation-${opt.value}"
+                    class="w-full p-4 rounded-lg border-2 text-left transition-all border-gray-600 hover:border-gray-500">
+                    <div class="font-bold mb-1 text-gray-300">
+                      ${opt.type}: ${opt.label}
+                    </div>
+                    <div class="text-sm text-gray-400">
+                      Jaarlijkse bandbreedte: ${opt.range}
+                    </div>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-lg text-gray-300 mb-4">
+                De nadruk van mijn beleggingen ligt op:
+              </label>
+              <div class="space-y-3">
+                ${[
+                  { value: 'risico-mijden', label: 'Risico mijden (obligaties en defensief)' },
+                  { value: 'beide', label: 'Beide (defensief en neutraal)' },
+                  { value: 'winst-behalen', label: 'Winst behalen (offensief, zeer offensief en aandelen)' }
+                ].map(opt => `
+                  <button onclick="selectAnswer('personalPreference', '${opt.value}')"
+                    id="btn-personalPreference-${opt.value}"
+                    class="w-full p-4 rounded-lg border-2 text-left transition-all border-gray-600 text-gray-300 hover:border-gray-500">
+                    ${opt.label}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 3) {
+        content.innerHTML = `
+          <div class="space-y-8">
+            <h2 class="text-2xl font-bold mb-6">Doelstelling</h2>
+
+            <label class="block text-lg text-gray-300 mb-4">
+              Wat is je beleggingsdoelstelling?
+            </label>
+            <div class="space-y-3">
+              ${[
+                { value: 'vermogensgroei', label: 'Vermogensgroei' },
+                { value: 'inkomen-niet-noodzakelijk', label: 'Aanvulling op inkomen (niet noodzakelijk)' },
+                { value: 'inkomen-noodzakelijk', label: 'Aanvulling op inkomen (noodzakelijk)' },
+                { value: 'anders', label: 'Anders' }
+              ].map(opt => `
+                <button onclick="selectAnswer('investmentGoal', '${opt.value}')"
+                  id="btn-investmentGoal-${opt.value}"
+                  class="w-full p-4 rounded-lg border-2 text-left transition-all border-gray-600 text-gray-300 hover:border-gray-500">
+                  ${opt.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 4) {
+        content.innerHTML = `
+          <div class="space-y-8">
+            <h2 class="text-2xl font-bold mb-6">Herkomst vermogen</h2>
+
+            <label class="block text-lg text-gray-300 mb-4">
+              Wat is de herkomst van je vermogen?
+            </label>
+            <div class="space-y-3">
+              ${[
+                { value: 'inkomen-arbeid', label: 'Inkomen uit arbeid' },
+                { value: 'verkoop-vastgoed', label: 'Verkoop vastgoed' },
+                { value: 'verkoop-onderneming', label: 'Verkoop onderneming' },
+                { value: 'erfenis', label: 'Erfenis' },
+                { value: 'schenking', label: 'Schenking' },
+                { value: 'sparen-beleggen', label: 'Sparen en beleggen' },
+                { value: 'anders', label: 'Anders' }
+              ].map(opt => `
+                <button onclick="selectAnswer('wealthOrigin', '${opt.value}')"
+                  id="btn-wealthOrigin-${opt.value}"
+                  class="w-full p-4 rounded-lg border-2 text-left transition-all border-gray-600 text-gray-300 hover:border-gray-500">
+                  ${opt.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 5) {
+        content.innerHTML = `
+          <div class="space-y-8">
+            <h2 class="text-2xl font-bold mb-6">Ervaring & Werkstatus</h2>
+
+            <div class="mb-8">
+              <label class="block text-lg text-gray-300 mb-4">
+                Beleggingservaring
+              </label>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gray-700">
+                      <th class="text-left py-3 text-gray-400">Categorie</th>
+                      <th class="text-center py-3 text-gray-400">Veel</th>
+                      <th class="text-center py-3 text-gray-400">Gemiddeld</th>
+                      <th class="text-center py-3 text-gray-400">Weinig/Geen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${[
+                      { key: 'experienceStocks', label: 'Aandelen' },
+                      { key: 'experienceBonds', label: 'Obligaties' },
+                      { key: 'experienceFunds', label: 'Beleggingsfondsen' },
+                      { key: 'experienceETFs', label: "ETF's / Indexfondsen" },
+                      { key: 'experienceAlternatives', label: 'Alternatieven' },
+                      { key: 'experienceDerivatives', label: 'Derivaten' }
+                    ].map(item => `
+                      <tr class="border-b border-gray-700/50">
+                        <td class="py-3 text-gray-300">${item.label}</td>
+                        ${['veel', 'gemiddeld', 'weinig'].map(level => `
+                          <td class="text-center py-3">
+                            <button onclick="selectAnswer('${item.key}', '${level}')"
+                              id="btn-${item.key}-${level}"
+                              class="w-6 h-6 rounded-full border-2 transition-all border-gray-600 hover:border-gray-500">
+                            </button>
+                          </td>
+                        `).join('')}
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-gray-300 mb-2">Wat is jouw werkstatus?</label>
+                <select id="employment-status" onchange="selectAnswer('employmentStatus', this.value)"
+                  class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none">
+                  <option value="">Selecteer...</option>
+                  <option value="loondienst">In loondienst</option>
+                  <option value="zelfstandig">Zelfstandig</option>
+                  <option value="pensioen">Pensioen</option>
+                  <option value="anders">Anders</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Restore selected values
+      restoreSelections();
+      validateStep();
+    }
+
+    // Select answer
+    function selectAnswer(field, value) {
+      answers[field] = value;
+
+      // Update button styling
+      const buttons = document.querySelectorAll(`[id^="btn-${field}-"]`);
+      buttons.forEach(btn => {
+        if (btn.id === `btn-${field}-${value}`) {
+          btn.classList.add('border-[#28EBCF]', 'bg-[#28EBCF]/10', 'text-[#28EBCF]');
+          btn.classList.remove('border-gray-600', 'text-gray-300');
+        } else {
+          btn.classList.remove('border-[#28EBCF]', 'bg-[#28EBCF]/10', 'text-[#28EBCF]');
+          btn.classList.add('border-gray-600', 'text-gray-300');
+        }
+      });
+
+      validateStep();
+    }
+
+    // Restore selections
+    function restoreSelections() {
+      Object.keys(answers).forEach(field => {
+        if (answers[field]) {
+          const btn = document.getElementById(`btn-${field}-${answers[field]}`);
+          if (btn) {
+            btn.classList.add('border-[#28EBCF]', 'bg-[#28EBCF]/10', 'text-[#28EBCF]');
+            btn.classList.remove('border-gray-600', 'text-gray-300');
+          }
+        }
+      });
+
+      if (currentStep === 5 && answers.employmentStatus) {
+        document.getElementById('employment-status').value = answers.employmentStatus;
+      }
+    }
+
+    // Validate step
+    function validateStep() {
+      const nextBtn = document.getElementById('next-btn');
+      let isValid = false;
+
+      if (currentStep === 1) {
+        isValid = answers.investmentPercentage && answers.riskTolerance;
+      } else if (currentStep === 2) {
+        isValid = answers.returnExpectation && answers.personalPreference;
+      } else if (currentStep === 3) {
+        isValid = answers.investmentGoal;
+      } else if (currentStep === 4) {
+        isValid = answers.wealthOrigin;
+      } else if (currentStep === 5) {
+        const hasAllExperience = ['experienceStocks', 'experienceBonds', 'experienceFunds', 'experienceETFs', 'experienceAlternatives', 'experienceDerivatives']
+          .every(key => answers[key]);
+        isValid = answers.employmentStatus && hasAllExperience;
+      }
+
+      nextBtn.disabled = !isValid;
+    }
+
+    // Navigation
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        renderStep();
+      }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentStep < 5) {
+        currentStep++;
+        renderStep();
+      } else {
+        // Complete
+        showResults();
+      }
+    });
+
+    // Initialize
+    renderStep();
+  </script>
+</body>
+</html>
