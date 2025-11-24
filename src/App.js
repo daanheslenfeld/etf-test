@@ -8296,6 +8296,405 @@ useEffect(() => {
     );
   };
 
+  // Portfolio Onboarding - Steps 1, 2, 3, 5 (for building/choosing portfolio)
+  const PortfolioOnboardingPage = () => {
+    const [step, setStep] = useState(1);
+
+    const updateAnswer = (field, value) => {
+      setOnboardingData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const goToNextStep = () => {
+      setStep(prev => prev + 1);
+    };
+
+    const goToPrevStep = () => {
+      setStep(prev => prev - 1);
+    };
+
+    const calculateRiskProfile = () => {
+      const profiles = {
+        'obligaties': 0,
+        'defensief': 1,
+        'neutraal': 2,
+        'offensief': 3,
+        'zeer-offensief': 4,
+        'aandelen': 5
+      };
+
+      let score = 0;
+      let count = 0;
+
+      const percentageMap = { '0-25': 0, '25-50': 1, '50-75': 2, '75-100': 3 };
+      if (onboardingData.investmentPercentage) {
+        score += percentageMap[onboardingData.investmentPercentage] || 0;
+        count++;
+      }
+
+      if (onboardingData.riskTolerance) {
+        score += profiles[onboardingData.riskTolerance] || 0;
+        count++;
+      }
+
+      if (onboardingData.returnExpectation) {
+        score += profiles[onboardingData.returnExpectation] || 0;
+        count++;
+      }
+
+      const preferenceMap = { 'risico-mijden': 0, 'beide': 2, 'winst-behalen': 4 };
+      if (onboardingData.personalPreference) {
+        score += preferenceMap[onboardingData.personalPreference] || 0;
+        count++;
+      }
+
+      const avgScore = count > 0 ? score / count : 2;
+
+      if (avgScore <= 0.5) return 'Obligaties';
+      if (avgScore <= 1.5) return 'Defensief';
+      if (avgScore <= 2.5) return 'Neutraal';
+      if (avgScore <= 3.5) return 'Offensief';
+      if (avgScore <= 4.5) return 'Zeer Offensief';
+      return 'Aandelen';
+    };
+
+    const handleComplete = () => {
+      const riskProfile = calculateRiskProfile();
+      console.log('Portfolio onboarding completed:', riskProfile, onboardingData);
+
+      // Mark portfolio onboarding as complete
+      setOnboardingData(prev => ({ ...prev, portfolioOnboardingComplete: true, riskProfile }));
+
+      // Go to portfolio builder
+      setCurrentPage('portfolioBuilder');
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
+        <div className="bg-[#28EBCF]" style={{ height: 'env(safe-area-inset-top)' }}></div>
+
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16">
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                </svg>
+                <div>
+                  <div className="text-2xl font-bold text-white">PIGG</div>
+                  <div className="text-sm text-gray-400">Portfolio Setup</div>
+                </div>
+              </div>
+              <button onClick={() => setCurrentPage('initialChoice')} className="text-gray-400 hover:text-white transition-colors">
+                ← Back
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-3xl mx-auto px-4 py-8">
+          {/* Progress bar */}
+          <div className="mb-8">
+            <div className="flex justify-between mb-2">
+              <span className="text-sm text-gray-400">Step {step} of 4</span>
+              <span className="text-sm text-[#28EBCF]">{Math.round((step / 4) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-[#28EBCF] h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(step / 4) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Step 1: Investment Percentage & Risk Tolerance */}
+          {step === 1 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Investment Preference</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    What percentage of your available capital will you invest?
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {['0-25', '25-50', '50-75', '75-100'].map(option => (
+                      <button
+                        key={option}
+                        onClick={() => updateAnswer('investmentPercentage', option)}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          onboardingData.investmentPercentage === option
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Which statement do you choose?
+                  </label>
+                  <p className="text-sm text-gray-400 mb-4">I want my assets to move between:</p>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'defensief', label: 'EUR 95,000 and 110,000 (defensive)' },
+                      { value: 'neutraal', label: 'EUR 90,000 and 120,000 (neutral)' },
+                      { value: 'offensief', label: 'EUR 80,000 and 135,000 (offensive)' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('riskTolerance', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          onboardingData.riskTolerance === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={goToNextStep}
+                disabled={!onboardingData.investmentPercentage || !onboardingData.riskTolerance}
+                className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
+
+          {/* Step 2: Return Expectations & Personal Preference */}
+          {step === 2 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Return Expectations</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    What return are you aiming for?
+                  </label>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'obligaties', label: '3% - 4% per year', range: '-10% to 15%', type: 'Bonds' },
+                      { value: 'defensief', label: '4% - 5% per year', range: '-15% to 20%', type: 'Defensive' },
+                      { value: 'neutraal', label: '5% - 6% per year', range: '-20% to 25%', type: 'Neutral' },
+                      { value: 'offensief', label: '6% - 7% per year', range: '-25% to 30%', type: 'Offensive' },
+                      { value: 'zeer-offensief', label: '7% - 8% per year', range: '-30% to 35%', type: 'Very Offensive' },
+                      { value: 'aandelen', label: '8% - 9% per year', range: '-35% to 40%', type: 'Stocks' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('returnExpectation', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          onboardingData.returnExpectation === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10'
+                            : 'border-gray-600 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className={`font-bold mb-1 ${onboardingData.returnExpectation === option.value ? 'text-[#28EBCF]' : 'text-gray-300'}`}>
+                          {option.type}: {option.label}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          Annual range: {option.range}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-lg text-gray-300 mb-4">
+                    The focus of my investments is on:
+                  </label>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'risico-mijden', label: 'Avoiding risk (bonds and defensive)' },
+                      { value: 'beide', label: 'Both (defensive and neutral)' },
+                      { value: 'winst-behalen', label: 'Achieving profit (offensive, very offensive and stocks)' }
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        onClick={() => updateAnswer('personalPreference', option.value)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                          onboardingData.personalPreference === option.value
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                            : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={goToNextStep}
+                  disabled={!onboardingData.returnExpectation || !onboardingData.personalPreference}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Investment Goal */}
+          {step === 3 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Investment Goal</h2>
+
+                <label className="block text-lg text-gray-300 mb-4">
+                  What is your investment goal?
+                </label>
+                <div className="space-y-3">
+                  {[
+                    { value: 'vermogensgroei', label: 'Wealth growth' },
+                    { value: 'inkomen-niet-noodzakelijk', label: 'Income supplement (not necessary)' },
+                    { value: 'inkomen-noodzakelijk', label: 'Income supplement (necessary)' },
+                    { value: 'anders', label: 'Other' }
+                  ].map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => updateAnswer('investmentGoal', option.value)}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                        onboardingData.investmentGoal === option.value
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                          : 'border-gray-600 text-gray-300 hover:border-gray-500'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                {onboardingData.investmentGoal === 'anders' && (
+                  <input
+                    type="text"
+                    placeholder="Describe your goal..."
+                    value={onboardingData.investmentGoalOther}
+                    onChange={(e) => updateAnswer('investmentGoalOther', e.target.value)}
+                    className="mt-4 w-full px-4 py-3 bg-gray-700 text-white rounded-lg border-2 border-gray-600 focus:border-[#28EBCF] focus:outline-none"
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={goToNextStep}
+                  disabled={!onboardingData.investmentGoal || (onboardingData.investmentGoal === 'anders' && !onboardingData.investmentGoalOther)}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Experience (was step 5 in original) */}
+          {step === 4 && (
+            <div className="bg-gray-800 rounded-xl p-6 space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Investment Experience</h2>
+
+                <div className="mb-8">
+                  <label className="block text-lg text-gray-300 mb-4">
+                    Investment experience
+                  </label>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-700">
+                          <th className="text-left py-3 text-gray-400">Category</th>
+                          <th className="text-center py-3 text-gray-400">High</th>
+                          <th className="text-center py-3 text-gray-400">Medium</th>
+                          <th className="text-center py-3 text-gray-400">Low/None</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { key: 'experienceStocks', label: 'Stocks' },
+                          { key: 'experienceBonds', label: 'Bonds' },
+                          { key: 'experienceFunds', label: 'Investment Funds' },
+                          { key: 'experienceETFs', label: "ETFs / Index Funds" },
+                          { key: 'experienceAlternatives', label: 'Alternatives' },
+                          { key: 'experienceDerivatives', label: 'Derivatives' }
+                        ].map(item => (
+                          <tr key={item.key} className="border-b border-gray-700/50">
+                            <td className="py-3 text-gray-300">{item.label}</td>
+                            {['veel', 'gemiddeld', 'weinig'].map(level => (
+                              <td key={level} className="text-center py-3">
+                                <button
+                                  onClick={() => updateAnswer(item.key, level)}
+                                  className={`w-6 h-6 rounded-full border-2 transition-all ${
+                                    onboardingData[item.key] === level
+                                      ? 'border-[#28EBCF] bg-[#28EBCF]'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={goToPrevStep}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleComplete}
+                  disabled={!['experienceStocks', 'experienceBonds', 'experienceFunds', 'experienceETFs', 'experienceAlternatives', 'experienceDerivatives'].every(k => onboardingData[k])}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  Complete
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const WelcomePage = () => {
     const [marketData, setMarketData] = useState({
       indices: [
@@ -10338,6 +10737,7 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'initialChoice' && <InitialChoicePage />}
+      {currentPage === 'portfolioOnboarding' && <PortfolioOnboardingPage />}
       {currentPage === 'welcome' && <WelcomePage />}
       {currentPage === 'riskProfiling' && <RiskProfilingPage />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
