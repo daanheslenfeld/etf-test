@@ -985,6 +985,8 @@ const ETFPortal = () => {
     };
   });
 
+  const [portfolioOnboardingStep, setPortfolioOnboardingStep] = useState(1);
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
@@ -8302,18 +8304,16 @@ useEffect(() => {
 
   // Portfolio Onboarding - Steps 1, 2, 3, 5 (for building/choosing portfolio)
   const PortfolioOnboardingPage = () => {
-    const [step, setStep] = useState(1);
-
     const updateAnswer = (field, value) => {
       setOnboardingData(prev => ({ ...prev, [field]: value }));
     };
 
     const goToNextStep = () => {
-      setStep(prev => prev + 1);
+      setPortfolioOnboardingStep(prev => prev + 1);
     };
 
     const goToPrevStep = () => {
-      setStep(prev => prev - 1);
+      setPortfolioOnboardingStep(prev => prev - 1);
     };
 
     const calculateRiskProfile = () => {
@@ -8409,19 +8409,19 @@ useEffect(() => {
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-400">Step {step} of 4</span>
-              <span className="text-sm text-[#28EBCF]">{Math.round((step / 4) * 100)}%</span>
+              <span className="text-sm text-gray-400">Step {portfolioOnboardingStep} of 4</span>
+              <span className="text-sm text-[#28EBCF]">{Math.round((portfolioOnboardingStep / 4) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="bg-[#28EBCF] h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(step / 4) * 100}%` }}
+                style={{ width: `${(portfolioOnboardingStep / 4) * 100}%` }}
               />
             </div>
           </div>
 
           {/* Step 1: Investment Percentage & Risk Tolerance */}
-          {step === 1 && (
+          {portfolioOnboardingStep === 1 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Investment Preference</h2>
@@ -8485,7 +8485,7 @@ useEffect(() => {
           )}
 
           {/* Step 2: Return Expectations & Personal Preference */}
-          {step === 2 && (
+          {portfolioOnboardingStep === 2 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Return Expectations</h2>
@@ -8568,7 +8568,7 @@ useEffect(() => {
           )}
 
           {/* Step 3: Investment Goal */}
-          {step === 3 && (
+          {portfolioOnboardingStep === 3 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Investment Goal</h2>
@@ -8627,7 +8627,7 @@ useEffect(() => {
           )}
 
           {/* Step 4: Experience (was step 5 in original) */}
-          {step === 4 && (
+          {portfolioOnboardingStep === 4 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Investment Experience</h2>
