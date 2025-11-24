@@ -1651,8 +1651,8 @@ useEffect(() => {
           } else if (user.account_type && user.account_type !== 'fictief') {
             setCurrentPage('welcome');
           } else {
-            // First-time user with no portfolio - show FirstTimeWelcome
-            setCurrentPage('firstTimeWelcome');
+            // First-time user with no portfolio - go to main dashboard
+            setCurrentPage('mainDashboard');
           }
         }
       }
@@ -1813,9 +1813,9 @@ useEffect(() => {
           // Has paid account → go to welcome page
           setCurrentPage('welcome');
         } else {
-          console.log('➡️ Redirecting to firstTimeWelcome (no portfolio)');
-          // New user or fictitious account without portfolio → go to first-time welcome
-          setCurrentPage('firstTimeWelcome');
+          console.log('➡️ Redirecting to mainDashboard');
+          // New user or fictitious account without portfolio → go to main dashboard
+          setCurrentPage('mainDashboard');
         }
         return { success: true };
       } else {
@@ -1827,7 +1827,7 @@ useEffect(() => {
     }
   };
 
-  const handleRegister = async (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate) => {
+  const handleRegister = async (firstName, lastName, email, password, street, houseNumber, postalCode, city, phone) => {
     try {
       const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
@@ -1843,8 +1843,7 @@ useEffect(() => {
           houseNumber,
           postalCode,
           city,
-          phone,
-          birthDate
+          phone
         })
       });
 
@@ -3983,13 +3982,12 @@ useEffect(() => {
     const [postalCode, setPostalCode] = useState('');
     const [city, setCity] = useState('');
     const [phone, setPhone] = useState('');
-    const [birthDate, setBirthDate] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleSubmit = () => {
-      if (!firstName || !lastName || !street || !houseNumber || !postalCode || !city || !phone || !birthDate || !email || !password || !confirmPassword) {
+      if (!firstName || !lastName || !street || !houseNumber || !postalCode || !city || !phone || !email || !password || !confirmPassword) {
         alert('Vul alstublieft alle velden in');
         return;
       }
@@ -3997,7 +3995,7 @@ useEffect(() => {
         alert('Wachtwoorden komen niet overeen');
         return;
       }
-      handleRegister(firstName, lastName, email, password, street, houseNumber, postalCode, city, phone, birthDate);
+      handleRegister(firstName, lastName, email, password, street, houseNumber, postalCode, city, phone);
     };
 
     return (
@@ -4139,16 +4137,6 @@ useEffect(() => {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Geboortedatum *</label>
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
-                  required
-                />
-              </div>
 
               <div>
                 <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Email *</label>
@@ -5259,12 +5247,12 @@ useEffect(() => {
             <div>
               <div className="font-semibold mb-1 text-xs text-white">Historisch Rendement</div>
               <ResponsiveContainer width="100%" height={chartHeight}>
-                <BarChart data={historicalData}>
+                <LineChart data={historicalData}>
                   <XAxis dataKey="year" tick={{fontSize: 10, fill: '#9CA3AF'}} />
                   <YAxis tick={{fontSize: 10, fill: '#9CA3AF'}} />
                   <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
-                  <Bar dataKey="return" fill="#28EBCF" />
-                </BarChart>
+                  <Line type="monotone" dataKey="return" stroke="#28EBCF" strokeWidth={2} dot={{ fill: '#28EBCF', r: 4 }} />
+                </LineChart>
               </ResponsiveContainer>
             </div>
 
@@ -9128,138 +9116,6 @@ useEffect(() => {
   };
 
   // First-time user welcome page (no portfolio yet)
-  const FirstTimeWelcome = () => {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
-        {/* Logout button in top-right corner */}
-        <button
-          onClick={handleLogout}
-          className="fixed top-4 right-4 px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium"
-        >
-          Uitloggen
-        </button>
-
-        <div className="max-w-3xl w-full">
-          {/* Logo at the top */}
-          <div className="flex justify-center mb-12">
-            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
-              {/* Piggy bank body */}
-              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
-
-              {/* Coin slot on top */}
-              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-
-              {/* Gold coin */}
-              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-
-              {/* Pig face - Eyes */}
-              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
-              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
-
-              {/* Pig snout */}
-              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
-              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
-              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
-
-              {/* Pig ears */}
-              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-
-              {/* Smile */}
-              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
-
-              {/* Legs/feet */}
-              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-            </svg>
-          </div>
-
-          {/* Welcome content */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Invest your money
-              <br />
-              <span className="bg-gradient-to-r from-[#28EBCF] to-blue-500 bg-clip-text text-transparent">
-                in the world!
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
-              Start building your investment portfolio today and watch your wealth grow with smart ETF investments.
-            </p>
-          </div>
-
-          {/* Shiny Invest Now button */}
-          <div className="flex justify-center">
-            <button
-              onClick={() => setCurrentPage('riskProfiling')}
-              className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#28EBCF]/50"
-              style={{
-                background: 'linear-gradient(135deg, #28EBCF 0%, #20D4BA 50%, #28EBCF 100%)',
-                backgroundSize: '200% 100%',
-                animation: 'shimmer 3s ease-in-out infinite'
-              }}
-            >
-              {/* Shine effect overlay */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                  animation: 'shine 2s ease-in-out infinite'
-                }}
-              />
-
-              <span className="relative z-10 flex items-center gap-3">
-                Start Risicoprofiel
-                <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-
-              {/* Glow effect */}
-              <div className="absolute inset-0 rounded-2xl opacity-75 blur-xl"
-                style={{
-                  background: 'linear-gradient(135deg, #28EBCF, #20D4BA)',
-                  zIndex: -1
-                }}
-              />
-            </button>
-          </div>
-
-          {/* Additional info */}
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            <div className="p-4">
-              <div className="text-3xl mb-2">🌍</div>
-              <div className="text-sm text-gray-400">Global ETF Access</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl mb-2">📊</div>
-              <div className="text-sm text-gray-400">Smart Portfolio Building</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl mb-2">🔒</div>
-              <div className="text-sm text-gray-400">Secure & Reliable</div>
-            </div>
-          </div>
-        </div>
-
-        {/* CSS animations */}
-        <style jsx>{`
-          @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            50% { background-position: 0% 0; }
-            100% { background-position: -200% 0; }
-          }
-
-          @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-          }
-        `}</style>
-      </div>
-    );
-  };
-
   const FinancialNewsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -10349,7 +10205,6 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'welcome' && <WelcomePage />}
-      {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
       {currentPage === 'riskProfiling' && <RiskProfilingPage />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
