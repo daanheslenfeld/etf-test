@@ -110,14 +110,15 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Email verification disabled
-    // if (!customer.email_verified) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatie link.',
-    //     emailNotVerified: true
-    //   });
-    // }
+    // Check if email is verified
+    if (!customer.email_verified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatiecode.',
+        emailNotVerified: true,
+        email: customer.email
+      });
+    }
 
     // Get portfolio
     const { data: portfolio } = await supabase
