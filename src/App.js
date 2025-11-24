@@ -8368,6 +8368,10 @@ useEffect(() => {
       // Mark portfolio onboarding as complete
       setOnboardingData(prev => ({ ...prev, portfolioOnboardingComplete: true, riskProfile }));
 
+      // Set portfolio type to custom and go directly to profile selection
+      setPortfolioType('custom');
+      setCustomBuildStep('profile');
+
       // Go to portfolio builder
       setCurrentPage('portfolioBuilder');
     };
