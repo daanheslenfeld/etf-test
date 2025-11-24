@@ -8368,12 +8368,11 @@ useEffect(() => {
       // Mark portfolio onboarding as complete
       setOnboardingData(prev => ({ ...prev, portfolioOnboardingComplete: true, riskProfile }));
 
-      // Set portfolio type to custom and go directly to profile selection
-      setPortfolioType('custom');
-      setCustomBuildStep('profile');
+      // Reset onboarding step for next time
+      setPortfolioOnboardingStep(1);
 
-      // Go to portfolio builder
-      setCurrentPage('portfolioBuilder');
+      // Go to portfolio type choice page (custom vs premade)
+      setCurrentPage('portfolioTypeChoice');
     };
 
     return (
@@ -8698,6 +8697,86 @@ useEffect(() => {
               </div>
             </div>
           )}
+        </div>
+      </div>
+    );
+  };
+
+  // Portfolio Type Choice Page - After onboarding, choose custom or premade
+  const PortfolioTypeChoicePage = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+        <button
+          onClick={handleLogout}
+          className="fixed top-4 right-4 px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium z-50"
+        >
+          Uitloggen
+        </button>
+
+        <div className="max-w-5xl w-full">
+          <div className="flex justify-center mb-8">
+            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+            </svg>
+          </div>
+
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              Kies je beleggingsstrategie
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
+              Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <button
+              onClick={() => {
+                setPortfolioType('custom');
+                setCustomBuildStep('profile');
+                setCurrentPage('portfolioBuilder');
+              }}
+              className="group bg-gray-800 rounded-2xl p-8 hover:bg-gray-750 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#28EBCF]/20 border-2 border-gray-700 hover:border-[#28EBCF]"
+            >
+              <div className="text-6xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#28EBCF] transition-colors">
+                Zelf Samenstellen
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Kies een profiel en selecteer je eigen ETF's per categorie
+              </p>
+            </button>
+
+            <button
+              onClick={() => {
+                setPortfolioType('premade');
+                setCurrentPage('portfolioBuilder');
+              }}
+              className="group bg-gray-800 rounded-2xl p-8 hover:bg-gray-750 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#28EBCF]/20 border-2 border-gray-700 hover:border-[#28EBCF]"
+            >
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#28EBCF] transition-colors">
+                Vooraf Samengesteld
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Kies een portfolio op basis van risicoprofiel
+              </p>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -10746,6 +10825,7 @@ useEffect(() => {
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'initialChoice' && <InitialChoicePage />}
       {currentPage === 'portfolioOnboarding' && <PortfolioOnboardingPage />}
+      {currentPage === 'portfolioTypeChoice' && <PortfolioTypeChoicePage />}
       {currentPage === 'welcome' && <WelcomePage />}
       {currentPage === 'riskProfiling' && <RiskProfilingPage />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
