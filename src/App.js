@@ -6065,8 +6065,12 @@ useEffect(() => {
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-2xl font-bold text-[#28EBCF] hover:opacity-80 transition-opacity">PIGG</button>
               <div className="flex items-center gap-4">
-                <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
-                  ← Profiel
+                <button onClick={() => {
+                  setCustomBuildStep('profile');
+                  setSelectedProfile(null);
+                  setSelectedCategory(null);
+                }} className="text-gray-300 hover:text-[#28EBCF]">
+                  ← Change Profile
                 </button>
                 <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF]">
                   Uitloggen
