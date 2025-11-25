@@ -4,6 +4,7 @@ import Footer from './Footer';
 import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
+import IDScanner from './IDScanner';
 
 // API URL - works with Vercel Dev and production
 const API_URL = '/api';
@@ -6525,9 +6526,41 @@ useEffect(() => {
     const [showHorizonCustom, setShowHorizonCustom] = useState(false);
     const [showAmountCustom, setShowAmountCustom] = useState(false);
     const [showMonthlyCustom, setShowMonthlyCustom] = useState(false);
-    
-    // Pre-fill the risk profile if already selected, but still show step 1
+    const [showWealthOriginOther, setShowWealthOriginOther] = useState(false);
+    const [wealthOrigin, setWealthOrigin] = useState([]);
+    const [additionalTaxCountry, setAdditionalTaxCountry] = useState('');
+    const [pepExplanation, setPepExplanation] = useState('');
+    const [showPepTooltip, setShowPepTooltip] = useState(false);
+    const [passportFile, setPassportFile] = useState(null);
+    const [wealthProofFile, setWealthProofFile] = useState(null);
+    const [kycData, setKycData] = useState({
+      wealthOrigin: [],
+      wealthOriginOther: '',
+      isUSPerson: '',
+      primaryTaxCountry: '',
+      hasAdditionalTaxCountry: '',
+      additionalTaxCountry: '',
+      isPEP: '',
+      pepExplanation: ''
+    });
+
+    // Pre-fill from onboarding data
     useEffect(() => {
+      // Pre-fill investment goal from onboarding if available
+      if (onboardingData?.investmentGoal && !investmentDetails.goal) {
+        const goalMapping = {
+          'vermogensgroei': 'Vermogensopbouw',
+          'inkomen-niet-noodzakelijk': 'Inkomsten',
+          'inkomen-noodzakelijk': 'Inkomsten'
+        };
+        const mappedGoal = goalMapping[onboardingData.investmentGoal] || onboardingData.investmentGoalOther;
+        setInvestmentDetails(prev => ({
+          ...prev,
+          goal: mappedGoal
+        }));
+      }
+
+      // Pre-fill risk profile if already selected
       if (selectedProfile && premadePortfolios[selectedProfile] && !investmentDetails.riskProfile) {
         setInvestmentDetails(prev => ({
           ...prev,
@@ -6535,9 +6568,48 @@ useEffect(() => {
         }));
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedProfile]);
-    
-    const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
+    }, [selectedProfile, onboardingData]);
+
+    const canProceedStep1 = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
+
+    const canProceedStep2 = kycData.wealthOrigin.length > 0 &&
+      (kycData.wealthOrigin.includes('anders') ? kycData.wealthOriginOther.trim() !== '' : true);
+
+    const canProceedStep3 = kycData.isUSPerson && kycData.primaryTaxCountry &&
+      kycData.hasAdditionalTaxCountry &&
+      (kycData.hasAdditionalTaxCountry === 'yes' ? kycData.additionalTaxCountry.trim() !== '' : true) &&
+      kycData.isPEP &&
+      (kycData.isPEP === 'yes' ? kycData.pepExplanation.trim() !== '' : true);
+
+    const canProceedStep4 = passportFile && wealthProofFile;
+
+    const getWealthOriginInstructionText = () => {
+      const origins = kycData.wealthOrigin;
+      if (origins.length === 0) return '';
+
+      const instructions = [];
+
+      if (origins.includes('inkomen-arbeid')) {
+        instructions.push('You indicated income from employment. Please provide us with an income tax return from the most recent year.');
+      }
+      if (origins.includes('verkoop-vastgoed')) {
+        instructions.push('You indicated real estate sale. Please provide us with a sales deed of the property and a deposit receipt of the relevant amount.');
+      }
+      if (origins.includes('verkoop-onderneming')) {
+        instructions.push('You indicated business sale. Please provide us with the sales deed of the business and a deposit receipt of the relevant amount, or a notary statement.');
+      }
+      if (origins.includes('erfenis')) {
+        instructions.push('You indicated inheritance. Please provide us with a declaration of inheritance and a deposit receipt of the relevant amount, or a notary statement.');
+      }
+      if (origins.includes('schenking')) {
+        instructions.push('You indicated a gift. Please provide us with a deposit receipt of the gift.');
+      }
+      if (origins.includes('sparen-beleggen')) {
+        instructions.push('You indicated savings and investments. Please provide us with an overview of the savings/investment balance and an income tax return from the most recent year.');
+      }
+
+      return instructions.join('\n\n');
+    };
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -6589,84 +6661,328 @@ useEffect(() => {
           </div>
         </nav>
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <h1 className="text-3xl font-bold mb-8 text-center text-white">Upgrade naar Betaald Account</h1>
+          {/* Progress Indicator */}
+          <div className="mb-8">
+            <div className="flex justify-between mb-2">
+              <span className="text-sm text-gray-400">Step {step} of 5</span>
+              <span className="text-sm text-[#28EBCF]">{Math.round((step / 5) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-[#28EBCF] h-2 rounded-full transition-all duration-300" style={{ width: `${(step / 5) * 100}%` }}></div>
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-bold mb-8 text-center text-white">Upgrade to Paid Account</h1>
+
+          {/* Step 1: Investment Details (Pre-filled) */}
           {step === 1 && (
             <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
+              <p className="text-gray-400 text-sm mb-6">The investment goal and risk profile questions have already been answered during onboarding.</p>
+
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Doelstelling</label>
+                <label className="block text-lg font-bold mb-4 text-white">Investment Goal</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Vermogensopbouw</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Pensioen</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Inkomsten</button>
-                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Wealth Growth</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Pension</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Income</button>
+                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Other</button>
                 </div>
-                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
+                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Enter your own goal" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
               </div>
-              
+
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Beleggingshorizon</label>
+                <label className="block text-lg font-bold mb-4 text-white">Investment Horizon</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>5 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>10 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>20 jaar</button>
-                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>5 years</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>10 years</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>20 years</button>
+                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Other</button>
                 </div>
-                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
+                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Number of years" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
               </div>
-              
+
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Te Beleggen Vermogen</label>
+                <label className="block text-lg font-bold mb-4 text-white">Investment Amount</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 10.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 25.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 50.000</button>
-                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 10,000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 25,000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 50,000</button>
+                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Other</button>
                 </div>
                 {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Maandelijkse Storting</label>
+                <label className="block text-lg font-bold mb-4 text-white">Monthly Contribution</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 100</button>
                   <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 250</button>
                   <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 500</button>
-                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Other</button>
                 </div>
                 {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Risicoprofiel</label>
+                <label className="block text-lg font-bold mb-4 text-white">Risk Profile</label>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(premadePortfolios).map(([key, config]) => (
                     <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition text-center sm:text-left ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-gradient-to-br from-[#28EBCF]/30 to-[#1FA89B]/30 text-[#28EBCF]' : 'bg-gradient-to-br from-[#28EBCF]/10 to-[#1FA89B]/10 border-[#28EBCF]/40 text-[#28EBCF]/80 hover:border-[#28EBCF] hover:text-[#28EBCF]'}`}>
                       <div>{config.name}</div>
-                      <div className="hidden sm:block text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
+                      <div className="hidden sm:block text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% expected return</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Volgende Stap →</button>
+              <button onClick={() => setStep(2)} disabled={!canProceedStep1} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Next Step →</button>
             </div>
           )}
+
+          {/* Step 2: Source of Wealth */}
           {step === 2 && (
+            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">What is the source of your wealth?</label>
+                <p className="text-sm text-gray-400 mb-4">Select all that apply</p>
+                <div className="space-y-3">
+                  {[
+                    { value: 'inkomen-arbeid', label: 'Income from employment' },
+                    { value: 'verkoop-vastgoed', label: 'Real estate sale' },
+                    { value: 'verkoop-onderneming', label: 'Business sale' },
+                    { value: 'erfenis', label: 'Inheritance' },
+                    { value: 'schenking', label: 'Gift' },
+                    { value: 'sparen-beleggen', label: 'Savings and investments' },
+                    { value: 'anders', label: 'Other' }
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        const newOrigins = kycData.wealthOrigin.includes(opt.value)
+                          ? kycData.wealthOrigin.filter(v => v !== opt.value)
+                          : [...kycData.wealthOrigin, opt.value];
+                        setKycData({...kycData, wealthOrigin: newOrigins});
+                      }}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all flex items-center gap-3 ${
+                        kycData.wealthOrigin.includes(opt.value)
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/10 text-[#28EBCF]'
+                          : 'border-gray-700 text-gray-300 hover:border-gray-500'
+                      }`}
+                    >
+                      <span className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        kycData.wealthOrigin.includes(opt.value)
+                          ? 'border-[#28EBCF] bg-[#28EBCF]'
+                          : 'border-gray-600'
+                      }`}>
+                        {kycData.wealthOrigin.includes(opt.value) && <span className="text-gray-900 text-sm">✓</span>}
+                      </span>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {kycData.wealthOrigin.includes('anders') && (
+                  <input
+                    type="text"
+                    value={kycData.wealthOriginOther}
+                    onChange={(e) => setKycData({...kycData, wealthOriginOther: e.target.value})}
+                    placeholder="Please specify"
+                    className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500"
+                  />
+                )}
+              </div>
+
+              {kycData.wealthOrigin.length > 0 && (
+                <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                  <p className="text-sm text-blue-300 whitespace-pre-line">{getWealthOriginInstructionText()}</p>
+                </div>
+              )}
+
+              <div className="flex gap-4">
+                <button onClick={() => setStep(1)} className="flex-1 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all font-medium">← Back</button>
+                <button onClick={() => setStep(3)} disabled={!canProceedStep2} className="flex-1 py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Next Step →</button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Tax Residence & PEP */}
+          {step === 3 && (
+            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">Are you a US Person?</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => setKycData({...kycData, isUSPerson: 'yes'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.isUSPerson === 'yes' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Yes</button>
+                  <button onClick={() => setKycData({...kycData, isUSPerson: 'no'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.isUSPerson === 'no' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>No</button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">Where do you pay taxes?</label>
+                <input
+                  type="text"
+                  value={kycData.primaryTaxCountry}
+                  onChange={(e) => setKycData({...kycData, primaryTaxCountry: e.target.value})}
+                  placeholder="e.g., Netherlands"
+                  className="w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">Do you pay taxes in another country besides {kycData.primaryTaxCountry || 'your primary country'}?</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => setKycData({...kycData, hasAdditionalTaxCountry: 'yes'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.hasAdditionalTaxCountry === 'yes' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Yes</button>
+                  <button onClick={() => setKycData({...kycData, hasAdditionalTaxCountry: 'no'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.hasAdditionalTaxCountry === 'no' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>No</button>
+                </div>
+              </div>
+
+              {kycData.hasAdditionalTaxCountry === 'yes' && (
+                <div>
+                  <label className="block text-lg font-bold mb-4 text-white">Which country?</label>
+                  <input
+                    type="text"
+                    value={kycData.additionalTaxCountry}
+                    onChange={(e) => setKycData({...kycData, additionalTaxCountry: e.target.value})}
+                    placeholder="Enter country name"
+                    className="w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white flex items-center gap-2">
+                  Are you a PEP (Politically Exposed Person)?
+                  <button
+                    onMouseEnter={() => setShowPepTooltip(true)}
+                    onMouseLeave={() => setShowPepTooltip(false)}
+                    onClick={() => setShowPepTooltip(!showPepTooltip)}
+                    className="relative text-gray-400 hover:text-[#28EBCF]"
+                  >
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-gray-500 text-xs">i</span>
+                    {showPepTooltip && (
+                      <div className="absolute left-0 top-6 bg-gray-800 border border-gray-600 rounded-lg p-3 text-sm text-gray-300 w-64 z-10 shadow-xl">
+                        <p className="font-normal text-left">Examples include:</p>
+                        <ul className="list-disc ml-4 mt-2 font-normal text-left">
+                          <li>Heads of state or government</li>
+                          <li>Senior politicians</li>
+                          <li>Senior government officials</li>
+                          <li>Judicial or military officials</li>
+                          <li>Senior executives of state-owned corporations</li>
+                          <li>Important political party officials</li>
+                        </ul>
+                      </div>
+                    )}
+                  </button>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => setKycData({...kycData, isPEP: 'yes'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.isPEP === 'yes' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Yes</button>
+                  <button onClick={() => setKycData({...kycData, isPEP: 'no'})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${kycData.isPEP === 'no' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>No</button>
+                </div>
+              </div>
+
+              {kycData.isPEP === 'yes' && (
+                <div>
+                  <label className="block text-lg font-bold mb-4 text-white">Please explain your PEP status</label>
+                  <textarea
+                    value={kycData.pepExplanation}
+                    onChange={(e) => setKycData({...kycData, pepExplanation: e.target.value})}
+                    placeholder="Describe your role or position"
+                    rows="4"
+                    className="w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500"
+                  />
+                </div>
+              )}
+
+              <div className="flex gap-4">
+                <button onClick={() => setStep(2)} className="flex-1 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all font-medium">← Back</button>
+                <button onClick={() => setStep(4)} disabled={!canProceedStep3} className="flex-1 py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Next Step →</button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Document Upload */}
+          {step === 4 && (
+            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">Scan Your ID or Passport</label>
+                <IDScanner
+                  onDataExtracted={(data) => {
+                    console.log('Extracted ID data:', data);
+                    // Auto-fill KYC data from scanned ID
+                    setKycData({
+                      ...kycData,
+                      firstName: data.firstName || kycData.firstName,
+                      lastName: data.lastName || kycData.lastName,
+                      dateOfBirth: data.dateOfBirth || kycData.dateOfBirth,
+                      nationality: data.nationality || kycData.nationality,
+                      placeOfBirth: data.placeOfBirth || kycData.placeOfBirth,
+                      bsnNumber: data.bsnNumber || kycData.bsnNumber,
+                      documentNumber: data.documentNumber || kycData.documentNumber
+                    });
+                    // Mark passport as uploaded so user can proceed
+                    setPassportFile(new File(["scanned"], "id-scan.jpg", { type: "image/jpeg" }));
+                  }}
+                />
+                <p className="text-sm text-gray-400 mt-2">
+                  Upload your ID or passport and we'll automatically extract your information
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-lg font-bold mb-4 text-white">Upload Proof of Wealth Origin</label>
+                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-[#28EBCF] transition-all">
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={(e) => setWealthProofFile(e.target.files[0])}
+                    className="hidden"
+                    id="wealth-proof-upload"
+                  />
+                  <label htmlFor="wealth-proof-upload" className="cursor-pointer">
+                    {wealthProofFile ? (
+                      <div>
+                        <div className="text-4xl mb-2">✓</div>
+                        <p className="text-[#28EBCF]">{wealthProofFile.name}</p>
+                        <p className="text-sm text-gray-400 mt-2">Click to change file</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="text-4xl mb-2">📄</div>
+                        <p className="text-gray-300">Click to upload proof of wealth origin</p>
+                        <p className="text-sm text-gray-500 mt-2">Accepted formats: JPG, PNG, PDF</p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button onClick={() => setStep(3)} className="flex-1 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all font-medium">← Back</button>
+                <button onClick={() => setStep(5)} disabled={!canProceedStep4} className="flex-1 py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Next Step →</button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Payment */}
+          {step === 5 && (
             <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-6 text-center border border-gray-800">
               <div className="text-6xl mb-4">💳</div>
-              <h2 className="text-2xl font-bold text-white">Stort je beginbedrag</h2>
-              <p className="text-gray-400">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
-              <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30"><div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-400">Te storten bedrag</div></div>
+              <h2 className="text-2xl font-bold text-white">Deposit your initial amount</h2>
+              <p className="text-gray-400">Deposit {formatEuro(parseInt(investmentDetails.amount))} via iDEAL to activate your portfolio</p>
+              <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30">
+                <div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div>
+                <div className="text-sm text-gray-400">Amount to deposit</div>
+              </div>
               <button onClick={async () => {
                 console.log('💰 PAYMENT BUTTON CLICKED');
+                console.log('KYC Data:', kycData);
+                console.log('Files:', { passport: passportFile?.name, wealthProof: wealthProofFile?.name });
                 setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
 
                 // Save portfolio and investment details to database using the helper function
                 await savePortfolioToDatabase('betaald');
 
                 setCurrentPage('dashboard');
-              }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
-              <button onClick={() => setStep(1)} className="text-gray-400 hover:text-gray-200">← Terug</button>
+              }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Pay with iDEAL →</button>
+              <button onClick={() => setStep(4)} className="text-gray-400 hover:text-gray-200">← Back</button>
             </div>
           )}
         </div>
@@ -8398,11 +8714,11 @@ useEffect(() => {
                 </svg>
                 <div>
                   <div className="text-2xl font-bold text-white">PIGG</div>
-                  <div className="text-sm text-gray-400">Portfolio Setup</div>
+                  <div className="text-sm text-gray-400">Portfolio Instellen</div>
                 </div>
               </div>
               <button onClick={() => setCurrentPage('initialChoice')} className="text-gray-400 hover:text-white transition-colors">
-                ← Back
+                ← Terug
               </button>
             </div>
           </div>
@@ -8412,7 +8728,7 @@ useEffect(() => {
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-400">Step {portfolioOnboardingStep} of 4</span>
+              <span className="text-sm text-gray-400">Stap {portfolioOnboardingStep} van 4</span>
               <span className="text-sm text-[#28EBCF]">{Math.round((portfolioOnboardingStep / 4) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
@@ -8427,11 +8743,11 @@ useEffect(() => {
           {portfolioOnboardingStep === 1 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Investment Preference</h2>
+                <h2 className="text-2xl font-bold text-white mb-6">Beleggingsvoorkeur</h2>
 
                 <div className="mb-8">
                   <label className="block text-lg text-gray-300 mb-4">
-                    What percentage of your available capital will you invest?
+                    Welk percentage van uw beschikbare vermogen gaat u beleggen?
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     {['0-25', '25-50', '50-75', '75-100'].map(option => (
@@ -8452,14 +8768,14 @@ useEffect(() => {
 
                 <div>
                   <label className="block text-lg text-gray-300 mb-4">
-                    Which statement do you choose?
+                    Welke uitspraak kiest u?
                   </label>
-                  <p className="text-sm text-gray-400 mb-4">I want my assets to move between:</p>
+                  <p className="text-sm text-gray-400 mb-4">Ik wil dat mijn vermogen beweegt tussen:</p>
                   <div className="space-y-3">
                     {[
-                      { value: 'defensief', label: 'EUR 95,000 and 110,000 (defensive)' },
-                      { value: 'neutraal', label: 'EUR 90,000 and 120,000 (neutral)' },
-                      { value: 'offensief', label: 'EUR 80,000 and 135,000 (offensive)' }
+                      { value: 'defensief', label: 'EUR 95.000 en 110.000 (defensief)' },
+                      { value: 'neutraal', label: 'EUR 90.000 en 120.000 (neutraal)' },
+                      { value: 'offensief', label: 'EUR 80.000 en 135.000 (offensief)' }
                     ].map(option => (
                       <button
                         key={option.value}
@@ -8482,7 +8798,7 @@ useEffect(() => {
                 disabled={!onboardingData.investmentPercentage || !onboardingData.riskTolerance}
                 className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
-                Next
+                Volgende
               </button>
             </div>
           )}
@@ -8491,20 +8807,20 @@ useEffect(() => {
           {portfolioOnboardingStep === 2 && (
             <div className="bg-gray-800 rounded-xl p-6 space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Return Expectations</h2>
+                <h2 className="text-2xl font-bold text-white mb-6">Rendementsverwachting</h2>
 
                 <div className="mb-8">
                   <label className="block text-lg text-gray-300 mb-4">
-                    What return are you aiming for?
+                    Welk rendement streeft u na?
                   </label>
                   <div className="space-y-3">
                     {[
-                      { value: 'obligaties', label: '3% - 4% per year', range: '-10% to 15%', type: 'Bonds' },
-                      { value: 'defensief', label: '4% - 5% per year', range: '-15% to 20%', type: 'Defensive' },
-                      { value: 'neutraal', label: '5% - 6% per year', range: '-20% to 25%', type: 'Neutral' },
-                      { value: 'offensief', label: '6% - 7% per year', range: '-25% to 30%', type: 'Offensive' },
-                      { value: 'zeer-offensief', label: '7% - 8% per year', range: '-30% to 35%', type: 'Very Offensive' },
-                      { value: 'aandelen', label: '8% - 9% per year', range: '-35% to 40%', type: 'Stocks' }
+                      { value: 'obligaties', label: '3% - 4% per jaar', range: '-10% tot 15%', type: 'Obligaties' },
+                      { value: 'defensief', label: '4% - 5% per jaar', range: '-15% tot 20%', type: 'Defensief' },
+                      { value: 'neutraal', label: '5% - 6% per jaar', range: '-20% tot 25%', type: 'Neutraal' },
+                      { value: 'offensief', label: '6% - 7% per jaar', range: '-25% tot 30%', type: 'Offensief' },
+                      { value: 'zeer-offensief', label: '7% - 8% per jaar', range: '-30% tot 35%', type: 'Zeer Offensief' },
+                      { value: 'aandelen', label: '8% - 9% per jaar', range: '-35% tot 40%', type: 'Aandelen' }
                     ].map(option => (
                       <button
                         key={option.value}
@@ -8519,7 +8835,7 @@ useEffect(() => {
                           {option.type}: {option.label}
                         </div>
                         <div className="text-sm text-gray-400">
-                          Annual range: {option.range}
+                          Jaarlijkse bandbreedte: {option.range}
                         </div>
                       </button>
                     ))}
@@ -8528,13 +8844,13 @@ useEffect(() => {
 
                 <div>
                   <label className="block text-lg text-gray-300 mb-4">
-                    The focus of my investments is on:
+                    De focus van mijn beleggingen ligt op:
                   </label>
                   <div className="space-y-3">
                     {[
-                      { value: 'risico-mijden', label: 'Avoiding risk (bonds and defensive)' },
-                      { value: 'beide', label: 'Both (defensive and neutral)' },
-                      { value: 'winst-behalen', label: 'Achieving profit (offensive, very offensive and stocks)' }
+                      { value: 'risico-mijden', label: 'Risico mijden (obligaties en defensief)' },
+                      { value: 'beide', label: 'Beide (defensief en neutraal)' },
+                      { value: 'winst-behalen', label: 'Winst behalen (offensief, zeer offensief en aandelen)' }
                     ].map(option => (
                       <button
                         key={option.value}
@@ -8557,14 +8873,14 @@ useEffect(() => {
                   onClick={goToPrevStep}
                   className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
                 >
-                  Previous
+                  Vorige
                 </button>
                 <button
                   onClick={goToNextStep}
                   disabled={!onboardingData.returnExpectation || !onboardingData.personalPreference}
                   className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
                 >
-                  Next
+                  Volgende
                 </button>
               </div>
             </div>
