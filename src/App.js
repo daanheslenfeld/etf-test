@@ -6915,7 +6915,8 @@ useEffect(() => {
                       nationality: data.nationality || kycData.nationality,
                       placeOfBirth: data.placeOfBirth || kycData.placeOfBirth,
                       bsnNumber: data.bsnNumber || kycData.bsnNumber,
-                      documentNumber: data.documentNumber || kycData.documentNumber
+                      documentNumber: data.documentNumber || kycData.documentNumber,
+                      expiryDate: data.expiryDate || kycData.expiryDate
                     });
                     // Mark passport as uploaded so user can proceed
                     setPassportFile(new File(["scanned"], "id-scan.jpg", { type: "image/jpeg" }));

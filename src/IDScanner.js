@@ -358,6 +358,12 @@ const IDScanner = ({ onDataExtracted }) => {
                 <span className="text-white ml-2">{extractedData.bsnNumber}</span>
               </div>
             )}
+            {extractedData.expiryDate && (
+              <div>
+                <span className="text-gray-400">Expiry Date:</span>
+                <span className="text-white ml-2">{extractedData.expiryDate}</span>
+              </div>
+            )}
           </div>
 
           <button
