@@ -996,7 +996,15 @@ const ETFPortal = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const [customerPortalTab, setCustomerPortalTab] = useState('customers');
+  const [customerDetailTab, setCustomerDetailTab] = useState('overview');
   const [chatInquiries, setChatInquiries] = useState([]);
+  const [complianceReviews, setComplianceReviews] = useState(() => {
+    const saved = localStorage.getItem('complianceReviews');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewEmailTemplate, setReviewEmailTemplate] = useState('annual');
+  const [reviewNotes, setReviewNotes] = useState('');
 
   const [customers, setCustomers] = useState(() => {
     const saved = localStorage.getItem('customers');
@@ -1577,6 +1585,11 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem('portfolio', JSON.stringify(portfolio));
   }, [portfolio]);
+
+  // Save compliance reviews to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('complianceReviews', JSON.stringify(complianceReviews));
+  }, [complianceReviews]);
 
   // Reset ETF database filters when entering the page
   useEffect(() => {
@@ -10825,6 +10838,126 @@ useEffect(() => {
       return null;
     }
 
+    // Helper function to generate sanctions check (simulated)
+    const getSanctionsStatus = (customer) => {
+      // Simulated sanctions check - in production this would call an actual API
+      const checkDate = customer.sanctionsCheckDate || customer.registeredAt;
+      return {
+        checked: true,
+        passed: true,
+        checkDate: checkDate,
+        lists: ['EU Sanctions List', 'UN Sanctions List', 'OFAC SDN List', 'Dutch National Sanctions List']
+      };
+    };
+
+    // Helper function to calculate next review date
+    const getNextReviewDate = (customer) => {
+      const reviews = complianceReviews.filter(r => r.customerId === customer.id);
+      if (reviews.length === 0) {
+        // First review should be 1 year after registration
+        const regDate = new Date(customer.registeredAt);
+        regDate.setFullYear(regDate.getFullYear() + 1);
+        return regDate;
+      }
+      const lastReview = reviews.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      const nextDate = new Date(lastReview.date);
+      nextDate.setFullYear(nextDate.getFullYear() + 1);
+      return nextDate;
+    };
+
+    // Helper to get risk score color
+    const getRiskScoreColor = (score) => {
+      if (score <= 30) return 'text-green-400';
+      if (score <= 60) return 'text-yellow-400';
+      return 'text-red-400';
+    };
+
+    // Calculate client risk score based on profile
+    const calculateRiskScore = (customer) => {
+      let score = 20; // Base score
+      if (customer.investmentDetails?.riskProfile === 'Offensief' || customer.investmentDetails?.riskProfile === 'Zeer Offensief') score += 20;
+      if (parseFloat(customer.investmentDetails?.amount || 0) > 100000) score += 15;
+      if (!customer.email_verified) score += 25;
+      return Math.min(score, 100);
+    };
+
+    const sanctionsStatus = getSanctionsStatus(selectedCustomer);
+    const nextReviewDate = getNextReviewDate(selectedCustomer);
+    const isReviewDue = new Date() > nextReviewDate;
+    const customerReviews = complianceReviews.filter(r => r.customerId === selectedCustomer.id);
+    const riskScore = calculateRiskScore(selectedCustomer);
+
+    // Email templates
+    const emailTemplates = {
+      annual: {
+        subject: 'Jaarlijkse review van jouw beleggingsprofiel - PIGG',
+        body: `Beste ${selectedCustomer.firstName || selectedCustomer.name},
+
+Onderdeel van onze zorgplicht is het jaarlijks uitvoeren van een review van jouw beleggingsprofiel. We willen graag controleren of jouw huidige situatie nog overeenkomt met de gegevens die we van je hebben.
+
+Kun je ons laten weten of er veranderingen zijn in:
+- Je financiële situatie (inkomen, vermogen, schulden)
+- Je beleggingsdoelen
+- Je risicoprofiel of risicobereidheid
+- Je persoonlijke situatie (werk, gezin)
+- Je beleggingshorizon
+
+Je kunt eenvoudig reageren op deze email of inloggen op je persoonlijke portaal.
+
+Met vriendelijke groet,
+PIGG Account Management`
+      },
+      situation: {
+        subject: 'Wijziging financiële situatie - PIGG',
+        body: `Beste ${selectedCustomer.firstName || selectedCustomer.name},
+
+We hebben vernomen dat er mogelijk wijzigingen zijn in jouw financiële situatie. Om je optimaal te kunnen blijven adviseren, willen we graag de volgende informatie van je ontvangen:
+
+- Actueel jaarinkomen
+- Eventuele wijzigingen in vermogen
+- Wijzigingen in vaste lasten of schulden
+- Wijzigingen in je werk- of woonsituatie
+
+Neem gerust contact met ons op voor een persoonlijk gesprek.
+
+Met vriendelijke groet,
+PIGG Account Management`
+      },
+      kyc: {
+        subject: 'Actualisatie identiteitsgegevens - PIGG',
+        body: `Beste ${selectedCustomer.firstName || selectedCustomer.name},
+
+In het kader van de Wet ter voorkoming van witwassen en financieren van terrorisme (Wwft) zijn we verplicht om periodiek je identiteitsgegevens te verifiëren.
+
+We verzoeken je om een kopie van je geldige identiteitsbewijs te uploaden via je persoonlijke portaal, of ons te voorzien van:
+- Kopie paspoort of ID-kaart (voor- en achterzijde)
+- Recent bankafschrift of energierekening (niet ouder dan 3 maanden)
+
+Met vriendelijke groet,
+PIGG Account Management`
+      }
+    };
+
+    const handleSendReviewEmail = () => {
+      const template = emailTemplates[reviewEmailTemplate];
+      // In production, this would send an actual email
+      const newReview = {
+        id: Date.now(),
+        customerId: selectedCustomer.id,
+        date: new Date().toISOString(),
+        type: reviewEmailTemplate,
+        notes: reviewNotes,
+        status: 'sent',
+        emailSubject: template.subject
+      };
+      const updatedReviews = [...complianceReviews, newReview];
+      setComplianceReviews(updatedReviews);
+      localStorage.setItem('complianceReviews', JSON.stringify(updatedReviews));
+      setShowReviewModal(false);
+      setReviewNotes('');
+      alert(`Review email sent to ${selectedCustomer.email}`);
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* iOS Status Bar Spacer */}
@@ -10851,7 +10984,7 @@ useEffect(() => {
                 <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   Home
                 </button>
-                <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                <button onClick={() => { setCurrentPage('customerDatabase'); setCustomerDetailTab('overview'); }} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
                   ← Database
                 </button>
                 <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
@@ -10863,230 +10996,803 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-white">Klant Gegevens</h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Persoonlijke Informatie</h2>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-sm text-gray-500">Voornaam:</span>
-                  <div className="font-medium text-white">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Achternaam:</span>
-                  <div className="font-medium text-white">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Geboortedatum:</span>
-                  <div className="font-medium text-white">{selectedCustomer.birthDate || 'N/A'}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Email:</span>
-                  <div className="font-medium text-white">{selectedCustomer.email}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Telefoon:</span>
-                  <div className="font-medium text-white">{selectedCustomer.phone}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Straat + Huisnummer:</span>
-                  <div className="font-medium text-white">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Postcode:</span>
-                  <div className="font-medium text-white">{selectedCustomer.postalCode || 'N/A'}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Woonplaats:</span>
-                  <div className="font-medium text-white">{selectedCustomer.city}</div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Geregistreerd op:</span>
-                  <div className="font-medium text-white">
-                    {new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              </div>
+          {/* Customer Header with Status Badges */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white">{selectedCustomer.name}</h1>
+              <p className="text-gray-400">{selectedCustomer.email}</p>
             </div>
-
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Beleggingsinformatie</h2>
-              <div className="space-y-3">
-                <div>
-                  <span className="text-sm text-gray-500">Account Type:</span>
-                  <div className="font-medium">
-                    {selectedCustomer.account_type === 'betaald' ? (
-                      <span className="px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm font-semibold">
-                        Betaald Account
-                      </span>
-                    ) : selectedCustomer.account_type === 'fictief' ? (
-                      <span className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-semibold">
-                        Fictief Account
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold">
-                        Gratis Account
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {selectedCustomer.investmentDetails?.goal ? (
-                  <>
-                    <div>
-                      <span className="text-sm text-gray-500">Doelstelling:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.goal}</div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Horizon:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.horizon} jaar</div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Beleggingsbedrag:</span>
-                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Maandelijkse storting:</span>
-                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Risicoprofiel:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Actuele Waarde:</span>
-                      <div className="font-medium text-lg text-green-400">
-                        € {parseInt(selectedCustomer.investmentDetails.current_portfolio_value || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-500">Totaal Rendement:</span>
-                      <div className={`font-medium text-lg ${(() => {
-                        const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
-                        const currentValue = selectedCustomer.investmentDetails.current_portfolio_value || initialValue;
-                        const returnPercentage = selectedCustomer.investmentDetails.total_return || (initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0);
-                        return returnPercentage >= 0 ? 'text-green-400' : 'text-red-400';
-                      })()}`}>
-                        {(() => {
-                          const returnPercentage = selectedCustomer.investmentDetails.total_return !== null && selectedCustomer.investmentDetails.total_return !== undefined
-                            ? parseFloat(selectedCustomer.investmentDetails.total_return).toFixed(2)
-                            : '0.00';
-                          return `${parseFloat(returnPercentage) >= 0 ? '+' : ''}${returnPercentage}%`;
-                        })()}
-                      </div>
-                    </div>
-                  </>
+            <div className="flex flex-wrap gap-2">
+              {/* Sanctions Check Badge */}
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${sanctionsStatus.passed ? 'bg-green-600/20 border border-green-600' : 'bg-red-600/20 border border-red-600'}`}>
+                {sanctionsStatus.passed ? (
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                 ) : (
-                  <p className="text-gray-500">Nog geen beleggingsinformatie beschikbaar</p>
+                  <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 )}
+                <span className={`text-sm font-medium ${sanctionsStatus.passed ? 'text-green-400' : 'text-red-400'}`}>
+                  Sanctions Check {sanctionsStatus.passed ? 'Passed' : 'Failed'}
+                </span>
+              </div>
+              {/* Review Status Badge */}
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${isReviewDue ? 'bg-orange-600/20 border border-orange-600' : 'bg-blue-600/20 border border-blue-600'}`}>
+                <svg className="w-5 h-5" fill="none" stroke={isReviewDue ? '#f97316' : '#3b82f6'} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className={`text-sm font-medium ${isReviewDue ? 'text-orange-400' : 'text-blue-400'}`}>
+                  {isReviewDue ? 'Review Due!' : `Next Review: ${nextReviewDate.toLocaleDateString('nl-NL')}`}
+                </span>
+              </div>
+              {/* Risk Score Badge */}
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700/50 border border-gray-600">
+                <span className="text-sm text-gray-400">Risk Score:</span>
+                <span className={`text-sm font-bold ${getRiskScoreColor(riskScore)}`}>{riskScore}</span>
               </div>
             </div>
           </div>
 
-          {/* Portfolio Performance */}
-          {selectedCustomer.portfolioValue && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio Waarde</h2>
-                <div className="text-3xl font-bold text-white">
-                  € {selectedCustomer.portfolioValue.toLocaleString('nl-NL')}
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-8 border-b border-gray-700 overflow-x-auto">
+            {[
+              { id: 'overview', label: 'Overview', icon: '📋' },
+              { id: 'inventory', label: 'Client Inventory', icon: '📝' },
+              { id: 'documents', label: 'Documents & ID', icon: '🪪' },
+              { id: 'compliance', label: 'Compliance', icon: '✅' },
+              { id: 'activity', label: 'Activity Log', icon: '📊' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setCustomerDetailTab(tab.id)}
+                className={`px-4 py-3 font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
+                  customerDetailTab === tab.id
+                    ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Overview Tab */}
+          {customerDetailTab === 'overview' && (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                  <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Personal Information</h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">First Name:</span>
+                      <span className="font-medium text-white">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Last Name:</span>
+                      <span className="font-medium text-white">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Date of Birth:</span>
+                      <span className="font-medium text-white">{selectedCustomer.birthDate || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Email:</span>
+                      <span className="font-medium text-white">{selectedCustomer.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Phone:</span>
+                      <span className="font-medium text-white">{selectedCustomer.phone}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Address:</span>
+                      <span className="font-medium text-white">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Postal Code:</span>
+                      <span className="font-medium text-white">{selectedCustomer.postalCode || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">City:</span>
+                      <span className="font-medium text-white">{selectedCustomer.city}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Registered:</span>
+                      <span className="font-medium text-white">
+                        {new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                  <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Investment Information</h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-500">Account Type:</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        selectedCustomer.account_type === 'betaald' ? 'bg-green-600/20 text-green-400' :
+                        selectedCustomer.account_type === 'fictief' ? 'bg-blue-600/20 text-blue-400' :
+                        'bg-gray-700 text-gray-300'
+                      }`}>
+                        {selectedCustomer.account_type === 'betaald' ? 'Paid' : selectedCustomer.account_type === 'fictief' ? 'Fictitious' : 'Free'}
+                      </span>
+                    </div>
+                    {selectedCustomer.investmentDetails?.goal && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Goal:</span>
+                          <span className="font-medium text-white">{selectedCustomer.investmentDetails.goal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Horizon:</span>
+                          <span className="font-medium text-white">{selectedCustomer.investmentDetails.horizon} years</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Investment Amount:</span>
+                          <span className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Monthly Contribution:</span>
+                          <span className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Risk Profile:</span>
+                          <span className="font-medium text-white">{selectedCustomer.investmentDetails.riskProfile || 'Not set'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-500">Current Value:</span>
+                          <span className="font-medium text-lg text-green-400">€ {parseInt(selectedCustomer.investmentDetails.current_portfolio_value || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              {/* Portfolio Section */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6 mb-8">
+                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio</h2>
+                {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-900/50 border-b border-gray-800">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ETF</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Category</th>
+                          <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Weight</th>
+                          <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {selectedCustomer.portfolio.map((etf, idx) => (
+                          <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
+                            <td className="px-4 py-3 text-sm text-[#28EBCF]">{etf.naam}</td>
+                            <td className="px-4 py-3 text-sm text-gray-400">{etf.categorie}</td>
+                            <td className="px-4 py-3 text-sm text-right font-medium text-white">{(etf.weight || 0).toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-sm text-right text-gray-400">{etf['ter p.a.']}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">Client has not built a portfolio yet</p>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Client Inventory Tab */}
+          {customerDetailTab === 'inventory' && (
+            <div className="space-y-6">
               <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Totaal Rendement</h2>
-                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {selectedCustomer.totalReturn >= 0 ? '+' : ''}{selectedCustomer.totalReturn}%
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Onboarding Questionnaire Answers</h2>
+
+                {selectedCustomer.onboardingData ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Investment Preference */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="text-[#28EBCF]">1.</span> Investment Preference
+                      </h3>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-sm text-gray-400">Percentage of available assets to invest:</span>
+                          <div className="font-medium text-white mt-1">{selectedCustomer.onboardingData.investmentPercentage || 'Not specified'}%</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-400">Risk tolerance:</span>
+                          <div className="font-medium text-white mt-1 capitalize">{selectedCustomer.onboardingData.riskTolerance || 'Not specified'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Return Expectations */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="text-[#28EBCF]">2.</span> Return Expectations
+                      </h3>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-sm text-gray-400">Target return:</span>
+                          <div className="font-medium text-white mt-1 capitalize">{selectedCustomer.onboardingData.returnExpectation || 'Not specified'}</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-400">Personal preference:</span>
+                          <div className="font-medium text-white mt-1 capitalize">{selectedCustomer.onboardingData.personalPreference?.replace(/-/g, ' ') || 'Not specified'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Investment Goal */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="text-[#28EBCF]">3.</span> Investment Goal
+                      </h3>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-sm text-gray-400">Primary goal:</span>
+                          <div className="font-medium text-white mt-1 capitalize">
+                            {selectedCustomer.onboardingData.investmentGoal === 'vermogensgroei' ? 'Wealth Growth' :
+                             selectedCustomer.onboardingData.investmentGoal === 'inkomen-niet-noodzakelijk' ? 'Income (not necessary)' :
+                             selectedCustomer.onboardingData.investmentGoal === 'inkomen-noodzakelijk' ? 'Income (necessary)' :
+                             selectedCustomer.onboardingData.investmentGoal === 'anders' ? `Other: ${selectedCustomer.onboardingData.investmentGoalOther}` :
+                             'Not specified'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Experience */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <span className="text-[#28EBCF]">4.</span> Investment Experience
+                      </h3>
+                      <div className="space-y-2">
+                        {[
+                          { key: 'experienceStocks', label: 'Stocks' },
+                          { key: 'experienceBonds', label: 'Bonds' },
+                          { key: 'experienceFunds', label: 'Investment Funds' },
+                          { key: 'experienceETFs', label: 'ETFs' },
+                          { key: 'experienceAlternatives', label: 'Alternatives' },
+                          { key: 'experienceDerivatives', label: 'Derivatives' }
+                        ].map(item => (
+                          <div key={item.key} className="flex justify-between items-center">
+                            <span className="text-sm text-gray-400">{item.label}:</span>
+                            <span className={`text-sm font-medium px-2 py-1 rounded ${
+                              selectedCustomer.onboardingData[item.key] === 'veel' ? 'bg-green-600/20 text-green-400' :
+                              selectedCustomer.onboardingData[item.key] === 'gemiddeld' ? 'bg-yellow-600/20 text-yellow-400' :
+                              'bg-gray-700 text-gray-300'
+                            }`}>
+                              {selectedCustomer.onboardingData[item.key] === 'veel' ? 'High' :
+                               selectedCustomer.onboardingData[item.key] === 'gemiddeld' ? 'Medium' :
+                               selectedCustomer.onboardingData[item.key] === 'weinig' ? 'Low/None' : 'N/A'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p className="text-gray-500">No onboarding data available for this client</p>
+                    <p className="text-gray-600 text-sm mt-2">Client may not have completed the onboarding questionnaire</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Additional Investment Details */}
+              {selectedCustomer.investmentDetails && (
+                <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                  <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Investment Profile Summary</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-white">€{parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
+                      <div className="text-sm text-gray-400 mt-1">Initial Investment</div>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-white">€{parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
+                      <div className="text-sm text-gray-400 mt-1">Monthly Contribution</div>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-white">{selectedCustomer.investmentDetails.horizon || 'N/A'} yr</div>
+                      <div className="text-sm text-gray-400 mt-1">Investment Horizon</div>
+                    </div>
+                    <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-[#28EBCF]">{selectedCustomer.investmentDetails.riskProfile || 'N/A'}</div>
+                      <div className="text-sm text-gray-400 mt-1">Risk Profile</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Documents & ID Tab */}
+          {customerDetailTab === 'documents' && (
+            <div className="space-y-6">
+              {/* Sanctions Check Card */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-[#28EBCF]">Sanctions List Check</h2>
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${sanctionsStatus.passed ? 'bg-green-600/20' : 'bg-red-600/20'}`}>
+                    {sanctionsStatus.passed ? (
+                      <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                    <span className={`font-semibold ${sanctionsStatus.passed ? 'text-green-400' : 'text-red-400'}`}>
+                      {sanctionsStatus.passed ? 'CLEARED' : 'FLAGGED'}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-400 mb-3">Checked Against:</h3>
+                    <ul className="space-y-2">
+                      {sanctionsStatus.lists.map((list, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-white">
+                          <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          {list}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-400 mb-3">Check Details:</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Last checked:</span>
+                        <span className="text-white">{new Date(sanctionsStatus.checkDate).toLocaleDateString('nl-NL')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Status:</span>
+                        <span className="text-green-400">Permanent monitoring active</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Next auto-check:</span>
+                        <span className="text-white">Daily (automated)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ID Document Card */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Identity Document</h2>
+                {selectedCustomer.idDocument ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <img src={selectedCustomer.idDocument.image} alt="ID Document" className="w-full rounded-lg" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-3">Extracted Information:</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Document Type:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.type || 'ID Card'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Document Number:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.number || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Expiry Date:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.expiry || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Verified:</span>
+                          <span className="text-green-400">Yes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                    <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                    </svg>
+                    <p className="text-gray-500">No ID document uploaded</p>
+                    <p className="text-gray-600 text-sm mt-2">Client should upload ID via the portal</p>
+                  </div>
+                )}
+              </div>
+
+              {/* KYC Status Card */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">KYC Status</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                    <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${selectedCustomer.email_verified ? 'bg-green-600/20' : 'bg-red-600/20'}`}>
+                      {selectedCustomer.email_verified ? (
+                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-400">Email Verified</div>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                    <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${selectedCustomer.idDocument ? 'bg-green-600/20' : 'bg-yellow-600/20'}`}>
+                      {selectedCustomer.idDocument ? (
+                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-400">ID Verified</div>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center bg-green-600/20">
+                      <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="text-sm text-gray-400">Sanctions Clear</div>
+                  </div>
+                  <div className="bg-gray-800/50 rounded-lg p-4 text-center">
+                    <div className={`w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center ${selectedCustomer.onboardingData ? 'bg-green-600/20' : 'bg-yellow-600/20'}`}>
+                      {selectedCustomer.onboardingData ? (
+                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-400">Questionnaire</div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6 mb-8">
-            <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio</h2>
-            {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-800">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ETF</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Weging</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {selectedCustomer.portfolio.map((etf, idx) => {
-                      const fullETF = etfs.find(e => e.isin === etf.isin) || etf;
-                      return (
-                        <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
-                          <td className="px-4 py-3 text-sm">
-                            <button
-                              onClick={() => setSelectedETF(fullETF)}
-                              className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline text-left"
-                            >
-                              {etf.naam}
-                            </button>
-                          </td>
-                          <td className="px-4 py-3 text-sm text-gray-400">{etf.categorie}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-white">{(etf.weight || 0).toFixed(1)}%</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-400">{etf['ter p.a.']}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+          {/* Compliance Tab */}
+          {customerDetailTab === 'compliance' && (
+            <div className="space-y-6">
+              {/* Review Status Card */}
+              <div className={`bg-[#1A1B1F] border ${isReviewDue ? 'border-orange-600' : 'border-gray-800'} rounded-xl shadow-xl p-6`}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-[#28EBCF]">Annual Review Status</h2>
+                    <p className="text-gray-400 mt-1">
+                      {isReviewDue
+                        ? `Review was due on ${nextReviewDate.toLocaleDateString('nl-NL')}`
+                        : `Next review due: ${nextReviewDate.toLocaleDateString('nl-NL')}`
+                      }
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                      isReviewDue
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                        : 'bg-[#28EBCF] hover:bg-[#20D4BA] text-gray-900'
+                    }`}
+                  >
+                    {isReviewDue ? 'Send Review Request Now' : 'Schedule Review'}
+                  </button>
+                </div>
               </div>
-            ) : (
-              <p className="text-gray-500">Klant heeft nog geen portfolio samengesteld</p>
-            )}
-          </div>
 
-          {/* Transaction History */}
-          {selectedCustomer.transactions && selectedCustomer.transactions.length > 0 && (
+              {/* Review History */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Review History</h2>
+                {customerReviews.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-900/50 border-b border-gray-800">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Date</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Type</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Subject</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Status</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {customerReviews.sort((a, b) => new Date(b.date) - new Date(a.date)).map((review) => (
+                          <tr key={review.id} className="hover:bg-gray-900/30 transition-colors">
+                            <td className="px-4 py-3 text-sm text-white">
+                              {new Date(review.date).toLocaleDateString('nl-NL')}
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                review.type === 'annual' ? 'bg-blue-600/20 text-blue-400' :
+                                review.type === 'situation' ? 'bg-purple-600/20 text-purple-400' :
+                                'bg-orange-600/20 text-orange-400'
+                              }`}>
+                                {review.type === 'annual' ? 'Annual Review' :
+                                 review.type === 'situation' ? 'Situation Change' : 'KYC Update'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-400">{review.emailSubject}</td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className="px-2 py-1 bg-green-600/20 text-green-400 rounded text-xs font-medium">
+                                {review.status === 'sent' ? 'Sent' : review.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-400">{review.notes || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p className="text-gray-500">No reviews conducted yet</p>
+                    <p className="text-gray-600 text-sm mt-2">Schedule the first annual review for this client</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Quick Actions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => { setReviewEmailTemplate('annual'); setShowReviewModal(true); }}
+                    className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-left"
+                  >
+                    <div className="text-2xl mb-2">📅</div>
+                    <div className="font-medium text-white">Annual Review</div>
+                    <div className="text-sm text-gray-400 mt-1">Standard yearly client review</div>
+                  </button>
+                  <button
+                    onClick={() => { setReviewEmailTemplate('situation'); setShowReviewModal(true); }}
+                    className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-left"
+                  >
+                    <div className="text-2xl mb-2">💰</div>
+                    <div className="font-medium text-white">Situation Change</div>
+                    <div className="text-sm text-gray-400 mt-1">Request financial update</div>
+                  </button>
+                  <button
+                    onClick={() => { setReviewEmailTemplate('kyc'); setShowReviewModal(true); }}
+                    className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-left"
+                  >
+                    <div className="text-2xl mb-2">🪪</div>
+                    <div className="font-medium text-white">KYC Update</div>
+                    <div className="text-sm text-gray-400 mt-1">Request ID verification</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Activity Log Tab */}
+          {customerDetailTab === 'activity' && (
             <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Transactie Geschiedenis</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-800">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Datum</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Type</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Beschrijving</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Bedrag</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {selectedCustomer.transactions.map((transaction, idx) => (
-                      <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
-                        <td className="px-4 py-3 text-sm text-gray-400">
-                          {new Date(transaction.date).toLocaleDateString('nl-NL')}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                            transaction.type === 'Storting' ? 'bg-green-600/20 text-green-400' : 'bg-blue-600/20 text-blue-400'
-                          }`}>
-                            {transaction.type}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-400">{transaction.description}</td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-green-400">
-                          + € {transaction.amount.toLocaleString('nl-NL')}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Activity Log</h2>
+              <div className="space-y-4">
+                {/* Registration */}
+                <div className="flex gap-4 items-start">
+                  <div className="w-10 h-10 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <span className="font-medium text-white">Account Created</span>
+                      <span className="text-sm text-gray-500">{new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL')}</span>
+                    </div>
+                    <p className="text-sm text-gray-400 mt-1">Client registered on the platform</p>
+                  </div>
+                </div>
+
+                {/* Email Verification */}
+                {selectedCustomer.email_verified && (
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-white">Email Verified</span>
+                        <span className="text-sm text-gray-500">{new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL')}</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-1">Email address confirmed</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Onboarding */}
+                {selectedCustomer.onboardingData && (
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-white">Onboarding Completed</span>
+                        <span className="text-sm text-gray-500">-</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-1">Questionnaire and risk profile completed</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Portfolio Created */}
+                {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 && (
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 bg-[#28EBCF]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-[#28EBCF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-white">Portfolio Created</span>
+                        <span className="text-sm text-gray-500">-</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-1">Client built a portfolio with {selectedCustomer.portfolio.length} ETFs</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Transactions */}
+                {selectedCustomer.transactions && selectedCustomer.transactions.map((tx, idx) => (
+                  <div key={idx} className="flex gap-4 items-start">
+                    <div className="w-10 h-10 bg-yellow-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-white">{tx.type}: €{tx.amount.toLocaleString('nl-NL')}</span>
+                        <span className="text-sm text-gray-500">{new Date(tx.date).toLocaleDateString('nl-NL')}</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-1">{tx.description}</p>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Reviews */}
+                {customerReviews.map((review) => (
+                  <div key={review.id} className="flex gap-4 items-start">
+                    <div className="w-10 h-10 bg-orange-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-white">Review Email Sent</span>
+                        <span className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString('nl-NL')}</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mt-1">{review.emailSubject}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </div>
+
+        {/* Review Email Modal */}
+        {showReviewModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-start p-6 border-b border-gray-800">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Send Review Email</h2>
+                  <p className="text-gray-400 mt-1">Send a compliance review request to {selectedCustomer.name}</p>
+                </div>
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Template Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">Email Template</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: 'annual', label: 'Annual Review', icon: '📅' },
+                      { id: 'situation', label: 'Situation Change', icon: '💰' },
+                      { id: 'kyc', label: 'KYC Update', icon: '🪪' }
+                    ].map(template => (
+                      <button
+                        key={template.id}
+                        onClick={() => setReviewEmailTemplate(template.id)}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          reviewEmailTemplate === template.id
+                            ? 'border-[#28EBCF] bg-[#28EBCF]/10'
+                            : 'border-gray-700 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="text-2xl mb-2">{template.icon}</div>
+                        <div className={`text-sm font-medium ${reviewEmailTemplate === template.id ? 'text-[#28EBCF]' : 'text-white'}`}>
+                          {template.label}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Email Preview */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">Email Preview</label>
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="text-sm text-gray-400 mb-2">To: {selectedCustomer.email}</div>
+                    <div className="text-sm text-gray-400 mb-4">Subject: {emailTemplates[reviewEmailTemplate].subject}</div>
+                    <div className="text-sm text-white whitespace-pre-wrap border-t border-gray-700 pt-4">
+                      {emailTemplates[reviewEmailTemplate].body}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">Internal Notes (optional)</label>
+                  <textarea
+                    value={reviewNotes}
+                    onChange={(e) => setReviewNotes(e.target.value)}
+                    placeholder="Add any notes about this review..."
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent resize-none"
+                    rows="3"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-4 p-6 border-t border-gray-800">
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendReviewEmail}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-medium"
+                >
+                  Send Email
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
+
 
   // Handle PWA Install
   const handleInstallClick = async () => {
