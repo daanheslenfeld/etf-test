@@ -67,10 +67,33 @@ module.exports = async (req, res) => {
 
         console.log('Transformed investment details:', transformedInvestmentDetails);
 
+        // Parse KYC data if available
+        let kycData = null;
+        if (customer.kyc_data) {
+          try {
+            kycData = typeof customer.kyc_data === 'string'
+              ? JSON.parse(customer.kyc_data)
+              : customer.kyc_data;
+          } catch (e) {
+            console.error('Error parsing kyc_data:', e);
+          }
+        }
+
+        // Build idDocument object for frontend
+        const idDocument = customer.id_document_image ? {
+          image: customer.id_document_image,
+          type: 'ID Card/Passport',
+          number: kycData?.documentNumber || null,
+          expiry: kycData?.expiryDate || null,
+          bsn: kycData?.bsnNumber || null
+        } : null;
+
         return {
           ...customer,
           portfolio: portfolio || [],
-          investmentDetails: transformedInvestmentDetails
+          investmentDetails: transformedInvestmentDetails,
+          idDocument: idDocument,
+          kycData: kycData
         };
       })
     );

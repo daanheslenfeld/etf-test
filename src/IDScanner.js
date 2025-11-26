@@ -250,7 +250,8 @@ const IDScanner = ({ onDataExtracted }) => {
 
       setExtractedData(parsedData);
       if (onDataExtracted) {
-        onDataExtracted(parsedData);
+        // Include the original image with the extracted data
+        onDataExtracted({ ...parsedData, idImage: uploadedImage });
       }
 
       await worker.terminate();

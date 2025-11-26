@@ -1968,7 +1968,7 @@ useEffect(() => {
     }
   };
 
-  const savePortfolioToDatabase = async (accountType = 'fictief') => {
+  const savePortfolioToDatabase = async (accountType = 'fictief', kycDataParam = null) => {
     if (!user || !user.id) {
       console.error('❌ No user logged in');
       return false;
@@ -1998,7 +1998,8 @@ useEffect(() => {
           customer_id: user.id,
           portfolio: portfolio,
           investmentDetails: investmentDetails,
-          account_type: accountType
+          account_type: accountType,
+          kycData: kycDataParam
         })
       });
 
@@ -6937,7 +6938,8 @@ useEffect(() => {
                       placeOfBirth: data.placeOfBirth || kycData.placeOfBirth,
                       bsnNumber: data.bsnNumber || kycData.bsnNumber,
                       documentNumber: data.documentNumber || kycData.documentNumber,
-                      expiryDate: data.expiryDate || kycData.expiryDate
+                      expiryDate: data.expiryDate || kycData.expiryDate,
+                      idImage: data.idImage  // Store the scanned ID image
                     });
                     // Mark passport as uploaded so user can proceed
                     setPassportFile(new File(["scanned"], "id-scan.jpg", { type: "image/jpeg" }));
@@ -6999,8 +7001,8 @@ useEffect(() => {
                 console.log('Files:', { passport: passportFile?.name, wealthProof: wealthProofFile?.name });
                 setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
 
-                // Save portfolio and investment details to database using the helper function
-                await savePortfolioToDatabase('betaald');
+                // Save portfolio, investment details and KYC data to database
+                await savePortfolioToDatabase('betaald', kycData);
 
                 setCurrentPage('dashboard');
               }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Pay with iDEAL →</button>

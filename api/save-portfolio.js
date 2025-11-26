@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { customer_id, portfolio, investmentDetails, account_type } = req.body;
+  const { customer_id, portfolio, investmentDetails, account_type, kycData } = req.body;
 
   if (!customer_id) {
     return res.status(400).json({
