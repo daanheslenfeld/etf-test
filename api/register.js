@@ -68,6 +68,7 @@ module.exports = async (req, res) => {
       city: city,
       phone: phone,
       role: 'customer',
+      account_type: 'fictief',  // Default to fictief (simulated) mode
       email_verified: false,  // User must verify email
       verification_code: verificationCode,
       verification_code_expires_at: codeExpiresAt.toISOString()

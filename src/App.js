@@ -956,34 +956,37 @@ const ETFPortal = () => {
 
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
 
+  // Default empty onboarding state
+  const defaultOnboardingData = {
+    portfolioOnboardingComplete: false,
+    realMoneyOnboardingComplete: false,
+    investmentPercentage: '',
+    riskTolerance: '',
+    returnExpectation: '',
+    personalPreference: '',
+    investmentGoal: '',
+    investmentGoalOther: '',
+    wealthOrigin: '',
+    wealthOriginOther: '',
+    experienceStocks: '',
+    experienceBonds: '',
+    experienceFunds: '',
+    experienceETFs: '',
+    experienceAlternatives: '',
+    experienceDerivatives: '',
+    usPersonStatus: '',
+    taxResidence: '',
+    additionalTaxCountry: '',
+    additionalTaxCountryName: '',
+    pepStatus: '',
+    pepExplanation: '',
+    documentsUploaded: false
+  };
+
   // Onboarding state
   const [onboardingData, setOnboardingData] = useState(() => {
     const saved = localStorage.getItem('onboardingData');
-    return saved ? JSON.parse(saved) : {
-      portfolioOnboardingComplete: false,
-      realMoneyOnboardingComplete: false,
-      investmentPercentage: '',
-      riskTolerance: '',
-      returnExpectation: '',
-      personalPreference: '',
-      investmentGoal: '',
-      investmentGoalOther: '',
-      wealthOrigin: '',
-      wealthOriginOther: '',
-      experienceStocks: '',
-      experienceBonds: '',
-      experienceFunds: '',
-      experienceETFs: '',
-      experienceAlternatives: '',
-      experienceDerivatives: '',
-      usPersonStatus: '',
-      taxResidence: '',
-      additionalTaxCountry: '',
-      additionalTaxCountryName: '',
-      pepStatus: '',
-      pepExplanation: '',
-      documentsUploaded: false
-    };
+    return saved ? JSON.parse(saved) : defaultOnboardingData;
   });
 
   const [portfolioOnboardingStep, setPortfolioOnboardingStep] = useState(1);
@@ -1903,6 +1906,11 @@ useEffect(() => {
       console.log('Registration response:', data);
 
       if (data.success) {
+        // Clear onboarding data for new user - they should start fresh
+        setOnboardingData(defaultOnboardingData);
+        localStorage.removeItem('onboardingData');
+        setPortfolioOnboardingStep(1);
+
         if (data.requiresVerification) {
           // Email verification required - go to verification page
           setPendingVerificationEmail(email);
