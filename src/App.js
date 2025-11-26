@@ -2500,6 +2500,10 @@ useEffect(() => {
 
           <button
             onClick={() => {
+              if (!onboardingData.portfolioOnboardingComplete) {
+                setCurrentPage('portfolioOnboarding');
+                return;
+              }
               setPortfolio([]);
               setSelectedProfile(null);
               setPortfolioType('custom');
@@ -2516,6 +2520,10 @@ useEffect(() => {
 
           <button
             onClick={() => {
+              if (!onboardingData.portfolioOnboardingComplete) {
+                setCurrentPage('portfolioOnboarding');
+                return;
+              }
               setPortfolioType('premade');
               setCurrentPage('portfolioBuilder');
             }}
