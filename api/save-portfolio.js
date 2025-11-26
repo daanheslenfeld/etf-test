@@ -39,6 +39,25 @@ module.exports = async (req, res) => {
         .eq('id', customer_id);
     }
 
+    // Save KYC data including ID document image if provided
+    if (kycData) {
+      const kycUpdate = {
+        kyc_data: JSON.stringify(kycData)
+      };
+
+      // If there's an ID image, store it separately for easier retrieval
+      if (kycData.idImage) {
+        kycUpdate.id_document_image = kycData.idImage;
+      }
+
+      await supabase
+        .from('customers')
+        .update(kycUpdate)
+        .eq('id', customer_id);
+
+      console.log('KYC data saved for customer:', customer_id);
+    }
+
     // Delete existing portfolio items for this customer
     await supabase
       .from('portfolio')
