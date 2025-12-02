@@ -1579,10 +1579,8 @@ useEffect(() => {
     }
   }, [currentPage]);
 
-  // Save customers to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('customers', JSON.stringify(customers));
-  }, [customers]);
+  // Don't save customers to localStorage - they contain large base64 images
+  // and are fetched fresh from the API anyway
 
   // Save portfolio data to localStorage when it changes
   useEffect(() => {
@@ -1968,7 +1966,7 @@ useEffect(() => {
     }
   };
 
-  const savePortfolioToDatabase = async (accountType = 'fictief', kycDataParam = null) => {
+  const savePortfolioToDatabase = async (accountType = 'fictief', kycDataParam = null, wealthProofBase64 = null, onboardingDataParam = null) => {
     if (!user || !user.id) {
       console.error('❌ No user logged in');
       return false;
@@ -1985,7 +1983,8 @@ useEffect(() => {
       portfolio_count: portfolio.length,
       portfolio_items: portfolio,
       investmentDetails,
-      accountType
+      accountType,
+      onboardingData: onboardingDataParam
     });
 
     try {
@@ -1999,7 +1998,9 @@ useEffect(() => {
           portfolio: portfolio,
           investmentDetails: investmentDetails,
           account_type: accountType,
-          kycData: kycDataParam
+          kycData: kycDataParam,
+          wealthProofDocument: wealthProofBase64,
+          onboardingData: onboardingDataParam
         })
       });
 
@@ -2163,16 +2164,20 @@ useEffect(() => {
     return isNaN(num) ? 0 : num;
   };
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat('nl-NL').format(num);
+  const formatEuro = (value, decimals = 2) => {
+    return new Intl.NumberFormat('nl-NL', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(value);
   };
 
-  const formatEuro = (value) => {
-    return new Intl.NumberFormat('nl-NL', { 
-      style: 'currency', 
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+  // Format number with EU style (comma as decimal separator)
+  const formatNumber = (value, decimals = 2) => {
+    return new Intl.NumberFormat('nl-NL', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     }).format(value);
   };
 
@@ -3492,8 +3497,8 @@ useEffect(() => {
   };
 
   const LoginPage = () => {
-    const [email, setEmail] = useState('demo@pigg.nl');
-    const [password, setPassword] = useState('demo123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLoginClick = async () => {
@@ -3578,7 +3583,7 @@ useEffect(() => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onTouchStart={(e) => e.target.focus()}
+                  
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.common.email}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
@@ -3589,10 +3594,10 @@ useEffect(() => {
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
                 <input
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="off"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onTouchStart={(e) => e.target.focus()}
+                  
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
                   placeholder={t.auth.password}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
@@ -3608,7 +3613,7 @@ useEffect(() => {
 
               <button
                 onClick={handleDemoLogin}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-white border-2 border-[#28EBCF] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-3"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-white border-2 border-[#28EBCF] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-6"
               >
                 🚀 Probeer Demo Account
               </button>
@@ -5896,8 +5901,8 @@ useEffect(() => {
                   setInvestmentDetails(newInvestmentDetails);
                   setPortfolioValue(10000);
 
-                  // Save to database
-                  await savePortfolioToDatabase('fictief');
+                  // Save to database with onboarding data
+                  await savePortfolioToDatabase('fictief', null, null, onboardingData);
 
                   setCurrentPage('dashboard');
                 }}
@@ -6163,8 +6168,8 @@ useEffect(() => {
                     // Check if user is existing customer (has portfolio value and investment details)
                     const isExistingCustomer = portfolioValue > 0 && investmentDetails.amount;
                     if (isExistingCustomer) {
-                      // Save portfolio before going to dashboard
-                      await savePortfolioToDatabase(user?.account_type || 'fictief');
+                      // Save portfolio with onboarding data before going to dashboard
+                      await savePortfolioToDatabase(user?.account_type || 'fictief', null, null, onboardingData);
                       // Existing customer: go directly to dashboard, keep current portfolio value
                       setCurrentPage('dashboard');
                     } else {
@@ -6498,8 +6503,8 @@ useEffect(() => {
                       });
                     }
 
-                    // Save to database
-                    await savePortfolioToDatabase('fictief');
+                    // Save to database with onboarding data
+                    await savePortfolioToDatabase('fictief', null, null, onboardingData);
 
                     setCurrentPage('dashboard');
                   }}
@@ -7009,8 +7014,18 @@ useEffect(() => {
                 console.log('Files:', { passport: passportFile?.name, wealthProof: wealthProofFile?.name });
                 setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
 
-                // Save portfolio, investment details and KYC data to database
-                await savePortfolioToDatabase('betaald', kycData);
+                // Convert wealth proof file to base64 if present
+                let wealthProofBase64 = null;
+                if (wealthProofFile) {
+                  wealthProofBase64 = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(wealthProofFile);
+                  });
+                }
+
+                // Save portfolio, investment details, KYC data, wealth proof and onboarding data to database
+                await savePortfolioToDatabase('betaald', kycData, wealthProofBase64, onboardingData);
 
                 setCurrentPage('dashboard');
               }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Pay with iDEAL →</button>
@@ -7035,7 +7050,43 @@ useEffect(() => {
     const [depositAmount, setDepositAmount] = useState('');
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
     // const [portfolioEvents, setPortfolioEvents] = useState([]); // Track deposits, withdrawals, profile changes
+    const [realPortfolioData, setRealPortfolioData] = useState(null);
+    const [isLoadingRealData, setIsLoadingRealData] = useState(true);
     const metrics = calculatePortfolioMetrics();
+
+    // Fetch real portfolio value using live ETF prices
+    const fetchRealPortfolioValue = async () => {
+      if (!user || !user.id) {
+        setIsLoadingRealData(false);
+        return;
+      }
+
+      setIsLoadingRealData(true);
+      try {
+        const response = await fetch(`${API_URL}/get-portfolio-value`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customer_id: user.id })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          console.log('📈 Real portfolio data:', data);
+          setRealPortfolioData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching real portfolio value:', error);
+      } finally {
+        setIsLoadingRealData(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchRealPortfolioValue();
+      // Refresh every 30 seconds for more live feel
+      const interval = setInterval(fetchRealPortfolioValue, 30000);
+      return () => clearInterval(interval);
+    }, [user]);
 
     const horizon = parseInt(investmentDetails.horizon) || 10;
     // Fix: parseFloat("") gives NaN, so we need to check for valid values
@@ -7550,8 +7601,44 @@ useEffect(() => {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
+          {/* Real Portfolio Value Section - shows actual market data */}
+          {realPortfolioData && realPortfolioData.totalInvested > 0 && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-[#28EBCF]/10 to-transparent border border-[#28EBCF]/30 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[#28EBCF] text-sm font-medium">📊 Live Marktwaarde</span>
+                <span className="text-xs text-gray-500">Bijgewerkt: {new Date(realPortfolioData.timestamp).toLocaleString('nl-NL')}</span>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
+                  <div className="text-xs text-gray-400">Huidige Waarde</div>
+                  <div className="text-lg font-bold text-white">{formatEuro(realPortfolioData.currentValue)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400">Totaal Ingelegd</div>
+                  <div className="text-lg font-bold text-white">{formatEuro(realPortfolioData.totalInvested)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400">Winst/Verlies</div>
+                  <div className={`text-lg font-bold ${realPortfolioData.totalReturn >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {realPortfolioData.totalReturn >= 0 ? '+' : ''}{formatEuro(realPortfolioData.totalReturn)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400">Rendement</div>
+                  <div className={`text-lg font-bold ${realPortfolioData.totalReturnPercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {realPortfolioData.totalReturnPercent >= 0 ? '+' : ''}{realPortfolioData.totalReturnPercent.toFixed(2)}%
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+              <div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde {realPortfolioData && realPortfolioData.totalInvested > 0 ? '(Simulatie)' : ''}</div>
+              <div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div>
+              <div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div>
+            </div>
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
@@ -7694,7 +7781,26 @@ useEffect(() => {
           </div>
 
           <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800">
-            <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg text-white">Portfolio Holdings</h3>
+              <button
+                onClick={fetchRealPortfolioValue}
+                disabled={isLoadingRealData}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 text-white text-sm rounded-lg transition"
+              >
+                {isLoadingRealData ? (
+                  <span className="animate-spin">⟳</span>
+                ) : (
+                  <span>🔄</span>
+                )}
+                <span className="hidden sm:inline">{isLoadingRealData ? 'Laden...' : 'Ververs koersen'}</span>
+              </button>
+            </div>
+            {realPortfolioData?.timestamp && (
+              <div className="text-xs text-gray-500 mb-3">
+                Koersen bijgewerkt: {new Date(realPortfolioData.timestamp).toLocaleString('nl-NL')}
+              </div>
+            )}
             <div className="space-y-4">
               {(() => {
                 console.log('📊 Portfolio Holdings Render:', {
@@ -7717,7 +7823,12 @@ useEffect(() => {
                 .filter(item => item.categoryWeight > 0) // Filter out 0% categories
                 .sort((a, b) => b.categoryWeight - a.categoryWeight) // Sort by weight descending
                 .map(({ category, etfs, categoryWeight }) => {
-                  const categoryValue = etfs.reduce((sum, e) => sum + (animatedPortfolioValue * (e.weight || 0) / 100), 0);
+                  // Calculate category value - use real values when available
+                  const categoryValue = etfs.reduce((sum, e) => {
+                    const realHolding = realPortfolioData?.holdings?.find(h => h.isin === e.isin);
+                    const value = realHolding?.currentValue || (animatedPortfolioValue * (e.weight || 0) / 100);
+                    return sum + value;
+                  }, 0);
 
                   return (
                   <div key={category} className="border-2 border-slate-800 rounded-lg overflow-hidden">
@@ -7725,29 +7836,63 @@ useEffect(() => {
                       <h4 className="font-bold text-white">{category}</h4>
                     </div>
                     <div className="bg-slate-900/50">
-                      <table className="w-full">
-                        <tbody>
-                          {etfs.map((etf, idx) => {
-                            const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
-                            return (
-                              <tr key={idx} className="border-t border-slate-800 hover:bg-slate-800/40">
-                                <td className="px-2 sm:px-4 py-2 sm:py-3">
-                                  <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-xs sm:text-sm break-words max-w-full">
-                                    <span className="line-clamp-2 sm:line-clamp-none">{etf.naam}</span>
-                                  </button>
-                                </td>
-                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-gray-300 text-xs sm:text-sm w-16 sm:w-24">{(etf.weight || 0).toFixed(1)}%</td>
-                                <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-white font-medium text-xs sm:text-sm w-20 sm:w-32">{formatEuro(etfValue)}</td>
-                              </tr>
-                            );
-                          })}
-                          <tr className="border-t-2 border-slate-700 bg-slate-800/50">
-                            <td className="px-4 py-3 text-sm font-bold text-white">Totaal {category}</td>
-                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-24">{categoryWeight.toFixed(1)}%</td>
-                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-32">{formatEuro(categoryValue)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div className="overflow-x-auto">
+                        <table className="w-full min-w-[600px]">
+                          <thead className="bg-slate-800/50">
+                            <tr>
+                              <th className="px-2 sm:px-4 py-2 text-left text-xs text-gray-400 font-medium">ETF</th>
+                              <th className="px-2 sm:px-4 py-2 text-right text-xs text-gray-400 font-medium">Aantal</th>
+                              <th className="px-2 sm:px-4 py-2 text-right text-xs text-gray-400 font-medium">Aankoopprijs</th>
+                              <th className="px-2 sm:px-4 py-2 text-right text-xs text-gray-400 font-medium">Huidige Koers</th>
+                              <th className="px-2 sm:px-4 py-2 text-right text-xs text-gray-400 font-medium">Weging</th>
+                              <th className="px-2 sm:px-4 py-2 text-right text-xs text-gray-400 font-medium">Waarde</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {etfs.map((etf, idx) => {
+                              const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
+                              // Get real data from realPortfolioData if available
+                              const realHolding = realPortfolioData?.holdings?.find(h => h.isin === etf.isin);
+                              const units = realHolding?.units;
+                              const purchasePrice = realHolding?.purchasePrice;
+                              const currentPrice = realHolding?.currentPrice;
+                              const realValue = realHolding?.currentValue;
+
+                              return (
+                                <tr key={idx} className="border-t border-slate-800 hover:bg-slate-800/40">
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3">
+                                    <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-xs sm:text-sm break-words max-w-full">
+                                      <span className="line-clamp-2 sm:line-clamp-none">{etf.naam}</span>
+                                    </button>
+                                  </td>
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-gray-300 text-xs sm:text-sm">
+                                    {units ? formatNumber(units, 4) : '-'}
+                                  </td>
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-gray-400 text-xs sm:text-sm">
+                                    {purchasePrice ? formatEuro(purchasePrice) : '-'}
+                                  </td>
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-xs sm:text-sm">
+                                    {currentPrice ? (
+                                      <span className={currentPrice >= (purchasePrice || 0) ? 'text-green-400' : 'text-red-400'}>
+                                        {formatEuro(currentPrice)}
+                                      </span>
+                                    ) : '-'}
+                                  </td>
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-gray-300 text-xs sm:text-sm">{(etf.weight || 0).toFixed(1)}%</td>
+                                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-right text-white font-medium text-xs sm:text-sm">
+                                    {realValue ? formatEuro(realValue) : formatEuro(etfValue)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                            <tr className="border-t-2 border-slate-700 bg-slate-800/50">
+                              <td className="px-4 py-3 text-sm font-bold text-white" colSpan="4">Totaal {category}</td>
+                              <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF]">{categoryWeight.toFixed(1)}%</td>
+                              <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF]">{formatEuro(categoryValue)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 );
@@ -8665,7 +8810,22 @@ useEffect(() => {
     };
 
     const calculateRiskProfile = () => {
-      const profiles = {
+      /*
+       * Risk Profile Scoring Algorithm
+       *
+       * The algorithm uses a constraint-based approach:
+       * 1. Return Expectation sets the BASE profile (what they want)
+       * 2. Risk Tolerance sets a CEILING (maximum risk they can handle)
+       * 3. Personal Preference adjusts within those bounds
+       * 4. Experience can slightly adjust but never exceeds ceiling
+       *
+       * The final profile is the MINIMUM of:
+       * - What they want (return expectation)
+       * - What they can handle (risk tolerance ceiling)
+       * - Adjusted by preference direction
+       */
+
+      const profileLevels = {
         'obligaties': 0,
         'defensief': 1,
         'neutraal': 2,
@@ -8674,53 +8834,221 @@ useEffect(() => {
         'aandelen': 5
       };
 
-      let score = 0;
-      let count = 0;
+      const profileNames = ['Obligaties', 'Defensief', 'Neutraal', 'Offensief', 'Zeer Offensief', 'Aandelen'];
 
-      const percentageMap = { '0-25': 0, '25-50': 1, '50-75': 2, '75-100': 3 };
-      if (onboardingData.investmentPercentage) {
-        score += percentageMap[onboardingData.investmentPercentage] || 0;
-        count++;
-      }
+      const breakdown = [];
 
-      if (onboardingData.riskTolerance) {
-        score += profiles[onboardingData.riskTolerance] || 0;
-        count++;
-      }
-
+      // 1. BASE: Return Expectation directly maps to a profile level
+      let baseLevel = 2; // Default: Neutraal
       if (onboardingData.returnExpectation) {
-        score += profiles[onboardingData.returnExpectation] || 0;
-        count++;
+        baseLevel = profileLevels[onboardingData.returnExpectation] ?? 2;
+        breakdown.push({
+          question: 'Return Expectation (Base)',
+          answer: onboardingData.returnExpectation,
+          points: baseLevel,
+          effect: `Sets base to ${profileNames[baseLevel]}`
+        });
       }
 
-      const preferenceMap = { 'risico-mijden': 0, 'beide': 2, 'winst-behalen': 4 };
+      // 2. CEILING: Risk Tolerance limits maximum profile
+      // defensief = max Defensief (1), neutraal = max Neutraal (2), offensief = max Offensief (3)
+      let ceiling = 5; // Default: no ceiling
+      if (onboardingData.riskTolerance) {
+        const toleranceMap = {
+          'defensief': 1,   // Can only go up to Defensief
+          'neutraal': 2,    // Can only go up to Neutraal
+          'offensief': 3    // Can only go up to Offensief
+        };
+        ceiling = toleranceMap[onboardingData.riskTolerance] ?? 5;
+        breakdown.push({
+          question: 'Risk Tolerance (Ceiling)',
+          answer: onboardingData.riskTolerance,
+          points: ceiling,
+          effect: `Limits max to ${profileNames[ceiling]}`
+        });
+      }
+
+      // 3. PREFERENCE ADJUSTMENT: Personal preference shifts the profile
+      let preferenceAdjustment = 0;
       if (onboardingData.personalPreference) {
-        score += preferenceMap[onboardingData.personalPreference] || 0;
-        count++;
+        const prefMap = {
+          'risico-mijden': -1,  // Shift down (more conservative)
+          'beide': 0,           // No shift
+          'winst-behalen': 1    // Shift up (more aggressive)
+        };
+        preferenceAdjustment = prefMap[onboardingData.personalPreference] ?? 0;
+        breakdown.push({
+          question: 'Personal Preference',
+          answer: onboardingData.personalPreference,
+          points: preferenceAdjustment,
+          effect: preferenceAdjustment < 0 ? 'Shifts down (conservative)' :
+                  preferenceAdjustment > 0 ? 'Shifts up (aggressive)' : 'No adjustment'
+        });
       }
 
-      const avgScore = count > 0 ? score / count : 2;
+      // 4. EXPERIENCE BONUS: Only adds if lots of experience, max +1 level
+      let experienceBonus = 0;
+      const experienceMap = { 'veel': 2, 'gemiddeld': 1, 'weinig': 0 };
+      const experienceFields = [
+        { key: 'experienceStocks', label: 'Stocks' },
+        { key: 'experienceBonds', label: 'Bonds' },
+        { key: 'experienceFunds', label: 'Funds' },
+        { key: 'experienceETFs', label: 'ETFs' },
+        { key: 'experienceAlternatives', label: 'Alternatives' },
+        { key: 'experienceDerivatives', label: 'Derivatives' }
+      ];
 
-      if (avgScore <= 0.5) return 'Obligaties';
-      if (avgScore <= 1.5) return 'Defensief';
-      if (avgScore <= 2.5) return 'Neutraal';
-      if (avgScore <= 3.5) return 'Offensief';
-      if (avgScore <= 4.5) return 'Zeer Offensief';
-      return 'Aandelen';
+      let totalExperience = 0;
+      let experienceCount = 0;
+      experienceFields.forEach(field => {
+        if (onboardingData[field.key]) {
+          totalExperience += experienceMap[onboardingData[field.key]] || 0;
+          experienceCount++;
+        }
+      });
+
+      // Average experience: 0-0.5 = penalty, 0.5-1.0 = neutral, 1.0-2.0 = bonus
+      if (experienceCount > 0) {
+        const avgExperience = totalExperience / experienceCount;
+        if (avgExperience >= 1.5) {
+          experienceBonus = 1;  // High experience: can handle +1 level
+        } else if (avgExperience < 0.5) {
+          experienceBonus = -1; // Low experience: should be -1 level more conservative
+        }
+        breakdown.push({
+          question: 'Investment Experience',
+          answer: `Average: ${avgExperience.toFixed(1)}/2`,
+          points: experienceBonus,
+          effect: experienceBonus > 0 ? '+1 (experienced)' :
+                  experienceBonus < 0 ? '-1 (inexperienced)' : 'No adjustment'
+        });
+      }
+
+      // 5. Investment Percentage consideration
+      let percentageAdjustment = 0;
+      if (onboardingData.investmentPercentage) {
+        const pctMap = { '0-25': -1, '25-50': 0, '50-75': 0, '75-100': 1 };
+        percentageAdjustment = pctMap[onboardingData.investmentPercentage] ?? 0;
+        // Only apply negative adjustment (if investing small %, be more conservative)
+        if (percentageAdjustment < 0) {
+          breakdown.push({
+            question: 'Investment Percentage',
+            answer: onboardingData.investmentPercentage + '%',
+            points: percentageAdjustment,
+            effect: 'Low % = more conservative'
+          });
+        } else if (percentageAdjustment > 0) {
+          breakdown.push({
+            question: 'Investment Percentage',
+            answer: onboardingData.investmentPercentage + '%',
+            points: 0, // Don't add risk just because investing more
+            effect: 'Noted (no adjustment)'
+          });
+          percentageAdjustment = 0; // Reset - high % doesn't mean take more risk
+        }
+      }
+
+      // CALCULATE FINAL PROFILE
+      // Start with base (return expectation)
+      let finalLevel = baseLevel;
+
+      // Apply preference adjustment
+      finalLevel += preferenceAdjustment;
+
+      // Apply experience adjustment
+      finalLevel += experienceBonus;
+
+      // Apply percentage adjustment
+      finalLevel += percentageAdjustment;
+
+      // CRITICAL: Apply ceiling constraint (risk tolerance limits max)
+      finalLevel = Math.min(finalLevel, ceiling);
+
+      // Ensure within bounds [0, 5]
+      finalLevel = Math.max(0, Math.min(5, finalLevel));
+
+      // Round to nearest integer
+      finalLevel = Math.round(finalLevel);
+
+      const recommendedProfile = profileNames[finalLevel];
+
+      // Calculate a display score for transparency
+      const totalScore = baseLevel + (preferenceAdjustment + 2) + (experienceBonus + 1);
+      const maxScore = 5 + 4 + 2; // max base + max pref + max exp
+      const normalizedScore = ((finalLevel / 5) * 100);
+
+      breakdown.push({
+        question: 'Final Calculation',
+        answer: `Base(${baseLevel}) + Pref(${preferenceAdjustment}) + Exp(${experienceBonus}) = ${baseLevel + preferenceAdjustment + experienceBonus}, Ceiling(${ceiling})`,
+        points: finalLevel,
+        effect: `Result: ${recommendedProfile}`
+      });
+
+      return {
+        profile: recommendedProfile,
+        totalScore: finalLevel,
+        maxScore: 5,
+        normalizedScore: normalizedScore.toFixed(0),
+        breakdown
+      };
+    };
+
+    const [showRecommendation, setShowRecommendation] = useState(false);
+    const [recommendationData, setRecommendationData] = useState(null);
+    const [selectedProfile, setSelectedProfileOverride] = useState(null);
+    const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+    const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+    // Calculate recommendation when entering step 5
+    React.useEffect(() => {
+      if (portfolioOnboardingStep === 5 && !recommendationData) {
+        const result = calculateRiskProfile();
+        setRecommendationData(result);
+        setSelectedProfileOverride(result.profile);
+      }
+    }, [portfolioOnboardingStep, recommendationData]);
+
+    const handleGoToRecommendation = () => {
+      const result = calculateRiskProfile();
+      setRecommendationData(result);
+      setSelectedProfileOverride(result.profile);
+      setPortfolioOnboardingStep(5);
     };
 
     const handleComplete = () => {
-      const riskProfile = calculateRiskProfile();
-      console.log('Portfolio onboarding completed:', riskProfile, onboardingData);
+      const isOverridden = selectedProfile !== recommendationData?.profile;
 
-      // Mark portfolio onboarding as complete
-      setOnboardingData(prev => ({ ...prev, portfolioOnboardingComplete: true, riskProfile }));
+      console.log('Portfolio onboarding completed:', selectedProfile, onboardingData);
+
+      // Mark portfolio onboarding as complete with recommendation details
+      setOnboardingData(prev => ({
+        ...prev,
+        portfolioOnboardingComplete: true,
+        riskProfile: selectedProfile,
+        recommendedProfile: recommendationData?.profile,
+        profileOverridden: isOverridden,
+        disclaimerAcceptedAt: isOverridden ? new Date().toISOString() : null,
+        riskScoreDetails: recommendationData
+      }));
 
       // Reset onboarding step for next time
       setPortfolioOnboardingStep(1);
+      setDisclaimerAccepted(false);
+      setShowDisclaimer(false);
 
       // Go to portfolio type choice page (custom vs premade)
       setCurrentPage('portfolioTypeChoice');
+    };
+
+    const handleProfileSelect = (profile) => {
+      if (profile !== recommendationData?.profile) {
+        setShowDisclaimer(true);
+        setSelectedProfileOverride(profile);
+      } else {
+        setSelectedProfileOverride(profile);
+        setShowDisclaimer(false);
+        setDisclaimerAccepted(false);
+      }
     };
 
     return (
@@ -8760,13 +9088,13 @@ useEffect(() => {
           {/* Progress bar */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-400">Stap {portfolioOnboardingStep} van 4</span>
-              <span className="text-sm text-[#28EBCF]">{Math.round((portfolioOnboardingStep / 4) * 100)}%</span>
+              <span className="text-sm text-gray-400">Stap {portfolioOnboardingStep} van 5</span>
+              <span className="text-sm text-[#28EBCF]">{Math.round((portfolioOnboardingStep / 5) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="bg-[#28EBCF] h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(portfolioOnboardingStep / 4) * 100}%` }}
+                style={{ width: `${(portfolioOnboardingStep / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -9036,11 +9364,133 @@ useEffect(() => {
                   Previous
                 </button>
                 <button
-                  onClick={handleComplete}
+                  onClick={handleGoToRecommendation}
                   disabled={!['experienceStocks', 'experienceBonds', 'experienceFunds', 'experienceETFs', 'experienceAlternatives', 'experienceDerivatives'].every(k => onboardingData[k])}
                   className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
                 >
-                  Complete
+                  View Recommendation
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Risk Profile Recommendation */}
+          {portfolioOnboardingStep === 5 && !recommendationData && (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
+                <p className="text-gray-400">Calculating your risk profile...</p>
+              </div>
+            </div>
+          )}
+          {portfolioOnboardingStep === 5 && recommendationData && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-white mb-2">Your Risk Profile Recommendation</h2>
+                <p className="text-gray-400">Based on your answers, we recommend the following profile</p>
+              </div>
+
+              {/* Recommendation Card */}
+              <div className="bg-[#1A1B1F] rounded-xl p-6 border-2 border-[#28EBCF]">
+                <div className="text-center mb-6">
+                  <div className="text-sm text-gray-400 mb-2">Recommended Profile</div>
+                  <div className="text-4xl font-bold text-[#28EBCF]">{recommendationData.profile}</div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    Score: {recommendationData.totalScore} / {recommendationData.maxScore} points
+                  </div>
+                </div>
+
+                {/* Score Breakdown */}
+                <div className="border-t border-gray-700 pt-4">
+                  <h3 className="text-sm font-semibold text-gray-400 mb-3">Score Breakdown:</h3>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {recommendationData.breakdown.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-sm">
+                        <span className="text-gray-400">{item.question}:</span>
+                        <span className="text-white">
+                          <span className="text-gray-500">{item.answer}</span>
+                          <span className="text-[#28EBCF] ml-2">+{item.points} pts</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile Selection */}
+              <div className="bg-[#1A1B1F] rounded-xl p-6 border border-gray-800">
+                <h3 className="text-lg font-semibold text-white mb-4">Select Your Risk Profile</h3>
+                <p className="text-sm text-gray-400 mb-4">You can accept our recommendation or choose a different profile</p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {['Obligaties', 'Defensief', 'Neutraal', 'Offensief', 'Zeer Offensief', 'Aandelen'].map(profile => (
+                    <button
+                      key={profile}
+                      onClick={() => handleProfileSelect(profile)}
+                      className={`p-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                        selectedProfile === profile
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]'
+                          : 'border-gray-700 text-gray-400 hover:border-gray-600'
+                      } ${profile === recommendationData.profile ? 'ring-2 ring-green-500/50' : ''}`}
+                    >
+                      {profile}
+                      {profile === recommendationData.profile && (
+                        <span className="block text-xs text-green-400 mt-1">Recommended</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Disclaimer (shown when overriding) */}
+              {showDisclaimer && selectedProfile !== recommendationData.profile && (
+                <div className="bg-yellow-900/20 border border-yellow-600 rounded-xl p-6">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-yellow-500 font-semibold mb-2">Important Disclaimer</h4>
+                      <p className="text-yellow-200/80 text-sm mb-4">
+                        You have chosen <strong>{selectedProfile}</strong> instead of the recommended <strong>{recommendationData.profile}</strong> profile.
+                        By selecting a different profile, you acknowledge that:
+                      </p>
+                      <ul className="text-yellow-200/80 text-sm list-disc list-inside space-y-1 mb-4">
+                        <li>This profile may not align with your assessed risk tolerance</li>
+                        <li>You may experience higher or lower volatility than expected</li>
+                        <li>You accept full responsibility for this choice</li>
+                        <li>PIGG is not liable for any losses resulting from this override</li>
+                      </ul>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={disclaimerAccepted}
+                          onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                          className="w-5 h-5 rounded border-yellow-600 bg-transparent text-[#28EBCF] focus:ring-[#28EBCF]"
+                        />
+                        <span className="text-white text-sm font-medium">
+                          I understand and accept the risks of overriding the recommendation
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setPortfolioOnboardingStep(4)}
+                  className="flex-1 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleComplete}
+                  disabled={showDisclaimer && !disclaimerAccepted}
+                  className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                >
+                  {selectedProfile === recommendationData.profile ? 'Accept Recommendation' : 'Confirm Override'}
                 </button>
               </div>
             </div>
@@ -9132,57 +9582,43 @@ useEffect(() => {
 
   const WelcomePage = () => {
     const [marketData, setMarketData] = useState({
-      indices: [
-        { name: 'S&P 500', value: 5234.18, baseValue: 5234.18, change: 1.2, positive: true },
-        { name: 'Dow Jones', value: 41250.50, baseValue: 41250.50, change: 0.8, positive: true },
-        { name: 'NASDAQ', value: 16825.93, baseValue: 16825.93, change: 1.5, positive: true },
-        { name: 'AEX', value: 915.32, baseValue: 915.32, change: -0.3, positive: false },
-        { name: 'DAX', value: 19850.45, baseValue: 19850.45, change: 0.6, positive: true },
-        { name: 'FTSE 100', value: 8350.22, baseValue: 8350.22, change: 0.4, positive: true },
-      ],
-      currencies: [
-        { name: 'EUR/USD', value: 1.0875, baseValue: 1.0875, change: 0.2, positive: true },
-        { name: 'GBP/USD', value: 1.2650, baseValue: 1.2650, change: -0.1, positive: false },
-        { name: 'USD/JPY', value: 149.85, baseValue: 149.85, change: 0.3, positive: true },
-        { name: 'EUR/GBP', value: 0.8595, baseValue: 0.8595, change: 0.1, positive: true },
-      ],
-      commodities: [
-        { name: 'Gold', symbol: 'XAU', value: 2345.60, baseValue: 2345.60, change: 0.8, positive: true },
-        { name: 'Bitcoin', symbol: 'BTC', value: 98250.00, baseValue: 98250.00, change: 2.3, positive: true },
-        { name: 'Ethereum', symbol: 'ETH', value: 3420.50, baseValue: 3420.50, change: 1.9, positive: true },
-      ]
+      indices: [],
+      currencies: [],
+      commodities: []
     });
+    const [marketDataLoading, setMarketDataLoading] = useState(true);
 
-    // Navbar is always visible - removed auto-hide functionality
-
-    // Simulate real-time price updates
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setMarketData(prevData => {
-          const updateCategory = (items) => items.map(item => {
-            // Random price change between -0.15% and +0.15%
-            const randomChange = (Math.random() - 0.5) * 0.3;
-            const newValue = item.value * (1 + randomChange / 100);
-
-            // Calculate change percentage from base value
-            const changePercent = ((newValue - item.baseValue) / item.baseValue) * 100;
-
-            return {
-              ...item,
-              value: newValue,
-              change: changePercent,
-              positive: changePercent >= 0
-            };
-          });
-
-          return {
-            indices: updateCategory(prevData.indices),
-            currencies: updateCategory(prevData.currencies),
-            commodities: updateCategory(prevData.commodities)
-          };
+    // Fetch real market data from Yahoo Finance
+    const fetchMarketData = async () => {
+      try {
+        const response = await fetch(`${API_URL}/fetch-etf-prices`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ type: 'market' })
         });
-      }, 2000); // Update every 2 seconds
 
+        const data = await response.json();
+
+        if (data.success) {
+          setMarketData({
+            indices: data.indices || [],
+            currencies: data.currencies || [],
+            commodities: data.commodities || []
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching market data:', error);
+      } finally {
+        setMarketDataLoading(false);
+      }
+    };
+
+    // Fetch market data on mount and refresh every 5 minutes
+    useEffect(() => {
+      fetchMarketData();
+      const interval = setInterval(fetchMarketData, 5 * 60 * 1000); // Refresh every 5 minutes
       return () => clearInterval(interval);
     }, []);
 
@@ -9461,7 +9897,11 @@ useEffect(() => {
           <div className="mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">📈 Beursindices</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {marketData.indices.map((index, i) => (
+              {marketDataLoading ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Laden...</div>
+              ) : marketData.indices.length === 0 ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Geen data beschikbaar</div>
+              ) : marketData.indices.map((index, i) => (
                 <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
                   <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide truncate">{index.name}</div>
                   <div className="text-sm sm:text-base font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
@@ -9478,7 +9918,11 @@ useEffect(() => {
           <div className="mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">💱 Valuta</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {marketData.currencies.map((currency, i) => (
+              {marketDataLoading ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Laden...</div>
+              ) : marketData.currencies.length === 0 ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Geen data beschikbaar</div>
+              ) : marketData.currencies.map((currency, i) => (
                 <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
                   <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{currency.name}</div>
                   <div className="text-sm sm:text-base font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
@@ -9495,7 +9939,11 @@ useEffect(() => {
           <div className="mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">🪙 Grondstoffen & Crypto</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {marketData.commodities.map((commodity, i) => (
+              {marketDataLoading ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Laden...</div>
+              ) : marketData.commodities.length === 0 ? (
+                <div className="col-span-full text-center text-gray-400 py-4">Geen data beschikbaar</div>
+              ) : marketData.commodities.map((commodity, i) => (
                 <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 sm:p-3 transition-all hover:shadow-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -9509,7 +9957,7 @@ useEffect(() => {
                     </div>
                   </div>
                   <div className="h-px bg-gray-800 mb-2"></div>
-                  <div className="text-base sm:text-lg font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className="text-base sm:text-lg font-bold text-white mb-1">€{commodity.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   <div className={`text-xs sm:text-sm font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
                     {commodity.positive ? '▲' : '▼'} {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
                   </div>
@@ -10291,22 +10739,26 @@ useEffect(() => {
       if (showRefreshIndicator) setRefreshing(true);
       try {
         const response = await fetch(`${API_URL}/customers`);
+        if (!response.ok) {
+          console.error('Failed to fetch customers:', response.status);
+          return;
+        }
         const data = await response.json();
         console.log('Fetched customers data:', data);
-        if (data.success) {
+        if (data.success && data.customers) {
           // Transform database format to app format
-          const transformedCustomers = data.customers.map(c => {
+          const transformedCustomers = (data.customers || []).map(c => {
             console.log('Customer investmentDetails from API:', c.investmentDetails);
             console.log('Customer riskProfile:', c.investmentDetails?.riskProfile);
             return {
               ...c,
-              firstName: c.first_name,
-              lastName: c.last_name,
-              name: `${c.first_name} ${c.last_name}`,
-              houseNumber: c.house_number,
-              postalCode: c.postal_code,
-              birthDate: c.birth_date,
-              address: `${c.street} ${c.house_number}, ${c.postal_code} ${c.city}`,
+              firstName: c.first_name || '',
+              lastName: c.last_name || '',
+              name: `${c.first_name || ''} ${c.last_name || ''}`.trim() || 'Unknown',
+              houseNumber: c.house_number || '',
+              postalCode: c.postal_code || '',
+              birthDate: c.birth_date || '',
+              address: `${c.street || ''} ${c.house_number || ''}, ${c.postal_code || ''} ${c.city || ''}`,
               registeredAt: c.registered_at || c.created_at,
               portfolio: c.portfolio || [],
               investmentDetails: c.investmentDetails || {}
@@ -10851,8 +11303,13 @@ useEffect(() => {
   };
 
   const CustomerDetailPage = () => {
+    useEffect(() => {
+      if (!selectedCustomer) {
+        setCurrentPage('customerDatabase');
+      }
+    }, [selectedCustomer]);
+
     if (!selectedCustomer) {
-      setCurrentPage('customerDatabase');
       return null;
     }
 
@@ -11390,7 +11847,37 @@ PIGG Account Management`
 
               {/* ID Document Card */}
               <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Identity Document</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-[#28EBCF]">Identity Document</h2>
+                  {selectedCustomer.idDocument && (
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Are you sure you want to delete this ID document? This action cannot be undone.')) {
+                          try {
+                            const response = await fetch(`${API_URL}/customers`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ action: 'delete_id_document', customer_id: selectedCustomer.id })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                              alert('ID document deleted successfully');
+                              // Refresh customer data
+                              setSelectedCustomer({ ...selectedCustomer, idDocument: null });
+                            } else {
+                              alert('Failed to delete ID document: ' + data.message);
+                            }
+                          } catch (error) {
+                            alert('Error deleting ID document');
+                          }
+                        }
+                      }}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm transition-all"
+                    >
+                      Delete Document
+                    </button>
+                  )}
+                </div>
                 {selectedCustomer.idDocument ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-gray-800 rounded-lg p-4">
@@ -11400,8 +11887,28 @@ PIGG Account Management`
                       <h3 className="text-sm font-medium text-gray-400 mb-3">Extracted Information:</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Document Type:</span>
-                          <span className="text-white">{selectedCustomer.idDocument.type || 'ID Card'}</span>
+                          <span className="text-gray-400">First Name:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.firstName || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Last Name:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.lastName || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Date of Birth:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.dateOfBirth || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Nationality:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.nationality || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Place of Birth:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.placeOfBirth || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">BSN Number:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.bsn || 'N/A'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Document Number:</span>
@@ -11410,6 +11917,10 @@ PIGG Account Management`
                         <div className="flex justify-between">
                           <span className="text-gray-400">Expiry Date:</span>
                           <span className="text-white">{selectedCustomer.idDocument.expiry || 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Document Type:</span>
+                          <span className="text-white">{selectedCustomer.idDocument.type || 'ID Card'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Verified:</span>
@@ -11425,6 +11936,204 @@ PIGG Account Management`
                     </svg>
                     <p className="text-gray-500">No ID document uploaded</p>
                     <p className="text-gray-600 text-sm mt-2">Client should upload ID via the portal</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Wealth Proof Document Card */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Proof of Wealth Origin</h2>
+                {selectedCustomer.wealthProofDocument && selectedCustomer.wealthProofDocument.image ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      {selectedCustomer.wealthProofDocument.image.startsWith('data:application/pdf') ? (
+                        <div className="text-center py-8">
+                          <svg className="w-16 h-16 text-[#28EBCF] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <p className="text-white mb-2">PDF Document</p>
+                          <a
+                            href={selectedCustomer.wealthProofDocument.image}
+                            download="wealth-proof.pdf"
+                            className="inline-block px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-sm"
+                          >
+                            Download PDF
+                          </a>
+                        </div>
+                      ) : (
+                        <img src={selectedCustomer.wealthProofDocument.image} alt="Proof of Wealth" className="w-full rounded-lg" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-3">Document Details:</h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Document Type:</span>
+                          <span className="text-white">Proof of Wealth Origin</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Uploaded:</span>
+                          <span className="text-white">{selectedCustomer.wealthProofDocument.uploadedAt ? new Date(selectedCustomer.wealthProofDocument.uploadedAt).toLocaleDateString('nl-NL') : 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Status:</span>
+                          <span className="text-green-400">Received</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                    <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p className="text-gray-500">No proof of wealth document uploaded</p>
+                    <p className="text-gray-600 text-sm mt-2">Client should upload proof via the portal</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Onboarding Q&A and Risk Profile Card */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-6 text-[#28EBCF]">Onboarding Questionnaire & Risk Profile</h2>
+                {selectedCustomer.onboardingData ? (
+                  <div className="space-y-6">
+                    {/* Risk Profile Summary */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4">Risk Profile Summary</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-[#28EBCF]">
+                            {selectedCustomer.onboardingData.riskProfile || 'N/A'}
+                          </div>
+                          <div className="text-sm text-gray-400">Selected Profile</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-300">
+                            {selectedCustomer.onboardingData.recommendedProfile || 'N/A'}
+                          </div>
+                          <div className="text-sm text-gray-400">Recommended Profile</div>
+                        </div>
+                        <div className="text-center">
+                          <div className={`text-2xl font-bold ${selectedCustomer.onboardingData.profileOverridden ? 'text-yellow-400' : 'text-green-400'}`}>
+                            {selectedCustomer.onboardingData.profileOverridden ? 'Yes' : 'No'}
+                          </div>
+                          <div className="text-sm text-gray-400">Profile Overridden</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-gray-300">
+                            {selectedCustomer.onboardingData.riskScoreDetails?.totalScore || 0} / {selectedCustomer.onboardingData.riskScoreDetails?.maxScore || 56}
+                          </div>
+                          <div className="text-sm text-gray-400">Risk Score</div>
+                        </div>
+                      </div>
+                      {selectedCustomer.onboardingData.profileOverridden && selectedCustomer.onboardingData.disclaimerAcceptedAt && (
+                        <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-600/50 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span className="text-yellow-300 text-sm">
+                              Customer accepted risk disclaimer on {new Date(selectedCustomer.onboardingData.disclaimerAcceptedAt).toLocaleString('nl-NL')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Questionnaire Answers */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4">Questionnaire Answers</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Investment Percentage */}
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-sm text-gray-400 mb-1">Investment Percentage of Available Assets</div>
+                          <div className="text-white font-medium">
+                            {selectedCustomer.onboardingData.investmentPercentage ? `${selectedCustomer.onboardingData.investmentPercentage}%` : 'N/A'}
+                          </div>
+                        </div>
+
+                        {/* Risk Tolerance */}
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-sm text-gray-400 mb-1">Risk Tolerance</div>
+                          <div className="text-white font-medium capitalize">
+                            {selectedCustomer.onboardingData.riskTolerance || 'N/A'}
+                          </div>
+                        </div>
+
+                        {/* Return Expectation */}
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-sm text-gray-400 mb-1">Return Expectation</div>
+                          <div className="text-white font-medium capitalize">
+                            {selectedCustomer.onboardingData.returnExpectation || 'N/A'}
+                          </div>
+                        </div>
+
+                        {/* Personal Preference */}
+                        <div className="bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-sm text-gray-400 mb-1">Personal Preference (Stocks vs Bonds)</div>
+                          <div className="text-white font-medium capitalize">
+                            {selectedCustomer.onboardingData.personalPreference || 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Investment Experience */}
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold text-white mb-4">Investment Experience</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {[
+                          { key: 'experienceStocks', label: 'Stocks' },
+                          { key: 'experienceBonds', label: 'Bonds' },
+                          { key: 'experienceETF', label: 'ETFs' },
+                          { key: 'experienceDerivatives', label: 'Derivatives' },
+                          { key: 'experienceCrypto', label: 'Crypto' },
+                          { key: 'experienceRealEstate', label: 'Real Estate' }
+                        ].map(({ key, label }) => (
+                          <div key={key} className="bg-gray-900/50 rounded-lg p-3">
+                            <div className="text-sm text-gray-400 mb-1">{label}</div>
+                            <div className={`font-medium ${selectedCustomer.onboardingData[key] === 'yes' ? 'text-green-400' : 'text-gray-500'}`}>
+                              {selectedCustomer.onboardingData[key] === 'yes' ? 'Has Experience' : 'No Experience'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Score Breakdown */}
+                    {selectedCustomer.onboardingData.riskScoreDetails?.breakdown && (
+                      <div className="bg-gray-800/50 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold text-white mb-4">Score Breakdown</h3>
+                        <div className="space-y-2">
+                          {selectedCustomer.onboardingData.riskScoreDetails.breakdown.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center bg-gray-900/50 rounded-lg p-3">
+                              <div>
+                                <div className="text-white text-sm">{item.question}</div>
+                                <div className="text-gray-400 text-xs">Answer: {item.answer}</div>
+                              </div>
+                              <div className="text-[#28EBCF] font-bold">
+                                +{item.points} pts
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
+                          <span className="text-gray-300 font-medium">Normalized Score</span>
+                          <span className="text-[#28EBCF] text-xl font-bold">
+                            {selectedCustomer.onboardingData.riskScoreDetails.normalizedScore}%
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                    <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    <p className="text-gray-500">No onboarding questionnaire data available</p>
+                    <p className="text-gray-600 text-sm mt-2">Customer has not completed the risk assessment questionnaire</p>
                   </div>
                 )}
               </div>
