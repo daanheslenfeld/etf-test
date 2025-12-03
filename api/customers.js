@@ -17,6 +17,51 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Handle POST request for deleting ID document
+  if (req.method === 'POST') {
+    const { action, customer_id } = req.body;
+
+    if (action === 'delete_id_document') {
+      if (!customer_id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Customer ID is required'
+        });
+      }
+
+      try {
+        const { error } = await supabase
+          .from('customers')
+          .update({
+            id_document_image: null,
+            kyc_data: null
+          })
+          .eq('id', customer_id);
+
+        if (error) {
+          console.error('Error deleting ID document:', error);
+          return res.status(400).json({
+            success: false,
+            message: 'Failed to delete ID document'
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: 'ID document deleted successfully'
+        });
+      } catch (error) {
+        console.error('Error deleting ID document:', error);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to delete ID document'
+        });
+      }
+    }
+
+    return res.status(400).json({ message: 'Invalid action' });
+  }
+
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -79,13 +124,36 @@ module.exports = async (req, res) => {
           }
         }
 
-        // Build idDocument object for frontend
+        // Parse onboarding data if available
+        let onboardingData = null;
+        if (customer.onboarding_data) {
+          try {
+            onboardingData = typeof customer.onboarding_data === 'string'
+              ? JSON.parse(customer.onboarding_data)
+              : customer.onboarding_data;
+          } catch (e) {
+            console.error('Error parsing onboarding_data:', e);
+          }
+        }
+
+        // Build idDocument object for frontend with all KYC data
         const idDocument = customer.id_document_image ? {
           image: customer.id_document_image,
           type: 'ID Card/Passport',
           number: kycData?.documentNumber || null,
           expiry: kycData?.expiryDate || null,
-          bsn: kycData?.bsnNumber || null
+          bsn: kycData?.bsnNumber || null,
+          firstName: kycData?.firstName || null,
+          lastName: kycData?.lastName || null,
+          dateOfBirth: kycData?.dateOfBirth || null,
+          nationality: kycData?.nationality || null,
+          placeOfBirth: kycData?.placeOfBirth || null
+        } : null;
+
+        // Build wealthProofDocument object for frontend
+        const wealthProofDocument = customer.wealth_proof_document ? {
+          image: customer.wealth_proof_document,
+          uploadedAt: customer.updated_at || customer.created_at
         } : null;
 
         return {
@@ -93,7 +161,9 @@ module.exports = async (req, res) => {
           portfolio: portfolio || [],
           investmentDetails: transformedInvestmentDetails,
           idDocument: idDocument,
-          kycData: kycData
+          wealthProofDocument: wealthProofDocument,
+          kycData: kycData,
+          onboardingData: onboardingData
         };
       })
     );

@@ -248,14 +248,25 @@ const IDScanner = ({ onDataExtracted }) => {
       const { data: { text } } = await worker.recognize(processedImage);
       const parsedData = parseDocumentText(text);
 
+      await worker.terminate();
+      setScanning(false);
+
+      // Validate that this is a real ID document by checking if key fields were found
+      const hasValidIdData = parsedData.lastName || parsedData.firstName ||
+                             parsedData.documentNumber || parsedData.dateOfBirth ||
+                             parsedData.bsnNumber || parsedData.nationality;
+
+      if (!hasValidIdData) {
+        alert('This does not appear to be a valid ID document. Please upload a passport, ID card, or driver\'s license with visible text.');
+        setExtractedData(null);
+        return;
+      }
+
       setExtractedData(parsedData);
       if (onDataExtracted) {
         // Include the original image with the extracted data
         onDataExtracted({ ...parsedData, idImage: uploadedImage });
       }
-
-      await worker.terminate();
-      setScanning(false);
     } catch (error) {
       console.error('Error scanning document:', error);
       setScanning(false);

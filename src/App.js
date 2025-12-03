@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend, AreaChart, Area, ReferenceDot } from 'recharts';
 import Footer from './Footer';
 import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
@@ -1548,9 +1548,35 @@ useEffect(() => {
   }, [filters.search, activeFilters, selectedMainCategory, etfs]);
 
   // Save user to localStorage for persistent login (stays logged in after closing app)
+  // Only store essential fields - exclude large data like images, portfolio, kyc_data
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+      const userForStorage = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        street: user.street,
+        houseNumber: user.houseNumber,
+        house_number: user.house_number,
+        postalCode: user.postalCode,
+        postal_code: user.postal_code,
+        city: user.city,
+        phone: user.phone,
+        birthDate: user.birthDate,
+        birth_date: user.birth_date,
+        account_type: user.account_type,
+        email_verified: user.email_verified,
+        role: user.role
+      };
+      try {
+        localStorage.setItem('user', JSON.stringify(userForStorage));
+      } catch (e) {
+        console.warn('Could not save user to localStorage:', e.message);
+      }
     } else {
       localStorage.removeItem('user');
     }
@@ -7044,6 +7070,7 @@ useEffect(() => {
     const [currentMonth, setCurrentMonth] = useState(0);
     const [staticPerformanceData, setStaticPerformanceData] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [chartZoom, setChartZoom] = useState('all'); // 'all', '1y', '5y', '10y'
     const [showEditChoice, setShowEditChoice] = useState(false);
     const [showDeposit, setShowDeposit] = useState(false);
     const [showWithdrawal, setShowWithdrawal] = useState(false);
@@ -7135,59 +7162,67 @@ useEffect(() => {
       return mean + stdDev * z0;
     }, []);
 
-    // Monte Carlo simulation - now simulates percentage returns instead of absolute values
-    const runMonteCarloSimulation = useCallback((scenarios = 1000) => {
+    // Monte Carlo simulation - runs actual random simulations to get realistic percentiles
+    const runMonteCarloSimulation = useCallback((numSimulations = 1000) => {
+      const monthlyReturn = avgReturn / 12;
+      const monthlyStdDev = stdDev / Math.sqrt(12);
+
+      // Run multiple simulations
       const allSimulations = [];
 
-      for (let sim = 0; sim < scenarios; sim++) {
-        // Start with 0% return
-        let cumulativeReturn = 0;
-        const simulation = [0]; // Month 0: 0% return
+      for (let sim = 0; sim < numSimulations; sim++) {
+        let cumulativeReturn = 1;
+        const simReturns = [0]; // Start at 0%
 
         for (let month = 1; month <= months; month++) {
-          // Generate monthly return using normal distribution
-          // Annual return / 12 for monthly, stdDev / sqrt(12) for monthly volatility
-          const monthlyReturn = generateNormalRandom(avgReturn / 12, stdDev / Math.sqrt(12));
+          // Box-Muller transform for normal distribution
+          const u1 = Math.random();
+          const u2 = Math.random();
+          const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 
-          // Calculate cumulative return: (1 + old_return) * (1 + new_return) - 1
-          cumulativeReturn = (1 + cumulativeReturn) * (1 + monthlyReturn) - 1;
-
-          // Store as percentage
-          simulation.push(cumulativeReturn * 100);
+          // Monthly return with randomness
+          const thisMonthReturn = monthlyReturn + (monthlyStdDev * z);
+          cumulativeReturn *= (1 + thisMonthReturn);
+          simReturns.push((cumulativeReturn - 1) * 100);
         }
-        allSimulations.push(simulation);
+        allSimulations.push(simReturns);
       }
 
       // Calculate percentiles for each month
       const performanceData = [];
-      for (let month = 0; month <= months; month++) {
-        const monthReturns = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
 
+      for (let month = 0; month <= months; month++) {
         const date = new Date();
         date.setMonth(date.getMonth() + month);
 
-        // Use 10th percentile for poor, median for expected, 90th percentile for good
-        const p10 = monthReturns[Math.floor(scenarios * 0.10)];
-        const p50 = monthReturns[Math.floor(scenarios * 0.50)];
-        const p90 = monthReturns[Math.floor(scenarios * 0.90)];
+        // Get all values for this month and sort
+        const monthValues = allSimulations.map(sim => sim[month]).sort((a, b) => a - b);
 
-        // Calculate portfolio value based on expected return percentage
-        // This is used for display purposes (Totale Waarde, etc.)
+        // Calculate percentiles (P10, P50, P90)
+        const p10Index = Math.floor(numSimulations * 0.10);
+        const p50Index = Math.floor(numSimulations * 0.50);
+        const p90Index = Math.floor(numSimulations * 0.90);
+
+        const poorReturn = monthValues[p10Index];
+        const expectedReturn = monthValues[p50Index];
+        const goodReturn = monthValues[p90Index];
+
+        // Calculate portfolio value based on median return
         const totalInvested = initialValue + (monthlyContribution * month);
-        const portfolioValue = totalInvested * (1 + p50 / 100);
+        const portfolioValue = totalInvested * (1 + expectedReturn / 100);
 
         performanceData.push({
           date: date.toLocaleDateString('nl-NL', { month: 'short', year: '2-digit' }),
-          poor: p10,
-          expected: p50,
-          good: p90,
+          poor: poorReturn,
+          expected: expectedReturn,
+          good: goodReturn,
           portfolioValue: portfolioValue
         });
       }
 
       return performanceData;
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [months, avgReturn, stdDev, generateNormalRandom, initialValue, monthlyContribution]);
+    }, [months, avgReturn, stdDev, initialValue, monthlyContribution]);
 
     // Load saved simulation state from database on mount
     useEffect(() => {
@@ -7626,23 +7661,13 @@ useEffect(() => {
                 <div>
                   <div className="text-xs text-gray-400">Rendement</div>
                   <div className={`text-lg font-bold ${realPortfolioData.totalReturnPercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {realPortfolioData.totalReturnPercent >= 0 ? '+' : ''}{realPortfolioData.totalReturnPercent.toFixed(2)}%
+                    {realPortfolioData.totalReturnPercent >= 0 ? '+' : ''}{(realPortfolioData.totalReturnPercent || 0).toFixed(2)}%
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
-              <div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde {realPortfolioData && realPortfolioData.totalInvested > 0 ? '(Simulatie)' : ''}</div>
-              <div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div>
-              <div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div>
-            </div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
-          </div>
 
           {/* Goal Progress Section - Only show if target amount is set */}
           {targetAmount > 0 && (
@@ -7697,52 +7722,117 @@ useEffect(() => {
               <div>
                 <h3 className="font-bold text-base sm:text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar)</h3>
                 <div className="text-xs sm:text-sm text-gray-400">
-                  Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% rendement en {(stdDev * 100).toFixed(1)}% risico
+                  Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% rendement
                 </div>
               </div>
-              <div className="hidden md:flex gap-2">
-                <button
-                  onClick={toggleAnimation}
-                  className={`px-4 py-2 rounded-lg font-medium transition ${
-                    isAnimating
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
-                  }`}
-                >
-                  {isAnimating ? '⏸ Pauzeer' : currentMonth >= months ? '🔄 Herstarten' : '▶ Start'}
-                </button>
-                <button
-                  onClick={resetSimulation}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition"
-                >
-                  ↺ Reset
-                </button>
+              <div className="flex gap-2 flex-wrap">
+                <div className="flex bg-slate-800 rounded-lg p-1">
+                  {['1j', '5j', '10j', 'Alles'].map((label, idx) => {
+                    const zoomValues = ['1y', '5y', '10y', 'all'];
+                    const zoomValue = zoomValues[idx];
+                    return (
+                      <button
+                        key={label}
+                        onClick={() => setChartZoom(zoomValue)}
+                        className={`px-3 py-1 text-sm rounded-md transition ${
+                          chartZoom === zoomValue
+                            ? 'bg-[#28EBCF] text-slate-900 font-medium'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-            <div className="text-xs text-gray-500 mb-4">
-              Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
-            </div>
             <ResponsiveContainer width="100%" height={chartHeight}>
-              <LineChart data={performanceData} margin={{ top: 5, right: 50, left: 0, bottom: 5 }}>
+              <AreaChart
+                data={(() => {
+                  if (!performanceData) return [];
+                  const zoomMonths = chartZoom === '1y' ? 12 : chartZoom === '5y' ? 60 : chartZoom === '10y' ? 120 : performanceData.length;
+                  const slicedData = performanceData.slice(0, Math.min(zoomMonths + 1, performanceData.length));
+
+                  // Add actual portfolio return at first data point
+                  const actualReturn = realPortfolioData?.totalReturnPercent || 0;
+                  return slicedData.map((d, idx) => ({
+                    ...d,
+                    portfolio: idx === 0 ? actualReturn : null
+                  }));
+                })()}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorGood" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExpected" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FBBF24" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#FBBF24" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorPoor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#EF4444" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <XAxis
                   dataKey="date"
-                  interval={Math.floor(months / 10)}
+                  tick={{ fill: '#9CA3AF', fontSize: 11 }}
+                  tickLine={{ stroke: '#4B5563' }}
+                  axisLine={{ stroke: '#4B5563' }}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tickFormatter={(value) => `${value.toFixed(1)}%`}
-                  label={{ value: 'Rendement (%)', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => `${value.toFixed(0)}%`}
+                  tick={{ fill: '#9CA3AF', fontSize: 11 }}
+                  tickLine={{ stroke: '#4B5563' }}
+                  axisLine={{ stroke: '#4B5563' }}
+                  domain={['auto', 'auto']}
                 />
                 <Tooltip
-                  formatter={(value) => [`${value.toFixed(2)}%`, '']}
-                  labelFormatter={(label) => `Datum: ${label}`}
+                  contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #475569', borderRadius: '8px' }}
+                  labelStyle={{ color: '#F3F4F6' }}
+                  formatter={(value, name) => {
+                    if (value === null) return null;
+                    const labels = { good: 'Goed Scenario (P90)', expected: 'Verwacht (P50)', poor: 'Slecht Scenario (P10)', portfolio: 'Huidige Waarde' };
+                    return [`${value.toFixed(1)}%`, labels[name] || name];
+                  }}
                 />
-                <Legend wrapperStyle={{fontSize: window.innerWidth < 640 ? '10px' : '12px', paddingTop: '10px'}} iconSize={window.innerWidth < 640 ? 8 : 14} />
-                <Line type="monotone" dataKey="poor" stroke="#EF4444" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Slecht (P10)" : "Slecht Scenario (P10)"} dot={false} label={window.innerWidth >= 640 ? { position: 'right', fill: '#EF4444', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
-                <Line type="monotone" dataKey="portfolio" stroke="#0088FE" strokeWidth={3} name={window.innerWidth < 640 ? "Portfolio" : "Jouw Portfolio (Median)"} dot={false} connectNulls label={window.innerWidth >= 640 ? { position: 'right', fill: '#0088FE', fontSize: 11, fontWeight: 'bold', formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
-                <Line type="monotone" dataKey="expected" stroke="#FBBF24" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Verwacht" : "Verwacht Scenario (Median)"} dot={false} opacity={0.3} label={window.innerWidth >= 640 ? { position: 'right', fill: '#FBBF24', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
-                <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name={window.innerWidth < 640 ? "Goed (P90)" : "Goed Scenario (P90)"} dot={false} label={window.innerWidth >= 640 ? { position: 'right', fill: '#10B981', fontSize: 11, formatter: (value) => value ? `${value.toFixed(1)}%` : '' } : false} />
-              </LineChart>
+                <Area type="monotone" dataKey="good" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorGood)" />
+                <Area type="monotone" dataKey="expected" stroke="#FBBF24" strokeWidth={2} fillOpacity={1} fill="url(#colorExpected)" />
+                <Area type="monotone" dataKey="poor" stroke="#EF4444" strokeWidth={2} fillOpacity={1} fill="url(#colorPoor)" />
+                {realPortfolioData?.totalReturnPercent !== undefined && performanceData && performanceData[0] && (
+                  <ReferenceDot
+                    x={performanceData[0].date}
+                    y={realPortfolioData.totalReturnPercent}
+                    r={8}
+                    fill="#0088FE"
+                    stroke="#fff"
+                    strokeWidth={2}
+                  />
+                )}
+              </AreaChart>
             </ResponsiveContainer>
+            <div className="flex justify-center gap-4 sm:gap-6 mt-4 text-xs sm:text-sm flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className="text-gray-400">Goed Scenario (P90)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <span className="text-gray-400">Verwacht (P50)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <span className="text-gray-400">Slecht Scenario (P10)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white"></div>
+                <span className="text-gray-400">Huidige Waarde ({(realPortfolioData?.totalReturnPercent || 0).toFixed(1)}%)</span>
+              </div>
+            </div>
             <div className="mt-4 text-sm text-gray-400 text-center">
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
             </div>

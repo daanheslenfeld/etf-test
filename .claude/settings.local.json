@@ -46,7 +46,16 @@
       "Bash(start https://etf-test-5e4xn60dc-daniels-projects-b00bc24a.vercel.app)",
       "Bash(vercel project:*)",
       "Bash(vercel:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(start https://etf-test.vercel.app)",
+      "Bash(node test-register.js:*)",
+      "Bash(nslookup:*)",
+      "Bash(git restore:*)",
+      "Bash(start https://vercel.com/daniels-projects-b00bc24a/etf-test)",
+      "Bash(start https://etf-test.vercel.app/onboarding.html)",
+      "Bash(node test-register-new.js:*)",
+      "Bash(node test-full-registration.js:*)",
+      "Bash(node test-after-fix.js:*)"
     ],
     "deny": [],
     "ask": []
