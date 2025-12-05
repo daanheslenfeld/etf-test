@@ -7636,8 +7636,8 @@ useEffect(() => {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
-          {/* Real Portfolio Value Section - shows actual market data */}
-          {realPortfolioData && realPortfolioData.totalInvested > 0 && (
+          {/* Portfolio Value Section */}
+          {realPortfolioData && realPortfolioData.totalInvested > 0 ? (
             <div className="mb-6 p-4 bg-gradient-to-r from-[#28EBCF]/10 to-transparent border border-[#28EBCF]/30 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[#28EBCF] text-sm font-medium">📊 Live Marktwaarde</span>
@@ -7664,6 +7664,26 @@ useEffect(() => {
                     {realPortfolioData.totalReturnPercent >= 0 ? '+' : ''}{(realPortfolioData.totalReturnPercent || 0).toFixed(2)}%
                   </div>
                 </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div>
+                <div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div>
+                <div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div>
+              </div>
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div>
+                <div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div>
+              </div>
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div>
+                <div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div>
+              </div>
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div>
+                <div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div>
               </div>
             </div>
           )}
