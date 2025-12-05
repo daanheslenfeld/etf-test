@@ -8062,106 +8062,82 @@ useEffect(() => {
         </div>
 
         {showHoldings && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-            <div className="bg-[#1A1B1F] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
-              <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-6 py-4 flex justify-between items-center z-10">
-                <h2 className="text-2xl font-bold text-white">Portfolio Holdings</h2>
-                <button onClick={() => setShowHoldings(false)} className="text-3xl text-gray-400 hover:text-gray-200 leading-none">×</button>
+          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-end md:items-center justify-center" style={{ zIndex: 9999 }} onClick={() => setShowHoldings(false)}>
+            <div className="bg-[#1A1B1F] rounded-t-2xl md:rounded-lg w-full md:max-w-2xl max-h-[85vh] md:max-h-[90vh] overflow-hidden border border-gray-800" onClick={(e) => e.stopPropagation()}>
+              {/* Header */}
+              <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-4 py-4 flex justify-between items-center z-10">
+                <h2 className="text-xl font-bold text-white">Mijn ETF's</h2>
+                <button onClick={() => setShowHoldings(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700">
+                  <span className="text-xl leading-none">×</span>
+                </button>
               </div>
 
-              <div className="p-6">
-                <div className="flex gap-4 mb-6">
-                  <button
-                    onClick={() => setHoldingsView('top10')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
-                  >
-                    Top 10
-                  </button>
-                  <button
-                    onClick={() => setHoldingsView('top100')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
-                  >
-                    Top 100
-                  </button>
-                </div>
-                
-                {(() => {
-                  const holdings = generateHoldings();
-                  const limit = holdingsView === 'top10' ? 10 : 100;
-                  
-                  return (
-                    <div className="space-y-8">
-                      {holdings.stocks.length > 0 && (
-                        <div>
-                          <h3 className="text-xl font-bold mb-4 text-white">Aandelen</h3>
-                          <div className="overflow-x-auto">
-                            <table className="w-full">
-                              <thead className="bg-gray-900/50">
-                                <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-gray-800">
-                                {holdings.stocks.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-900/30">
-                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {holdings.bonds.length > 0 && (
-                        <div>
-                          <h3 className="text-xl font-bold mb-4 text-white">Obligaties</h3>
-                          <div className="overflow-x-auto">
-                            <table className="w-full">
-                              <thead className="bg-gray-900/50">
-                                <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Looptijd</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Coupon</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-gray-800">
-                                {holdings.bonds.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-900/30">
-                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.maturity}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.coupon}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      )}
+              {/* ETF List */}
+              <div className="overflow-y-auto max-h-[calc(85vh-120px)] md:max-h-[calc(90vh-140px)]">
+                <div className="p-4 space-y-3">
+                  {Object.entries(
+                    portfolio.reduce((acc, etf) => {
+                      const category = etf.categorie || 'Overig';
+                      if (!acc[category]) acc[category] = [];
+                      acc[category].push(etf);
+                      return acc;
+                    }, {})
+                  )
+                  .map(([category, etfs]) => ({
+                    category,
+                    etfs,
+                    categoryWeight: etfs.reduce((sum, e) => sum + (e.weight || 0), 0)
+                  }))
+                  .filter(item => item.categoryWeight > 0)
+                  .sort((a, b) => b.categoryWeight - a.categoryWeight)
+                  .map(({ category, etfs, categoryWeight }) => (
+                    <div key={category} className="bg-slate-800/50 rounded-xl overflow-hidden">
+                      <div className="bg-slate-700/50 px-4 py-2 flex justify-between items-center">
+                        <span className="font-semibold text-white text-sm">{category}</span>
+                        <span className="text-[#28EBCF] text-sm font-medium">{categoryWeight.toFixed(1)}%</span>
+                      </div>
+                      <div className="divide-y divide-slate-700/50">
+                        {etfs.map((etf, idx) => {
+                          const etfValue = (animatedPortfolioValue * (etf.weight || 0) / 100);
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                setSelectedETF(etf);
+                                setShowHoldings(false);
+                              }}
+                              className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-700/30 transition-colors text-left"
+                            >
+                              <div className="flex-1 min-w-0 pr-3">
+                                <div className="text-white text-sm font-medium truncate">{etf.naam}</div>
+                                <div className="text-gray-400 text-xs mt-0.5">{etf.isin}</div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="text-white text-sm font-medium">{formatEuro(etfValue)}</div>
+                                <div className="text-gray-400 text-xs">{(etf.weight || 0).toFixed(1)}%</div>
+                              </div>
+                              <div className="ml-2 text-gray-500">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  );
-                })()}
-                
-                <div className="mt-6">
-                  <button
-                    onClick={() => setShowHoldings(false)}
-                    className="w-full py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
-                  >
-                    Sluiten
-                  </button>
+                  ))}
                 </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-[#1A1B1F] border-t border-gray-800 p-4">
+                <button
+                  onClick={() => setShowHoldings(false)}
+                  className="w-full py-3 bg-slate-700 text-white rounded-xl font-medium hover:bg-slate-600 transition-colors"
+                >
+                  Sluiten
+                </button>
               </div>
             </div>
           </div>
