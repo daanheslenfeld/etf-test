@@ -7838,60 +7838,108 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO ANALYSE</div>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+          {/* Mobile: Button to view holdings */}
+          <div className="md:hidden mb-6">
+            <button
+              onClick={() => setShowHoldings(true)}
+              className="w-full py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-lg font-semibold flex items-center justify-center gap-3 border-2 border-slate-600 hover:border-[#28EBCF] transition-all"
+            >
+              <span className="text-xl">📊</span>
+              <span>Bekijk Portfolio Holdings</span>
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-10">
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
-              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
-              <ResponsiveContainer width="100%" height={chartHeight}>
-                <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#0f172a', border: '2px solid #334155', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
-              </ResponsiveContainer>
+          {/* Mobile: Compact Asset Allocatie */}
+          <div className="md:hidden mb-6">
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 border-2 border-slate-800">
+              <h3 className="font-bold text-base mb-3 text-white">Asset Allocatie</h3>
+              <div className="flex items-center gap-4">
+                <div className="w-28 h-28 flex-shrink-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={50} innerRadius={25}>
+                        {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex-1 space-y-1">
+                  {categoryData.slice(0, 5).map((entry, index) => (
+                    <div key={entry.name} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{backgroundColor: COLORS[index % COLORS.length]}}></div>
+                        <span className="text-gray-300 truncate max-w-[80px]">{entry.name}</span>
+                      </div>
+                      <span className="text-white font-medium">{entry.value.toFixed(1)}%</span>
+                    </div>
+                  ))}
+                  {categoryData.length > 5 && (
+                    <div className="text-xs text-gray-500">+{categoryData.length - 5} meer</div>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
-              <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
+          </div>
+
+          {/* Desktop: Full Portfolio Analyse section */}
+          <div className="hidden md:block">
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+              <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO ANALYSE</div>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-10">
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
+                <ResponsiveContainer width="100%" height={chartHeight}>
+                  <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#0f172a', border: '2px solid #334155', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
+                <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-gray-400">Gemiddelde TER:</span><span className="font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</span></div>
+                  <div className="flex justify-between items-center"><span className="text-gray-400">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
+                  <div className="flex justify-between items-center"><span className="text-gray-400">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop only: Portfolio Holdings section */}
+          <div className="hidden md:block">
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+              <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO HOLDINGS</div>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+            </div>
+
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-lg text-white">Portfolio Holdings</h3>
+                <button
+                  onClick={fetchRealPortfolioValue}
+                  disabled={isLoadingRealData}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 text-white text-sm rounded-lg transition"
+                >
+                  {isLoadingRealData ? (
+                    <span className="animate-spin">⟳</span>
+                  ) : (
+                    <span>🔄</span>
+                  )}
+                  <span className="hidden sm:inline">{isLoadingRealData ? 'Laden...' : 'Ververs koersen'}</span>
+                </button>
+              </div>
+              {realPortfolioData?.timestamp && (
+                <div className="text-xs text-gray-500 mb-3">
+                  Koersen bijgewerkt: {new Date(realPortfolioData.timestamp).toLocaleString('nl-NL')}
+                </div>
+              )}
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Gemiddelde TER:</span><span className="font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO HOLDINGS</div>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-          </div>
-
-          <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg text-white">Portfolio Holdings</h3>
-              <button
-                onClick={fetchRealPortfolioValue}
-                disabled={isLoadingRealData}
-                className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 text-white text-sm rounded-lg transition"
-              >
-                {isLoadingRealData ? (
-                  <span className="animate-spin">⟳</span>
-                ) : (
-                  <span>🔄</span>
-                )}
-                <span className="hidden sm:inline">{isLoadingRealData ? 'Laden...' : 'Ververs koersen'}</span>
-              </button>
-            </div>
-            {realPortfolioData?.timestamp && (
-              <div className="text-xs text-gray-500 mb-3">
-                Koersen bijgewerkt: {new Date(realPortfolioData.timestamp).toLocaleString('nl-NL')}
-              </div>
-            )}
-            <div className="space-y-4">
               {(() => {
                 console.log('📊 Portfolio Holdings Render:', {
                   animatedPortfolioValue,
@@ -7988,10 +8036,11 @@ useEffect(() => {
                 );
               });
               })()}
+              </div>
             </div>
           </div>
         </div>
-        
+
         {showHoldings && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
             <div className="bg-[#1A1B1F] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
