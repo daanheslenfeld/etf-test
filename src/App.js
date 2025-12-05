@@ -7669,9 +7669,9 @@ useEffect(() => {
           )}
 
 
-          {/* Goal Progress Section - Only show if target amount is set */}
+          {/* Goal Progress Section - Only show if target amount is set - HIDDEN ON MOBILE */}
           {targetAmount > 0 && (
-            <>
+            <div className="hidden md:block">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
                 <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">DOELVOORTGANG</div>
@@ -7707,7 +7707,7 @@ useEffect(() => {
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* Divider */}
