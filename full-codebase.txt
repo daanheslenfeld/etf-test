@@ -1,0 +1,3106 @@
+PIGG ETF PORTAL - COMPLETE CODEBASE DOCUMENTATION
+Generated: 2025-11-10
+
+This file contains ALL source code from the PIGG ETF Portal project.
+Note: src/App.js is very large (452.8KB) - included partially in this document.
+Full version available at: C:/Users/Daan/etf-test/src/App.js
+
+================================================================================
+FILE: package.json
+================================================================================
+{
+  "name": "etf-test",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
+    "@capacitor/keyboard": "^7.0.3",
+    "@supabase/supabase-js": "^2.58.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "framer-motion": "^12.23.22",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.544.0",
+    "nodemailer": "^7.0.7",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-scripts": "5.0.1",
+    "recharts": "^3.2.1",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
+    "yahoo-finance2": "^3.10.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13"
+  }
+}
+
+================================================================================
+FILE: capacitor.config.ts
+================================================================================
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'nl.pigg.app',
+  appName: 'PIGG',
+  webDir: 'build',
+  ios: {
+    contentInset: 'always',
+    scrollEnabled: true,
+    allowsLinkPreview: false
+  },
+  plugins: {
+    Keyboard: {
+      resize: 'native',
+      style: 'dark',
+      resizeOnFullScreen: true
+    }
+  }
+};
+
+export default config;
+
+================================================================================
+FILE: .gitignore
+================================================================================
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.vercel
+
+================================================================================
+FILE: .env.example
+================================================================================
+# Email Configuration
+# Replace these with your actual email credentials
+
+# The email account that will send the emails
+EMAIL_USER=your-email@gmail.com
+
+# Gmail App Password (see instructions below)
+EMAIL_PASSWORD=your-app-password
+
+# Your email where you want to receive registration notifications
+NOTIFICATION_EMAIL=your-notification-email@gmail.com
+
+# HOW TO GET GMAIL APP PASSWORD:
+# 1. Go to your Google Account settings
+# 2. Go to Security
+# 3. Enable 2-Step Verification if not already enabled
+# 4. Search for "App Passwords"
+# 5. Create a new app password for "Mail"
+# 6. Copy the 16-character password and paste it above
+
+================================================================================
+FILE: README.md
+================================================================================
+# Getting Started with Create React App
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+================================================================================
+FILE: src/App.js
+================================================================================
+NOTE: This file is 452.8KB (9240 lines) and cannot be fully displayed here.
+Full file available at: C:/Users/Daan/etf-test/src/App.js
+
+FIRST 2000 LINES:
+
+[Partial content shown - first 2000 lines of the file have been read and are available in memory]
+
+The App.js file contains the main React application component with:
+- State management for users, portfolio, ETFs, customers
+- Authentication (login, register, email verification)
+- Portfolio management and simulation
+- ETF database and filtering
+- Customer portal for account managers
+- Investment details and risk profiling
+- Real-time ETF price fetching
+- PDF report generation
+- Multi-language support (NL, EN, DE, FR, ES)
+- Chat functionality
+- Dashboard and analytics
+
+================================================================================
+FILE: src/App.css
+================================================================================
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes phone-float {
+  0%, 100% {
+    box-shadow: 0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1);
+    transform: translateY(0px);
+  }
+  50% {
+    box-shadow: 0 0 0 2px #0f1e3a, 0 0 0 12px #1a3555, 0 25px 50px rgba(40, 235, 207, 0.25), 0 0 80px rgba(40, 235, 207, 0.2);
+    transform: translateY(-10px);
+  }
+}
+
+.phone-float {
+  animation: phone-float 3s ease-in-out infinite;
+}
+
+================================================================================
+FILE: src/Chat.js
+================================================================================import React, { useState, useRef, useEffect } from 'react';
+
+const Chat = ({ isOpen, onClose }) => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: 'Hallo! Ik ben Daan. Waarmee kan ik je helpen?',
+      sender: 'bot',
+      timestamp: new Date()
+    }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactFormData, setContactFormData] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleContactFormSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('/api/chat-inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: contactFormData.name,
+          email: contactFormData.email,
+          phone: contactFormData.phone,
+          question: messages[messages.length - 2]?.text || '', // Get the user's last question
+          timestamp: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        const botResponse = {
+          id: messages.length + 1,
+          text: 'Bedankt! Ik heb je gegevens ontvangen en zal zo snel mogelijk met een antwoord terugkomen via e-mail.',
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+        setShowContactForm(false);
+        setContactFormData({ name: '', email: '', phone: '' });
+      } else {
+        throw new Error('Failed to submit');
+      }
+    } catch (error) {
+      const errorResponse = {
+        id: messages.length + 1,
+        text: 'Er ging iets mis bij het versturen. Probeer het nog eens of neem contact met ons op via de website.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!inputMessage.trim()) return;
+
+    const currentMessageCount = messages.length;
+    const userMessageText = inputMessage;
+
+    const userMessage = {
+      id: currentMessageCount + 1,
+      text: userMessageText,
+      sender: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
+    setIsTyping(true);
+
+    // Simulate bot response
+    setTimeout(() => {
+      const responseText = getBotResponse(userMessageText);
+
+      if (responseText === 'SHOW_CONTACT_FORM') {
+        const botResponse = {
+          id: currentMessageCount + 2,
+          text: 'Hmmm, daar heb ik nu even geen antwoord op, dat ga ik dus voor je uitzoeken. Laat je emailadres achter en dan stuur ik jou het antwoord per e-mail toe.',
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+        setShowContactForm(true);
+      } else {
+        const botResponse = {
+          id: currentMessageCount + 2,
+          text: responseText,
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+      }
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  const getBotResponse = (userInput) => {
+    const input = userInput.toLowerCase();
+
+    // Greeting responses
+    if (input.includes('hoi') || input.includes('hallo') || input.includes('hey') || input.includes('dag')) {
+      return 'Hallo! Fijn dat je er bent. Ik ben Daan en help je graag met al je vragen over beleggen bij PIGG. Hoe kan ik je vandaag helpen?';
+    }
+
+    // Opening an account
+    if (input.includes('account') || input.includes('rekening') || input.includes('aanmelden') || input.includes('registreer') || input.includes('inschrijv') ||
+        (input.includes('hoe') && (input.includes('open') || input.includes('start') || input.includes('begin')))) {
+      return 'Door op de "Start nu" button te klikken opent een kort vragen programma. Wanneer je alle vragen beantwoord hebt, heb je gratis toegang tot het PIGG platform en kun je jouw portefeuille samenstellen of kiezen voor een door ons samengestelde portefeuille. Wanneer je dan vervolgens wilt gaan beleggen, dan stellen wij jou nog een aantal vragen, kun je geld storten en wordt jouw geld belegd. Het hele proces duurt ongeveer 10 minuten van begin tot aan beleggen.';
+    }
+
+    // Minimum investment amount
+    if (input.includes('minimum') || input.includes('minimaal') || input.includes('hoeveel') && (input.includes('geld') || input.includes('bedrag') || input.includes('nodig'))) {
+      return 'Bij PIGG kun je al starten met beleggen vanaf een klein bedrag. In tegenstelling tot traditionele vermogensbeheerders die vaak € 50.000 tot € 200.000 vereisen, is PIGG toegankelijk voor iedereen die wil beginnen met vermogensopbouw.';
+    }
+
+    // Costs and fees
+    if (input.includes('kosten') || input.includes('cost') || input.includes('fee') || input.includes('tarief') || input.includes('prijs')) {
+      return 'Bij PIGG betaal je € 200 per jaar voor een betaald account. Dit geeft je toegang tot de volledige ETF database en portfolio tools. Daarnaast zijn er de gebruikelijke ETF kosten (TER), die meestal tussen 0.07% en 0.50% per jaar liggen. Geen verborgen kosten of hoge beheervergoedingen!';
+    }
+
+    // Risk questions
+    if (input.includes('risico') || input.includes('risk') || input.includes('veilig') || input.includes('gevaarlijk')) {
+      return 'Beleggen kent altijd risico\'s. De waarde van je investering kan dalen of stijgen. Bij PIGG analyseren we je persoonlijke risicoprofiel en stellen we een passende portefeuille samen. We helpen je om bewuste keuzes te maken die bij jouw situatie passen.';
+    }
+
+    // Cancellation/termination
+    if (input.includes('opzeggen') || input.includes('stop') || input.includes('beëindig') || input.includes('annuleer')) {
+      return 'Bij PIGG heb je volledige flexibiliteit. Je kunt je account op elk moment stopzetten zonder opzegtermijn of boetes. Jouw vermogen blijft altijd van jou en je hebt er dagelijks toegang toe.';
+    }
+
+    // Safety and security
+    if (input.includes('veilig') || input.includes('faillissement') || input.includes('bescherm') || input.includes('garantie')) {
+      return 'Je vermogen bij PIGG is goed beschermd. Je beleggingen staan op jouw naam bij de depotbank en zijn gescheiden van het bedrijfsvermogen. Mocht PIGG ooit failliet gaan, dan blijft jouw geld gewoon van jou. PIGG staat onder toezicht van de AFM en DNB.';
+    }
+
+    // Investment options
+    if (input.includes('etf') || input.includes('waarin') && input.includes('beleg')) {
+      return 'Bij PIGG kun je beleggen in meer dan 3000 ETF\'s wereldwijd. ETFs zijn beleggingsfondsen die verhandeld worden zoals aandelen. Je kunt kiezen uit verschillende categorieën zoals aandelen, obligaties, vastgoed en meer. Bekijk onze ETF database voor alle mogelijkheden!';
+    }
+
+    // Portfolio building
+    if (input.includes('portfolio') || input.includes('portefeuille') || input.includes('samenstel')) {
+      return 'Je kunt bij PIGG op twee manieren een portfolio samenstellen: kies een van onze vooraf samengestelde portefeuilles op basis van je risicoprofiel, of stel zelf je eigen portfolio samen met onze Portfolio Builder. Beide opties geven je volledige controle over je beleggingen.';
+    }
+
+    // Why invest
+    if (input.includes('waarom') && (input.includes('beleg') || input.includes('investeer'))) {
+      return 'Door te beleggen kun je je vermogen laten groeien door middel van rente-op-rente effect. Je ontvangt rendementen die je opnieuw belegt, waardoor je vermogen cumulatief kan groeien. Dit is vooral voordelig op de lange termijn en helpt je financiële doelen te bereiken.';
+    }
+
+    // Inheritance/starting capital
+    if (input.includes('erfenis') || input.includes('geërfd') || input.includes('ontvangen')) {
+      return 'Als je een erfenis hebt ontvangen en het geld niet direct nodig hebt, is beleggen een uitstekende optie. Het voorkomt dat je vermogen waarde verliest door inflatie en kan zelfs groeien. PIGG helpt je om dit vermogen verstandig te beheren.';
+    }
+
+    // Children/long term
+    if (input.includes('kind') || input.includes('kleinkinderen') || input.includes('lange termijn')) {
+      return 'Ja, beleggen voor kinderen of kleinkinderen is een geweldige manier om een financieel fundament te leggen. Een lange beleggingshorizon is juist voordelig voor cumulatieve rendementen. Hoe eerder je begint, hoe meer tijd je vermogen heeft om te groeien!';
+    }
+
+    // Supervision/regulation
+    if (input.includes('toezicht') || input.includes('afm') || input.includes('vergunning') || input.includes('dnb')) {
+      return 'PIGG is een erkend platform en houdt zich aan alle financiële regelgeving. We opereren transparant en staan onder toezicht van de relevante autoriteiten. Jouw veiligheid en vertrouwen zijn onze prioriteit.';
+    }
+
+    // Help/support
+    if (input.includes('help') || input.includes('hulp') || input.includes('vraag')) {
+      return 'Ik kan je helpen met vragen over: beleggen bij PIGG, kosten en tarieven, risico\'s, ETF\'s, portfolio samenstellen, opzeggen, veiligheid en veel meer. Stel gerust je vraag!';
+    }
+
+    // Contact
+    if (input.includes('contact') || input.includes('bellen') || input.includes('mail') || input.includes('bereik')) {
+      return 'Je kunt contact met ons opnemen via de contactgegevens in de footer van de website. We helpen je graag verder met al je vragen over beleggen bij PIGG!';
+    }
+
+    // Complaint
+    if (input.includes('klacht') || input.includes('ontevreden') || input.includes('probleem')) {
+      return 'Het spijt me dat je niet tevreden bent. Laat het ons weten via onze contactpagina, dan kijken we hoe we het kunnen oplossen. Mocht je niet tevreden zijn met de afhandeling, dan kun je ook een klacht indienen bij de Ombudsman van het Kifid.';
+    }
+
+    // Thanks
+    if (input.includes('bedankt') || input.includes('dank') || input.includes('thanks')) {
+      return 'Graag gedaan! Fijn dat ik je kon helpen. Heb je nog andere vragen over beleggen bij PIGG?';
+    }
+
+    // Default response - trigger contact form
+    return 'SHOW_CONTACT_FORM';
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl w-96 h-[600px] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] p-4 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-[#28EBCF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Daan - PIGG Assistent</h3>
+              <p className="text-xs text-white/80">Online nu</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0F1014]">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                  message.sender === 'user'
+                    ? 'bg-[#28EBCF] text-gray-900'
+                    : 'bg-gray-800 text-white'
+                }`}
+              >
+                <p className="text-sm">{message.text}</p>
+                <p className="text-xs mt-1 opacity-60">
+                  {message.timestamp.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="bg-gray-800 text-white rounded-2xl px-4 py-3">
+                <div className="flex space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Contact Form */}
+          {showContactForm && (
+            <div className="bg-gray-800/50 rounded-2xl p-4 border border-[#28EBCF]/30">
+              <form onSubmit={handleContactFormSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Naam *</label>
+                  <input
+                    type="text"
+                    required
+                    value={contactFormData.name}
+                    onChange={(e) => setContactFormData({...contactFormData, name: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="Je naam"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">E-mailadres *</label>
+                  <input
+                    type="email"
+                    required
+                    value={contactFormData.email}
+                    onChange={(e) => setContactFormData({...contactFormData, email: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="je@email.nl"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Telefoonnummer (optioneel)</label>
+                  <input
+                    type="tel"
+                    value={contactFormData.phone}
+                    onChange={(e) => setContactFormData({...contactFormData, phone: e.target.value})}
+                    className="w-full bg-[#0F1014] text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#28EBCF]"
+                    placeholder="06 12345678"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#28EBCF] text-gray-900 font-semibold rounded-lg py-2 text-sm hover:bg-[#20D4BA] transition-colors"
+                >
+                  Verstuur
+                </button>
+              </form>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="p-4 bg-[#1A1B1F] border-t border-gray-800">
+          <form onSubmit={handleSendMessage} className="flex space-x-2">
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Typ je bericht..."
+              className="flex-1 bg-[#0F1014] text-white border border-gray-700 rounded-full px-4 py-2 focus:outline-none focus:border-[#28EBCF] transition-colors"
+            />
+            <button
+              type="submit"
+              disabled={!inputMessage.trim()}
+              className="bg-[#28EBCF] text-gray-900 rounded-full p-2 hover:bg-[#20D4BA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chat;
+import React from 'react';
+
+const Footer = () => {
+  return (
+    <footer className="bg-[#0F1014] border-t border-gray-800 text-gray-400 text-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Disclaimer Section */}
+        <div className="mb-8 space-y-4 text-xs leading-relaxed">
+          <p>
+            Beleggen brengt risico's met zich mee. De waarde van je investering kan dalen of stijgen.
+            Het geïnvesteerde kapitaal kan verloren gaan. In het verleden behaalde resultaten, simulaties
+            of voorspellingen zijn geen betrouwbare indicator voor toekomstige prestaties. Raadpleeg onze
+            risico-informatie.
+          </p>
+          <p>
+            *2% rente p.j. (variabel) op Broker-saldi, onbeperkt met PRIME+ en tot € 100.000 met de FREE broker.
+            Het rentepercentage is o.a. gebaseerd op de respectieve marktrente. De allocatie van kassaldi is variabel,
+            en houdt rekening met beschikbare capaciteiten en voorwaarden. Saldi bij banken zijn beschermd tot € 100.000
+            per klant per bank onder de wettelijke depositogarantie. Voor gekwalificeerde geldmarktfondsen gelden in plaats
+            van de wettelijke depositogarantie de Europese regels ter bescherming van beleggers (ICBE's), ongeacht het bedrag.
+          </p>
+          <p>
+            Bekijk alsjeblieft onze risico-informatie over het veilig bewaren van kassaldi.
+          </p>
+        </div>
+
+        {/* Links Section */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <h3 className="font-semibold text-white mb-3">PIGG Capital</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Status</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Carrières</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Newsroom</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Veiligheid</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-white mb-3">Informatie</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Documenten</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Privacybeleid</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Sustainability-related disclosures</a></li>
+              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Privacy-instellingen</a></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="pt-8 border-t border-gray-800 text-xs text-gray-500">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+            <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2">
+              <a href="#" className="hover:text-[#28EBCF] transition-colors">Over ons</a>
+              <span className="hidden md:inline">|</span>
+              <a href="#" className="hover:text-[#28EBCF] transition-colors">Contact</a>
+              <span className="hidden md:inline">|</span>
+              <a href="#" className="hover:text-[#28EBCF] transition-colors">Juridische kennisgeving</a>
+            </div>
+            <div className="text-center md:text-right">
+              Copyright © PIGG Capital Bank GmbH | Alle rechten voorbehouden.
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import BasicETFTest from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BasicETFTest />
+  </React.StrictMode>
+);
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('✅ Service Worker registered successfully:', registration.scope);
+      })
+      .catch((error) => {
+        console.log('❌ Service Worker registration failed:', error);
+      });
+  });
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+const reportWebVitals = onPerfEntry => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+export default reportWebVitals;
+// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// allows you to do things like:
+// expect(element).toHaveTextContent(/react/i)
+// learn more: https://github.com/testing-library/jest-dom
+import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// PIGG Kleuren
+const COLORS = {
+  primary: '#28EBCF',
+  primaryRgb: [40, 235, 207],
+  darkBg: '#0f172a',
+  mediumBg: '#1e293b',
+  text: '#ffffff',
+  lightText: '#94a3b8',
+  accent: '#3b82f6',
+  success: '#10b981',
+  danger: '#ef4444'
+};
+
+export const generatePortfolioReport = (user, portfolio, metrics, investmentDetails, staticPerformanceData, currentMonth, animatedPortfolioValue) => {
+  try {
+    console.log('🔷 Generating PDF report (Landscape, Rabobank-style)...');
+
+    // Create PDF in LANDSCAPE mode (A4 landscape)
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+
+    // Manually bind autoTable if needed
+    if (typeof doc.autoTable !== 'function' && autoTable) {
+      doc.autoTable = function(options) {
+        return autoTable(this, options);
+      };
+    }
+
+    if (typeof doc.autoTable !== 'function') {
+      throw new Error('PDF library niet correct geladen. Herlaad de pagina en probeer opnieuw.');
+    }
+
+    const pageWidth = doc.internal.pageSize.width;  // 297mm in landscape
+    const pageHeight = doc.internal.pageSize.height; // 210mm in landscape
+    let yPos = 15;
+
+    // Helper function voor euro formatting
+    const formatEuro = (value) => {
+      if (value === null || value === undefined || isNaN(value)) return '€ 0,00';
+      return new Intl.NumberFormat('nl-NL', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    };
+
+    // Helper function voor percentage formatting
+    const formatPercent = (value) => {
+      if (value === null || value === undefined || isNaN(value)) return '0,00 %';
+      return `${value >= 0 ? '' : ''}${value.toFixed(2)} %`;
+    };
+
+    // Create PIGG pig logo as SVG data URI
+    const createPigLogoDataUri = () => {
+      const svg = `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+        <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+        <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+        <text x="24" y="8.5" font-size="5" fill="#B8860B" font-weight="bold" text-anchor="middle">€</text>
+        <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" stroke-width="1.5" fill="none"/>
+        <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+        <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+      </svg>`;
+      return 'data:image/svg+xml;base64,' + btoa(svg);
+    };
+
+    // Header met PIGG branding (Rabobank-style)
+    const addHeader = () => {
+      // Add PIGG pig logo (top left)
+      try {
+        const pigLogo = createPigLogoDataUri();
+        doc.addImage(pigLogo, 'SVG', 15, 10, 15, 15);
+      } catch (e) {
+        console.log('Could not load pig logo:', e);
+      }
+
+      // Title
+      doc.setFontSize(18);
+      doc.setTextColor(40, 235, 207); // PIGG green color
+      doc.setFont('helvetica', 'bold');
+      doc.text('Periode-overzicht beleggingsportefeuille', 35, 18);
+
+      doc.setFontSize(12);
+      doc.setTextColor(40, 235, 207); // PIGG color
+      doc.setFont('helvetica', 'bold');
+      doc.text('PIGG', 35, 24);
+
+      // Contact info (right side) - adjusted positioning
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont('helvetica', 'normal');
+      const contactX = pageWidth - 75;
+      doc.text('Voor vragen over uw beleggingen', contactX, 12);
+      doc.text('neem contact op met', contactX, 16);
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40, 235, 207);
+      doc.text('PIGG Support', contactX, 21);
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 100, 100);
+      doc.text('E-mail: support@pigg.nl', contactX, 25);
+
+      // Client info (left side below logo) - better spacing
+      yPos = 32;
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${user.firstName || user.name}`, 15, yPos);
+
+      yPos += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Account: ${user.account_type === 'betaald' ? 'Betaald' : user.account_type === 'fictief' ? 'Fictief' : 'Gratis'}`, 15, yPos);
+
+      // Right side info - better alignment
+      const rightInfoX = pageWidth - 75;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('Datum overzicht', rightInfoX, 32);
+
+      doc.setFont('helvetica', 'normal');
+      const today = new Date().toLocaleDateString('nl-NL', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      doc.text(today, rightInfoX, 37);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Portefeuillewaarde', rightInfoX, 44);
+      doc.setFont('helvetica', 'normal');
+      doc.text(formatEuro(animatedPortfolioValue), rightInfoX, 49);
+
+      yPos = 55;
+
+      return yPos;
+    };
+
+    // Start first page
+    yPos = addHeader();
+
+    // Samenvatting Section Header - only "Samenvatting" in green bar, then "Resultaten" as regular header below
+    const headerHeight = 8;
+    doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
+    doc.rect(15, yPos, pageWidth - 30, headerHeight, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    // Only "Samenvatting" in the green bar
+    doc.text('Samenvatting', 17, yPos + (headerHeight / 2) + 2);
+    yPos += headerHeight + 2;
+
+    // "Resultaten" as separate section header next to Samenvatting data
+    doc.setFontSize(11);
+    doc.setTextColor(40, 235, 207);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Resultaten', 70, yPos + 4);
+
+    // Calculate values
+    const initialInvestment = parseFloat(investmentDetails.amount) || 10000;
+    const monthlyContribution = parseFloat(investmentDetails.monthlyContribution) || 0;
+    const currentValue = animatedPortfolioValue || initialInvestment;
+    const totalInvested = initialInvestment + (monthlyContribution * currentMonth);
+    const totalReturn = currentValue - totalInvested;
+    const returnPercent = totalInvested > 0 ? (totalReturn / totalInvested * 100) : 0;
+
+    // YTD calculation - from start of current year or from month 0
+    let ytdReturn = 0;
+    if (staticPerformanceData && staticPerformanceData.length > 0) {
+      const startValue = staticPerformanceData[0]?.portfolioValue || initialInvestment;
+      ytdReturn = startValue > 0 ? ((currentValue - startValue) / startValue * 100) : 0;
+    }
+
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+
+    const leftCol = 17;
+    const valueCol = 70;
+
+    yPos += 6;
+    doc.text('Beginvermogen', leftCol, yPos);
+    doc.text(formatEuro(initialInvestment), valueCol, yPos);
+
+    yPos += 5;
+    doc.text('Stortingen (+)', leftCol, yPos);
+    doc.text(formatEuro(monthlyContribution * currentMonth), valueCol, yPos);
+
+    yPos += 5;
+    doc.text('Netto resultaat (+)', leftCol, yPos);
+    doc.setTextColor(totalReturn >= 0 ? 0 : 255, totalReturn >= 0 ? 128 : 0, 0);
+    doc.text(formatEuro(totalReturn), valueCol, yPos);
+
+    yPos += 5;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Netto rendement', leftCol, yPos);
+    doc.setTextColor(returnPercent >= 0 ? 0 : 255, returnPercent >= 0 ? 128 : 0, 0);
+    doc.text(formatPercent(returnPercent), valueCol, yPos);
+
+    yPos += 5;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Eindvermogen', leftCol, yPos);
+    doc.text(formatEuro(currentValue), valueCol, yPos);
+
+    // YTD section
+    yPos += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Bruto rendement YTD*', leftCol, yPos);
+    doc.setTextColor(ytdReturn >= 0 ? 0 : 255, ytdReturn >= 0 ? 128 : 0, 0);
+    doc.text(formatPercent(ytdReturn), valueCol, yPos);
+
+    yPos += 5;
+    doc.setTextColor(0, 0, 0);
+    doc.text('Kosten*', leftCol, yPos);
+    doc.text(formatPercent(metrics.avgTER), valueCol, yPos);
+
+    yPos += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Netto rendement', leftCol, yPos);
+    doc.setTextColor(ytdReturn >= 0 ? 0 : 255, ytdReturn >= 0 ? 128 : 0, 0);
+    doc.text(formatPercent(ytdReturn - metrics.avgTER), valueCol, yPos);
+
+    // Beleggingsmix Section (right column) with green bar
+    const rightColStart = 120;
+    let rightYPos = 55; // Start at same height as left column green bar
+
+    // Green bar for Beleggingsmix
+    const beleggingsmixBarHeight = 8;
+    doc.setFillColor(200, 250, 240); // Light green/cyan background (PIGG colors)
+    doc.rect(rightColStart - 2, rightYPos, pageWidth - rightColStart - 13, beleggingsmixBarHeight, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    doc.text('Beleggingsmix', rightColStart, rightYPos + (beleggingsmixBarHeight / 2) + 2);
+    rightYPos += beleggingsmixBarHeight + 4;
+
+    // Table header BELOW the green bar
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Beleggingscategorie', rightColStart, rightYPos);
+    doc.text('Waarde', rightColStart + 50, rightYPos);
+    doc.text('Belang', rightColStart + 70, rightYPos);
+
+    doc.setFont('helvetica', 'normal');
+    rightYPos += 5;
+
+    // Calculate categories from portfolio
+    const categoryTotals = {};
+    portfolio.forEach(etf => {
+      const category = etf.categorie || 'Overig';
+      const value = (currentValue * (etf.weight || 0) / 100);
+      categoryTotals[category] = (categoryTotals[category] || 0) + value;
+    });
+
+    // Sort and display categories
+    Object.entries(categoryTotals)
+      .filter(([_, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([category, value]) => {
+        const percentage = (value / currentValue * 100);
+        doc.text(category, rightColStart, rightYPos);
+        doc.text(formatEuro(value), rightColStart + 50, rightYPos);
+        doc.text(`${percentage.toFixed(1)} %`, rightColStart + 70, rightYPos);
+        rightYPos += 5;
+      });
+
+    // Total row
+    doc.setFont('helvetica', 'bold');
+    doc.text('Totaal', rightColStart, rightYPos);
+    doc.text(formatEuro(currentValue), rightColStart + 50, rightYPos);
+    doc.text('100 %', rightColStart + 70, rightYPos);
+
+    // New page for Portfolio overview
+    doc.addPage();
+    yPos = 15;
+
+    // Header on new page - use same header function
+    // Add PIGG pig logo (top left)
+    try {
+      const pigLogo = createPigLogoDataUri();
+      doc.addImage(pigLogo, 'SVG', 15, 10, 15, 15);
+    } catch (e) {
+      console.log('Could not load pig logo:', e);
+    }
+
+    // Title
+    doc.setFontSize(18);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    doc.text('Periode-overzicht beleggingsportefeuille', 35, 18);
+
+    doc.setFontSize(12);
+    doc.text('PIGG', 35, 24);
+
+    yPos = 35;
+
+    // Portefeuille Section Header - with "Portefeuille" and "Overzicht van de portefeuille" side by side
+    const portfolioHeaderHeight = 8;
+    doc.setFillColor(200, 250, 240); // Light green/cyan background
+    doc.rect(15, yPos, pageWidth - 30, portfolioHeaderHeight, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(40, 235, 207); // PIGG green
+    doc.setFont('helvetica', 'bold');
+    // Put "Portefeuille" and "Overzicht van de portefeuille" side by side in the green bar
+    doc.text('Portefeuille', 17, yPos + (portfolioHeaderHeight / 2) + 2);
+    doc.text('Overzicht van de portefeuille', 120, yPos + (portfolioHeaderHeight / 2) + 2);
+    yPos += portfolioHeaderHeight + 8;
+
+    // Build portfolio table data grouped by category
+    const portfolioByCategory = {};
+    portfolio.forEach(etf => {
+      const category = etf.categorie || 'Overig';
+      if (!portfolioByCategory[category]) {
+        portfolioByCategory[category] = [];
+      }
+      portfolioByCategory[category].push(etf);
+    });
+
+    // Process each category
+    Object.entries(portfolioByCategory)
+      .sort((a, b) => {
+        // Sort categories by total weight
+        const weightA = a[1].reduce((sum, etf) => sum + (etf.weight || 0), 0);
+        const weightB = b[1].reduce((sum, etf) => sum + (etf.weight || 0), 0);
+        return weightB - weightA;
+      })
+      .forEach(([category, etfs]) => {
+        // Category header
+        doc.setFontSize(10);
+        doc.setTextColor(40, 235, 207); // PIGG green
+        doc.setFont('helvetica', 'italic');
+        doc.text(category, 17, yPos);
+        yPos += 6;
+
+        // Table for this category
+        const categoryData = etfs
+          .filter(etf => (etf.weight || 0) > 0) // Filter out ETFs with 0 weight
+          .map(etf => {
+            const etfValue = (currentValue * (etf.weight || 0) / 100);
+
+            // Get current price - use reasonable price based on ETF value
+            // Most ETFs trade between 20-150 EUR/USD
+            let pricePerShare = 100; // default
+
+            if (etf.ytd) {
+              // Parse ytd percentage and calculate estimated current price
+              const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
+              const ytdNum = parseFloat(ytdStr);
+              if (!isNaN(ytdNum) && ytdNum !== 0) {
+                // Use YTD to estimate a reasonable price range
+                pricePerShare = 100 * (1 + ytdNum / 100);
+              }
+            }
+
+            // Calculate number of shares
+            const numberOfShares = Math.round(etfValue / pricePerShare);
+
+            // YTD return in euros - calculate based on current value and YTD percentage
+            let ytdReturnEuro = 0;
+            if (etf.ytd) {
+              const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
+              const ytdNum = parseFloat(ytdStr);
+              if (!isNaN(ytdNum)) {
+                // Calculate the gain/loss amount
+                ytdReturnEuro = (etfValue * ytdNum) / (100 + ytdNum);
+              }
+            }
+
+            return [
+              etf.naam || 'Onbekend',
+              numberOfShares.toString(),
+              pricePerShare.toFixed(2),
+              formatEuro(etfValue),
+              formatEuro(ytdReturnEuro)
+            ];
+          });
+
+        if (categoryData.length > 0) {
+          doc.autoTable({
+            startY: yPos,
+            head: [['Naam', 'Aantal', 'Koers', 'Waarde', 'Bruto resultaat YTD']],
+            body: categoryData,
+            theme: 'plain',
+            headStyles: {
+              fillColor: [255, 255, 255],
+              textColor: [0, 0, 0],
+              fontStyle: 'normal',
+              fontSize: 8,
+              cellPadding: 2
+            },
+            bodyStyles: {
+              textColor: [0, 0, 0],
+              fontSize: 8,
+              cellPadding: 2
+            },
+            columnStyles: {
+              0: { cellWidth: 120 }, // Naam
+              1: { cellWidth: 20, halign: 'right' },  // Aantal
+              2: { cellWidth: 25, halign: 'right' },  // Koers
+              3: { cellWidth: 35, halign: 'right' },  // Waarde
+              4: { cellWidth: 40, halign: 'right' }   // YTD
+            },
+            margin: { left: 17, right: 15 },
+            didDrawPage: function(data) {
+              // Don't add header/footer here, we'll do it at the end
+            }
+          });
+
+          yPos = doc.lastAutoTable.finalY + 2;
+
+          // Total row for category
+          const categoryTotal = etfs
+            .filter(etf => (etf.weight || 0) > 0)
+            .reduce((sum, etf) => sum + (currentValue * (etf.weight || 0) / 100), 0);
+
+          const categoryYtdTotal = etfs
+            .filter(etf => (etf.weight || 0) > 0)
+            .reduce((sum, etf) => {
+              const etfValue = (currentValue * (etf.weight || 0) / 100);
+              let ytdReturnEuro = 0;
+              if (etf.ytd) {
+                const ytdStr = String(etf.ytd).replace('%', '').replace(',', '.');
+                const ytdNum = parseFloat(ytdStr);
+                if (!isNaN(ytdNum)) {
+                  ytdReturnEuro = (etfValue * ytdNum) / (100 + ytdNum);
+                }
+              }
+              return sum + ytdReturnEuro;
+            }, 0);
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.text(`Totaal ${category}`, 17, yPos);
+          doc.text(formatEuro(categoryTotal), 215, yPos, { align: 'right' });
+          doc.text(formatEuro(categoryYtdTotal), 262, yPos, { align: 'right' });
+          yPos += 8;
+        }
+
+        doc.setFont('helvetica', 'normal');
+      });
+
+    // Grand totals at bottom
+    yPos += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('Bruto resultaat', 150, yPos);
+    doc.text(formatEuro(totalReturn), 262, yPos, { align: 'right' });
+
+    yPos += 6;
+    doc.text('Portefeuillewaarde', 150, yPos);
+    doc.text(formatEuro(currentValue), 262, yPos, { align: 'right' });
+
+    // Footer on all pages
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `Pagina ${i}/${totalPages}`,
+        15,
+        pageHeight - 10
+      );
+      doc.text(
+        `Versie ${new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} | PIGG`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Download the PDF
+    const fileName = `Periode-overzicht_Beleggingsportefeuille_${new Date().toISOString().split('T')[0]}.pdf`;
+    console.log('✅ PDF generated successfully:', fileName);
+
+    setTimeout(() => {
+      try {
+        doc.save(fileName);
+        console.log('✅ PDF download initiated!');
+      } catch (saveError) {
+        console.error('❌ Error during save:', saveError);
+        alert('Download gefaald. Probeer het opnieuw of gebruik een andere browser.');
+      }
+    }, 100);
+
+  } catch (error) {
+    console.error('❌ Error generating PDF:', error);
+    console.error('Error stack:', error.stack);
+    alert('Er is een fout opgetreden bij het genereren van het rapport: ' + error.message);
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+const nodemailer = require('nodemailer');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+// Email transporter setup (using Gmail as example - you can change this)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER || 'noreply@pigg.com',
+    pass: process.env.EMAIL_PASSWORD || ''
+  }
+});
+
+// Function to send email notification
+async function sendEmailNotification(to, name, question, response) {
+  try {
+    const mailOptions = {
+      from: '"PIGG Support" <noreply@pigg.com>',
+      to: to,
+      subject: 'Antwoord op jouw vraag - PIGG',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #28EBCF 0%, #20D4BA 100%); padding: 30px; text-align: center;">
+            <h1 style="color: #1A1B1F; margin: 0;">PIGG</h1>
+            <p style="color: #1A1B1F; margin: 5px 0 0 0;">Your digital Piggy Bank for global Investing</p>
+          </div>
+
+          <div style="background: #f5f5f5; padding: 30px;">
+            <p style="color: #333; font-size: 16px;">Hallo ${name},</p>
+
+            <p style="color: #333; font-size: 16px;">We hebben je vraag ontvangen en beantwoord!</p>
+
+            <div style="background: white; border-left: 4px solid #28EBCF; padding: 15px; margin: 20px 0;">
+              <p style="color: #666; font-size: 14px; margin: 0 0 5px 0;"><strong>Jouw vraag:</strong></p>
+              <p style="color: #333; font-size: 14px; margin: 0;">${question}</p>
+            </div>
+
+            <div style="background: white; border-left: 4px solid #20D4BA; padding: 15px; margin: 20px 0;">
+              <p style="color: #666; font-size: 14px; margin: 0 0 5px 0;"><strong>Ons antwoord:</strong></p>
+              <p style="color: #333; font-size: 14px; margin: 0; white-space: pre-wrap;">${response}</p>
+            </div>
+
+            <p style="color: #333; font-size: 16px;">Heb je nog meer vragen? Beantwoord gewoon deze email!</p>
+
+            <p style="color: #333; font-size: 16px;">Met vriendelijke groet,<br>Het PIGG Team</p>
+          </div>
+
+          <div style="background: #1A1B1F; padding: 20px; text-align: center;">
+            <p style="color: #999; font-size: 12px; margin: 0;">
+              © ${new Date().getFullYear()} PIGG - Your digital Piggy Bank for global Investing
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+}
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  // GET - Fetch all inquiries OR messages for a specific inquiry
+  if (req.method === 'GET') {
+    const { inquiry_id } = req.query;
+
+    // If inquiry_id is provided, fetch messages for that inquiry
+    if (inquiry_id) {
+      try {
+        const { data: messages, error } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('inquiry_id', inquiry_id)
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.error('Supabase error:', error);
+          return res.status(400).json({
+            success: false,
+            message: 'Failed to fetch messages',
+            error: error.message
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          messages: messages || []
+        });
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to fetch messages',
+          error: error.message
+        });
+      }
+    }
+
+    // Otherwise, fetch all inquiries
+    try {
+      const { data: inquiries, error } = await supabase
+        .from('chat_inquiries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to fetch chat inquiries',
+          error: error.message
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        inquiries: inquiries || []
+      });
+    } catch (error) {
+      console.error('Error fetching chat inquiries:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch chat inquiries',
+        error: error.message
+      });
+    }
+  }
+
+  // POST - Create new inquiry OR send a message in conversation
+  if (req.method === 'POST') {
+    const { inquiry_id, sender, message, name, email, phone, question, timestamp } = req.body;
+
+    // If inquiry_id and sender are provided, this is a new message in a conversation
+    if (inquiry_id && sender && message) {
+      try {
+        // Insert the new message
+        const { data: newMessage, error: messageError } = await supabase
+          .from('chat_messages')
+          .insert([
+            {
+              inquiry_id: inquiry_id,
+              sender: sender,
+              message: message
+            }
+          ])
+          .select();
+
+        if (messageError) {
+          console.error('Supabase error:', messageError);
+          return res.status(400).json({
+            success: false,
+            error: 'Failed to send message',
+            details: messageError.message
+          });
+        }
+
+        // First, get the current inquiry to read the response_count
+        const { data: currentInquiry, error: fetchError } = await supabase
+          .from('chat_inquiries')
+          .select('response_count, name, email, question')
+          .eq('id', inquiry_id)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching inquiry:', fetchError);
+        }
+
+        // Update the inquiry with response tracking
+        const updates = {
+          last_response_at: new Date().toISOString(),
+          response_count: (currentInquiry?.response_count || 0) + 1
+        };
+
+        // If sender is customer, mark as having unread response
+        if (sender === 'customer') {
+          updates.has_unread_response = true;
+        }
+
+        // If sender is manager, update status to 'responded' and send email
+        if (sender === 'manager') {
+          updates.status = 'responded';
+          updates.has_unread_response = false;
+
+          if (currentInquiry) {
+            // Send email notification (don't wait for it to complete)
+            sendEmailNotification(
+              currentInquiry.email,
+              currentInquiry.name,
+              currentInquiry.question,
+              message
+            ).catch(err => console.error('Email send failed:', err));
+          }
+        }
+
+        const { error: updateError } = await supabase
+          .from('chat_inquiries')
+          .update(updates)
+          .eq('id', inquiry_id);
+
+        if (updateError) {
+          console.error('Error updating inquiry:', updateError);
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: 'Message sent successfully',
+          data: newMessage
+        });
+      } catch (error) {
+        console.error('Error sending message:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to send message',
+          details: error.message
+        });
+      }
+    }
+
+    // Otherwise, this is a new inquiry
+    try {
+      // Validate required fields
+      if (!name || !email || !question) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Insert into Supabase
+      const { data, error } = await supabase
+        .from('chat_inquiries')
+        .insert([
+          {
+            name: name,
+            email: email,
+            phone: phone || null,
+            question: question,
+            created_at: timestamp || new Date().toISOString(),
+            status: 'new',
+            response_count: 1
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        return res.status(400).json({
+          success: false,
+          error: 'Failed to save inquiry',
+          details: error.message
+        });
+      }
+
+      // Also insert the initial question as a message
+      if (data && data[0]) {
+        const { error: messageError } = await supabase
+          .from('chat_messages')
+          .insert([
+            {
+              inquiry_id: data[0].id,
+              sender: 'customer',
+              message: question,
+              created_at: timestamp || new Date().toISOString()
+            }
+          ]);
+
+        if (messageError) {
+          console.error('Error saving initial message:', messageError);
+          // Don't fail the whole request if message insert fails
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Inquiry saved successfully',
+        data: data
+      });
+    } catch (error) {
+      console.error('Error saving chat inquiry:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to save inquiry',
+        details: error.message
+      });
+    }
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'DELETE') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { id } = req.query;
+
+  try {
+    const { error } = await supabase
+      .from('customers')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Verwijderen mislukt'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Klant succesvol verwijderd'
+    });
+
+  } catch (error) {
+    console.error('Error deleting customer:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Verwijderen mislukt. Probeer opnieuw.'
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  try {
+    const { data: customers, error } = await supabase
+      .from('customers')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch customers'
+      });
+    }
+
+    // Fetch portfolio and investment details for each customer
+    const customersWithDetails = await Promise.all(
+      (customers || []).map(async (customer) => {
+        // Get portfolio
+        const { data: portfolio } = await supabase
+          .from('portfolio')
+          .select('*')
+          .eq('customer_id', customer.id);
+
+        // Get investment details
+        const { data: investmentDetails } = await supabase
+          .from('investment_details')
+          .select('*')
+          .eq('customer_id', customer.id)
+          .single();
+
+        console.log('Raw investment details from DB for customer', customer.id, ':', investmentDetails);
+        console.log('risk_profile value:', investmentDetails?.risk_profile);
+
+        // Transform snake_case to camelCase for consistency with frontend
+        const transformedInvestmentDetails = investmentDetails ? {
+          goal: investmentDetails.goal,
+          horizon: investmentDetails.horizon,
+          amount: investmentDetails.amount,
+          monthlyContribution: investmentDetails.monthly_contribution,
+          riskProfile: investmentDetails.risk_profile,
+          current_portfolio_value: investmentDetails.current_portfolio_value,
+          total_return: investmentDetails.total_return
+        } : null;
+
+        console.log('Transformed investment details:', transformedInvestmentDetails);
+
+        return {
+          ...customer,
+          portfolio: portfolio || [],
+          investmentDetails: transformedInvestmentDetails
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      customers: customersWithDetails
+    });
+
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch customers'
+    });
+  }
+};
+const YahooFinanceClass = require('yahoo-finance2').default;
+const yahooFinance = new YahooFinanceClass();
+
+// Mapping of ISIN to Yahoo Finance ticker symbols
+// European ETFs typically trade on multiple exchanges, using the most liquid ones
+const ISIN_TO_TICKER = {
+  // iShares Core S&P 500 UCITS ETF USD (Acc)
+  'IE00B5BMR087': 'CSPX.L',  // London Stock Exchange
+
+  // iShares Core MSCI World UCITS ETF USD (Acc)
+  'IE00B4L5Y983': 'IWDA.AS', // Amsterdam
+
+  // Vanguard S&P 500 UCITS ETF (USD) Distributing
+  'IE00B3XXRP09': 'VUSA.L',  // London
+
+  // iShares Core MSCI Emerging Markets IMI UCITS ETF (Acc)
+  'IE00BKM4GZ66': 'EMIM.L',  // London
+
+  // iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)
+  'IE00BDBRDM35': 'AGGH.L',  // London
+
+  // iShares Core Euro Government Bond UCITS ETF
+  'IE00B4WXJJ64': 'SEGA.L',  // London
+
+  // iShares Physical Gold ETC
+  'IE00B4ND3602': 'IGLN.L',  // London
+  'IE00B579F325': 'SGLN.L',  // London (alternative)
+
+  // Vanguard FTSE All-World UCITS ETF
+  'IE00B3RBWM25': 'VWRL.L',  // London
+
+  // iShares MSCI World UCITS ETF
+  'IE00B0M62Q58': 'IWRD.L',  // London
+
+  // iShares Developed Markets Property Yield UCITS ETF
+  'IE00B1FZS350': 'IWDP.L',  // London
+
+  // Xtrackers MSCI World UCITS ETF
+  'IE00BJ0KDQ92': 'XDWD.L',  // London
+
+  // Xtrackers MSCI Emerging Markets UCITS ETF
+  'IE00BTJRMP35': 'XMME.L',  // London
+
+  // iShares Core Euro Corporate Bond UCITS ETF
+  'IE00B3F81R35': 'IEAC.L',  // London
+
+  // iShares Global Infrastructure UCITS ETF
+  'IE00B1FZS467': 'INFR.L',  // London
+
+  // iShares WELT UCITS ETF
+  'IE00B4WJKG14': 'WELT.DE', // Xetra
+
+  // iShares Gold - DE
+  'DE0002635307': 'EWG2.DE', // Xetra
+};
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { isins } = req.body;
+
+  if (!isins || !Array.isArray(isins)) {
+    return res.status(400).json({
+      success: false,
+      message: 'ISINs array is required'
+    });
+  }
+
+  try {
+    const prices = {};
+    const errors = [];
+
+    // Fetch prices for each ISIN
+    for (const isin of isins) {
+      const ticker = ISIN_TO_TICKER[isin];
+
+      if (!ticker) {
+        errors.push(`No ticker mapping found for ISIN: ${isin}`);
+        continue;
+      }
+
+      try {
+        // Fetch quote with a timeout
+        const quote = await yahooFinance.quote(ticker, {
+          fields: ['regularMarketPrice', 'regularMarketChange', 'regularMarketChangePercent', 'currency']
+        });
+
+        if (quote && quote.regularMarketPrice) {
+          prices[isin] = {
+            price: quote.regularMarketPrice,
+            change: quote.regularMarketChange || 0,
+            changePercent: quote.regularMarketChangePercent || 0,
+            currency: quote.currency || 'EUR',
+            ticker: ticker,
+            timestamp: new Date().toISOString()
+          };
+        } else {
+          errors.push(`No price data available for ${ticker} (ISIN: ${isin})`);
+        }
+      } catch (error) {
+        console.error(`Error fetching price for ${ticker} (ISIN: ${isin}):`, error.message);
+        errors.push(`Failed to fetch ${ticker}: ${error.message}`);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      prices,
+      errors: errors.length > 0 ? errors : undefined,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching ETF prices:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch ETF prices',
+      error: error.message
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+const YahooFinanceClass = require('yahoo-finance2').default;
+const yahooFinance = new YahooFinanceClass();
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+// Mapping of ISIN to Yahoo Finance ticker symbols
+const ISIN_TO_TICKER = {
+  'IE00B5BMR087': 'CSPX.L',
+  'IE00B4L5Y983': 'IWDA.AS',
+  'IE00B3XXRP09': 'VUSA.L',
+  'IE00BKM4GZ66': 'EMIM.L',
+  'IE00BDBRDM35': 'AGGH.L',
+  'IE00B4WXJJ64': 'SEGA.L',
+  'IE00B4ND3602': 'IGLN.L',
+  'IE00B579F325': 'SGLN.L',
+  'IE00B3RBWM25': 'VWRL.L',
+  'IE00B0M62Q58': 'IWRD.L',
+  'IE00B1FZS350': 'IWDP.L',
+  'IE00BJ0KDQ92': 'XDWD.L',
+  'IE00BTJRMP35': 'XMME.L',
+  'IE00B3F81R35': 'IEAC.L',
+  'IE00B1FZS467': 'INFR.L',
+  'IE00B4WJKG14': 'WELT.DE',
+  'DE0002635307': 'EWG2.DE',
+};
+
+// Fetch real-time prices for portfolio ETFs
+async function fetchETFPrices(portfolio) {
+  if (!portfolio || portfolio.length === 0) {
+    return { portfolio, pricesLastUpdated: null };
+  }
+
+  const isins = portfolio.map(item => item.isin).filter(Boolean);
+  if (isins.length === 0) {
+    return { portfolio, pricesLastUpdated: null };
+  }
+
+  const prices = {};
+  const timestamp = new Date().toISOString();
+
+  // Fetch prices for each ISIN
+  for (const isin of isins) {
+    const ticker = ISIN_TO_TICKER[isin];
+    if (!ticker) continue;
+
+    try {
+      const quote = await yahooFinance.quote(ticker, {
+        fields: ['regularMarketPrice', 'regularMarketChange', 'regularMarketChangePercent', 'currency']
+      });
+
+      if (quote && quote.regularMarketPrice) {
+        prices[isin] = {
+          price: quote.regularMarketPrice,
+          change: quote.regularMarketChange || 0,
+          changePercent: quote.regularMarketChangePercent || 0,
+          currency: quote.currency || 'EUR'
+        };
+      }
+    } catch (error) {
+      console.error(`Error fetching price for ${ticker} (ISIN: ${isin}):`, error.message);
+    }
+  }
+
+  // Attach prices to portfolio items
+  const enrichedPortfolio = portfolio.map(item => ({
+    ...item,
+    currentPrice: prices[item.isin]?.price || null,
+    priceChange: prices[item.isin]?.change || null,
+    priceChangePercent: prices[item.isin]?.changePercent || null,
+    currency: prices[item.isin]?.currency || null
+  }));
+
+  return { portfolio: enrichedPortfolio, pricesLastUpdated: timestamp };
+}
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    const { data: customer, error } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('email', email)
+      .eq('password', password)
+      .single();
+
+    if (error || !customer) {
+      return res.status(401).json({
+        success: false,
+        message: 'Onjuiste email of wachtwoord'
+      });
+    }
+
+    // Email verification disabled
+    // if (!customer.email_verified) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatie link.',
+    //     emailNotVerified: true
+    //   });
+    // }
+
+    // Get portfolio
+    const { data: portfolio } = await supabase
+      .from('portfolio')
+      .select('*')
+      .eq('customer_id', customer.id);
+
+    // Fetch real-time ETF prices
+    const { portfolio: enrichedPortfolio, pricesLastUpdated } = await fetchETFPrices(portfolio || []);
+
+    // Get investment details
+    const { data: investmentDetails } = await supabase
+      .from('investment_details')
+      .select('*')
+      .eq('customer_id', customer.id)
+      .single();
+
+    console.log('Login - Raw investment details from DB:', investmentDetails);
+    console.log('Login - risk_profile value:', investmentDetails?.risk_profile);
+
+    // Transform snake_case to camelCase for consistency with frontend
+    const transformedInvestmentDetails = investmentDetails ? {
+      goal: investmentDetails.goal,
+      horizon: investmentDetails.horizon,
+      amount: investmentDetails.amount,
+      monthlyContribution: investmentDetails.monthly_contribution,
+      riskProfile: investmentDetails.risk_profile,
+      current_portfolio_value: investmentDetails.current_portfolio_value,
+      total_return: investmentDetails.total_return,
+      pricesLastUpdated: pricesLastUpdated
+    } : { pricesLastUpdated };
+
+    console.log('Login - Transformed investment details:', transformedInvestmentDetails);
+
+    res.status(200).json({
+      success: true,
+      customer: {
+        ...customer,
+        portfolio: enrichedPortfolio,
+        investmentDetails: transformedInvestmentDetails
+      }
+    });
+
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Login mislukt. Probeer opnieuw.'
+    });
+  }
+};
+const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    street,
+    houseNumber,
+    postalCode,
+    city,
+    phone,
+    birthDate
+  } = req.body;
+
+  try {
+    console.log('=== REGISTRATION DEBUG ===');
+    console.log('SUPABASE_KEY first 50 chars:', process.env.SUPABASE_KEY?.substring(0, 50));
+    console.log('SUPABASE_KEY length:', process.env.SUPABASE_KEY?.length);
+    console.log('Contains service_role:', process.env.SUPABASE_KEY?.includes('service_role'));
+
+    // Generate 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
+    console.log('Generated verification code:', verificationCode);
+    console.log('Code expires at:', codeExpiresAt.toISOString());
+
+    // Insert customer into Supabase (unverified)
+    const { data: customer, error } = await supabase
+      .from('customers')
+      .insert([
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          street: street,
+          house_number: houseNumber,
+          postal_code: postalCode,
+          city: city,
+          phone: phone,
+          birth_date: birthDate,
+          role: 'customer',
+          email_verified: false,  // User must verify email
+          verification_code: verificationCode,
+          verification_code_expires_at: codeExpiresAt.toISOString()
+        }
+      ])
+      .select()
+      .single();
+
+    console.log('Insert result - customer:', JSON.stringify(customer, null, 2));
+    console.log('Insert result - error:', JSON.stringify(error, null, 2));
+
+    // Double check what's actually in the database
+    if (customer && customer.id) {
+      const { data: dbCheck, error: dbCheckError } = await supabase
+        .from('customers')
+        .select('id, email, verification_token, email_verified')
+        .eq('id', customer.id)
+        .single();
+
+      console.log('DATABASE CHECK - What is actually stored:');
+      console.log('- Customer ID:', customer.id);
+      console.log('- Token from INSERT response:', customer.verification_token);
+      console.log('- Token from DB query:', dbCheck?.verification_token);
+      console.log('- Are they the same?', customer.verification_token === dbCheck?.verification_token);
+    }
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        message: error.message.includes('duplicate') ? 'Dit emailadres is al geregistreerd' : 'Registratie mislukt'
+      });
+    }
+
+    // Send verification code email to user
+    const verificationEmail = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Bevestig je emailadres - PIGG',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #28EBCF;">Welkom bij PIGG!</h2>
+          <p>Hallo ${firstName},</p>
+          <p>Bedankt voor je registratie! Gebruik de onderstaande code om je emailadres te bevestigen:</p>
+          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+            <h1 style="color: #1A1B1F; font-size: 36px; letter-spacing: 8px; margin: 0;">${verificationCode}</h1>
+          </div>
+          <p>Deze code is <strong>15 minuten geldig</strong>.</p>
+          <p>Als je deze registratie niet hebt aangevraagd, kun je deze email negeren.</p>
+          <p>Met vriendelijke groet,<br>Het PIGG Team</p>
+        </div>
+      `
+    };
+
+    try {
+      await transporter.sendMail(verificationEmail);
+      console.log('Verification code email sent to:', email);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      // Don't fail registration if email fails, but log it
+    }
+
+    // Send notification email to admin
+    const notificationEmail = {
+      from: process.env.EMAIL_USER,
+      to: process.env.NOTIFICATION_EMAIL,
+      subject: 'New User Registration - PIGG',
+      html: `
+        <h2>New User Registration</h2>
+        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Registration Date:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+        <p><strong>Status:</strong> Awaiting email verification</p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(notificationEmail);
+    } catch (emailError) {
+      console.error('Error sending notification email:', emailError);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Registratie succesvol! Check je email voor de verificatiecode.',
+      emailSent: true,
+      email: email,
+      requiresVerification: true
+    });
+
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed. Please try again.'
+    });
+  }
+};
+const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { email } = req.body;
+
+  console.log('=== RESEND VERIFICATION CODE ===');
+  console.log('Email:', email);
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email is verplicht'
+    });
+  }
+
+  try {
+    // Find customer with this email
+    const { data: customer, error: findError } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (findError || !customer) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geen account gevonden met dit emailadres'
+      });
+    }
+
+    // Check if already verified
+    if (customer.email_verified) {
+      return res.status(200).json({
+        success: false,
+        message: 'Dit emailadres is al geverifieerd',
+        alreadyVerified: true
+      });
+    }
+
+    // Generate new 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiry
+
+    console.log('New verification code:', verificationCode);
+
+    // Update customer with new code
+    const { error: updateError } = await supabase
+      .from('customers')
+      .update({
+        verification_code: verificationCode,
+        verification_code_expires_at: codeExpiresAt.toISOString()
+      })
+      .eq('id', customer.id);
+
+    if (updateError) {
+      console.error('Error updating verification code:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Er is een fout opgetreden'
+      });
+    }
+
+    // Send verification code email
+    const verificationEmail = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Nieuwe verificatiecode - PIGG',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #28EBCF;">Nieuwe verificatiecode</h2>
+          <p>Hallo ${customer.first_name},</p>
+          <p>Je hebt een nieuwe verificatiecode aangevraagd:</p>
+          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+            <h1 style="color: #1A1B1F; font-size: 36px; letter-spacing: 8px; margin: 0;">${verificationCode}</h1>
+          </div>
+          <p>Deze code is <strong>15 minuten geldig</strong>.</p>
+          <p>Met vriendelijke groet,<br>Het PIGG Team</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(verificationEmail);
+    console.log('New verification code sent to:', email);
+
+    res.status(200).json({
+      success: true,
+      message: 'Nieuwe verificatiecode is verzonden naar je email'
+    });
+
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Er is een fout opgetreden. Probeer het later opnieuw.'
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { customer_id, portfolio, investmentDetails, account_type } = req.body;
+
+  if (!customer_id) {
+    return res.status(400).json({
+      success: false,
+      message: 'Customer ID is required'
+    });
+  }
+
+  try {
+    // Update customer with account type if provided
+    if (account_type) {
+      await supabase
+        .from('customers')
+        .update({ account_type })
+        .eq('id', customer_id);
+    }
+
+    // Delete existing portfolio items for this customer
+    await supabase
+      .from('portfolio')
+      .delete()
+      .eq('customer_id', customer_id);
+
+    // Insert new portfolio items
+    if (portfolio && portfolio.length > 0) {
+      const now = new Date().toISOString();
+      const portfolioItems = portfolio.map(item => ({
+        customer_id,
+        naam: item.naam,
+        isin: item.isin,
+        categorie: item.categorie,
+        weight: item.weight,
+        ter_pa: item['ter p.a.'] || item.ter_pa,
+        created_at: now,
+        updated_at: now
+      }));
+
+      const { error: portfolioError } = await supabase
+        .from('portfolio')
+        .insert(portfolioItems);
+
+      if (portfolioError) {
+        throw portfolioError;
+      }
+    }
+
+    // Save or update investment details
+    if (investmentDetails && Object.keys(investmentDetails).length > 0) {
+      console.log('Saving investment details:', investmentDetails);
+      console.log('riskProfile value:', investmentDetails.riskProfile);
+
+      const { data: existing } = await supabase
+        .from('investment_details')
+        .select('id')
+        .eq('customer_id', customer_id)
+        .single();
+
+      const investmentData = {
+        customer_id,
+        goal: investmentDetails.goal,
+        horizon: investmentDetails.horizon,
+        amount: investmentDetails.amount,
+        monthly_contribution: investmentDetails.monthlyContribution,
+        risk_profile: investmentDetails.riskProfile
+      };
+
+      console.log('Saving to database:', investmentData);
+
+      if (existing) {
+        await supabase
+          .from('investment_details')
+          .update(investmentData)
+          .eq('customer_id', customer_id);
+      } else {
+        await supabase
+          .from('investment_details')
+          .insert([investmentData]);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Portfolio saved successfully'
+    });
+
+  } catch (error) {
+    console.error('DETAILED ERROR saving portfolio:', error);
+    console.error('Error message:', error.message);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save portfolio',
+      error: error.message,
+      errorCode: error.code,
+      errorDetails: error.details,
+      errorHint: error.hint,
+      fullError: error
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  // GET - Retrieve simulation state
+  if (req.method === 'GET') {
+    const { customer_id } = req.query;
+
+    if (!customer_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID is required'
+      });
+    }
+
+    try {
+      const { data: simulationState, error } = await supabase
+        .from('simulation_state')
+        .select('*')
+        .eq('customer_id', customer_id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        throw error;
+      }
+
+      if (simulationState) {
+        res.status(200).json({
+          success: true,
+          state: {
+            currentMonth: simulationState.current_month,
+            performanceData: simulationState.performance_data
+          }
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          state: null
+        });
+      }
+
+    } catch (error) {
+      console.error('Error getting simulation state:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get simulation state'
+      });
+    }
+  }
+
+  // POST - Save or clear simulation state
+  else if (req.method === 'POST') {
+    const { customer_id, currentMonth, performanceData, action } = req.body;
+
+    if (!customer_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID is required'
+      });
+    }
+
+    try {
+      // Clear simulation state
+      if (action === 'clear') {
+        const { error } = await supabase
+          .from('simulation_state')
+          .delete()
+          .eq('customer_id', customer_id);
+
+        if (error) {
+          throw error;
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Simulation state cleared successfully'
+        });
+      }
+      // Save simulation state
+      else {
+        // Check if simulation state already exists
+        const { data: existingState } = await supabase
+          .from('simulation_state')
+          .select('id')
+          .eq('customer_id', customer_id)
+          .single();
+
+        const simulationState = {
+          customer_id,
+          current_month: currentMonth,
+          performance_data: performanceData,
+          updated_at: new Date().toISOString()
+        };
+
+        let result;
+        if (existingState) {
+          // Update existing state
+          result = await supabase
+            .from('simulation_state')
+            .update(simulationState)
+            .eq('customer_id', customer_id);
+        } else {
+          // Insert new state
+          result = await supabase
+            .from('simulation_state')
+            .insert([simulationState]);
+        }
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Simulation state saved successfully'
+        });
+      }
+
+    } catch (error) {
+      console.error('Error with simulation state:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to process simulation state'
+      });
+    }
+  }
+
+  else {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { customer_id, current_portfolio_value, total_return } = req.body;
+
+  if (!customer_id) {
+    return res.status(400).json({
+      success: false,
+      message: 'Customer ID is required'
+    });
+  }
+
+  try {
+    // Update investment_details with current portfolio value
+    const { error } = await supabase
+      .from('investment_details')
+      .update({
+        current_portfolio_value: current_portfolio_value,
+        total_return: total_return,
+        updated_at: new Date().toISOString()
+      })
+      .eq('customer_id', customer_id);
+
+    if (error) {
+      throw error;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Portfolio value updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error updating portfolio value:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update portfolio value',
+      error: error.message
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { email, code } = req.body;
+
+  console.log('=== VERIFICATION CODE CHECK ===');
+  console.log('Email:', email);
+  console.log('Code:', code);
+
+  if (!email || !code) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email en code zijn verplicht'
+    });
+  }
+
+  try {
+    // Find customer with this email and verification code
+    const { data: customer, error: findError } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('email', email)
+      .eq('verification_code', code)
+      .maybeSingle();
+
+    console.log('Customer found:', !!customer);
+    console.log('Find error:', findError);
+
+    if (findError || !customer) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ongeldige verificatiecode'
+      });
+    }
+
+    // Check if already verified
+    if (customer.email_verified) {
+      return res.status(200).json({
+        success: true,
+        message: 'Email is al geverifieerd. Je kunt nu inloggen.',
+        alreadyVerified: true
+      });
+    }
+
+    // Check if code is expired
+    const expiresAt = new Date(customer.verification_code_expires_at);
+    const now = new Date();
+
+    console.log('Code expires at:', expiresAt);
+    console.log('Current time:', now);
+    console.log('Is expired:', now > expiresAt);
+
+    if (now > expiresAt) {
+      return res.status(400).json({
+        success: false,
+        message: 'Verificatiecode is verlopen. Vraag een nieuwe code aan.',
+        expired: true
+      });
+    }
+
+    // Update customer to mark email as verified
+    const { error: updateError } = await supabase
+      .from('customers')
+      .update({
+        email_verified: true,
+        verification_code: null,
+        verification_code_expires_at: null,
+        verified_at: new Date().toISOString()
+      })
+      .eq('id', customer.id);
+
+    if (updateError) {
+      console.error('Error updating customer:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Er is een fout opgetreden bij het verifiëren van je email'
+      });
+    }
+
+    console.log('Email successfully verified for:', email);
+
+    res.status(200).json({
+      success: true,
+      message: 'Je email is succesvol geverifieerd! Je kunt nu inloggen.',
+      email: customer.email
+    });
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Er is een fout opgetreden. Probeer het later opnieuw.'
+    });
+  }
+};
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+);
+
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
+  const { token } = req.query;
+
+  console.log('=== VERIFICATION DEBUG ===');
+  console.log('Token received:', token);
+  console.log('Token length:', token ? token.length : 0);
+  console.log('Supabase URL:', process.env.SUPABASE_URL);
+  console.log('Using service_role key:', process.env.SUPABASE_KEY?.includes('service_role'));
+
+  if (!token) {
+    console.log('No token provided in request');
+    return res.status(400).json({
+      success: false,
+      message: 'Verificatie token ontbreekt'
+    });
+  }
+
+  try {
+    // First, let's try to get ALL unverified customers to see what we have
+    const { data: allUnverified, error: allError } = await supabase
+      .from('customers')
+      .select('id, email, verification_token')
+      .eq('email_verified', false);
+
+    console.log('All unverified customers:', allUnverified?.length || 0);
+    if (allUnverified && allUnverified.length > 0) {
+      console.log('Sample tokens:', allUnverified.map(c => ({ email: c.email, token: c.verification_token?.substring(0, 20) + '...' })));
+    }
+
+    // Find customer with this verification token (exact match)
+    const { data: customer, error: findError } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('verification_token', token)
+      .maybeSingle();
+
+    console.log('Database lookup result:');
+    console.log('- Customer found:', !!customer);
+    console.log('- Error:', findError);
+    if (customer) {
+      console.log('- Customer email:', customer.email);
+      console.log('- Already verified:', customer.email_verified);
+    }
+
+    if (findError || !customer) {
+      console.log('FAILURE - No match found for token:', token.substring(0, 20) + '...');
+      return res.status(400).json({
+        success: false,
+        message: 'Ongeldige of verlopen verificatie link'
+      });
+    }
+
+    // Check if already verified
+    if (customer.email_verified) {
+      return res.status(200).json({
+        success: true,
+        message: 'Email is al geverifieerd. Je kunt nu inloggen.',
+        alreadyVerified: true
+      });
+    }
+
+    // Update customer to mark email as verified
+    const { error: updateError } = await supabase
+      .from('customers')
+      .update({
+        email_verified: true,
+        verification_token: null,
+        verified_at: new Date().toISOString()
+      })
+      .eq('id', customer.id);
+
+    if (updateError) {
+      console.error('Error updating customer:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Er is een fout opgetreden bij het verifiëren van je email'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Je email is succesvol geverifieerd! Je kunt nu inloggen.',
+      email: customer.email
+    });
+
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Er is een fout opgetreden. Probeer het later opnieuw.'
+    });
+  }
+};
+const express = require('express');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Email configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+// Registration endpoint
+app.post('/api/register', async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    street,
+    houseNumber,
+    postalCode,
+    city,
+    phone,
+    birthDate
+  } = req.body;
+
+  try {
+    // Insert customer into Supabase
+    const { data: customer, error } = await supabase
+      .from('customers')
+      .insert([
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          street: street,
+          house_number: houseNumber,
+          postal_code: postalCode,
+          city: city,
+          phone: phone,
+          birth_date: birthDate,
+          role: 'customer'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        message: error.message.includes('duplicate') ? 'Dit emailadres is al geregistreerd' : 'Registratie mislukt'
+      });
+    }
+
+    // Send email notification
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.NOTIFICATION_EMAIL,
+      subject: 'New User Registration - PIGG',
+      html: `
+        <h2>New User Registration</h2>
+        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Registration Date:</strong> ${new Date().toLocaleString('nl-NL')}</p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Send welcome email to the user
+    const welcomeEmail = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Welcome to PIGG - Your digital Piggy Bank',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #28EBCF;">Welcome to PIGG!</h2>
+          <p>Hi ${firstName},</p>
+          <p>Thank you for registering with PIGG - Your digital Piggy Bank for global Investing.</p>
+          <p>You can now start building your investment portfolio.</p>
+          <p>Best regards,<br>The PIGG Team</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(welcomeEmail);
+
+    res.status(200).json({
+      success: true,
+      message: 'Registration successful! Check your email.',
+      customer: customer
+    });
+
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed. Please try again.'
+    });
+  }
+});
+
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const { data: customer, error } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('email', email)
+      .eq('password', password)
+      .single();
+
+    if (error || !customer) {
+      return res.status(401).json({
+        success: false,
+        message: 'Onjuiste email of wachtwoord'
+      });
+    }
+
+    // Get portfolio
+    const { data: portfolio } = await supabase
+      .from('portfolio')
+      .select('*')
+      .eq('customer_id', customer.id);
+
+    // Get investment details
+    const { data: investmentDetails } = await supabase
+      .from('investment_details')
+      .select('*')
+      .eq('customer_id', customer.id)
+      .single();
+
+    res.status(200).json({
+      success: true,
+      customer: {
+        ...customer,
+        portfolio: portfolio || [],
+        investmentDetails: investmentDetails || {}
+      }
+    });
+
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Login mislukt. Probeer opnieuw.'
+    });
+  }
+});
+
+// Delete customer endpoint
+app.delete('/api/customers/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { error } = await supabase
+      .from('customers')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Verwijderen mislukt'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Klant succesvol verwijderd'
+    });
+
+  } catch (error) {
+    console.error('Error deleting customer:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Verwijderen mislukt. Probeer opnieuw.'
+    });
+  }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'Server is running' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

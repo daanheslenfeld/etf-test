@@ -2,7 +2,7 @@
 
 // Service Worker for PIGG PWA
 // IMPORTANT: Increment version number to force update
-const CACHE_NAME = 'pigg-cache-v7';
+const CACHE_NAME = 'pigg-cache-v8';
 const urlsToCache = [
   '/',
   '/index.html',

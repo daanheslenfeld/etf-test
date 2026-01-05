@@ -1,29 +1,61 @@
 {
   "short_name": "PIGG",
   "name": "PIGG Investment Portfolio",
-  "description": "Manage your investment portfolio with PIGG",
+  "description": "Manage your investment portfolio with PIGG - ETF tracking and portfolio management",
   "icons": [
     {
-      "src": "logo192.png",
+      "src": "/logo192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "logo512.png",
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#28EBCF",
   "background_color": "#0f172a",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "scope": "/",
+  "prefer_related_applications": false,
   "categories": [
     "finance",
-    "investment"
+    "investment",
+    "business"
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Portfolio Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your portfolio",
+      "url": "/?page=dashboard",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Income Calculator",
+      "short_name": "Calculator",
+      "description": "Calculate dividend income",
+      "url": "/?page=calculator",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
   ]
 }

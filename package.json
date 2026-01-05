@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.13.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -24,13 +25,15 @@
     "react-dom": "^19.1.1",
     "react-scripts": "5.0.1",
     "recharts": "^3.2.1",
+    "tesseract.js": "^6.0.1",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5",
     "yahoo-finance2": "^3.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "dev": "vercel dev",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

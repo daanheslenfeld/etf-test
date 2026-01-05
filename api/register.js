@@ -3,8 +3,8 @@ const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
 const supabase = createClient(
-  'https://rfmbhdgfovnglegqxjnj.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
+  process.env.SUPABASE_URL || 'https://rfmbhdgfovnglegqxjnj.supabase.co',
+  process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmbWJoZGdmb3ZuZ2xlZ3F4am5qIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc0NDg3MiwiZXhwIjoyMDc1MzIwODcyfQ.cxYG4xpMubBsetGB1e6wWLcd_IX-Bwtjpvgj-1ImzMw'
 );
 
 const transporter = nodemailer.createTransport({
@@ -57,26 +57,31 @@ module.exports = async (req, res) => {
     console.log('Code expires at:', codeExpiresAt.toISOString());
 
     // Insert customer into Supabase (unverified)
+    const customerData = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      password: password,
+      street: street,
+      house_number: houseNumber,
+      postal_code: postalCode,
+      city: city,
+      phone: phone,
+      role: 'customer',
+      account_type: 'fictief',  // Default to fictief (simulated) mode
+      email_verified: false,  // User must verify email
+      verification_code: verificationCode,
+      verification_code_expires_at: codeExpiresAt.toISOString()
+    };
+
+    // Only add birthDate if provided
+    if (birthDate) {
+      customerData.birth_date = birthDate;
+    }
+
     const { data: customer, error } = await supabase
       .from('customers')
-      .insert([
-        {
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password,
-          street: street,
-          house_number: houseNumber,
-          postal_code: postalCode,
-          city: city,
-          phone: phone,
-          birth_date: birthDate,
-          role: 'customer',
-          email_verified: false,  // User must verify email
-          verification_code: verificationCode,
-          verification_code_expires_at: codeExpiresAt.toISOString()
-        }
-      ])
+      .insert([customerData])
       .select()
       .single();
 

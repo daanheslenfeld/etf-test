@@ -1,0 +1,46 @@
+@media print {
+    #dashboard-content {
+        font-size: 8px !important;
+    }
+    #dashboard-content table {
+        font-size: 7px !important;
+    }
+    #dashboard-content h2 {
+        font-size: 12px !important;
+    }
+    #dashboard-content .text-xs {
+        font-size: 6px !important;
+    }
+}
+
+/* Custom slider styling */
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #14b8a6;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #14b8a6;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #0d9488;
+    transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    background: #0d9488;
+    transform: scale(1.1);
+}
