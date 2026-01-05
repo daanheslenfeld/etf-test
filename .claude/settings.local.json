@@ -55,7 +55,12 @@
       "Bash(start https://etf-test.vercel.app/onboarding.html)",
       "Bash(node test-register-new.js:*)",
       "Bash(node test-full-registration.js:*)",
-      "Bash(node test-after-fix.js:*)"
+      "Bash(node test-after-fix.js:*)",
+      "Bash(python -m venv:*)",
+      "Bash(..venvScriptsactivate)",
+      "Bash(pip install:*)",
+      "Bash(.venv/Scripts/pip.exe install:*)",
+      "Bash(.venv/Scripts/uvicorn.exe:*)"
     ],
     "deny": [],
     "ask": []

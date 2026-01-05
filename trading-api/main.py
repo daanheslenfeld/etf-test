@@ -22,9 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Disable SSL warnings for IB Gateway self-signed cert
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+# Note: IB Gateway uses self-signed certs - SSL warnings handled in ib_client.py
 
 
 @asynccontextmanager

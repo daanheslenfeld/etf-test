@@ -9,7 +9,7 @@ import IncomeCalculator from './IncomeCalculator';
 const API_URL = '/api';
 
 // Trading API URL - FastAPI service for LYNX/IB trading
-const TRADING_API_URL = 'http://localhost:8000';
+const TRADING_API_URL = 'http://localhost:8002';
 
 // Sample ETF data
 const SAMPLE_ETFS = [

@@ -1,5 +1,5 @@
-"""Audit logging service for trading activity."""
-from supabase import create_client, Client
+"""Audit logging service for trading activity using direct HTTP calls."""
+import httpx
 from config import get_settings
 from typing import Optional
 import logging
@@ -13,10 +13,13 @@ class AuditService:
 
     def __init__(self):
         settings = get_settings()
-        self.client: Client = create_client(
-            settings.supabase_url,
-            settings.supabase_key
-        )
+        self.base_url = f"{settings.supabase_url}/rest/v1"
+        self.headers = {
+            "apikey": settings.supabase_key,
+            "Authorization": f"Bearer {settings.supabase_key}",
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        }
 
     async def log_action(
         self,
@@ -36,22 +39,28 @@ class AuditService:
     ) -> bool:
         """Log a trading action to the audit log."""
         try:
-            self.client.table("trade_audit_log").insert({
-                "customer_id": customer_id,
-                "broker_account_id": broker_account_id,
-                "action": action,
-                "order_id": order_id,
-                "symbol": symbol,
-                "side": side,
-                "quantity": quantity,
-                "price": price,
-                "status": status,
-                "request_payload": json.dumps(request_payload) if request_payload else None,
-                "response_payload": json.dumps(response_payload) if response_payload else None,
-                "error_message": error_message,
-                "ip_address": ip_address
-            }).execute()
-            return True
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/trade_audit_log",
+                    headers=self.headers,
+                    json={
+                        "customer_id": customer_id,
+                        "broker_account_id": broker_account_id,
+                        "action": action,
+                        "order_id": order_id,
+                        "symbol": symbol,
+                        "side": side,
+                        "quantity": quantity,
+                        "price": price,
+                        "status": status,
+                        "request_payload": request_payload,
+                        "response_payload": response_payload,
+                        "error_message": error_message,
+                        "ip_address": ip_address
+                    }
+                )
+                response.raise_for_status()
+                return True
         except Exception as e:
             logger.error(f"Error logging audit action: {e}")
             return False

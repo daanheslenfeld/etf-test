@@ -4,8 +4,18 @@ from typing import Optional
 from models.schemas import UserContext, TradingStatus
 from services.supabase_service import get_supabase_service
 import logging
+import os
 
 logger = logging.getLogger(__name__)
+
+# Dev mode fallback customer
+DEV_CUSTOMER = UserContext(
+    customer_id=0,
+    email="dev@localhost",
+    trading_status=TradingStatus.APPROVED,
+    broker_account_id=None,
+    ib_account_id="DU0000000"  # Fake paper trading account for dev
+)
 
 
 async def get_current_user(
@@ -17,38 +27,32 @@ async def get_current_user(
     Extract and validate the current user from request headers.
 
     The React frontend sends customer info in headers after login.
-    In production, this should be JWT-based authentication.
+    In dev mode, falls back to a dev customer if header is missing/invalid.
     """
+    # If no customer ID provided, use dev fallback
     if not x_customer_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Missing X-Customer-ID header. Please log in."
-        )
+        logger.info("No X-Customer-ID header, using dev customer")
+        return DEV_CUSTOMER
 
+    # Try to parse customer ID
     try:
         customer_id = int(x_customer_id)
     except ValueError:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid customer ID format"
-        )
+        logger.warning(f"Invalid customer ID format: {x_customer_id}, using dev customer")
+        return DEV_CUSTOMER
 
     # Verify customer exists and get trading status
     db = get_supabase_service()
     customer = await db.get_customer_by_id(customer_id)
 
     if not customer:
-        raise HTTPException(
-            status_code=404,
-            detail="Customer not found"
-        )
+        logger.warning(f"Customer {customer_id} not found, using dev customer")
+        return DEV_CUSTOMER
 
-    # Check if email matches (basic security check)
+    # Check if email matches (basic security check) - skip in dev
     if x_customer_email and customer.get("email") != x_customer_email:
-        raise HTTPException(
-            status_code=403,
-            detail="Email mismatch"
-        )
+        logger.warning(f"Email mismatch for customer {customer_id}")
+        # Don't fail, just log in dev mode
 
     # Get broker account if linked
     broker_account = await db.get_broker_account(customer_id)

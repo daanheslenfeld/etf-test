@@ -3,7 +3,10 @@ import httpx
 from typing import Optional
 from config import get_settings
 import logging
-import ssl
+import warnings
+
+# Suppress SSL warnings for IB Gateway self-signed cert
+warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
 logger = logging.getLogger(__name__)
 
