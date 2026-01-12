@@ -1,5 +1,6 @@
-"""Order placement and status endpoints."""
+"""Order placement and status endpoints with production safety guards."""
 from fastapi import APIRouter, Depends, Request, HTTPException
+from datetime import datetime
 from models.schemas import (
     OrderRequest, OrderResponse, OrdersResponse, OrderStatus,
     UserContext, OrderSide
@@ -7,6 +8,7 @@ from models.schemas import (
 from middleware.auth import require_trading_approved, get_client_ip
 from services.ib_client import get_ib_client
 from services.audit import get_audit_service
+from config import get_settings, TradingMode
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,11 +25,66 @@ async def place_order(
     """
     Place a market order to buy or sell an ETF.
 
-    Currently supports market orders only for MVP.
+    Safety guards:
+    - Live trading blocked unless explicitly confirmed
+    - All orders logged with environment info
+    - Connection verified before submission
     """
+    settings = get_settings()
     ib_client = get_ib_client()
     audit = get_audit_service()
     client_ip = get_client_ip(request)
+
+    # ==========================================================================
+    # SAFETY CHECK: Block live trading unless explicitly enabled
+    # ==========================================================================
+    if settings.trading_mode == TradingMode.LIVE:
+        if not settings.is_live_trading_enabled():
+            logger.error(f"BLOCKED: Live trading attempt without confirmation - {order.side.value} {order.quantity} {order.symbol}")
+            return OrderResponse(
+                success=False,
+                message="Live trading is not enabled. Set LIVE_TRADING_CONFIRMATION environment variable.",
+                details={"error": "LIVE_TRADING_BLOCKED", "mode": "live"}
+            )
+
+    # ==========================================================================
+    # Log order attempt with full context
+    # ==========================================================================
+    order_context = {
+        "timestamp": datetime.now().isoformat(),
+        "trading_mode": settings.trading_mode.value,
+        "customer_id": user.customer_id,
+        "ib_account": user.ib_account_id,
+        "symbol": order.symbol,
+        "conid": order.conid,
+        "side": order.side.value,
+        "quantity": order.quantity,
+        "order_type": order.order_type.value,
+        "limit_price": order.limit_price,
+        "client_ip": client_ip,
+    }
+
+    if settings.log_orders:
+        logger.info(f"ORDER ATTEMPT: {order_context}")
+
+    # ==========================================================================
+    # Connection checks
+    # ==========================================================================
+    if not ib_client.is_connected():
+        logger.error(f"Order rejected: IB Gateway not connected - {order_context}")
+        return OrderResponse(
+            success=False,
+            message="IB Gateway is not connected. Please ensure IB Gateway is running and connected.",
+            details={"error": "NOT_CONNECTED"}
+        )
+
+    if not ib_client.is_ready_for_orders():
+        logger.error(f"Order rejected: IB Gateway not ready - {order_context}")
+        return OrderResponse(
+            success=False,
+            message="IB Gateway is connected but not ready for orders. Waiting for nextValidId.",
+            details={"error": "NOT_READY"}
+        )
 
     # Validate ETF is in our allowed list
     mvp_etfs = ib_client.get_mvp_etfs()
@@ -101,11 +158,18 @@ async def place_order(
             ip_address=client_ip
         )
 
+        # Add trading mode to success response
+        details = result if isinstance(result, dict) else {"result": result}
+        details["trading_mode"] = settings.trading_mode.value
+
+        if settings.log_orders:
+            logger.info(f"ORDER SUCCESS: order_id={order_id}, {order_context}")
+
         return OrderResponse(
             success=True,
             order_id=order_id,
-            message=f"Order placed successfully: {order.side.value} {order.quantity} {order.symbol}",
-            details=result if isinstance(result, dict) else {"result": result}
+            message=f"Order placed successfully: {order.side.value} {order.quantity} {order.symbol} [{settings.trading_mode.value.upper()}]",
+            details=details
         )
 
     except Exception as e:
