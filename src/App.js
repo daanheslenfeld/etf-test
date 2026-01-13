@@ -4,6 +4,7 @@ import Footer from './Footer';
 import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
+import { TradingDashboard } from './components/trading';
 
 // API URL - works with Vercel Dev and production
 const API_URL = '/api';
@@ -919,6 +920,33 @@ const ETFPortal = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const hasToken = !!(urlParams.get('token') || urlParams.get('Token'));
 
+  // Routes that should NEVER be auto-restored from localStorage
+  // These are wizard flows that users can get stuck in
+  const BLOCKED_RESTORE_ROUTES = [
+    'incomeCalculator',
+    'portfolioBuilder',
+    'customPortfolioBuilder',
+    'purchase',
+    'firstTimeWelcome',
+    'verify-code',
+    'verify-email',
+    'emailVerificationPending',
+    'resetPassword',
+  ];
+
+  // Routes that are safe to restore (explicit allowlist)
+  const ALLOWED_RESTORE_ROUTES = [
+    'mainDashboard',
+    'welcome',
+    'dashboard',
+    'etfDatabase',
+    'portfolioOverview',
+    'financialNews',
+    'customerDatabase',
+    'customerDetail',
+    'trading',
+  ];
+
   // Initialize state from localStorage or URL
   const [currentPage, setCurrentPage] = useState(() => {
     if (hasToken) {
@@ -941,6 +969,20 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('currentPage');
 
     console.log('Initializing app - path:', path, 'saved page:', saved, 'has user:', !!savedUser);
+
+    // Block wizard routes from being restored - redirect to safe default
+    if (saved && BLOCKED_RESTORE_ROUTES.includes(saved)) {
+      console.log('Blocked wizard route restore:', saved, '-> redirecting to safe default');
+      localStorage.removeItem('currentPage');
+      return savedUser ? 'welcome' : 'landing';
+    }
+
+    // Only restore if route is in allowlist
+    if (saved && !ALLOWED_RESTORE_ROUTES.includes(saved)) {
+      console.log('Unknown route not in allowlist:', saved, '-> redirecting to safe default');
+      localStorage.removeItem('currentPage');
+      return savedUser ? 'welcome' : 'landing';
+    }
 
     // If user is logged in and no saved page, go to welcome instead of landing
     if (savedUser && !saved) {
@@ -1479,8 +1521,8 @@ useEffect(() => {
   }, [user]);
 
   useEffect(() => {
-    // Don't save 'verify-email' or 'emailVerificationPending' to localStorage as they're temporary
-    if (currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending') {
+    // Don't save wizard/temporary routes to localStorage - they can trap users
+    if (!BLOCKED_RESTORE_ROUTES.includes(currentPage)) {
       localStorage.setItem('currentPage', currentPage);
     }
   }, [currentPage]);
@@ -9332,68 +9374,60 @@ useEffect(() => {
   // ========================
   const TradingPage = () => {
     const [etfs, setEtfs] = useState([]);
-    const [quotes, setQuotes] = useState({});
     const [orders, setOrders] = useState([]);
     const [positions, setPositions] = useState([]);
-    const [sessionStatus, setSessionStatus] = useState({ authenticated: false, connected: false, message: '' });
     const [loading, setLoading] = useState(true);
+    const [connectionStatus, setConnectionStatus] = useState({ connected: false, account: null });
     const [orderForm, setOrderForm] = useState({ symbol: '', conid: 0, side: 'BUY', quantity: 1 });
     const [orderLoading, setOrderLoading] = useState(false);
     const [orderError, setOrderError] = useState('');
     const [orderSuccess, setOrderSuccess] = useState('');
-    const [linkingAccount, setLinkingAccount] = useState(false);
-    const [lynxAccountId, setLynxAccountId] = useState('');
-    const [accountInfo, setAccountInfo] = useState(null);
 
-    // Check if user can trade
-    const canTrade = user?.trading_status === 'approved';
-    const hasLinkedAccount = accountInfo?.broker_account_linked;
+    // Model Portfolio state
+    const [activeTab, setActiveTab] = useState('trade'); // 'trade', 'modelPortfolio', 'customPortfolio'
+    const [customPortfolio, setCustomPortfolio] = useState([]); // [{conid, symbol, weight}]
+    const [portfolioAmount, setPortfolioAmount] = useState(1000); // Amount to invest
+    const [executionStatus, setExecutionStatus] = useState([]); // [{symbol, status, message}]
+    const [isExecuting, setIsExecuting] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null); // {type: 'buy'|'sell', data: ...}
+    const [executionSummary, setExecutionSummary] = useState(null); // {success: X, failed: Y}
 
-    // Get auth headers for FastAPI
-    const getAuthHeaders = () => ({
-      'Content-Type': 'application/json',
-      'X-Customer-ID': String(user?.id || ''),
-      'X-Customer-Email': user?.email || ''
-    });
-
-    // Fetch account info
-    const fetchAccountInfo = async () => {
-      try {
-        const response = await fetch(`${TRADING_API_URL}/trading/account/info`, {
-          headers: getAuthHeaders()
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAccountInfo(data);
-        }
-      } catch (error) {
-        console.error('Error fetching account info:', error);
+    // Predefined Model Portfolios
+    const MODEL_PORTFOLIOS = [
+      {
+        id: 'classic60-40',
+        name: 'Classic 60/40',
+        description: '60% Stocks, 40% World ETF - Balanced approach',
+        allocations: [
+          { symbol: 'VUSA', weight: 60 },
+          { symbol: 'IWDA', weight: 40 }
+        ]
+      },
+      {
+        id: 'all-world',
+        name: 'All World',
+        description: '100% Global exposure',
+        allocations: [
+          { symbol: 'IWDA', weight: 100 }
+        ]
+      },
+      {
+        id: 'diversified',
+        name: 'Diversified Global',
+        description: 'Mix of US, Europe and Emerging Markets',
+        allocations: [
+          { symbol: 'VUSA', weight: 40 },
+          { symbol: 'EXSA', weight: 30 },
+          { symbol: 'EMIM', weight: 30 }
+        ]
       }
-    };
+    ];
 
-    // Fetch session status
-    const fetchSessionStatus = async () => {
-      if (!canTrade || !hasLinkedAccount) return;
-      try {
-        const response = await fetch(`${TRADING_API_URL}/trading/session/status`, {
-          headers: getAuthHeaders()
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setSessionStatus(data);
-        }
-      } catch (error) {
-        setSessionStatus({ authenticated: false, connected: false, message: 'Cannot connect to trading API' });
-      }
-    };
-
-    // Fetch ETF list
+    // Fetch ETFs from API
     const fetchETFs = async () => {
-      if (!canTrade || !hasLinkedAccount) return;
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/etfs`, {
-          headers: getAuthHeaders()
-        });
+        const response = await fetch(`${TRADING_API_URL}/trading/etfs`);
         if (response.ok) {
           const data = await response.json();
           setEtfs(data.etfs || []);
@@ -9406,32 +9440,10 @@ useEffect(() => {
       }
     };
 
-    // Fetch quotes
-    const fetchQuotes = async () => {
-      if (!canTrade || !hasLinkedAccount || etfs.length === 0) return;
-      try {
-        const conids = etfs.map(e => e.conid).join(',');
-        const response = await fetch(`${TRADING_API_URL}/trading/quotes?conids=${conids}`, {
-          headers: getAuthHeaders()
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const quoteMap = {};
-          (data.quotes || []).forEach(q => { quoteMap[q.conid] = q; });
-          setQuotes(quoteMap);
-        }
-      } catch (error) {
-        console.error('Error fetching quotes:', error);
-      }
-    };
-
     // Fetch orders
     const fetchOrders = async () => {
-      if (!canTrade || !hasLinkedAccount) return;
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/orders`, {
-          headers: getAuthHeaders()
-        });
+        const response = await fetch(`${TRADING_API_URL}/trading/orders`);
         if (response.ok) {
           const data = await response.json();
           setOrders(data.orders || []);
@@ -9443,17 +9455,53 @@ useEffect(() => {
 
     // Fetch positions
     const fetchPositions = async () => {
-      if (!canTrade || !hasLinkedAccount) return;
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/positions`, {
-          headers: getAuthHeaders()
-        });
+        const response = await fetch(`${TRADING_API_URL}/trading/positions`);
         if (response.ok) {
           const data = await response.json();
           setPositions(data.positions || []);
         }
       } catch (error) {
         console.error('Error fetching positions:', error);
+      }
+    };
+
+    // Auto-link broker account
+    const linkBrokerAccount = async () => {
+      try {
+        const response = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.linked) {
+            setConnectionStatus({ connected: true, account: data.account_id });
+            return true;
+          }
+        }
+        return false;
+      } catch (error) {
+        console.error('Error linking broker:', error);
+        return false;
+      }
+    };
+
+    // Check connection status
+    const checkConnection = async () => {
+      try {
+        const response = await fetch(`${TRADING_API_URL}/health`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.ib_gateway?.connected) {
+            // Try to link account automatically
+            await linkBrokerAccount();
+            return true;
+          }
+        }
+        return false;
+      } catch (error) {
+        return false;
       }
     };
 
@@ -9467,7 +9515,7 @@ useEffect(() => {
       try {
         const response = await fetch(`${TRADING_API_URL}/trading/order`, {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             symbol: orderForm.symbol,
             conid: orderForm.conid,
@@ -9480,10 +9528,13 @@ useEffect(() => {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          setOrderSuccess(`Order placed: ${orderForm.side} ${orderForm.quantity} ${orderForm.symbol}`);
+          setOrderSuccess(`Order executed: ${orderForm.side} ${orderForm.quantity} ${orderForm.symbol}`);
           setOrderForm(prev => ({ ...prev, quantity: 1 }));
-          fetchOrders();
-          fetchPositions();
+          // Refresh data
+          setTimeout(() => {
+            fetchOrders();
+            fetchPositions();
+          }, 1000);
         } else {
           setOrderError(data.detail || data.message || 'Order failed');
         }
@@ -9494,71 +9545,196 @@ useEffect(() => {
       }
     };
 
-    // Link LYNX account
-    const linkAccount = async (e) => {
-      e.preventDefault();
-      setLinkingAccount(true);
-      setOrderError('');
-
+    // Execute single order (helper for portfolio execution)
+    const executeSingleOrder = async (symbol, conid, side, quantity) => {
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/account/link`, {
+        const response = await fetch(`${TRADING_API_URL}/trading/order`, {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            account_id: lynxAccountId,
-            account_type: 'paper'
+            symbol,
+            conid,
+            side,
+            quantity: parseInt(quantity),
+            order_type: 'MKT'
           })
         });
-
         const data = await response.json();
-
         if (response.ok && data.success) {
-          setOrderSuccess(data.message);
-          setLynxAccountId('');
-          fetchAccountInfo();
-        } else {
-          setOrderError(data.detail || data.message || 'Failed to link account');
+          return { success: true, message: `${side} ${quantity} ${symbol}` };
         }
+        return { success: false, message: data.detail || data.message || 'Order failed' };
       } catch (error) {
-        setOrderError('Network error: ' + error.message);
-      } finally {
-        setLinkingAccount(false);
+        return { success: false, message: error.message };
       }
     };
+
+    // Execute portfolio (buy model or custom portfolio)
+    const executePortfolio = async (allocations, amount) => {
+      setIsExecuting(true);
+      setExecutionStatus([]);
+      setExecutionSummary(null);
+
+      let successCount = 0;
+      let failCount = 0;
+
+      // Calculate quantities for each ETF
+      // Simple approach: divide amount by weight, use 1 share minimum
+      const ordersToExecute = allocations.map(alloc => {
+        const etf = etfs.find(e => e.symbol === alloc.symbol);
+        if (!etf) return null;
+        // Simple quantity calculation: weight% of 10 shares max (for demo)
+        // In production, you'd use actual prices
+        const quantity = Math.max(1, Math.round((alloc.weight / 100) * 10));
+        return { ...alloc, conid: etf.conid, quantity };
+      }).filter(Boolean);
+
+      // Execute orders sequentially
+      for (const order of ordersToExecute) {
+        setExecutionStatus(prev => [...prev, { symbol: order.symbol, status: 'pending', message: 'Submitting...' }]);
+
+        const result = await executeSingleOrder(order.symbol, order.conid, 'BUY', order.quantity);
+
+        if (result.success) {
+          successCount++;
+          setExecutionStatus(prev => prev.map(s =>
+            s.symbol === order.symbol ? { ...s, status: 'success', message: result.message } : s
+          ));
+        } else {
+          failCount++;
+          setExecutionStatus(prev => prev.map(s =>
+            s.symbol === order.symbol ? { ...s, status: 'error', message: result.message } : s
+          ));
+        }
+
+        // Small delay between orders
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      setExecutionSummary({ success: successCount, failed: failCount });
+      setIsExecuting(false);
+
+      // Refresh positions after execution
+      setTimeout(() => {
+        fetchOrders();
+        fetchPositions();
+      }, 1500);
+    };
+
+    // Sell all positions
+    const sellAllPositions = async () => {
+      setIsExecuting(true);
+      setExecutionStatus([]);
+      setExecutionSummary(null);
+
+      let successCount = 0;
+      let failCount = 0;
+
+      // Fetch fresh positions
+      const freshPositions = await fetchPositions();
+      const positionsToSell = positions.filter(p => parseFloat(p.quantity) > 0);
+
+      for (const pos of positionsToSell) {
+        const etf = etfs.find(e => e.symbol === pos.symbol);
+        if (!etf) {
+          failCount++;
+          setExecutionStatus(prev => [...prev, { symbol: pos.symbol, status: 'error', message: 'ETF not found' }]);
+          continue;
+        }
+
+        setExecutionStatus(prev => [...prev, { symbol: pos.symbol, status: 'pending', message: 'Selling...' }]);
+
+        const result = await executeSingleOrder(pos.symbol, etf.conid, 'SELL', Math.abs(parseFloat(pos.quantity)));
+
+        if (result.success) {
+          successCount++;
+          setExecutionStatus(prev => prev.map(s =>
+            s.symbol === pos.symbol ? { ...s, status: 'success', message: result.message } : s
+          ));
+        } else {
+          failCount++;
+          setExecutionStatus(prev => prev.map(s =>
+            s.symbol === pos.symbol ? { ...s, status: 'error', message: result.message } : s
+          ));
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      setExecutionSummary({ success: successCount, failed: failCount });
+      setIsExecuting(false);
+
+      setTimeout(() => {
+        fetchOrders();
+        fetchPositions();
+      }, 1500);
+    };
+
+    // Handle confirmation
+    const handleConfirm = () => {
+      setShowConfirmModal(false);
+      if (pendingAction?.type === 'buyPortfolio') {
+        executePortfolio(pendingAction.allocations, pendingAction.amount);
+      } else if (pendingAction?.type === 'sellAll') {
+        sellAllPositions();
+      }
+      setPendingAction(null);
+    };
+
+    // Add ETF to custom portfolio
+    const addToCustomPortfolio = (etf) => {
+      if (customPortfolio.find(p => p.conid === etf.conid)) return;
+      setCustomPortfolio(prev => [...prev, { conid: etf.conid, symbol: etf.symbol, name: etf.name, weight: 0 }]);
+    };
+
+    // Update weight in custom portfolio
+    const updateCustomWeight = (conid, weight) => {
+      setCustomPortfolio(prev => prev.map(p =>
+        p.conid === conid ? { ...p, weight: Math.max(0, Math.min(100, parseInt(weight) || 0)) } : p
+      ));
+    };
+
+    // Remove from custom portfolio
+    const removeFromCustomPortfolio = (conid) => {
+      setCustomPortfolio(prev => prev.filter(p => p.conid !== conid));
+    };
+
+    // Calculate total weight
+    const totalWeight = customPortfolio.reduce((sum, p) => sum + p.weight, 0);
 
     // Initial load
     useEffect(() => {
       const loadData = async () => {
         setLoading(true);
-        await fetchAccountInfo();
+        const connected = await checkConnection();
+        if (connected) {
+          await Promise.all([fetchETFs(), fetchOrders(), fetchPositions()]);
+        } else {
+          await fetchETFs(); // Still load ETFs to show the interface
+        }
         setLoading(false);
       };
       loadData();
     }, []);
 
-    // Load trading data when account is ready
+    // Refresh orders periodically
     useEffect(() => {
-      if (canTrade && hasLinkedAccount) {
-        fetchSessionStatus();
-        fetchETFs();
-        fetchOrders();
-        fetchPositions();
-      }
-    }, [canTrade, hasLinkedAccount]);
-
-    // Poll quotes every 5 seconds
-    useEffect(() => {
-      if (canTrade && hasLinkedAccount && etfs.length > 0) {
-        fetchQuotes();
-        const interval = setInterval(fetchQuotes, 5000);
+      if (connectionStatus.connected) {
+        const interval = setInterval(() => {
+          fetchOrders();
+          fetchPositions();
+        }, 10000);
         return () => clearInterval(interval);
       }
-    }, [canTrade, hasLinkedAccount, etfs]);
+    }, [connectionStatus.connected]);
 
     if (loading) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-          <div className="text-white text-xl">Loading trading...</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
+            <div className="text-white text-xl">Connecting to LYNX Trading...</div>
+          </div>
         </div>
       );
     }
@@ -9569,17 +9745,18 @@ useEffect(() => {
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium">
-                  ← Terug naar Dashboard
-                </button>
-              </div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium hover:text-[#20D4BA]">
+                ← Back to Dashboard
+              </button>
               <h1 className="text-xl font-bold text-white">LYNX Trading</h1>
-              <div className="text-sm text-gray-400">
-                {sessionStatus.authenticated ? (
-                  <span className="text-green-400">Connected</span>
+              <div className="text-sm">
+                {connectionStatus.connected ? (
+                  <span className="text-green-400 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    {connectionStatus.account || 'Connected'}
+                  </span>
                 ) : (
-                  <span className="text-yellow-400">Not Connected</span>
+                  <span className="text-yellow-400">Disconnected</span>
                 )}
               </div>
             </div>
@@ -9587,58 +9764,29 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-          {/* Trading Status Check */}
-          {!canTrade && (
-            <div className="bg-yellow-900/30 border border-yellow-600 rounded-xl p-6 mb-8">
-              <h2 className="text-xl font-bold text-yellow-400 mb-2">Trading niet beschikbaar</h2>
-              <p className="text-gray-300">
-                Je trading status is: <strong>{user?.trading_status || 'pending'}</strong>
-              </p>
-              <p className="text-gray-400 mt-2">
-                Neem contact op met een account manager om trading te activeren.
-              </p>
-            </div>
-          )}
-
-          {/* Link Account Section */}
-          {canTrade && !hasLinkedAccount && (
-            <div className="bg-blue-900/30 border border-blue-600 rounded-xl p-6 mb-8">
-              <h2 className="text-xl font-bold text-blue-400 mb-4">Koppel je LYNX Account</h2>
-              <p className="text-gray-300 mb-4">
-                Voer je LYNX paper trading account ID in (begint meestal met "DU").
-              </p>
-              <form onSubmit={linkAccount} className="flex gap-4">
-                <input
-                  type="text"
-                  value={lynxAccountId}
-                  onChange={(e) => setLynxAccountId(e.target.value.toUpperCase())}
-                  placeholder="DU123456"
-                  className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                />
-                <button
-                  type="submit"
-                  disabled={linkingAccount || !lynxAccountId}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {linkingAccount ? 'Koppelen...' : 'Koppel Account'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* IB Gateway Connection Warning */}
-          {canTrade && hasLinkedAccount && !sessionStatus.authenticated && (
+          {/* Connection Warning */}
+          {!connectionStatus.connected && (
             <div className="bg-orange-900/30 border border-orange-600 rounded-xl p-6 mb-8">
-              <h2 className="text-xl font-bold text-orange-400 mb-2">IB Gateway niet verbonden</h2>
-              <p className="text-gray-300 mb-4">{sessionStatus.message}</p>
-              <div className="text-gray-400 text-sm">
-                <p className="mb-2">Om te handelen moet je:</p>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Start de IB Client Portal Gateway</li>
-                  <li>Log in op https://localhost:5000 met je paper trading credentials</li>
-                  <li>Ververs deze pagina</li>
-                </ol>
-              </div>
+              <h2 className="text-xl font-bold text-orange-400 mb-2">IB Gateway Not Connected</h2>
+              <p className="text-gray-300 mb-4">
+                Cannot connect to IB Gateway. Please ensure:
+              </p>
+              <ul className="text-gray-400 text-sm list-disc list-inside space-y-1">
+                <li>IB Gateway is running on localhost:4001</li>
+                <li>You are logged into LYNX Paper Trading</li>
+                <li>The Trading API is running on localhost:8002</li>
+              </ul>
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  await checkConnection();
+                  await Promise.all([fetchETFs(), fetchOrders(), fetchPositions()]);
+                  setLoading(false);
+                }}
+                className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+              >
+                Retry Connection
+              </button>
             </div>
           )}
 
@@ -9646,177 +9794,542 @@ useEffect(() => {
           {orderError && (
             <div className="bg-red-900/30 border border-red-600 rounded-xl p-4 mb-6">
               <p className="text-red-400">{orderError}</p>
+              <button onClick={() => setOrderError('')} className="text-red-300 text-sm mt-2 hover:underline">Dismiss</button>
             </div>
           )}
           {orderSuccess && (
             <div className="bg-green-900/30 border border-green-600 rounded-xl p-4 mb-6">
               <p className="text-green-400">{orderSuccess}</p>
+              <button onClick={() => setOrderSuccess('')} className="text-green-300 text-sm mt-2 hover:underline">Dismiss</button>
             </div>
           )}
 
-          {/* Trading Interface */}
-          {canTrade && hasLinkedAccount && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* ETF List with Quotes */}
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Beschikbare ETFs</h2>
-                <div className="space-y-4">
-                  {etfs.map(etf => {
-                    const quote = quotes[etf.conid] || {};
-                    return (
-                      <div key={etf.conid} className="bg-gray-800/50 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="text-white font-semibold">{etf.symbol}</h3>
-                            <p className="text-gray-400 text-sm">{etf.name}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-white font-mono">
-                              {quote.last_price ? `$${quote.last_price.toFixed(2)}` : '-'}
-                            </p>
-                            <p className="text-gray-400 text-xs">Last</p>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-500">Bid: </span>
-                            <span className="text-green-400">{quote.bid ? `$${quote.bid.toFixed(2)}` : '-'}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Ask: </span>
-                            <span className="text-red-400">{quote.ask ? `$${quote.ask.toFixed(2)}` : '-'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {etfs.length === 0 && (
-                    <p className="text-gray-500">Geen ETFs beschikbaar</p>
-                  )}
+          {/* Execution Summary */}
+          {executionSummary && (
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-white mb-4">Execution Summary</h3>
+              <div className="flex gap-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-400">{executionSummary.success}</div>
+                  <div className="text-gray-400 text-sm">Orders Submitted</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-red-400">{executionSummary.failed}</div>
+                  <div className="text-gray-400 text-sm">Failed</div>
                 </div>
               </div>
+              <button
+                onClick={() => { setExecutionSummary(null); setExecutionStatus([]); }}
+                className="mt-4 text-gray-400 text-sm hover:text-white"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
 
-              {/* Order Form */}
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Order Plaatsen</h2>
-                <form onSubmit={placeOrder} className="space-y-4">
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">ETF</label>
-                    <select
-                      value={orderForm.conid}
-                      onChange={(e) => {
-                        const etf = etfs.find(et => et.conid === parseInt(e.target.value));
-                        setOrderForm(prev => ({ ...prev, conid: parseInt(e.target.value), symbol: etf?.symbol || '' }));
-                      }}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    >
-                      {etfs.map(etf => (
-                        <option key={etf.conid} value={etf.conid}>{etf.symbol} - {etf.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-400 text-sm mb-2">Side</label>
-                      <select
-                        value={orderForm.side}
-                        onChange={(e) => setOrderForm(prev => ({ ...prev, side: e.target.value }))}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                      >
-                        <option value="BUY">Koop</option>
-                        <option value="SELL">Verkoop</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-gray-400 text-sm mb-2">Aantal</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={orderForm.quantity}
-                        onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                      />
+          {/* Execution Progress */}
+          {executionStatus.length > 0 && !executionSummary && (
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-white mb-4">
+                {isExecuting ? 'Executing Orders...' : 'Execution Complete'}
+              </h3>
+              <div className="space-y-2">
+                {executionStatus.map((status, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-gray-800/50 rounded-lg p-3">
+                    <span className="text-white font-medium">{status.symbol}</span>
+                    <div className="flex items-center gap-2">
+                      {status.status === 'pending' && (
+                        <div className="animate-spin h-4 w-4 border-2 border-[#28EBCF] border-t-transparent rounded-full"></div>
+                      )}
+                      {status.status === 'success' && (
+                        <span className="text-green-400">Submitted</span>
+                      )}
+                      {status.status === 'error' && (
+                        <span className="text-red-400">{status.message}</span>
+                      )}
                     </div>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={orderLoading || !sessionStatus.authenticated}
-                    className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
-                      orderForm.side === 'BUY'
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-red-600 hover:bg-red-700 text-white'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-6 flex-wrap">
+            <button
+              onClick={() => setActiveTab('trade')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                activeTab === 'trade'
+                  ? 'bg-[#28EBCF] text-gray-900'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              Single Trade
+            </button>
+            <button
+              onClick={() => setActiveTab('modelPortfolio')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                activeTab === 'modelPortfolio'
+                  ? 'bg-[#28EBCF] text-gray-900'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              Model Portfolios
+            </button>
+            <button
+              onClick={() => setActiveTab('customPortfolio')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                activeTab === 'customPortfolio'
+                  ? 'bg-[#28EBCF] text-gray-900'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              Custom Portfolio
+            </button>
+          </div>
+
+          {/* SINGLE TRADE TAB */}
+          {activeTab === 'trade' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Order Form */}
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-6">Place Order</h2>
+              <form onSubmit={placeOrder} className="space-y-5">
+                {/* ETF Selector */}
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">Select ETF</label>
+                  <select
+                    value={orderForm.conid}
+                    onChange={(e) => {
+                      const etf = etfs.find(et => et.conid === parseInt(e.target.value));
+                      setOrderForm(prev => ({ ...prev, conid: parseInt(e.target.value), symbol: etf?.symbol || '' }));
+                    }}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#28EBCF] focus:outline-none"
                   >
-                    {orderLoading ? 'Verwerken...' : `${orderForm.side === 'BUY' ? 'Koop' : 'Verkoop'} ${orderForm.quantity} ${orderForm.symbol}`}
-                  </button>
-                  {!sessionStatus.authenticated && (
-                    <p className="text-yellow-400 text-sm text-center">Verbind eerst met IB Gateway om te handelen</p>
-                  )}
-                </form>
+                    {etfs.map(etf => (
+                      <option key={etf.conid} value={etf.conid}>
+                        {etf.symbol} - {etf.name} ({etf.currency})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* BUY/SELL Toggle */}
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">Order Side</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setOrderForm(prev => ({ ...prev, side: 'BUY' }))}
+                      className={`py-3 rounded-lg font-bold transition-all ${
+                        orderForm.side === 'BUY'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-800 text-gray-400 border border-gray-700 hover:border-green-600'
+                      }`}
+                    >
+                      BUY
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderForm(prev => ({ ...prev, side: 'SELL' }))}
+                      className={`py-3 rounded-lg font-bold transition-all ${
+                        orderForm.side === 'SELL'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-800 text-gray-400 border border-gray-700 hover:border-red-600'
+                      }`}
+                    >
+                      SELL
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quantity */}
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2">Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={orderForm.quantity}
+                    onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white text-center text-xl font-mono focus:border-[#28EBCF] focus:outline-none"
+                  />
+                </div>
+
+                {/* Order Type Info */}
+                <div className="bg-gray-800/50 rounded-lg p-3 text-center">
+                  <span className="text-gray-400 text-sm">Order Type: </span>
+                  <span className="text-white font-semibold">MARKET</span>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={orderLoading || !connectionStatus.connected || etfs.length === 0}
+                  className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
+                    orderForm.side === 'BUY'
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {orderLoading
+                    ? 'Processing...'
+                    : `${orderForm.side} ${orderForm.quantity} ${orderForm.symbol}`}
+                </button>
+
+                {!connectionStatus.connected && (
+                  <p className="text-yellow-400 text-sm text-center">Connect to IB Gateway to place orders</p>
+                )}
+              </form>
+            </div>
+
+            {/* ETF List */}
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Available ETFs</h2>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {etfs.map(etf => (
+                  <div
+                    key={etf.conid}
+                    onClick={() => setOrderForm(prev => ({ ...prev, conid: etf.conid, symbol: etf.symbol }))}
+                    className={`bg-gray-800/50 rounded-lg p-4 cursor-pointer transition-all hover:bg-gray-700/50 ${
+                      orderForm.conid === etf.conid ? 'ring-2 ring-[#28EBCF]' : ''
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-white font-semibold">{etf.symbol}</h3>
+                        <p className="text-gray-400 text-sm">{etf.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-gray-500">{etf.exchange}</span>
+                        <p className="text-[#28EBCF] font-mono">{etf.currency}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {etfs.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">No ETFs available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Positions */}
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Positions</h2>
+              {positions.length > 0 ? (
+                <div className="space-y-3">
+                  {positions.map((pos, idx) => (
+                    <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                      <div className="flex justify-between">
+                        <span className="text-white font-semibold">{pos.symbol}</span>
+                        <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {pos.unrealized_pnl ? `€${parseFloat(pos.unrealized_pnl).toFixed(2)}` : '-'}
+                        </span>
+                      </div>
+                      <div className="text-gray-400 text-sm mt-1">
+                        {pos.quantity} shares @ €{parseFloat(pos.avg_cost || 0).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No positions</p>
+              )}
+            </div>
+
+            {/* Recent Orders */}
+            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Recent Orders</h2>
+              {orders.length > 0 ? (
+                <div className="space-y-3">
+                  {orders.map((order, idx) => (
+                    <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            order.side === 'BUY' || order.side === 'BOT'
+                              ? 'bg-green-600/30 text-green-400'
+                              : 'bg-red-600/30 text-red-400'
+                          }`}>
+                            {order.side === 'BOT' ? 'BUY' : order.side}
+                          </span>
+                          <span className="text-white">{order.quantity} {order.symbol}</span>
+                        </div>
+                        <span className={`text-sm font-medium ${
+                          order.status === 'Filled' ? 'text-green-400' :
+                          order.status === 'Cancelled' ? 'text-red-400' : 'text-yellow-400'
+                        }`}>
+                          {order.status}
+                        </span>
+                      </div>
+                      {order.avg_fill_price && (
+                        <div className="text-gray-400 text-sm mt-1">
+                          Filled @ €{parseFloat(order.avg_fill_price).toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No recent orders</p>
+              )}
+            </div>
+          </div>
+          )}
+
+          {/* MODEL PORTFOLIOS TAB */}
+          {activeTab === 'modelPortfolio' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {MODEL_PORTFOLIOS.map(portfolio => (
+                  <div key={portfolio.id} className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-white mb-2">{portfolio.name}</h3>
+                    <p className="text-gray-400 text-sm mb-4">{portfolio.description}</p>
+
+                    {/* Allocations */}
+                    <div className="space-y-2 mb-6">
+                      {portfolio.allocations.map((alloc, idx) => {
+                        const etf = etfs.find(e => e.symbol === alloc.symbol);
+                        return (
+                          <div key={idx} className="flex justify-between items-center bg-gray-800/50 rounded-lg p-3">
+                            <div>
+                              <span className="text-white font-medium">{alloc.symbol}</span>
+                              {etf && <span className="text-gray-500 text-xs ml-2">{etf.name}</span>}
+                            </div>
+                            <span className="text-[#28EBCF] font-bold">{alloc.weight}%</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Buy Button */}
+                    <button
+                      onClick={() => {
+                        setPendingAction({ type: 'buyPortfolio', allocations: portfolio.allocations, amount: portfolioAmount });
+                        setShowConfirmModal(true);
+                      }}
+                      disabled={isExecuting || !connectionStatus.connected}
+                      className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Buy Portfolio
+                    </button>
+                  </div>
+                ))}
               </div>
 
-              {/* Positions */}
+              {/* Positions with Sell All */}
               <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Posities</h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-white">Current Positions</h2>
+                  {positions.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setPendingAction({ type: 'sellAll' });
+                        setShowConfirmModal(true);
+                      }}
+                      disabled={isExecuting || !connectionStatus.connected}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Sell All Positions
+                    </button>
+                  )}
+                </div>
                 {positions.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {positions.map((pos, idx) => (
                       <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
                         <div className="flex justify-between">
                           <span className="text-white font-semibold">{pos.symbol}</span>
                           <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {pos.unrealized_pnl ? `$${parseFloat(pos.unrealized_pnl).toFixed(2)}` : '-'}
+                            {pos.unrealized_pnl ? `€${parseFloat(pos.unrealized_pnl).toFixed(2)}` : '-'}
                           </span>
                         </div>
                         <div className="text-gray-400 text-sm mt-1">
-                          {pos.quantity} @ ${parseFloat(pos.avg_cost || 0).toFixed(2)}
+                          {pos.quantity} shares @ €{parseFloat(pos.avg_cost || 0).toFixed(2)}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">Geen open posities</p>
+                  <p className="text-gray-500 text-center py-4">No positions</p>
                 )}
               </div>
+            </div>
+          )}
 
-              {/* Orders */}
+          {/* CUSTOM PORTFOLIO TAB */}
+          {activeTab === 'customPortfolio' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* ETF Selector */}
               <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Recente Orders</h2>
-                {orders.length > 0 ? (
-                  <div className="space-y-3">
-                    {orders.map((order, idx) => (
-                      <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                <h2 className="text-xl font-bold text-white mb-4">Select ETFs</h2>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {etfs.map(etf => {
+                    const isInPortfolio = customPortfolio.some(p => p.conid === etf.conid);
+                    return (
+                      <div
+                        key={etf.conid}
+                        onClick={() => !isInPortfolio && addToCustomPortfolio(etf)}
+                        className={`bg-gray-800/50 rounded-lg p-4 transition-all ${
+                          isInPortfolio
+                            ? 'opacity-50 cursor-not-allowed ring-2 ring-[#28EBCF]'
+                            : 'cursor-pointer hover:bg-gray-700/50'
+                        }`}
+                      >
                         <div className="flex justify-between items-center">
                           <div>
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                              order.side === 'BUY' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
-                            }`}>
-                              {order.side}
-                            </span>
-                            <span className="text-white ml-2">{order.quantity} {order.symbol}</span>
+                            <h3 className="text-white font-semibold">{etf.symbol}</h3>
+                            <p className="text-gray-400 text-sm">{etf.name}</p>
                           </div>
-                          <span className={`text-sm ${
-                            order.status === 'Filled' ? 'text-green-400' :
-                            order.status === 'Cancelled' ? 'text-red-400' : 'text-yellow-400'
-                          }`}>
-                            {order.status}
-                          </span>
+                          {isInPortfolio ? (
+                            <span className="text-[#28EBCF] text-sm">Added</span>
+                          ) : (
+                            <button className="text-gray-400 hover:text-white text-sm">+ Add</button>
+                          )}
                         </div>
-                        {order.avg_fill_price && (
-                          <div className="text-gray-400 text-sm mt-1">
-                            Filled @ ${parseFloat(order.avg_fill_price).toFixed(2)}
-                          </div>
-                        )}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Portfolio Builder */}
+              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+                <h2 className="text-xl font-bold text-white mb-4">Your Custom Portfolio</h2>
+
+                {customPortfolio.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">Select ETFs from the list to build your portfolio</p>
                 ) : (
-                  <p className="text-gray-500">Geen recente orders</p>
+                  <>
+                    <div className="space-y-3 mb-6">
+                      {customPortfolio.map(item => (
+                        <div key={item.conid} className="bg-gray-800/50 rounded-lg p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-white font-semibold">{item.symbol}</span>
+                            <button
+                              onClick={() => removeFromCustomPortfolio(item.conid)}
+                              className="text-red-400 hover:text-red-300 text-sm"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={item.weight}
+                              onChange={(e) => updateCustomWeight(item.conid, e.target.value)}
+                              className="w-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-center focus:border-[#28EBCF] focus:outline-none"
+                            />
+                            <span className="text-gray-400">%</span>
+                            <div className="flex-1 bg-gray-700 rounded-full h-2">
+                              <div
+                                className="bg-[#28EBCF] h-2 rounded-full transition-all"
+                                style={{ width: `${item.weight}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Total Weight */}
+                    <div className={`flex justify-between items-center p-4 rounded-lg mb-6 ${
+                      totalWeight === 100 ? 'bg-green-900/30 border border-green-600' : 'bg-orange-900/30 border border-orange-600'
+                    }`}>
+                      <span className="text-white font-medium">Total Weight</span>
+                      <span className={`text-xl font-bold ${totalWeight === 100 ? 'text-green-400' : 'text-orange-400'}`}>
+                        {totalWeight}%
+                      </span>
+                    </div>
+
+                    {totalWeight !== 100 && (
+                      <p className="text-orange-400 text-sm mb-4">Weights must equal 100% to buy portfolio</p>
+                    )}
+
+                    {/* Buy Custom Portfolio Button */}
+                    <button
+                      onClick={() => {
+                        setPendingAction({ type: 'buyPortfolio', allocations: customPortfolio, amount: portfolioAmount });
+                        setShowConfirmModal(true);
+                      }}
+                      disabled={isExecuting || !connectionStatus.connected || totalWeight !== 100}
+                      className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Buy Custom Portfolio
+                    </button>
+                  </>
                 )}
               </div>
             </div>
           )}
         </div>
+
+        {/* Confirmation Modal */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold text-white mb-4">Confirm Action</h3>
+
+              {pendingAction?.type === 'buyPortfolio' && (
+                <>
+                  <p className="text-gray-300 mb-4">
+                    This will place <span className="text-[#28EBCF] font-bold">{pendingAction.allocations.length}</span> MARKET orders:
+                  </p>
+                  <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
+                    {pendingAction.allocations.map((alloc, idx) => (
+                      <div key={idx} className="flex justify-between bg-gray-800/50 rounded-lg p-3">
+                        <span className="text-white">{alloc.symbol}</span>
+                        <span className="text-green-400">BUY {alloc.weight}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {pendingAction?.type === 'sellAll' && (
+                <>
+                  <p className="text-gray-300 mb-4">
+                    This will sell <span className="text-red-400 font-bold">ALL</span> your positions ({positions.length} ETFs):
+                  </p>
+                  <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
+                    {positions.map((pos, idx) => (
+                      <div key={idx} className="flex justify-between bg-gray-800/50 rounded-lg p-3">
+                        <span className="text-white">{pos.symbol}</span>
+                        <span className="text-red-400">SELL {pos.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-3 mb-6">
+                <p className="text-orange-400 text-sm">
+                  Warning: This will place multiple trades using MARKET orders. Orders will be submitted sequentially.
+                </p>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => { setShowConfirmModal(false); setPendingAction(null); }}
+                  className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirm}
+                  className={`flex-1 py-3 font-bold rounded-lg transition-all ${
+                    pendingAction?.type === 'sellAll'
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
+                >
+                  {pendingAction?.type === 'sellAll' ? 'Sell All' : 'Buy Portfolio'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -9858,7 +10371,7 @@ useEffect(() => {
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
-      {currentPage === 'trading' && <TradingPage />}
+      {currentPage === 'trading' && <TradingDashboard onBack={() => setCurrentPage('mainDashboard')} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Chat Widget */}

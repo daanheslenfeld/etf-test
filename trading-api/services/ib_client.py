@@ -15,7 +15,7 @@ from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, field
 
-from ib_insync import IB, Stock, MarketOrder, LimitOrder, Contract, Trade
+from ib_insync import IB, Stock, MarketOrder, LimitOrder, StopOrder, Order, Contract, Trade
 import eventkit
 
 logger = logging.getLogger(__name__)
@@ -475,7 +475,8 @@ class IBClient:
         side: str,
         quantity: int,
         order_type: str = "MKT",
-        limit_price: Optional[float] = None
+        limit_price: Optional[float] = None,
+        stop_price: Optional[float] = None
     ) -> dict:
         """Place an order via IB Gateway."""
         from config import get_settings, TradingMode
@@ -491,6 +492,7 @@ class IBClient:
             "quantity": quantity,
             "order_type": order_type,
             "limit_price": limit_price,
+            "stop_price": stop_price,
             "timestamp": datetime.now().isoformat(),
         }
 
@@ -532,6 +534,24 @@ class IBClient:
                 if limit_price is None:
                     return {"error": True, "message": "Limit price required for LMT orders"}
                 order = LimitOrder(action=side, totalQuantity=quantity, lmtPrice=limit_price, account=account_id, tif="DAY")
+            elif order_type == "STP":
+                if stop_price is None:
+                    return {"error": True, "message": "Stop price required for STP orders"}
+                order = StopOrder(action=side, totalQuantity=quantity, stopPrice=stop_price, account=account_id, tif="DAY")
+            elif order_type == "STP_LMT":
+                if stop_price is None:
+                    return {"error": True, "message": "Stop price required for STP_LMT orders"}
+                if limit_price is None:
+                    return {"error": True, "message": "Limit price required for STP_LMT orders"}
+                order = Order(
+                    action=side,
+                    totalQuantity=quantity,
+                    orderType="STP LMT",
+                    auxPrice=stop_price,
+                    lmtPrice=limit_price,
+                    account=account_id,
+                    tif="DAY"
+                )
             else:
                 return {"error": True, "message": f"Unsupported order type: {order_type}"}
 

@@ -16,6 +16,8 @@ class OrderType(str, Enum):
     """Order type enumeration."""
     MARKET = "MKT"
     LIMIT = "LMT"
+    STOP = "STP"
+    STOP_LIMIT = "STP_LMT"
 
 
 class TradingStatus(str, Enum):
@@ -69,6 +71,7 @@ class OrderRequest(BaseModel):
     quantity: int = Field(..., gt=0)
     order_type: OrderType = OrderType.MARKET
     limit_price: Optional[float] = None
+    stop_price: Optional[float] = None
 
 
 class OrderResponse(BaseModel):

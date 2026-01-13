@@ -278,9 +278,10 @@ async def liveness_check():
 
 if __name__ == "__main__":
     import uvicorn
+    settings = get_settings()
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
+        port=settings.api_port,  # Always 8002
         reload=True
     )

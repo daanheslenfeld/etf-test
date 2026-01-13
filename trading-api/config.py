@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     # ==========================================================================
     debug: bool = True
 
+    # API server port - MUST be 8002 to match frontend expectations
+    api_port: int = 8002
+
     class Config:
         env_file = "../.env"
         env_file_encoding = "utf-8"

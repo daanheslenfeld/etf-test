@@ -61,6 +61,7 @@ async def place_order(
         "quantity": order.quantity,
         "order_type": order.order_type.value,
         "limit_price": order.limit_price,
+        "stop_price": order.stop_price,
         "client_ip": client_ip,
     }
 
@@ -106,7 +107,8 @@ async def place_order(
             side=order.side.value,
             quantity=order.quantity,
             order_type=order.order_type.value,
-            limit_price=order.limit_price
+            limit_price=order.limit_price,
+            stop_price=order.stop_price
         )
 
         # Check for errors
