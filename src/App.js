@@ -5,6 +5,19 @@ import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
+import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
+
+// Helper: Get categories that have tradable ETFs
+const getTradableCategories = (etfList) => {
+  const tradableETFs = etfList.filter(etf => etf.isTradableViaLynx);
+  return [...new Set(tradableETFs.map(etf => etf.categorie))];
+};
+
+// Helper: Check if a portfolio profile can be fully traded via LYNX
+const isProfileFullyTradable = (allocation, tradableCategories) => {
+  if (!allocation || Object.keys(allocation).length === 0) return true; // Free portfolio
+  return Object.keys(allocation).every(cat => tradableCategories.includes(cat));
+};
 
 // API URL - works with Vercel Dev and production
 const API_URL = '/api';
@@ -1199,6 +1212,7 @@ const ETFPortal = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [etfs, setEtfs] = useState(SAMPLE_ETFS);
   const [filteredEtfs, setFilteredEtfs] = useState(SAMPLE_ETFS);
+  const [showOnlyTradable, setShowOnlyTradable] = useState(true); // Default: show only LYNX-tradable ETFs
   const [etfPrices, setEtfPrices] = useState({});
   const [etfPricesLastUpdated, setEtfPricesLastUpdated] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -1450,19 +1464,24 @@ useEffect(() => {
           etf.naam && etf.naam.trim() !== '' &&
           etf.isin && etf.isin.trim() !== ''
         );
-        console.log(`✅ Loaded ${validETFs.length} valid ETFs from Excel (filtered from ${jsonData.length} rows)`);
-        setEtfs(validETFs);
-        setFilteredEtfs(validETFs);
+        // Enrich ETFs with tradability information
+        const enrichedETFs = validETFs.map(etf => enrichWithTradability(etf));
+        const tradableCount = enrichedETFs.filter(e => e.isTradableViaLynx).length;
+        console.log(`✅ Loaded ${enrichedETFs.length} valid ETFs from Excel (${tradableCount} tradable via LYNX)`);
+        setEtfs(enrichedETFs);
+        setFilteredEtfs(enrichedETFs);
       } else {
         console.warn('⚠️ Excel file is empty, using sample data');
-        setEtfs(SAMPLE_ETFS);
-        setFilteredEtfs(SAMPLE_ETFS);
+        const enrichedSample = SAMPLE_ETFS.map(etf => enrichWithTradability(etf));
+        setEtfs(enrichedSample);
+        setFilteredEtfs(enrichedSample);
       }
     } catch (error) {
       console.error('❌ Error loading Excel file:', error);
       console.log('Using sample ETF data as fallback (' + SAMPLE_ETFS.length + ' items)');
-      setEtfs(SAMPLE_ETFS);
-      setFilteredEtfs(SAMPLE_ETFS);
+      const enrichedSample = SAMPLE_ETFS.map(etf => enrichWithTradability(etf));
+      setEtfs(enrichedSample);
+      setFilteredEtfs(enrichedSample);
     }
     setLoading(false);
     console.log('ETF loading complete');
@@ -1473,6 +1492,11 @@ useEffect(() => {
 
    useEffect(() => {
     let filtered = [...etfs];
+
+    // Apply tradability filter (only in ETF Database, not in portfolio builder)
+    if (showOnlyTradable && currentPage === 'etfDatabase') {
+      filtered = filtered.filter(etf => etf.isTradableViaLynx);
+    }
 
     // Apply main category filter
     if (selectedMainCategory) {
@@ -1509,7 +1533,7 @@ useEffect(() => {
     }
 
     setFilteredEtfs(filtered);
-  }, [filters.search, activeFilters, selectedMainCategory, etfs]);
+  }, [filters.search, activeFilters, selectedMainCategory, etfs, showOnlyTradable, currentPage]);
 
   // Save user to localStorage for persistent login (stays logged in after closing app)
   useEffect(() => {
@@ -2481,16 +2505,42 @@ useEffect(() => {
                 Bereken je toekomstige inkomen en vermogensopbouw
               </p>
             </button>
-            <button
-              onClick={() => setCurrentPage('trading')}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
-            >
-              <div className="text-3xl sm:text-4xl mb-3">📈</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">LYNX Trading</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Handel ETFs via je LYNX broker account
-              </p>
-            </button>
+            {(() => {
+              const tradableInPortfolio = portfolio.filter(p => p.isTradableViaLynx).length;
+              const totalInPortfolio = portfolio.length;
+              const isFullyTradable = tradableInPortfolio === totalInPortfolio;
+
+              return (
+                <button
+                  onClick={() => setCurrentPage('trading')}
+                  className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="text-3xl sm:text-4xl">📈</div>
+                    {totalInPortfolio > 0 && (
+                      isFullyTradable ? (
+                        <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">
+                          {tradableInPortfolio} ETFs klaar
+                        </span>
+                      ) : (
+                        <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">
+                          {tradableInPortfolio}/{totalInPortfolio} handelbaar
+                        </span>
+                      )
+                    )}
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">LYNX Trading</h3>
+                  <p className="text-xs sm:text-sm text-gray-400">
+                    Handel ETFs via je LYNX broker account
+                  </p>
+                  {totalInPortfolio > 0 && !isFullyTradable && (
+                    <p className="text-xs text-yellow-500/70 mt-2">
+                      {totalInPortfolio - tradableInPortfolio} ETF(s) in je portfolio zijn niet handelbaar via LYNX
+                    </p>
+                  )}
+                </button>
+              );
+            })()}
           </div>
         </div>
 
@@ -4577,6 +4627,35 @@ useEffect(() => {
               />
             </div>
 
+            {/* Tradability toggle */}
+            <div className="mb-4 flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+              <div className="flex items-center gap-3">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showOnlyTradable}
+                    onChange={(e) => setShowOnlyTradable(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#28EBCF]"></div>
+                </label>
+                <span className="text-sm text-gray-300">
+                  {showOnlyTradable ? 'Alleen LYNX-handelbare ETFs' : 'Alle ETFs (incl. niet-handelbaar)'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {showOnlyTradable ? (
+                  <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">
+                    {filteredEtfs.length} handelbaar
+                  </span>
+                ) : (
+                  <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded-full">
+                    {filteredEtfs.filter(e => e.isTradableViaLynx).length} van {filteredEtfs.length} handelbaar
+                  </span>
+                )}
+              </div>
+            </div>
+
             {/* Step 1: Category Selection - Only show if no category selected or in filterSelect step */}
             {(filterStep === 'category' || !selectedMainCategory) && (
               <div className="mb-4">
@@ -4749,13 +4828,20 @@ useEffect(() => {
               const priceData = etfPrices[etf.isin];
               const isAdded = portfolioIsinSet.has(etf.isin);
               return (
-              <div key={idx} className="bg-[#1A1B1F] rounded-lg shadow p-3 border border-gray-800">
-                <button
-                  onClick={() => setSelectedETF(etf)}
-                  className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline text-sm w-full mb-2"
-                >
-                  {etf.naam}
-                </button>
+              <div key={idx} className={`bg-[#1A1B1F] rounded-lg shadow p-3 border ${etf.isTradableViaLynx ? 'border-gray-800' : 'border-gray-800 opacity-75'}`}>
+                <div className="flex items-start justify-between mb-2">
+                  <button
+                    onClick={() => setSelectedETF(etf)}
+                    className={`${etf.isTradableViaLynx ? 'text-[#28EBCF] hover:text-[#20D4BA]' : 'text-gray-400'} font-medium text-left hover:underline text-sm`}
+                  >
+                    {etf.naam}
+                  </button>
+                  {etf.isTradableViaLynx ? (
+                    <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full whitespace-nowrap ml-2">LYNX</span>
+                  ) : !showOnlyTradable && (
+                    <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-400 rounded-full whitespace-nowrap ml-2">Niet handelbaar</span>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                   <div><span className="text-gray-500">ISIN:</span> <span className="font-medium text-gray-300">{etf.isin}</span></div>
                   <div><span className="text-gray-500">Cat:</span> <span className="font-medium text-gray-300">{etf.categorie}</span></div>
@@ -4823,14 +4909,21 @@ useEffect(() => {
                     const priceData = etfPrices[etf.isin];
                     const isAdded = portfolioIsinSet.has(etf.isin);
                     return (
-                    <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
+                    <tr key={idx} className={`hover:bg-gray-800/30 transition-colors ${!etf.isTradableViaLynx ? 'opacity-75' : ''}`}>
                       <td className="px-4 py-3">
-                        <button
-                          onClick={() => setSelectedETF(etf)}
-                          className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline"
-                        >
-                          {etf.naam}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedETF(etf)}
+                            className={`${etf.isTradableViaLynx ? 'text-[#28EBCF] hover:text-[#20D4BA]' : 'text-gray-400'} font-medium text-left hover:underline`}
+                          >
+                            {etf.naam}
+                          </button>
+                          {etf.isTradableViaLynx ? (
+                            <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full whitespace-nowrap">LYNX</span>
+                          ) : !showOnlyTradable && (
+                            <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-400 rounded-full whitespace-nowrap">Niet handelbaar</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
                       <td className="px-4 py-3 text-sm text-gray-300">{etf.categorie}</td>
@@ -5368,25 +5461,50 @@ useEffect(() => {
             <div>
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Stap 1: Kies je risicoprofiel</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {Object.entries(premadePortfolios).map(([key, config]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      setSelectedProfile(key);
-                      setCustomBuildStep('categories');
-                    }}
-                    className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]"
-                  >
-                    <h4 className="font-bold text-base sm:text-lg mb-2 text-white">{config.name}</h4>
-                    <div className="text-xs sm:text-sm text-gray-400 mb-3">
-                      {Object.entries(config.allocation).map(([cat, pct]) => (
-                        <div key={cat}>{cat}: {pct}%</div>
-                      ))}
-                    </div>
-                    <div className="text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
-                  </button>
-                ))}
+                {Object.entries(premadePortfolios).map(([key, config]) => {
+                  const tradableCategories = getTradableCategories(etfs);
+                  const fullyTradable = isProfileFullyTradable(config.allocation, tradableCategories);
+                  const tradableCats = Object.keys(config.allocation).filter(cat => tradableCategories.includes(cat));
+                  const totalCats = Object.keys(config.allocation).length;
+
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setSelectedProfile(key);
+                        setCustomBuildStep('categories');
+                      }}
+                      className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border ${fullyTradable ? 'border-gray-800 hover:border-[#28EBCF]' : 'border-gray-800 hover:border-yellow-500/50'}`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-bold text-base sm:text-lg text-white">{config.name}</h4>
+                        {fullyTradable ? (
+                          <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">LYNX</span>
+                        ) : totalCats > 0 && (
+                          <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full" title="Niet alle categorieën zijn handelbaar via LYNX">
+                            {tradableCats.length}/{totalCats}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs sm:text-sm text-gray-400 mb-3">
+                        {Object.entries(config.allocation).map(([cat, pct]) => {
+                          const isCatTradable = tradableCategories.includes(cat);
+                          return (
+                            <div key={cat} className={isCatTradable ? 'text-gray-400' : 'text-gray-500'}>
+                              {cat}: {pct}%
+                              {!isCatTradable && <span className="text-yellow-500/70 ml-1">*</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                      <div className="text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                      {!fullyTradable && totalCats > 0 && (
+                        <div className="text-xs text-yellow-500/70 mt-2">* Geen handelbare ETF's beschikbaar</div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -5915,22 +6033,42 @@ useEffect(() => {
             <p className="text-center text-gray-400 mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {profiles.map(profile => (
-                <button
-                  key={profile.key}
-                  onClick={() => {
-                    setSelectedProfile(profile.key);
-                    setCategoriesCompleted({});
-                    setPortfolio([]);
-                    setCustomBuildStep('categories');
-                  }}
-                  className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 border-gray-800 hover:border-[#28EBCF] text-left"
-                >
-                  <div className="text-5xl mb-4">{profile.icon}</div>
-                  <h3 className="text-2xl font-bold mb-2 text-white">{profile.name}</h3>
-                  <p className="text-gray-400 text-sm">{profile.desc}</p>
-                </button>
-              ))}
+              {profiles.map(profile => {
+                const tradableCategories = getTradableCategories(etfs);
+                const config = premadePortfolios[profile.key];
+                const fullyTradable = isProfileFullyTradable(config.allocation, tradableCategories);
+                const tradableCats = Object.keys(config.allocation).filter(cat => tradableCategories.includes(cat));
+                const totalCats = Object.keys(config.allocation).length;
+
+                return (
+                  <button
+                    key={profile.key}
+                    onClick={() => {
+                      setSelectedProfile(profile.key);
+                      setCategoriesCompleted({});
+                      setPortfolio([]);
+                      setCustomBuildStep('categories');
+                    }}
+                    className={`bg-[#1A1B1F] rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 text-left ${fullyTradable ? 'border-gray-800 hover:border-[#28EBCF]' : 'border-gray-800 hover:border-yellow-500/50'}`}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-5xl">{profile.icon}</div>
+                      {fullyTradable ? (
+                        <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full font-medium">LYNX</span>
+                      ) : totalCats > 0 && (
+                        <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full font-medium" title="Niet alle categorieën zijn handelbaar via LYNX">
+                          {tradableCats.length}/{totalCats} handelbaar
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2 text-white">{profile.name}</h3>
+                    <p className="text-gray-400 text-sm">{profile.desc}</p>
+                    {!fullyTradable && totalCats > 0 && (
+                      <p className="text-xs text-yellow-500/70 mt-3">Sommige categorieën zijn niet handelbaar via LYNX</p>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -6061,8 +6199,10 @@ useEffect(() => {
         return null;
       }
 
-      // Get all ETFs in this category for filter options
-      const allCategoryETFs = etfs.filter(etf => etf.categorie === selectedCategory);
+      // Get all ETFs in this category - ONLY tradable via LYNX
+      const allCategoryETFs = etfs.filter(etf =>
+        etf.categorie === selectedCategory && etf.isTradableViaLynx
+      );
       const subcategories = [...new Set(allCategoryETFs.map(e => e.subcategorie))].filter(Boolean).sort();
       const currencies = [...new Set(allCategoryETFs.map(e => e['fund ccy']))].filter(Boolean).sort();
       const distributions = [...new Set(allCategoryETFs.map(e => e.distribution))].filter(Boolean).sort();
@@ -6139,8 +6279,11 @@ useEffect(() => {
 
           <div className="max-w-7xl mx-auto px-4 py-12">
             <h1 className="text-4xl font-bold text-center mb-4 text-white">Selecteer ETF's voor {selectedCategory}</h1>
-            <p className="text-center text-gray-400 mb-8">
+            <p className="text-center text-gray-400 mb-2">
               {selectedInCategory.length} ETF(s) geselecteerd (minimaal 1 vereist) • {categoryETFs.length} ETF(s) gevonden
+            </p>
+            <p className="text-center text-sm text-[#28EBCF]/70 mb-8">
+              Alleen ETF's die handelbaar zijn via LYNX worden getoond
             </p>
 
             {/* Filter Buttons */}
@@ -6242,52 +6385,74 @@ useEffect(() => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-4 mb-8">
-              {categoryETFs.map(etf => {
-                const isSelected = selectedInCategory.some(p => p.isin === etf.isin);
+            {categoryETFs.length === 0 ? (
+              <div className="bg-[#1A1B1F] rounded-xl shadow-lg p-12 text-center border border-gray-800 mb-8">
+                <div className="text-5xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-white mb-2">Geen handelbare ETF's gevonden</h3>
+                <p className="text-gray-400 mb-4">
+                  Er zijn momenteel geen ETF's in deze categorie die handelbaar zijn via LYNX.
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setCustomBuildStep('categories');
+                  }}
+                  className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all"
+                >
+                  ← Terug naar categorieën
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 mb-8">
+                {categoryETFs.map(etf => {
+                  const isSelected = selectedInCategory.some(p => p.isin === etf.isin);
 
-                return (
-                  <button
-                    key={etf.isin}
-                    onClick={(e) => handleETFToggle(etf, e)}
-                    className={`bg-[#1A1B1F] rounded-xl shadow p-6 transition-all text-left border-2 ${
-                      isSelected
-                        ? 'border-[#28EBCF] bg-[#28EBCF]/10'
-                        : 'border-gray-800 hover:border-gray-700'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-2 text-white">{etf.naam}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-400">ISIN:</span>
-                            <div className="font-medium text-gray-300">{etf.isin}</div>
+                  return (
+                    <button
+                      key={etf.isin}
+                      onClick={(e) => handleETFToggle(etf, e)}
+                      className={`bg-[#1A1B1F] rounded-xl shadow p-6 transition-all text-left border-2 ${
+                        isSelected
+                          ? 'border-[#28EBCF] bg-[#28EBCF]/10'
+                          : 'border-gray-800 hover:border-gray-700'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-bold text-lg text-white">{etf.naam}</h3>
+                            <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">LYNX</span>
                           </div>
-                          <div>
-                            <span className="text-gray-400">TER:</span>
-                            <div className="font-medium text-gray-300">{etf['ter p.a.']}</div>
-                          </div>
-                          <div>
-                            <span className="text-gray-400">Grootte:</span>
-                            <div className="font-medium text-gray-300">€{formatNumber(etf['fund size (in m €)'])}M</div>
-                          </div>
-                          <div>
-                            <span className="text-gray-400">2024:</span>
-                            <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                              {etf['2024']}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-400">ISIN:</span>
+                              <div className="font-medium text-gray-300">{etf.isin}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">TER:</span>
+                              <div className="font-medium text-gray-300">{etf['ter p.a.']}</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Grootte:</span>
+                              <div className="font-medium text-gray-300">€{formatNumber(etf['fund size (in m €)'])}M</div>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">2024:</span>
+                              <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                {etf['2024']}
+                              </div>
                             </div>
                           </div>
                         </div>
+                        <div className="ml-4">
+                          {isSelected && <div className="text-3xl">✅</div>}
+                        </div>
                       </div>
-                      <div className="ml-4">
-                        {isSelected && <div className="text-3xl">✅</div>}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {selectedInCategory.length > 0 && (
               <div className="text-center">
