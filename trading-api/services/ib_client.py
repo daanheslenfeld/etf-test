@@ -61,13 +61,22 @@ class ConnectionStatus:
 
 # =============================================================================
 # EU UCITS ETFs - Allowed for trading
+# Updated based on IB Gateway investigation (scripts/investigate_etfs.py)
+# Must stay in sync with frontend: src/data/tradableETFs.js
 # =============================================================================
 
 MVP_ETFS = [
-    {"symbol": "VUSA", "name": "Vanguard S&P 500 UCITS ETF", "conid": 128884495, "exchange": "AEB", "currency": "EUR"},
-    {"symbol": "IWDA", "name": "iShares Core MSCI World UCITS ETF", "conid": 100292038, "exchange": "AEB", "currency": "EUR"},
-    {"symbol": "CSPX", "name": "iShares Core S&P 500 UCITS ETF", "conid": 76023663, "exchange": "EBS", "currency": "USD"},
-    {"symbol": "IUSA", "name": "iShares S&P 500 UCITS ETF", "conid": 29651319, "exchange": "AEB", "currency": "EUR"},
+    # S&P 500 ETFs
+    {"symbol": "VUSA", "name": "Vanguard S&P 500 UCITS ETF", "conid": 128884495, "exchange": "AEB", "currency": "EUR", "isin": "IE00B3XXRP09"},
+    {"symbol": "CSPX", "name": "iShares Core S&P 500 UCITS ETF", "conid": 76023663, "exchange": "EBS", "currency": "USD", "isin": "IE00B5BMR087"},
+    {"symbol": "IUSA", "name": "iShares S&P 500 UCITS ETF", "conid": 29651319, "exchange": "AEB", "currency": "EUR", "isin": "IE0031442068"},
+    # World ETFs
+    {"symbol": "IWDA", "name": "iShares Core MSCI World UCITS ETF", "conid": 100292038, "exchange": "AEB", "currency": "EUR", "isin": "IE00B4L5Y983"},
+    {"symbol": "VWRL", "name": "Vanguard FTSE All-World UCITS ETF", "conid": 128831206, "exchange": "AEB", "currency": "EUR", "isin": "IE00B3RBWM25"},
+    {"symbol": "VWCE", "name": "Vanguard FTSE All-World UCITS ETF Acc", "conid": 375858281, "exchange": "AEB", "currency": "EUR", "isin": "IE00BK5BQT80"},
+    # Emerging Markets ETFs
+    {"symbol": "IEMM", "name": "iShares MSCI EM UCITS ETF", "conid": 37036647, "exchange": "AEB", "currency": "EUR", "isin": "IE00B0M63177"},
+    {"symbol": "EMIM", "name": "iShares Core MSCI EM IMI UCITS ETF", "conid": 153454120, "exchange": "AEB", "currency": "EUR", "isin": "IE00BKM4GZ66"},
 ]
 
 

@@ -8,7 +8,9 @@
  */
 
 // ISIN → Trading Metadata
+// Updated based on IB Gateway investigation (investigate_etfs.py)
 export const TRADABLE_ETFS = {
+  // === S&P 500 ETFs ===
   // Vanguard S&P 500 UCITS ETF (USD) Distributing
   'IE00B3XXRP09': {
     symbol: 'VUSA',
@@ -16,14 +18,6 @@ export const TRADABLE_ETFS = {
     exchange: 'AEB',
     currency: 'EUR',
     name: 'Vanguard S&P 500 UCITS ETF'
-  },
-  // iShares Core MSCI World UCITS ETF USD (Acc)
-  'IE00B4L5Y983': {
-    symbol: 'IWDA',
-    conid: 100292038,
-    exchange: 'AEB',
-    currency: 'EUR',
-    name: 'iShares Core MSCI World UCITS ETF'
   },
   // iShares Core S&P 500 UCITS ETF USD (Acc)
   'IE00B5BMR087': {
@@ -40,6 +34,50 @@ export const TRADABLE_ETFS = {
     exchange: 'AEB',
     currency: 'EUR',
     name: 'iShares S&P 500 UCITS ETF'
+  },
+
+  // === World ETFs ===
+  // iShares Core MSCI World UCITS ETF USD (Acc)
+  'IE00B4L5Y983': {
+    symbol: 'IWDA',
+    conid: 100292038,
+    exchange: 'AEB',
+    currency: 'EUR',
+    name: 'iShares Core MSCI World UCITS ETF'
+  },
+  // Vanguard FTSE All-World UCITS ETF (Dist)
+  'IE00B3RBWM25': {
+    symbol: 'VWRL',
+    conid: 128831206,
+    exchange: 'AEB',
+    currency: 'EUR',
+    name: 'Vanguard FTSE All-World UCITS ETF'
+  },
+  // Vanguard FTSE All-World UCITS ETF (Acc)
+  'IE00BK5BQT80': {
+    symbol: 'VWCE',
+    conid: 375858281,
+    exchange: 'AEB',
+    currency: 'EUR',
+    name: 'Vanguard FTSE All-World UCITS ETF Acc'
+  },
+
+  // === Emerging Markets ETFs ===
+  // iShares MSCI EM UCITS ETF (Dist)
+  'IE00B0M63177': {
+    symbol: 'IEMM',
+    conid: 37036647,
+    exchange: 'AEB',
+    currency: 'EUR',
+    name: 'iShares MSCI EM UCITS ETF'
+  },
+  // iShares Core MSCI EM IMI UCITS ETF (Acc)
+  'IE00BKM4GZ66': {
+    symbol: 'EMIM',
+    conid: 153454120,
+    exchange: 'AEB',
+    currency: 'EUR',
+    name: 'iShares Core MSCI EM IMI UCITS ETF'
   },
 };
 
