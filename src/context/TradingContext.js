@@ -19,6 +19,10 @@ const initialState = {
   etfs: [],
   quotes: {},
 
+  // Market data: { [symbol]: { bid, ask, last, spread, midPrice, delayed, timestamp } }
+  marketData: {},
+  marketDataLoading: false,
+
   // Orders
   orders: [],
   orderBasket: [],
@@ -47,6 +51,8 @@ const ACTIONS = {
   SET_EXECUTION_RESULTS: 'SET_EXECUTION_RESULTS',
   UPDATE_ORDER_STATUS: 'UPDATE_ORDER_STATUS',
   SET_ACCOUNT_SUMMARY: 'SET_ACCOUNT_SUMMARY',
+  SET_MARKET_DATA: 'SET_MARKET_DATA',
+  SET_MARKET_DATA_LOADING: 'SET_MARKET_DATA_LOADING',
 };
 
 // Reducer
@@ -82,6 +88,10 @@ function tradingReducer(state, action) {
       return { ...state, executionResults: state.executionResults.map(r => r.id === action.payload.id ? { ...r, ...action.payload.updates } : r) };
     case ACTIONS.SET_ACCOUNT_SUMMARY:
       return { ...state, cashBalance: action.payload.cashBalance, portfolioValue: action.payload.portfolioValue, todayPnL: action.payload.todayPnL };
+    case ACTIONS.SET_MARKET_DATA:
+      return { ...state, marketData: action.payload };
+    case ACTIONS.SET_MARKET_DATA_LOADING:
+      return { ...state, marketDataLoading: action.payload };
     default:
       return state;
   }
@@ -184,6 +194,55 @@ export function TradingProvider({ children }) {
       console.error('Error fetching orders:', error);
     }
   }, []);
+
+  // API: Subscribe to all market data
+  const subscribeToMarketData = useCallback(async () => {
+    try {
+      await fetch(`${TRADING_API_URL}/trading/marketdata/subscribe/all`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (error) {
+      console.error('Error subscribing to market data:', error);
+    }
+  }, []);
+
+  // API: Fetch all market data
+  const fetchMarketData = useCallback(async () => {
+    try {
+      dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: true });
+      const res = await fetch(`${TRADING_API_URL}/trading/marketdata`);
+      if (res.ok) {
+        const data = await res.json();
+        // Convert array to object keyed by symbol
+        const marketDataBySymbol = {};
+        (data.data || []).forEach(item => {
+          marketDataBySymbol[item.symbol] = {
+            conid: item.conid,
+            bid: item.bid,
+            ask: item.ask,
+            last: item.last,
+            bidSize: item.bidSize,
+            askSize: item.askSize,
+            spread: item.spread,
+            midPrice: item.midPrice,
+            delayed: item.delayed,
+            timestamp: item.timestamp,
+          };
+        });
+        dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: marketDataBySymbol });
+      }
+    } catch (error) {
+      console.error('Error fetching market data:', error);
+    } finally {
+      dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: false });
+    }
+  }, []);
+
+  // Get market data for a specific symbol
+  const getMarketDataForSymbol = useCallback((symbol) => {
+    return state.marketData[symbol] || null;
+  }, [state.marketData]);
 
   // API: Place single order
   const placeOrder = useCallback(async (order) => {
@@ -293,22 +352,26 @@ export function TradingProvider({ children }) {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
       await checkConnection();
       await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
+      // Subscribe to market data after connection
+      await subscribeToMarketData();
+      await fetchMarketData();
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
-  }, [checkConnection, fetchETFs, fetchPositions, fetchOrders]);
+  }, [checkConnection, fetchETFs, fetchPositions, fetchOrders, subscribeToMarketData, fetchMarketData]);
 
-  // Polling for updates
+  // Polling for updates (positions, orders, market data)
   useEffect(() => {
     if (!state.connected) return;
 
     const interval = setInterval(() => {
       fetchPositions();
       fetchOrders();
-    }, 10000);
+      fetchMarketData();
+    }, 5000); // Poll every 5 seconds for market data
 
     return () => clearInterval(interval);
-  }, [state.connected, fetchPositions, fetchOrders]);
+  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData]);
 
   const value = {
     ...state,
@@ -316,6 +379,9 @@ export function TradingProvider({ children }) {
     fetchETFs,
     fetchPositions,
     fetchOrders,
+    fetchMarketData,
+    subscribeToMarketData,
+    getMarketDataForSymbol,
     placeOrder,
     executeBasket,
     addToBasket,

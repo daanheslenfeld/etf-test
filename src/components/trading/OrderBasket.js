@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { Trash2, ShoppingCart, AlertTriangle } from 'lucide-react';
+import { Trash2, ShoppingCart, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 
 const ORDER_TYPE_LABELS = {
   'MKT': 'Market',
@@ -10,16 +10,46 @@ const ORDER_TYPE_LABELS = {
 };
 
 export default function OrderBasket({ onExecute }) {
-  const { orderBasket, removeFromBasket, clearBasket, isExecuting } = useTrading();
+  const { orderBasket, removeFromBasket, clearBasket, isExecuting, marketData } = useTrading();
 
   const formatPrice = (price) => {
     if (!price) return '-';
     return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(price);
   };
 
+  // Get estimated price for an order (use limit price, or market price)
+  const getEstimatedPrice = (order) => {
+    if (order.limitPrice) return order.limitPrice;
+    const md = marketData[order.symbol];
+    if (!md) return null;
+    // For market orders, use ask for buy, bid for sell
+    return order.side === 'BUY' ? md.ask : md.bid;
+  };
+
+  // Calculate estimated cash impact
+  const calculateCashImpact = () => {
+    let totalBuy = 0;
+    let totalSell = 0;
+
+    orderBasket.forEach(order => {
+      const price = getEstimatedPrice(order);
+      if (price) {
+        const value = price * order.quantity;
+        if (order.side === 'BUY') {
+          totalBuy += value;
+        } else {
+          totalSell += value;
+        }
+      }
+    });
+
+    return { totalBuy, totalSell, net: totalSell - totalBuy };
+  };
+
   // Calculate basket summary
   const buyOrders = orderBasket.filter(o => o.side === 'BUY');
   const sellOrders = orderBasket.filter(o => o.side === 'SELL');
+  const cashImpact = calculateCashImpact();
 
   return (
     <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
@@ -55,40 +85,68 @@ export default function OrderBasket({ onExecute }) {
       ) : (
         <>
           <div className="max-h-64 overflow-y-auto divide-y divide-gray-800">
-            {orderBasket.map((order) => (
-              <div key={order.id} className="p-4 hover:bg-gray-800/30 transition-colors">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                        order.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
-                      }`}>
-                        {order.side}
-                      </span>
-                      <span className="font-medium text-white">{order.symbol}</span>
-                      <span className="text-gray-400">x{order.quantity}</span>
+            {orderBasket.map((order) => {
+              const md = marketData[order.symbol];
+              const estimatedPrice = getEstimatedPrice(order);
+              const estimatedValue = estimatedPrice ? estimatedPrice * order.quantity : null;
+
+              return (
+                <div key={order.id} className="p-4 hover:bg-gray-800/30 transition-colors">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                          order.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                        }`}>
+                          {order.side}
+                        </span>
+                        <span className="font-medium text-white">{order.symbol}</span>
+                        <span className="text-gray-400">x{order.quantity}</span>
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {ORDER_TYPE_LABELS[order.orderType] || order.orderType}
+                        {order.limitPrice && ` @ ${formatPrice(order.limitPrice)}`}
+                        {order.stopPrice && ` (Stop: ${formatPrice(order.stopPrice)})`}
+                      </div>
+                      {/* Market data for this symbol */}
+                      {md && order.orderType === 'MKT' && (
+                        <div className="flex items-center gap-3 mt-2 text-xs">
+                          <span className="text-green-400">Bid: {formatPrice(md.bid)}</span>
+                          <span className="text-gray-500">|</span>
+                          <span className="text-red-400">Ask: {formatPrice(md.ask)}</span>
+                          {md.spread && (
+                            <>
+                              <span className="text-gray-500">|</span>
+                              <span className="text-gray-400">Spread: {formatPrice(md.spread)}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {/* Estimated value */}
+                      {estimatedValue && (
+                        <div className="mt-1 text-xs text-gray-400">
+                          Est. value: <span className={order.side === 'BUY' ? 'text-red-400' : 'text-green-400'}>
+                            {order.side === 'BUY' ? '-' : '+'}{formatPrice(estimatedValue)}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <div className="text-sm text-gray-500 mt-1">
-                      {ORDER_TYPE_LABELS[order.orderType] || order.orderType}
-                      {order.limitPrice && ` @ ${formatPrice(order.limitPrice)}`}
-                      {order.stopPrice && ` (Stop: ${formatPrice(order.stopPrice)})`}
-                    </div>
+                    <button
+                      onClick={() => removeFromBasket(order.id)}
+                      disabled={isExecuting}
+                      className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeFromBasket(order.id)}
-                    disabled={isExecuting}
-                    className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Summary */}
           <div className="p-4 border-t border-gray-700 bg-gray-800/30">
-            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+            <div className="grid grid-cols-2 gap-4 text-sm mb-3">
               <div>
                 <span className="text-gray-400">Buy Orders:</span>
                 <span className="text-green-400 font-medium ml-2">{buyOrders.length}</span>
@@ -98,6 +156,33 @@ export default function OrderBasket({ onExecute }) {
                 <span className="text-red-400 font-medium ml-2">{sellOrders.length}</span>
               </div>
             </div>
+
+            {/* Cash Impact */}
+            {(cashImpact.totalBuy > 0 || cashImpact.totalSell > 0) && (
+              <div className="bg-gray-900/50 rounded-lg p-3 mb-4 text-sm">
+                <div className="text-gray-400 mb-2">Estimated Cash Impact</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {cashImpact.totalBuy > 0 && (
+                    <div className="flex items-center gap-1">
+                      <TrendingDown className="w-3 h-3 text-red-400" />
+                      <span className="text-red-400">-{formatPrice(cashImpact.totalBuy)}</span>
+                    </div>
+                  )}
+                  {cashImpact.totalSell > 0 && (
+                    <div className="flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3 text-green-400" />
+                      <span className="text-green-400">+{formatPrice(cashImpact.totalSell)}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-2 pt-2 border-t border-gray-700">
+                  <span className="text-gray-400">Net:</span>
+                  <span className={`ml-2 font-medium ${cashImpact.net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {cashImpact.net >= 0 ? '+' : ''}{formatPrice(cashImpact.net)}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Execute Button */}
             <button

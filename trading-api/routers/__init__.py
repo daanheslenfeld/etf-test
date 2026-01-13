@@ -5,3 +5,4 @@ from .orders import router as orders_router
 from .positions import router as positions_router
 from .account import router as account_router
 from .health import router as health_router
+from .marketdata import router as marketdata_router

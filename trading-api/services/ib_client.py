@@ -117,6 +117,11 @@ class IBClient:
         self._positions_cache: dict[str, list] = {}
         self._positions_subscribed = False
 
+        # Market data cache: {conid: {bid, ask, last, bidSize, askSize, volume, timestamp, delayed}}
+        self._market_data_cache: dict[int, dict] = {}
+        self._market_data_tickers: dict[int, Any] = {}  # Track active ticker subscriptions
+        self._market_data_contracts: dict[int, Contract] = {}
+
         # Callbacks
         self._on_connect_callbacks: list[Callable] = []
         self._on_disconnect_callbacks: list[Callable] = []
@@ -674,6 +679,158 @@ class IBClient:
 
         return results
 
+    # =========================================================================
+    # Streaming Market Data
+    # =========================================================================
+
+    def _on_ticker_update(self, ticker):
+        """Handle ticker update from IB."""
+        if not ticker.contract:
+            return
+
+        conid = ticker.contract.conId
+        if conid not in self._market_data_cache:
+            return
+
+        # Check if data is delayed (marketDataType 3 = delayed, 4 = delayed-frozen)
+        delayed = getattr(ticker, 'marketDataType', 1) in (3, 4)
+
+        # Update cache with latest values
+        self._market_data_cache[conid].update({
+            "bid": ticker.bid if ticker.bid and ticker.bid > 0 else self._market_data_cache[conid].get("bid"),
+            "ask": ticker.ask if ticker.ask and ticker.ask > 0 else self._market_data_cache[conid].get("ask"),
+            "last": ticker.last if ticker.last and ticker.last > 0 else self._market_data_cache[conid].get("last"),
+            "bidSize": ticker.bidSize if ticker.bidSize else self._market_data_cache[conid].get("bidSize"),
+            "askSize": ticker.askSize if ticker.askSize else self._market_data_cache[conid].get("askSize"),
+            "volume": ticker.volume if ticker.volume else self._market_data_cache[conid].get("volume"),
+            "timestamp": datetime.now().isoformat(),
+            "delayed": delayed,
+        })
+
+    async def subscribe_market_data(self, conid: int) -> bool:
+        """Subscribe to streaming market data for a contract."""
+        if not self.is_connected():
+            return False
+
+        # Already subscribed
+        if conid in self._market_data_tickers:
+            return True
+
+        # Find ETF info
+        etf_info = next((e for e in MVP_ETFS if e["conid"] == conid), None)
+        if not etf_info:
+            logger.warning(f"Cannot subscribe to unknown conid: {conid}")
+            return False
+
+        try:
+            # Create contract
+            contract = Stock(etf_info["symbol"], "SMART", etf_info["currency"])
+            contract.conId = conid
+
+            # Initialize cache entry
+            self._market_data_cache[conid] = {
+                "conid": conid,
+                "symbol": etf_info["symbol"],
+                "bid": None,
+                "ask": None,
+                "last": None,
+                "bidSize": None,
+                "askSize": None,
+                "volume": None,
+                "timestamp": None,
+                "delayed": False,
+            }
+
+            # Request streaming market data (empty string = default tick types)
+            ticker = self._ib.reqMktData(contract, genericTickList="", snapshot=False, regulatorySnapshot=False)
+
+            # Register update callback
+            ticker.updateEvent += self._on_ticker_update
+
+            # Store references
+            self._market_data_tickers[conid] = ticker
+            self._market_data_contracts[conid] = contract
+
+            logger.info(f"Subscribed to market data for {etf_info['symbol']} (conid: {conid})")
+            return True
+
+        except Exception as e:
+            logger.error(f"Error subscribing to market data for conid {conid}: {e}")
+            return False
+
+    async def unsubscribe_market_data(self, conid: int) -> bool:
+        """Unsubscribe from market data for a contract."""
+        if conid not in self._market_data_tickers:
+            return True
+
+        try:
+            ticker = self._market_data_tickers[conid]
+            contract = self._market_data_contracts.get(conid)
+
+            if contract and self._ib and self._ib.isConnected():
+                self._ib.cancelMktData(contract)
+
+            # Clean up
+            del self._market_data_tickers[conid]
+            if conid in self._market_data_contracts:
+                del self._market_data_contracts[conid]
+            if conid in self._market_data_cache:
+                del self._market_data_cache[conid]
+
+            logger.info(f"Unsubscribed from market data for conid: {conid}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Error unsubscribing from market data: {e}")
+            return False
+
+    async def subscribe_all_etfs(self) -> int:
+        """Subscribe to market data for all MVP ETFs. Returns count of successful subscriptions."""
+        count = 0
+        for etf in MVP_ETFS:
+            if await self.subscribe_market_data(etf["conid"]):
+                count += 1
+            await asyncio.sleep(0.1)  # Small delay to avoid overwhelming IB
+        return count
+
+    def unsubscribe_all_market_data(self):
+        """Unsubscribe from all market data."""
+        for conid in list(self._market_data_tickers.keys()):
+            try:
+                contract = self._market_data_contracts.get(conid)
+                if contract and self._ib and self._ib.isConnected():
+                    self._ib.cancelMktData(contract)
+            except Exception:
+                pass
+
+        self._market_data_tickers.clear()
+        self._market_data_contracts.clear()
+        self._market_data_cache.clear()
+        logger.info("Unsubscribed from all market data")
+
+    def get_market_data(self, conid: int) -> Optional[dict]:
+        """Get cached market data for a contract."""
+        return self._market_data_cache.get(conid)
+
+    def get_all_market_data(self) -> dict[int, dict]:
+        """Get all cached market data."""
+        return self._market_data_cache.copy()
+
+    async def get_market_data_for_symbol(self, symbol: str) -> Optional[dict]:
+        """Get market data by symbol. Subscribes if not already subscribed."""
+        etf_info = next((e for e in MVP_ETFS if e["symbol"].upper() == symbol.upper()), None)
+        if not etf_info:
+            return None
+
+        conid = etf_info["conid"]
+
+        # Subscribe if not already
+        if conid not in self._market_data_tickers:
+            await self.subscribe_market_data(conid)
+            await asyncio.sleep(0.5)  # Wait for initial data
+
+        return self.get_market_data(conid)
+
     async def confirm_order(self, reply_id: str, confirmed: bool = True) -> dict:
         """Order confirmation (TWS protocol doesn't need this)."""
         return {"confirmed": confirmed, "message": "TWS protocol does not require confirmation"}
@@ -697,6 +854,19 @@ class IBClient:
     def get_mvp_etfs(self) -> list[dict]:
         """Get allowed ETF list."""
         return MVP_ETFS.copy()
+
+    def parse_quote(self, raw: dict) -> dict:
+        """Parse raw quote data into standardized format."""
+        return {
+            "conid": raw.get("conid"),
+            "symbol": raw.get("55") or raw.get("symbol"),
+            "last_price": raw.get("31") or raw.get("last"),
+            "bid": raw.get("84") or raw.get("bid"),
+            "ask": raw.get("86") or raw.get("ask"),
+            "bid_size": raw.get("88") or raw.get("bidSize"),
+            "ask_size": raw.get("85") or raw.get("askSize"),
+            "volume": raw.get("87") or raw.get("volume"),
+        }
 
     def create_etf_contract(self, symbol: str, exchange: str = "SMART", currency: str = "USD") -> Stock:
         """Create ETF contract."""
