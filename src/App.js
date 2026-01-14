@@ -952,7 +952,6 @@ const ETFPortal = () => {
     'mainDashboard',
     'welcome',
     'dashboard',
-    'etfDatabase',
     'portfolioOverview',
     'financialNews',
     'customerDatabase',
@@ -1493,11 +1492,6 @@ useEffect(() => {
    useEffect(() => {
     let filtered = [...etfs];
 
-    // Apply tradability filter (only in ETF Database, not in portfolio builder)
-    if (showOnlyTradable && currentPage === 'etfDatabase') {
-      filtered = filtered.filter(etf => etf.isTradableViaLynx);
-    }
-
     // Apply main category filter
     if (selectedMainCategory) {
       filtered = filtered.filter(etf => etf.categorie === selectedMainCategory);
@@ -1572,16 +1566,6 @@ useEffect(() => {
     localStorage.setItem('portfolio', JSON.stringify(portfolio));
   }, [portfolio]);
 
-  // Reset ETF database filters when entering the page
-  useEffect(() => {
-    if (currentPage === 'etfDatabase') {
-      setFilterStep('category');
-      setSelectedMainCategory('');
-      setActiveFilters({});
-      setCurrentFilter('');
-    }
-  }, [currentPage]);
-
   useEffect(() => {
     if (portfolioType) {
       localStorage.setItem('portfolioType', portfolioType);
@@ -1601,13 +1585,6 @@ useEffect(() => {
   useEffect(() => {
     localStorage.setItem('categoriesCompleted', JSON.stringify(categoriesCompleted));
   }, [categoriesCompleted]);
-
-  // Fetch ETF prices when entering ETF Database page
-  useEffect(() => {
-    if (currentPage === 'etfDatabase' && user) {
-      fetchAllETFPrices();
-    }
-  }, [currentPage]);
 
   // Helper function to calculate current portfolio value
   const calculateCurrentPortfolioValue = (details) => {
@@ -2342,7 +2319,7 @@ useEffect(() => {
             
             <div className="flex gap-4 pt-4 border-t">
               <button
-                onClick={() => setCurrentPage('etfDatabase')}
+                onClick={() => setCurrentPage('portfolioBuilder')}
                 className="flex-1 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium"
               >
                 + ETF Toevoegen
@@ -2442,69 +2419,7 @@ useEffect(() => {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-            <button
-              onClick={() => setCurrentPage('etfDatabase')}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
-            >
-              <div className="text-3xl sm:text-4xl mb-3">📊</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">ETF Database</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Ontdek en filter alle beschikbare ETF's
-              </p>
-            </button>
-
-            <button
-              onClick={() => {
-                setPortfolio([]);
-                setSelectedProfile(null);
-                setPortfolioType('custom');
-                setCurrentPage('customPortfolioBuilder');
-              }}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
-            >
-              <div className="text-3xl sm:text-4xl mb-3">🔧</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Zelf Samenstellen</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Bouw je eigen portfolio stap voor stap
-              </p>
-            </button>
-
-            <button
-              onClick={() => {
-                setPortfolioType('premade');
-                setCurrentPage('portfolioBuilder');
-              }}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
-            >
-              <div className="text-3xl sm:text-4xl mb-3">✨</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Kies uit onze kant-en-klare portfolio's
-              </p>
-            </button>
-          </div>
-        </div>
-
-        {/* Financiële Planning Section */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <h2 className="text-xl font-bold text-white">Financiële Planning</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <button
-              onClick={() => setCurrentPage('incomeCalculator')}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
-            >
-              <div className="text-3xl sm:text-4xl mb-3">💰</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Inkomen Calculator</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Bereken je toekomstige inkomen en vermogensopbouw
-              </p>
-            </button>
             {(() => {
               const tradableInPortfolio = portfolio.filter(p => p.isTradableViaLynx).length;
               const totalInPortfolio = portfolio.length;
@@ -2541,6 +2456,42 @@ useEffect(() => {
                 </button>
               );
             })()}
+
+            <button
+              onClick={() => {
+                setPortfolioType('premade');
+                setCurrentPage('portfolioBuilder');
+              }}
+              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+            >
+              <div className="text-3xl sm:text-4xl mb-3">✨</div>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
+              <p className="text-xs sm:text-sm text-gray-400">
+                Kies uit onze kant-en-klare portfolio's
+              </p>
+            </button>
+          </div>
+        </div>
+
+        {/* Financiële Planning Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            <h2 className="text-xl font-bold text-white">Financiële Planning</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <button
+              onClick={() => setCurrentPage('incomeCalculator')}
+              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+            >
+              <div className="text-3xl sm:text-4xl mb-3">💰</div>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Inkomen Calculator</h3>
+              <p className="text-xs sm:text-sm text-gray-400">
+                Bereken je toekomstige inkomen en vermogensopbouw
+              </p>
+            </button>
           </div>
         </div>
 
@@ -5872,7 +5823,6 @@ useEffect(() => {
               <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
             </button>
             <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('etfDatabase')} className="text-gray-300 hover:text-[#28EBCF]">ETF Database</button>
               <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-300 hover:text-[#28EBCF]">Portfolio Samenstellen</button>
               <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#28EBCF] font-medium">Portfolio Overzicht</button>
               <div className="text-sm text-gray-400">{user?.name}</div>
@@ -7112,7 +7062,6 @@ useEffect(() => {
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
                 <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
                 <button
                   onClick={handleLogout}
@@ -7671,8 +7620,8 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     setShowEditChoice(false);
-                    setCustomBuildStep('profile');
-                    setCurrentPage('customPortfolioBuilder');
+                    setPortfolioType('premade');
+                    setCurrentPage('portfolioBuilder');
                   }}
                   className="bg-[#1A1B1F] border-2 border-gray-700 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all"
                 >
@@ -8235,7 +8184,6 @@ useEffect(() => {
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
                 <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
                 <button
                   onClick={handleLogout}
@@ -8262,7 +8210,7 @@ useEffect(() => {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             <button
               onClick={() => setCurrentPage('dashboard')}
               className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-3 text-left transition-all group border border-[#28EBCF]/50"
@@ -8272,18 +8220,6 @@ useEffect(() => {
               <p className="text-xs text-gray-800">Bekijk en beheer je beleggingen</p>
               <div className="mt-2 text-xs text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Ga naar dashboard →
-              </div>
-            </button>
-
-            <button
-              onClick={() => setCurrentPage('etfDatabase')}
-              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
-            >
-              <div className="text-2xl mb-1.5">🔍</div>
-              <h3 className="text-base font-bold text-white mb-1">ETF Database</h3>
-              <p className="text-xs text-gray-400">Ontdek nieuwe beleggingsmogelijkheden</p>
-              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Verken ETFs →
               </div>
             </button>
 
@@ -8562,7 +8498,6 @@ useEffect(() => {
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
                 <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <button onClick={() => setCurrentPage('etfDatabase')} className="hidden md:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">ETFs</button>
                 <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
                 <button onClick={handleLogout} className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base">
                   Uitloggen
@@ -10524,8 +10459,6 @@ useEffect(() => {
       {currentPage === 'emailVerificationPending' && <EmailVerificationPendingPage />}
       {currentPage === 'verify-email' && <EmailVerifyPage />}
       {currentPage === 'mainDashboard' && <MainDashboard />}
-      {currentPage === 'etfDatabase' && <ETFDatabasePage />}
-      {currentPage === 'customPortfolioBuilder' && <CustomPortfolioBuilder />}
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
