@@ -1,6 +1,38 @@
-import React, { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
 
 const TRADING_API_URL = 'http://localhost:8002';
+
+// Cache keys for localStorage
+const CACHE_KEYS = {
+  MARKET_DATA: 'trading_cache_marketData',
+  POSITIONS: 'trading_cache_positions',
+  ACCOUNT_SUMMARY: 'trading_cache_accountSummary',
+};
+
+// Cache helper functions
+const saveToCache = (key, data) => {
+  try {
+    const cacheEntry = {
+      data,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(key, JSON.stringify(cacheEntry));
+  } catch (e) {
+    console.warn('Failed to save to cache:', e);
+  }
+};
+
+const loadFromCache = (key) => {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn('Failed to load from cache:', e);
+  }
+  return null;
+};
 
 // Initial state
 const initialState = {
@@ -32,6 +64,11 @@ const initialState = {
   error: null,
   isExecuting: false,
   executionResults: [],
+
+  // Cache state
+  isDataStale: false,
+  lastMarketDataUpdate: null,
+  lastPositionsUpdate: null,
 };
 
 // Action types
@@ -53,6 +90,9 @@ const ACTIONS = {
   SET_ACCOUNT_SUMMARY: 'SET_ACCOUNT_SUMMARY',
   SET_MARKET_DATA: 'SET_MARKET_DATA',
   SET_MARKET_DATA_LOADING: 'SET_MARKET_DATA_LOADING',
+  SET_DATA_STALE: 'SET_DATA_STALE',
+  SET_LAST_MARKET_DATA_UPDATE: 'SET_LAST_MARKET_DATA_UPDATE',
+  SET_LAST_POSITIONS_UPDATE: 'SET_LAST_POSITIONS_UPDATE',
 };
 
 // Reducer
@@ -92,6 +132,12 @@ function tradingReducer(state, action) {
       return { ...state, marketData: action.payload };
     case ACTIONS.SET_MARKET_DATA_LOADING:
       return { ...state, marketDataLoading: action.payload };
+    case ACTIONS.SET_DATA_STALE:
+      return { ...state, isDataStale: action.payload };
+    case ACTIONS.SET_LAST_MARKET_DATA_UPDATE:
+      return { ...state, lastMarketDataUpdate: action.payload };
+    case ACTIONS.SET_LAST_POSITIONS_UPDATE:
+      return { ...state, lastPositionsUpdate: action.payload };
     default:
       return state;
   }
@@ -159,26 +205,45 @@ export function TradingProvider({ children }) {
     }
   }, []);
 
-  // API: Fetch positions
+  // API: Fetch positions with caching
   const fetchPositions = useCallback(async () => {
     try {
       const res = await fetch(`${TRADING_API_URL}/trading/positions`);
       if (res.ok) {
         const data = await res.json();
-        dispatch({ type: ACTIONS.SET_POSITIONS, payload: data.positions || [] });
+        const positions = data.positions || [];
+
+        dispatch({ type: ACTIONS.SET_POSITIONS, payload: positions });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
+        dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: Date.now() });
 
         // Calculate totals
-        const positions = data.positions || [];
         const totalValue = positions.reduce((sum, p) => sum + (parseFloat(p.market_value) || 0), 0);
         const totalPnL = positions.reduce((sum, p) => sum + (parseFloat(p.unrealized_pnl) || 0), 0);
+        const accountSummary = { portfolioValue: totalValue, todayPnL: totalPnL, cashBalance: 0 };
 
-        dispatch({
-          type: ACTIONS.SET_ACCOUNT_SUMMARY,
-          payload: { portfolioValue: totalValue, todayPnL: totalPnL, cashBalance: 0 }
-        });
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: accountSummary });
+
+        // Save to cache
+        saveToCache(CACHE_KEYS.POSITIONS, positions);
+        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, accountSummary);
+      } else {
+        throw new Error('API returned error');
       }
     } catch (error) {
       console.error('Error fetching positions:', error);
+      // Load from cache on failure
+      const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
+      const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+
+      if (cachedPositions?.data) {
+        dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
+        dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+      }
+      if (cachedSummary?.data) {
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+      }
     }
   }, []);
 
@@ -207,7 +272,7 @@ export function TradingProvider({ children }) {
     }
   }, []);
 
-  // API: Fetch all market data
+  // API: Fetch all market data with caching
   const fetchMarketData = useCallback(async () => {
     try {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: true });
@@ -231,9 +296,23 @@ export function TradingProvider({ children }) {
           };
         });
         dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: marketDataBySymbol });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
+        dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: Date.now() });
+
+        // Save to cache
+        saveToCache(CACHE_KEYS.MARKET_DATA, marketDataBySymbol);
+      } else {
+        throw new Error('API returned error');
       }
     } catch (error) {
       console.error('Error fetching market data:', error);
+      // Load from cache on failure
+      const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
+      if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
+        dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
+        dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+      }
     } finally {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: false });
     }
@@ -346,32 +425,60 @@ export function TradingProvider({ children }) {
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: [] });
   }, []);
 
-  // Initial load
+  // Initial load - load cache first, then fetch fresh data
   useEffect(() => {
     const init = async () => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
-      await checkConnection();
+
+      // Load cached data immediately for instant display
+      const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
+      const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
+      const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+
+      if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
+        dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
+        dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
+      }
+      if (cachedPositions?.data) {
+        dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
+        dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+      }
+      if (cachedSummary?.data) {
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+      }
+
+      // Then try to fetch fresh data
+      const connected = await checkConnection();
       await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
       // Subscribe to market data after connection
       await subscribeToMarketData();
       await fetchMarketData();
+
+      // If we loaded cache but couldn't connect, mark as stale
+      if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+      }
+
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
   }, [checkConnection, fetchETFs, fetchPositions, fetchOrders, subscribeToMarketData, fetchMarketData]);
 
   // Polling for updates (positions, orders, market data)
+  // Continue polling even when disconnected to update cache and detect reconnection
   useEffect(() => {
-    if (!state.connected) return;
-
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
+      // Try to check connection periodically
+      if (!state.connected) {
+        await checkConnection();
+      }
       fetchPositions();
       fetchOrders();
       fetchMarketData();
     }, 5000); // Poll every 5 seconds for market data
 
     return () => clearInterval(interval);
-  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData]);
+  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
 
   const value = {
     ...state,

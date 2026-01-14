@@ -6,7 +6,19 @@ import OrderBasket from './OrderBasket';
 import OrderStatus from './OrderStatus';
 import OrderHistory from './OrderHistory';
 import ConfirmationModal from './ConfirmationModal';
-import { ArrowLeft, Wifi, WifiOff, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Wifi, WifiOff, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
+
+// Helper to format time ago
+const formatTimeAgo = (timestamp) => {
+  if (!timestamp) return '';
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
 
 function TradingDashboardContent({ onBack }) {
   const {
@@ -23,6 +35,8 @@ function TradingDashboardContent({ onBack }) {
     fetchETFs,
     fetchPositions,
     fetchOrders,
+    isDataStale,
+    lastMarketDataUpdate,
   } = useTrading();
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -80,6 +94,16 @@ function TradingDashboardContent({ onBack }) {
                 {tradingMode === 'LIVE' ? 'LIVE' : 'PAPER'}
               </div>
 
+              {/* Stale Data Indicator */}
+              {isDataStale && (
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-orange-600/20 border border-orange-600/50 rounded-full">
+                  <Clock className="w-4 h-4 text-orange-400" />
+                  <span className="text-xs text-orange-400 hidden sm:inline">
+                    Cached {formatTimeAgo(lastMarketDataUpdate)}
+                  </span>
+                </div>
+              )}
+
               {/* Connection Status */}
               {connected ? (
                 <div className="flex items-center gap-2 text-green-400">
@@ -108,6 +132,30 @@ function TradingDashboardContent({ onBack }) {
           </div>
         )}
 
+        {/* Stale Data Banner */}
+        {isDataStale && (
+          <div className="bg-orange-900/20 border border-orange-600/50 rounded-xl p-4 mb-6">
+            <div className="flex items-center gap-3">
+              <Clock className="w-5 h-5 text-orange-400 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-orange-400 font-medium">
+                  Showing cached data from {formatTimeAgo(lastMarketDataUpdate)}
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Live data unavailable. Prices and positions may be outdated.
+                </p>
+              </div>
+              <button
+                onClick={handleRetryConnection}
+                className="px-3 py-1.5 bg-orange-600/30 text-orange-400 rounded-lg hover:bg-orange-600/50 text-sm flex items-center gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Refresh
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Connection Warning */}
         {!connected && (
           <div className="bg-orange-900/30 border border-orange-600 rounded-xl p-6 mb-8">
@@ -116,7 +164,7 @@ function TradingDashboardContent({ onBack }) {
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-orange-400 mb-2">IB Gateway Not Connected</h2>
                 <p className="text-gray-300 mb-4">
-                  Cannot connect to IB Gateway. Please ensure:
+                  {isDataStale ? 'Displaying cached market data. ' : ''}Cannot connect to IB Gateway. Please ensure:
                 </p>
                 <ul className="text-gray-400 text-sm list-disc list-inside space-y-1 mb-4">
                   <li>IB Gateway is running on localhost:4001</li>

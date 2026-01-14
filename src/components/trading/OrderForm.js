@@ -10,7 +10,7 @@ const ORDER_TYPES = [
 ];
 
 export default function OrderForm({ onAddToBasket }) {
-  const { etfs, marketData, addToBasket, marketDataLoading } = useTrading();
+  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate } = useTrading();
 
   const [form, setForm] = useState({
     symbol: '',
@@ -153,18 +153,26 @@ export default function OrderForm({ onAddToBasket }) {
 
         {/* Market Data Display */}
         {form.symbol && (
-          <div className="bg-gray-800/50 rounded-lg p-3">
+          <div className={`bg-gray-800/50 rounded-lg p-3 ${isDataStale ? 'border border-orange-600/30' : ''}`}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400">Market Data</span>
-              {currentMarketData?.delayed && (
-                <span className="text-xs text-yellow-400 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  Delayed
-                </span>
-              )}
-              {marketDataLoading && (
-                <div className="animate-spin h-3 w-3 border border-[#28EBCF] border-t-transparent rounded-full" />
-              )}
+              <div className="flex items-center gap-2">
+                {isDataStale && (
+                  <span className="text-xs text-orange-400 flex items-center gap-1 px-1.5 py-0.5 bg-orange-600/20 rounded">
+                    <Clock className="w-3 h-3" />
+                    Cached
+                  </span>
+                )}
+                {currentMarketData?.delayed && !isDataStale && (
+                  <span className="text-xs text-yellow-400 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    Delayed
+                  </span>
+                )}
+                {marketDataLoading && (
+                  <div className="animate-spin h-3 w-3 border border-[#28EBCF] border-t-transparent rounded-full" />
+                )}
+              </div>
             </div>
 
             {currentMarketData ? (

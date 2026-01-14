@@ -1,9 +1,21 @@
 import React from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, Clock } from 'lucide-react';
+
+// Helper to format time ago
+const formatTimeAgo = (timestamp) => {
+  if (!timestamp) return '';
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
 
 export default function PortfolioOverview() {
-  const { positions, portfolioValue, cashBalance, todayPnL, fetchPositions, loading } = useTrading();
+  const { positions, portfolioValue, cashBalance, todayPnL, fetchPositions, loading, isDataStale, lastPositionsUpdate } = useTrading();
 
   const formatCurrency = (value) => {
     const num = parseFloat(value) || 0;
@@ -31,7 +43,15 @@ export default function PortfolioOverview() {
     <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-        <h2 className="text-lg font-bold text-white">Portfolio Overview</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-bold text-white">Portfolio Overview</h2>
+          {isDataStale && (
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-600/20 border border-orange-600/40 rounded text-xs text-orange-400">
+              <Clock className="w-3 h-3" />
+              <span>Cached {formatTimeAgo(lastPositionsUpdate)}</span>
+            </div>
+          )}
+        </div>
         <button
           onClick={fetchPositions}
           disabled={loading}
