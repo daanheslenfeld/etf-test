@@ -1,21 +1,26 @@
-"""Account management endpoints."""
+"""Account management endpoints with multi-user isolation."""
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict
 from models.schemas import (
     LinkAccountRequest, LinkAccountResponse, SessionStatusResponse,
     UserContext
 )
-from middleware.auth import get_current_user, require_trading_approved, get_client_ip
+from middleware.auth import get_current_user, require_trading_approved, require_broker_linked, get_client_ip
 from services.ib_client import get_ib_client, reconnect_ib_client
 from services.supabase_service import get_supabase_service, SupabaseServiceError
 from services.audit import get_audit_service
 import logging
 import re
+import os
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/trading", tags=["Account"])
+
+# In-memory storage for LOCAL_DEV_MODE when database is not available
+# Maps customer_id -> {"ib_account_id": str, "account_type": str}
+_dev_mode_linked_accounts: Dict[int, dict] = {}
 
 
 class BrokerLinkResponse(BaseModel):
@@ -52,16 +57,25 @@ async def get_session_status(
     )
 
 
+class SelectAccountRequest(BaseModel):
+    """Request to select a specific IB account to link."""
+    account_id: str
+
+
 @router.post("/broker/link", response_model=BrokerLinkResponse)
 async def link_broker_account_simple(
     request: Request,
+    account_selection: Optional[SelectAccountRequest] = None,
     user: UserContext = Depends(get_current_user)
 ) -> BrokerLinkResponse:
     """
     Link a LYNX/IB account to the current user.
 
-    Auto-detects and links the first available IB account from the gateway.
-    No request body or headers required - just call this endpoint.
+    MULTI-USER ISOLATION: Each user links their OWN IB account.
+    The account must be available in the connected IB Gateway.
+
+    Without request body: Auto-selects the first available account.
+    With request body {"account_id": "DU..."}: Links the specified account.
 
     If IB Gateway is not connected, this will attempt to reconnect first.
     """
@@ -79,21 +93,31 @@ async def link_broker_account_simple(
             )
         logger.info("Successfully reconnected to IB Gateway")
 
-    # Get the account from the connected IB Gateway
-    ib_account = ib_client.get_primary_account()
+    # Get available accounts from IB Gateway
+    available_accounts = await ib_client.get_accounts()
+    if not available_accounts:
+        primary = ib_client.get_primary_account()
+        if primary:
+            available_accounts = [primary]
 
-    if not ib_account:
-        # Try to get accounts list
-        accounts = await ib_client.get_accounts()
-        logger.info(f"Available IB accounts: {accounts}")
-        if accounts:
-            ib_account = accounts[0]
-
-    if not ib_account:
+    if not available_accounts:
         raise HTTPException(
             status_code=503,
             detail="IB Gateway connected but no accounts available. Please ensure you are logged in to IB Gateway."
         )
+
+    # Determine which account to link
+    if account_selection and account_selection.account_id:
+        ib_account = account_selection.account_id.strip().upper()
+        # Validate the requested account is available
+        if ib_account not in available_accounts:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Account {ib_account} is not available in the connected IB Gateway. Available: {available_accounts}"
+            )
+    else:
+        # Auto-select first available
+        ib_account = available_accounts[0]
 
     # Determine account type based on prefix
     if ib_account.startswith("DU") or ib_account.startswith("DF"):
@@ -101,20 +125,24 @@ async def link_broker_account_simple(
     else:
         account_type = "live"
 
-    logger.info(f"Linking IB account: {ib_account} (type: {account_type})")
+    logger.info(f"User {user.customer_id} linking IB account: {ib_account} (type: {account_type})")
 
-    # For dev mode (customer_id=0), skip database storage
-    if user.customer_id == 0:
-        logger.info(f"Dev mode: Account {ib_account} linked in-memory")
+    # For LOCAL_DEV_MODE (customer_id=0 or no database), use in-memory storage
+    db = get_supabase_service()
+    if user.customer_id == 0 or not db.is_configured():
+        _dev_mode_linked_accounts[user.customer_id] = {
+            "ib_account_id": ib_account,
+            "account_type": account_type
+        }
+        logger.info(f"Dev mode: Account {ib_account} linked in-memory for user {user.customer_id}")
         return BrokerLinkResponse(
             linked=True,
             account_id=ib_account,
             account_type=account_type,
-            message=f"Account {ib_account} linked successfully (dev mode)"
+            message=f"Account {ib_account} linked successfully (local mode)"
         )
 
     # Link the account in database for real users
-    db = get_supabase_service()
     audit = get_audit_service()
 
     try:
@@ -145,20 +173,15 @@ async def link_broker_account_simple(
 
     except SupabaseServiceError as e:
         logger.error(f"Database error: {e.message}")
-        # Still return success for the IB link, just warn about DB
-        return BrokerLinkResponse(
-            linked=True,
-            account_id=ib_account,
-            account_type=account_type,
-            message=f"Account {ib_account} linked (database save failed: {e.message})"
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save broker account: {e.message}"
         )
     except Exception as e:
         logger.error(f"Error saving to database: {e}")
-        return BrokerLinkResponse(
-            linked=True,
-            account_id=ib_account,
-            account_type=account_type,
-            message=f"Account {ib_account} linked (database save failed)"
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save broker account: {str(e)}"
         )
 
 
@@ -267,22 +290,25 @@ async def link_broker_account(
 async def get_account_info(
     user: UserContext = Depends(get_current_user)
 ) -> dict:
-    """Get the current user's trading account information."""
+    """
+    Get the current user's trading account information.
+
+    MULTI-USER ISOLATION: Only shows this user's linked account.
+    No automatic fallback to IB Gateway's primary account.
+    """
     ib_client = get_ib_client()
 
-    # For dev mode, get real account from IB Gateway
+    # STRICT: Only use the user's own linked account
     ib_account_id = user.ib_account_id
-    if user.customer_id == 0 and not ib_account_id:
-        ib_account_id = ib_client.get_primary_account()
 
     return {
         "customer_id": user.customer_id,
         "email": user.email,
         "trading_status": user.trading_status.value,
-        "broker_account_linked": user.broker_account_id is not None or ib_account_id is not None,
+        "broker_account_linked": ib_account_id is not None,
         "ib_account_id": ib_account_id,
         "ib_gateway_connected": ib_client.is_connected(),
-        "ready_for_orders": ib_client.is_ready_for_orders()
+        "ready_for_orders": ib_client.is_ready_for_orders() and ib_account_id is not None
     }
 
 
@@ -322,6 +348,9 @@ async def get_account_summary(
 ) -> dict:
     """
     Get account summary including cash balance and portfolio value.
+
+    MULTI-USER ISOLATION: Only returns data for the user's linked account.
+    No automatic fallback to IB Gateway's primary account.
     """
     ib_client = get_ib_client()
 
@@ -334,10 +363,8 @@ async def get_account_summary(
             "message": "IB Gateway not connected"
         }
 
-    # Get account ID
+    # STRICT: Only use the user's own linked account
     ib_account_id = user.ib_account_id
-    if user.customer_id == 0 and not ib_account_id:
-        ib_account_id = ib_client.get_primary_account()
 
     if not ib_account_id:
         return {
@@ -345,11 +372,11 @@ async def get_account_summary(
             "cash_balance": 0,
             "portfolio_value": 0,
             "total_value": 0,
-            "message": "No account linked"
+            "message": "No broker account linked. Please link your LYNX account first."
         }
 
     try:
-        # Get account values from IB
+        # Get account values from IB for THIS user's account only
         account_values = await ib_client.get_account_values(ib_account_id)
 
         cash_balance = account_values.get("CashBalance", 0)
@@ -365,7 +392,7 @@ async def get_account_summary(
             "currency": "EUR"
         }
     except Exception as e:
-        logger.error(f"Error getting account summary: {e}")
+        logger.error(f"Error getting account summary for {ib_account_id}: {e}")
         return {
             "connected": True,
             "cash_balance": 0,

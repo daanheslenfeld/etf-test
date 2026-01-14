@@ -194,16 +194,23 @@ async def get_orders(
     user: UserContext = Depends(require_trading_approved)
 ) -> OrdersResponse:
     """
-    Get status of recent orders.
+    Get status of recent orders for the current user's linked account.
 
-    Returns orders from the current trading session.
+    MULTI-USER ISOLATION: Only returns orders for the user's linked IB account.
     """
     ib_client = get_ib_client()
 
+    # Get all orders from IB Gateway
     raw_orders = await ib_client.get_orders()
 
+    # Filter orders by user's account
     orders = []
     for raw in raw_orders:
+        # Only include orders for this user's account
+        order_account = raw.get("acctId", raw.get("account", ""))
+        if order_account and order_account != user.ib_account_id:
+            continue  # Skip orders from other accounts
+
         orders.append(OrderStatus(
             order_id=str(raw.get("orderId", raw.get("order_id", ""))),
             symbol=raw.get("ticker", raw.get("symbol", "")),

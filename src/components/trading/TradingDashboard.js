@@ -37,9 +37,17 @@ function TradingDashboardContent({ onBack }) {
     fetchOrders,
     isDataStale,
     lastMarketDataUpdate,
+    brokerLinked,
+    linkBrokerAccount,
+    getAvailableAccounts,
+    subscribeToMarketData,
+    fetchMarketData,
   } = useTrading();
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [linkingAccount, setLinkingAccount] = useState(false);
+  const [availableAccounts, setAvailableAccounts] = useState([]);
+  const [linkError, setLinkError] = useState(null);
 
   const handleExecuteClick = () => {
     if (orderBasket.length === 0) return;
@@ -56,6 +64,31 @@ function TradingDashboardContent({ onBack }) {
     await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
   };
 
+  // Load available accounts when not linked
+  const loadAvailableAccounts = async () => {
+    const accounts = await getAvailableAccounts();
+    setAvailableAccounts(accounts);
+  };
+
+  // Handle linking broker account
+  const handleLinkAccount = async (accountId = null) => {
+    setLinkingAccount(true);
+    setLinkError(null);
+
+    const result = await linkBrokerAccount(accountId);
+
+    if (result.success) {
+      // Refresh data after linking
+      await Promise.all([fetchPositions(), fetchOrders()]);
+      await subscribeToMarketData();
+      await fetchMarketData();
+    } else {
+      setLinkError(result.message);
+    }
+
+    setLinkingAccount(false);
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -63,6 +96,129 @@ function TradingDashboardContent({ onBack }) {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
           <div className="text-white text-xl">Connecting to Trading API...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Broker not linked - show connection flow
+  if (!brokerLinked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={onBack}
+                className="text-[#28EBCF] font-medium hover:text-[#20D4BA] flex items-center gap-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Back to Dashboard
+              </button>
+              <h1 className="text-xl font-bold text-white">Connect LYNX Account</h1>
+              <div className="w-32"></div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-2xl mx-auto px-4 py-12">
+          <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-8">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-[#28EBCF]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Wifi className="w-8 h-8 text-[#28EBCF]" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Connect Your LYNX Account</h2>
+              <p className="text-gray-400">
+                Link your LYNX broker account to start trading ETFs directly from this portal.
+              </p>
+            </div>
+
+            {linkError && (
+              <div className="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
+                <p className="text-red-400 text-sm">{linkError}</p>
+              </div>
+            )}
+
+            {!connected ? (
+              <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-6 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-6 h-6 text-orange-400 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-orange-400 font-medium mb-2">IB Gateway Not Connected</h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Please ensure IB Gateway is running and logged in before connecting your account.
+                    </p>
+                    <ul className="text-gray-400 text-sm list-disc list-inside space-y-1 mb-4">
+                      <li>Start IB Gateway on localhost:4001</li>
+                      <li>Log in with your LYNX credentials</li>
+                      <li>Wait for connection to be established</li>
+                    </ul>
+                    <button
+                      onClick={checkConnection}
+                      className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center gap-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      Check Connection
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-green-900/30 border border-green-600 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-green-400">
+                    <Wifi className="w-5 h-5" />
+                    <span>IB Gateway Connected</span>
+                  </div>
+                </div>
+
+                {availableAccounts.length === 0 ? (
+                  <button
+                    onClick={loadAvailableAccounts}
+                    className="w-full py-3 bg-[#28EBCF] text-gray-900 font-bold rounded-lg hover:bg-[#20D4BA] transition-colors"
+                  >
+                    Load Available Accounts
+                  </button>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-gray-400 text-sm">Select the account to link:</p>
+                    {availableAccounts.map((acct) => (
+                      <button
+                        key={acct}
+                        onClick={() => handleLinkAccount(acct)}
+                        disabled={linkingAccount}
+                        className="w-full py-4 px-6 bg-gray-800 border border-gray-600 rounded-lg hover:border-[#28EBCF] hover:bg-gray-700 transition-colors text-left disabled:opacity-50"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="text-white font-medium">{acct}</div>
+                            <div className="text-gray-400 text-sm">
+                              {acct.startsWith('DU') || acct.startsWith('DF') ? 'Paper Trading' : 'Live Trading'}
+                            </div>
+                          </div>
+                          {linkingAccount ? (
+                            <div className="animate-spin h-5 w-5 border-2 border-[#28EBCF] border-t-transparent rounded-full" />
+                          ) : (
+                            <span className="text-[#28EBCF]">Connect</span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {availableAccounts.length === 0 && (
+                  <button
+                    onClick={() => handleLinkAccount()}
+                    disabled={linkingAccount}
+                    className="w-full py-3 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 mt-4"
+                  >
+                    {linkingAccount ? 'Connecting...' : 'Auto-Connect First Available Account'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -215,9 +371,9 @@ function TradingDashboardContent({ onBack }) {
 }
 
 // Wrapper with Provider
-export default function TradingDashboard({ onBack }) {
+export default function TradingDashboard({ user, onBack }) {
   return (
-    <TradingProvider>
+    <TradingProvider user={user}>
       <TradingDashboardContent onBack={onBack} />
     </TradingProvider>
   );

@@ -40,6 +40,7 @@ const initialState = {
   connected: false,
   accountId: null,
   tradingMode: 'PAPER',
+  brokerLinked: false,  // Whether user has a linked broker account
 
   // Portfolio data
   positions: [],
@@ -74,6 +75,7 @@ const initialState = {
 // Action types
 const ACTIONS = {
   SET_CONNECTION: 'SET_CONNECTION',
+  SET_BROKER_LINKED: 'SET_BROKER_LINKED',
   SET_POSITIONS: 'SET_POSITIONS',
   SET_ETFS: 'SET_ETFS',
   SET_QUOTES: 'SET_QUOTES',
@@ -100,6 +102,8 @@ function tradingReducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_CONNECTION:
       return { ...state, connected: action.payload.connected, accountId: action.payload.accountId, tradingMode: action.payload.tradingMode || 'PAPER' };
+    case ACTIONS.SET_BROKER_LINKED:
+      return { ...state, brokerLinked: action.payload.linked, accountId: action.payload.accountId || state.accountId };
     case ACTIONS.SET_POSITIONS:
       return { ...state, positions: action.payload };
     case ACTIONS.SET_ETFS:
@@ -147,10 +151,19 @@ function tradingReducer(state, action) {
 const TradingContext = createContext(null);
 
 // Provider
-export function TradingProvider({ children }) {
+export function TradingProvider({ user, children }) {
   const [state, dispatch] = useReducer(tradingReducer, initialState);
 
-  // API: Check connection and link broker
+  // Create auth headers for API calls
+  const getAuthHeaders = useCallback(() => {
+    return {
+      'Content-Type': 'application/json',
+      'X-Customer-ID': user?.id?.toString() || '0',
+      'X-Customer-Email': user?.email || '',
+    };
+  }, [user]);
+
+  // API: Check connection status
   const checkConnection = useCallback(async () => {
     try {
       const healthRes = await fetch(`${TRADING_API_URL}/health`);
@@ -158,44 +171,99 @@ export function TradingProvider({ children }) {
 
       const health = await healthRes.json();
 
-      if (health.ib_gateway?.connected) {
-        // Try to link account
-        const linkRes = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (linkRes.ok) {
-          const linkData = await linkRes.json();
-          if (linkData.linked) {
-            dispatch({
-              type: ACTIONS.SET_CONNECTION,
-              payload: {
-                connected: true,
-                accountId: linkData.account_id,
-                tradingMode: health.trading_mode || 'PAPER'
-              }
-            });
-            return true;
-          }
-        }
-      }
-
       dispatch({
         type: ACTIONS.SET_CONNECTION,
-        payload: { connected: false, accountId: null, tradingMode: health.trading_mode || 'PAPER' }
+        payload: {
+          connected: health.ib_gateway?.connected || false,
+          accountId: state.accountId,
+          tradingMode: health.trading_mode || 'PAPER'
+        }
       });
-      return false;
+
+      return health.ib_gateway?.connected || false;
     } catch (error) {
       dispatch({ type: ACTIONS.SET_ERROR, payload: error.message });
       return false;
     }
-  }, []);
+  }, [state.accountId]);
+
+  // API: Check if user has linked broker account
+  const checkBrokerLink = useCallback(async () => {
+    try {
+      const res = await fetch(`${TRADING_API_URL}/trading/account/info`, {
+        headers: getAuthHeaders()
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        dispatch({
+          type: ACTIONS.SET_BROKER_LINKED,
+          payload: {
+            linked: data.broker_account_linked || false,
+            accountId: data.ib_account_id
+          }
+        });
+        return data.broker_account_linked || false;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking broker link:', error);
+      return false;
+    }
+  }, [getAuthHeaders]);
+
+  // API: Link broker account
+  const linkBrokerAccount = useCallback(async (accountId = null) => {
+    try {
+      const body = accountId ? { account_id: accountId } : null;
+      const res = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.linked) {
+          dispatch({
+            type: ACTIONS.SET_BROKER_LINKED,
+            payload: { linked: true, accountId: data.account_id }
+          });
+          return { success: true, accountId: data.account_id, message: data.message };
+        }
+      }
+
+      const errorData = await res.json().catch(() => ({}));
+      return { success: false, message: errorData.detail || 'Failed to link account' };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }, [getAuthHeaders]);
+
+  // API: Get available accounts
+  const getAvailableAccounts = useCallback(async () => {
+    try {
+      const res = await fetch(`${TRADING_API_URL}/trading/account/available`, {
+        headers: getAuthHeaders()
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return data.accounts || [];
+      }
+      return [];
+    } catch (error) {
+      console.error('Error getting available accounts:', error);
+      return [];
+    }
+  }, [getAuthHeaders]);
 
   // API: Fetch ETFs
   const fetchETFs = useCallback(async () => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/trading/etfs`);
+      const res = await fetch(`${TRADING_API_URL}/trading/etfs`, {
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
         dispatch({ type: ACTIONS.SET_ETFS, payload: data.etfs || [] });
@@ -203,12 +271,14 @@ export function TradingProvider({ children }) {
     } catch (error) {
       console.error('Error fetching ETFs:', error);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // API: Fetch positions with caching
   const fetchPositions = useCallback(async () => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/trading/positions`);
+      const res = await fetch(`${TRADING_API_URL}/trading/positions`, {
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
         const positions = data.positions || [];
@@ -245,12 +315,14 @@ export function TradingProvider({ children }) {
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
       }
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // API: Fetch orders
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/trading/orders`);
+      const res = await fetch(`${TRADING_API_URL}/trading/orders`, {
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
         dispatch({ type: ACTIONS.SET_ORDERS, payload: data.orders || [] });
@@ -258,25 +330,27 @@ export function TradingProvider({ children }) {
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // API: Subscribe to all market data
   const subscribeToMarketData = useCallback(async () => {
     try {
       await fetch(`${TRADING_API_URL}/trading/marketdata/subscribe/all`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: getAuthHeaders()
       });
     } catch (error) {
       console.error('Error subscribing to market data:', error);
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // API: Fetch all market data with caching
   const fetchMarketData = useCallback(async () => {
     try {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: true });
-      const res = await fetch(`${TRADING_API_URL}/trading/marketdata`);
+      const res = await fetch(`${TRADING_API_URL}/trading/marketdata`, {
+        headers: getAuthHeaders()
+      });
       if (res.ok) {
         const data = await res.json();
         // Convert array to object keyed by symbol
@@ -316,7 +390,7 @@ export function TradingProvider({ children }) {
     } finally {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: false });
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // Get market data for a specific symbol
   const getMarketDataForSymbol = useCallback((symbol) => {
@@ -328,7 +402,7 @@ export function TradingProvider({ children }) {
     try {
       const res = await fetch(`${TRADING_API_URL}/trading/order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           symbol: order.symbol,
           conid: order.conid,
@@ -350,7 +424,7 @@ export function TradingProvider({ children }) {
     } catch (error) {
       return { success: false, message: error.message };
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   // Execute all orders in basket
   const executeBasket = useCallback(async () => {
@@ -447,12 +521,20 @@ export function TradingProvider({ children }) {
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
       }
 
-      // Then try to fetch fresh data
+      // Check connection and broker link status
       const connected = await checkConnection();
-      await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
-      // Subscribe to market data after connection
-      await subscribeToMarketData();
-      await fetchMarketData();
+      const hasLinkedAccount = await checkBrokerLink();
+
+      // Only fetch trading data if user has linked account
+      if (hasLinkedAccount) {
+        await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
+        // Subscribe to market data after connection
+        await subscribeToMarketData();
+        await fetchMarketData();
+      } else {
+        // Still fetch ETFs for display
+        await fetchETFs();
+      }
 
       // If we loaded cache but couldn't connect, mark as stale
       if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
@@ -462,11 +544,14 @@ export function TradingProvider({ children }) {
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
-  }, [checkConnection, fetchETFs, fetchPositions, fetchOrders, subscribeToMarketData, fetchMarketData]);
+  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, subscribeToMarketData, fetchMarketData]);
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
+  // Only poll if broker is linked
   useEffect(() => {
+    if (!state.brokerLinked) return;
+
     const interval = setInterval(async () => {
       // Try to check connection periodically
       if (!state.connected) {
@@ -478,11 +563,14 @@ export function TradingProvider({ children }) {
     }, 5000); // Poll every 5 seconds for market data
 
     return () => clearInterval(interval);
-  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
+  }, [state.connected, state.brokerLinked, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
 
   const value = {
     ...state,
     checkConnection,
+    checkBrokerLink,
+    linkBrokerAccount,
+    getAvailableAccounts,
     fetchETFs,
     fetchPositions,
     fetchOrders,
