@@ -10,7 +10,7 @@ const ORDER_TYPE_LABELS = {
 };
 
 export default function OrderBasket({ onExecute }) {
-  const { orderBasket, removeFromBasket, clearBasket, isExecuting, marketData } = useTrading();
+  const { orderBasket, removeFromBasket, clearBasket, isExecuting, marketData, safetyLimits, isLive, tradingMode } = useTrading();
 
   const formatPrice = (price) => {
     if (!price) return '-';
@@ -51,8 +51,13 @@ export default function OrderBasket({ onExecute }) {
   const sellOrders = orderBasket.filter(o => o.side === 'SELL');
   const cashImpact = calculateCashImpact();
 
+  // Check for bulk order
+  const isBulkOrder = orderBasket.length >= (safetyLimits?.bulkOrderThreshold || 3);
+  // Check for large orders in basket
+  const hasLargeOrder = orderBasket.some(o => o.quantity >= (safetyLimits?.largeOrderThreshold || 25));
+
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
+    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -64,15 +69,24 @@ export default function OrderBasket({ onExecute }) {
             </span>
           )}
         </h3>
-        {orderBasket.length > 0 && (
-          <button
-            onClick={clearBasket}
-            disabled={isExecuting}
-            className="text-sm text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50"
-          >
-            Clear All
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          <div className={`px-2 py-0.5 rounded text-xs font-bold ${
+            isLive
+              ? 'bg-red-600/30 text-red-400 border border-red-600'
+              : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
+          }`}>
+            {tradingMode || 'PAPER'}
+          </div>
+          {orderBasket.length > 0 && (
+            <button
+              onClick={clearBasket}
+              disabled={isExecuting}
+              className="text-sm text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Orders List */}
@@ -184,21 +198,40 @@ export default function OrderBasket({ onExecute }) {
               </div>
             )}
 
+            {/* Safety Warnings */}
+            {(isBulkOrder || hasLargeOrder || isLive) && orderBasket.length > 0 && (
+              <div className={`mb-3 p-2 rounded text-xs ${isLive ? 'bg-red-900/30 border border-red-600/50' : 'bg-orange-900/30 border border-orange-600/50'}`}>
+                <div className={`flex items-center gap-1 font-medium ${isLive ? 'text-red-400' : 'text-orange-400'}`}>
+                  <AlertTriangle className="w-3 h-3" />
+                  Confirmation Required:
+                </div>
+                <ul className={`mt-1 space-y-0.5 ${isLive ? 'text-red-300' : 'text-orange-300'}`}>
+                  {isLive && <li>• Live trading - real money</li>}
+                  {isBulkOrder && <li>• Bulk order ({orderBasket.length} orders)</li>}
+                  {hasLargeOrder && <li>• Large order in basket</li>}
+                </ul>
+              </div>
+            )}
+
             {/* Execute Button */}
             <button
               onClick={onExecute}
               disabled={isExecuting || orderBasket.length === 0}
-              className="w-full py-3 bg-[#28EBCF] text-gray-900 font-bold rounded-lg hover:bg-[#20D4BA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className={`w-full py-3 font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+                isLive
+                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  : 'bg-[#28EBCF] hover:bg-[#20D4BA] text-gray-900'
+              }`}
             >
               {isExecuting ? (
                 <>
-                  <div className="animate-spin h-5 w-5 border-2 border-gray-900 border-t-transparent rounded-full" />
+                  <div className={`animate-spin h-5 w-5 border-2 border-t-transparent rounded-full ${isLive ? 'border-white' : 'border-gray-900'}`} />
                   Executing...
                 </>
               ) : (
                 <>
                   <AlertTriangle className="w-5 h-5" />
-                  Execute All Orders ({orderBasket.length})
+                  {isLive ? `Execute (LIVE) - ${orderBasket.length} Orders` : `Execute All Orders (${orderBasket.length})`}
                 </>
               )}
             </button>

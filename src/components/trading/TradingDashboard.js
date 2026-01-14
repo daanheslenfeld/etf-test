@@ -25,6 +25,8 @@ function TradingDashboardContent({ onBack }) {
     connected,
     accountId,
     tradingMode,
+    isLive,
+    safetyLimits,
     loading,
     error,
     clearError,
@@ -35,6 +37,7 @@ function TradingDashboardContent({ onBack }) {
     fetchETFs,
     fetchPositions,
     fetchOrders,
+    fetchSafetyLimits,
     isDataStale,
     lastMarketDataUpdate,
     brokerLinked,
@@ -55,8 +58,10 @@ function TradingDashboardContent({ onBack }) {
   };
 
   const handleConfirmExecute = async () => {
-    await executeBasket();
+    await executeBasket(true); // Pass confirmed=true to bypass confirmation requirement
     setShowConfirmModal(false);
+    // Refresh safety limits after execution
+    await fetchSafetyLimits();
   };
 
   const handleRetryConnection = async () => {
@@ -365,6 +370,8 @@ function TradingDashboardContent({ onBack }) {
         onConfirm={handleConfirmExecute}
         orders={orderBasket}
         tradingMode={tradingMode}
+        safetyLimits={safetyLimits}
+        warnings={isLive ? ['LIVE TRADING: Real money will be used'] : []}
       />
     </div>
   );

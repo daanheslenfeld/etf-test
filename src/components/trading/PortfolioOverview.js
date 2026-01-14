@@ -15,7 +15,7 @@ const formatTimeAgo = (timestamp) => {
 };
 
 export default function PortfolioOverview() {
-  const { positions, portfolioValue, cashBalance, todayPnL, fetchPositions, loading, isDataStale, lastPositionsUpdate } = useTrading();
+  const { positions, portfolioValue, cashBalance, todayPnL, fetchPositions, loading, isDataStale, lastPositionsUpdate, safetyLimits, isLive, tradingMode } = useTrading();
 
   const formatCurrency = (value) => {
     const num = parseFloat(value) || 0;
@@ -40,11 +40,18 @@ export default function PortfolioOverview() {
   const totalMarketValue = positions.reduce((sum, p) => sum + (parseFloat(p.market_value) || 0), 0);
 
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
+    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-bold text-white">Portfolio Overview</h2>
+          <div className={`px-2 py-0.5 rounded text-xs font-bold ${
+            isLive
+              ? 'bg-red-600/30 text-red-400 border border-red-600'
+              : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
+          }`}>
+            {tradingMode || 'PAPER'}
+          </div>
           {isDataStale && (
             <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-600/20 border border-orange-600/40 rounded text-xs text-orange-400">
               <Clock className="w-3 h-3" />
@@ -79,6 +86,29 @@ export default function PortfolioOverview() {
           </div>
         </div>
       </div>
+
+      {/* Daily Limits */}
+      {safetyLimits && (
+        <div className="px-4 pb-4">
+          <div className="bg-gray-800/30 rounded-lg p-3">
+            <div className="text-xs text-gray-400 mb-2">Daily Trading Limits</div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <div className="text-gray-500 text-xs">Orders Remaining</div>
+                <div className="text-white font-medium">
+                  {safetyLimits.ordersRemaining ?? '-'} / {safetyLimits.maxDailyOrders ?? '-'}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-500 text-xs">Exposure Remaining</div>
+                <div className="text-white font-medium">
+                  {formatCurrency(safetyLimits.exposureRemaining ?? 0)} / {formatCurrency(safetyLimits.maxDailyExposure ?? 0)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Positions Table */}
       <div className="overflow-x-auto">

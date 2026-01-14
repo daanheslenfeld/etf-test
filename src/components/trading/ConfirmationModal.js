@@ -8,13 +8,17 @@ const ORDER_TYPE_LABELS = {
   'STP_LMT': 'Stop Limit',
 };
 
-export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, tradingMode }) {
+export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, tradingMode, warnings = [], safetyLimits }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
   const buyOrders = orders.filter(o => o.side === 'BUY');
   const sellOrders = orders.filter(o => o.side === 'SELL');
+
+  // Check for large orders
+  const largeOrders = orders.filter(o => o.quantity >= (safetyLimits?.largeOrderThreshold || 25));
+  const isBulkOrder = orders.length >= (safetyLimits?.bulkOrderThreshold || 3);
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -24,6 +28,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
   };
 
   const isLive = tradingMode === 'LIVE';
+  const hasWarnings = warnings.length > 0 || largeOrders.length > 0 || isBulkOrder;
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -61,6 +66,27 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
                 WARNING: You are about to execute orders with REAL MONEY.
                 These orders cannot be undone once submitted.
               </p>
+            </div>
+          )}
+
+          {/* Safety Warnings */}
+          {hasWarnings && (
+            <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-4 mb-6">
+              <h4 className="text-orange-400 font-medium mb-2 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
+                Safety Warnings
+              </h4>
+              <ul className="text-orange-300 text-sm space-y-1">
+                {warnings.map((warning, idx) => (
+                  <li key={idx}>• {warning}</li>
+                ))}
+                {largeOrders.length > 0 && !warnings.includes(`Large order: ${largeOrders[0]?.quantity} shares`) && (
+                  <li>• Large order{largeOrders.length > 1 ? 's' : ''}: {largeOrders.map(o => `${o.symbol} (${o.quantity})`).join(', ')}</li>
+                )}
+                {isBulkOrder && (
+                  <li>• Bulk order: {orders.length} orders in basket</li>
+                )}
+              </ul>
             </div>
           )}
 

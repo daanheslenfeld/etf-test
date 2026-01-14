@@ -40,7 +40,20 @@ const initialState = {
   connected: false,
   accountId: null,
   tradingMode: 'PAPER',
+  isLive: false,  // Critical: true means real money
   brokerLinked: false,  // Whether user has a linked broker account
+
+  // Safety limits
+  safetyLimits: {
+    maxOrderSize: 100,
+    maxOrderValue: 10000,
+    maxDailyOrders: 50,
+    maxDailyExposure: 50000,
+    ordersRemaining: 50,
+    exposureRemaining: 50000,
+    largeOrderThreshold: 25,
+    bulkOrderThreshold: 3,
+  },
 
   // Portfolio data
   positions: [],
@@ -76,6 +89,8 @@ const initialState = {
 const ACTIONS = {
   SET_CONNECTION: 'SET_CONNECTION',
   SET_BROKER_LINKED: 'SET_BROKER_LINKED',
+  SET_TRADING_MODE: 'SET_TRADING_MODE',
+  SET_SAFETY_LIMITS: 'SET_SAFETY_LIMITS',
   SET_POSITIONS: 'SET_POSITIONS',
   SET_ETFS: 'SET_ETFS',
   SET_QUOTES: 'SET_QUOTES',
@@ -104,6 +119,10 @@ function tradingReducer(state, action) {
       return { ...state, connected: action.payload.connected, accountId: action.payload.accountId, tradingMode: action.payload.tradingMode || 'PAPER' };
     case ACTIONS.SET_BROKER_LINKED:
       return { ...state, brokerLinked: action.payload.linked, accountId: action.payload.accountId || state.accountId };
+    case ACTIONS.SET_TRADING_MODE:
+      return { ...state, tradingMode: action.payload.mode, isLive: action.payload.isLive };
+    case ACTIONS.SET_SAFETY_LIMITS:
+      return { ...state, safetyLimits: { ...state.safetyLimits, ...action.payload } };
     case ACTIONS.SET_POSITIONS:
       return { ...state, positions: action.payload };
     case ACTIONS.SET_ETFS:
@@ -171,13 +190,21 @@ export function TradingProvider({ user, children }) {
 
       const health = await healthRes.json();
 
+      const tradingMode = health.trading_mode || 'PAPER';
+      const isLive = tradingMode === 'LIVE';
+
       dispatch({
         type: ACTIONS.SET_CONNECTION,
         payload: {
           connected: health.ib_gateway?.connected || false,
           accountId: state.accountId,
-          tradingMode: health.trading_mode || 'PAPER'
+          tradingMode: tradingMode
         }
+      });
+
+      dispatch({
+        type: ACTIONS.SET_TRADING_MODE,
+        payload: { mode: tradingMode, isLive }
       });
 
       return health.ib_gateway?.connected || false;
@@ -186,6 +213,68 @@ export function TradingProvider({ user, children }) {
       return false;
     }
   }, [state.accountId]);
+
+  // API: Fetch user's safety limits
+  const fetchSafetyLimits = useCallback(async () => {
+    try {
+      const res = await fetch(`${TRADING_API_URL}/trading/safety/limits`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        dispatch({
+          type: ACTIONS.SET_SAFETY_LIMITS,
+          payload: {
+            maxOrderSize: data.max_order_size,
+            maxOrderValue: data.max_order_value,
+            maxDailyOrders: data.max_orders,
+            maxDailyExposure: data.max_exposure,
+            ordersRemaining: data.orders_remaining,
+            exposureRemaining: data.exposure_remaining,
+            orderCount: data.order_count,
+            totalExposure: data.total_exposure,
+          }
+        });
+        // Also update trading mode from response
+        dispatch({
+          type: ACTIONS.SET_TRADING_MODE,
+          payload: { mode: data.trading_mode, isLive: data.is_live }
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching safety limits:', error);
+    }
+  }, [getAuthHeaders]);
+
+  // API: Pre-check order safety
+  const checkOrderSafety = useCallback(async (order) => {
+    try {
+      const res = await fetch(`${TRADING_API_URL}/trading/safety/check`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          symbol: order.symbol,
+          conid: order.conid,
+          side: order.side,
+          quantity: parseInt(order.quantity),
+          order_type: order.orderType || 'MKT',
+          estimated_price: order.estimatedPrice || null
+        })
+      });
+      const data = await res.json();
+      return {
+        allowed: data.allowed,
+        reason: data.reason,
+        requiresConfirmation: data.requires_confirmation,
+        confirmationType: data.confirmation_type,
+        warnings: data.warnings || [],
+        tradingMode: data.trading_mode,
+        isLive: data.is_live
+      };
+    } catch (error) {
+      return { allowed: false, reason: error.message, warnings: [] };
+    }
+  }, [getAuthHeaders]);
 
   // API: Check if user has linked broker account
   const checkBrokerLink = useCallback(async () => {
@@ -397,10 +486,14 @@ export function TradingProvider({ user, children }) {
     return state.marketData[symbol] || null;
   }, [state.marketData]);
 
-  // API: Place single order
-  const placeOrder = useCallback(async (order) => {
+  // API: Place single order (with optional confirmation)
+  const placeOrder = useCallback(async (order, confirmed = false) => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/trading/order`, {
+      const url = confirmed
+        ? `${TRADING_API_URL}/trading/order?confirmed=true`
+        : `${TRADING_API_URL}/trading/order`;
+
+      const res = await fetch(url, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -415,19 +508,46 @@ export function TradingProvider({ user, children }) {
       });
 
       const data = await res.json();
+
+      // Check if confirmation is required
+      if (data.details?.error === 'CONFIRMATION_REQUIRED') {
+        return {
+          success: false,
+          requiresConfirmation: true,
+          confirmationType: data.details.confirmation_type,
+          warnings: data.details.warnings || [],
+          message: data.message,
+          isLive: data.details.is_live,
+          tradingMode: data.details.trading_mode
+        };
+      }
+
+      // Check for safety limit exceeded
+      if (data.details?.error === 'SAFETY_LIMIT_EXCEEDED') {
+        return {
+          success: false,
+          safetyBlocked: true,
+          message: data.message,
+          isLive: data.details.is_live,
+          tradingMode: data.details.trading_mode
+        };
+      }
+
       return {
         success: res.ok && data.success,
         orderId: data.order_id,
         message: data.message || (res.ok ? 'Order placed' : 'Order failed'),
-        details: data.details
+        details: data.details,
+        isLive: data.details?.is_live,
+        tradingMode: data.details?.trading_mode
       };
     } catch (error) {
       return { success: false, message: error.message };
     }
   }, [getAuthHeaders]);
 
-  // Execute all orders in basket
-  const executeBasket = useCallback(async () => {
+  // Execute all orders in basket (with confirmation flag)
+  const executeBasket = useCallback(async (confirmed = false) => {
     if (state.orderBasket.length === 0) return;
 
     dispatch({ type: ACTIONS.SET_EXECUTING, payload: true });
@@ -446,7 +566,41 @@ export function TradingProvider({ user, children }) {
 
     // Execute orders sequentially
     for (const order of state.orderBasket) {
-      const result = await placeOrder(order);
+      const result = await placeOrder(order, confirmed);
+
+      // Handle confirmation required
+      if (result.requiresConfirmation) {
+        dispatch({
+          type: ACTIONS.UPDATE_ORDER_STATUS,
+          payload: {
+            id: order.id,
+            updates: {
+              status: 'confirmation_required',
+              message: result.message,
+              warnings: result.warnings,
+              confirmationType: result.confirmationType
+            }
+          }
+        });
+        // Stop execution if confirmation is needed
+        dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
+        return { requiresConfirmation: true, warnings: result.warnings, confirmationType: result.confirmationType };
+      }
+
+      // Handle safety blocked
+      if (result.safetyBlocked) {
+        dispatch({
+          type: ACTIONS.UPDATE_ORDER_STATUS,
+          payload: {
+            id: order.id,
+            updates: {
+              status: 'blocked',
+              message: result.message
+            }
+          }
+        });
+        continue; // Continue with other orders
+      }
 
       dispatch({
         type: ACTIONS.UPDATE_ORDER_STATUS,
@@ -467,12 +621,15 @@ export function TradingProvider({ user, children }) {
     dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
     dispatch({ type: ACTIONS.CLEAR_BASKET });
 
-    // Refresh data after execution
+    // Refresh data after execution (including safety limits)
     setTimeout(() => {
       fetchOrders();
       fetchPositions();
+      fetchSafetyLimits();
     }, 1500);
-  }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions]);
+
+    return { success: true };
+  }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions, fetchSafetyLimits]);
 
   // Basket operations
   const addToBasket = useCallback((order) => {
@@ -527,7 +684,7 @@ export function TradingProvider({ user, children }) {
 
       // Only fetch trading data if user has linked account
       if (hasLinkedAccount) {
-        await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
+        await Promise.all([fetchETFs(), fetchPositions(), fetchOrders(), fetchSafetyLimits()]);
         // Subscribe to market data after connection
         await subscribeToMarketData();
         await fetchMarketData();
@@ -544,7 +701,7 @@ export function TradingProvider({ user, children }) {
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
-  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, subscribeToMarketData, fetchMarketData]);
+  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, fetchSafetyLimits, subscribeToMarketData, fetchMarketData]);
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
@@ -575,6 +732,8 @@ export function TradingProvider({ user, children }) {
     fetchPositions,
     fetchOrders,
     fetchMarketData,
+    fetchSafetyLimits,
+    checkOrderSafety,
     subscribeToMarketData,
     getMarketDataForSymbol,
     placeOrder,

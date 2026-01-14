@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { Plus, ShoppingCart, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Plus, ShoppingCart, TrendingUp, TrendingDown, Clock, AlertTriangle, ShieldAlert } from 'lucide-react';
 
 const ORDER_TYPES = [
   { value: 'MKT', label: 'Market', requiresLimit: false, requiresStop: false },
@@ -10,7 +10,7 @@ const ORDER_TYPES = [
 ];
 
 export default function OrderForm({ onAddToBasket }) {
-  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate } = useTrading();
+  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode } = useTrading();
 
   const [form, setForm] = useState({
     symbol: '',
@@ -103,12 +103,25 @@ export default function OrderForm({ onAddToBasket }) {
     return `€${price.toFixed(2)}`;
   };
 
+  // Check if quantity exceeds limit
+  const isLargeOrder = form.quantity >= (safetyLimits?.largeOrderThreshold || 25);
+  const exceedsMaxSize = form.quantity > (safetyLimits?.maxOrderSize || 100);
+
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-4">
-      <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <Plus className="w-5 h-5 text-[#28EBCF]" />
-        Add Order to Basket
-      </h3>
+    <div className={`bg-[#1A1B1F] border rounded-xl p-4 ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <Plus className="w-5 h-5 text-[#28EBCF]" />
+          Add Order to Basket
+        </h3>
+        <div className={`px-2 py-0.5 rounded text-xs font-bold ${
+          isLive
+            ? 'bg-red-600/30 text-red-400 border border-red-600'
+            : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
+        }`}>
+          {tradingMode || 'PAPER'}
+        </div>
+      </div>
 
       <div className="space-y-4">
         {/* Side Toggle */}
@@ -217,14 +230,36 @@ export default function OrderForm({ onAddToBasket }) {
 
         {/* Quantity */}
         <div>
-          <label className="block text-gray-400 text-sm mb-1">Quantity</label>
+          <label className="block text-gray-400 text-sm mb-1">
+            Quantity
+            <span className="text-gray-500 ml-2">(max: {safetyLimits?.maxOrderSize || 100})</span>
+          </label>
           <input
             type="number"
             min="1"
+            max={safetyLimits?.maxOrderSize || 100}
             value={form.quantity}
             onChange={(e) => setForm(prev => ({ ...prev, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+            className={`w-full bg-gray-800 border rounded-lg px-4 py-3 text-white focus:outline-none ${
+              exceedsMaxSize
+                ? 'border-red-500 focus:border-red-500'
+                : isLargeOrder
+                  ? 'border-orange-500 focus:border-orange-500'
+                  : 'border-gray-600 focus:border-[#28EBCF]'
+            }`}
           />
+          {exceedsMaxSize && (
+            <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3" />
+              Exceeds max order size ({safetyLimits?.maxOrderSize || 100})
+            </p>
+          )}
+          {isLargeOrder && !exceedsMaxSize && (
+            <p className="text-orange-400 text-xs mt-1 flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3" />
+              Large order - will require confirmation
+            </p>
+          )}
         </div>
 
         {/* Order Type */}
@@ -332,7 +367,7 @@ export default function OrderForm({ onAddToBasket }) {
         {/* Add to Basket Button */}
         <button
           onClick={handleAddToBasket}
-          disabled={!form.conid}
+          disabled={!form.conid || exceedsMaxSize}
           className="w-full py-3 bg-[#28EBCF] text-gray-900 font-bold rounded-lg hover:bg-[#20D4BA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <ShoppingCart className="w-5 h-5" />
