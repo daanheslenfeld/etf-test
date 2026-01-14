@@ -316,6 +316,65 @@ async def get_available_accounts(
     }
 
 
+@router.get("/account/summary")
+async def get_account_summary(
+    user: UserContext = Depends(get_current_user)
+) -> dict:
+    """
+    Get account summary including cash balance and portfolio value.
+    """
+    ib_client = get_ib_client()
+
+    if not ib_client.is_connected():
+        return {
+            "connected": False,
+            "cash_balance": 0,
+            "portfolio_value": 0,
+            "total_value": 0,
+            "message": "IB Gateway not connected"
+        }
+
+    # Get account ID
+    ib_account_id = user.ib_account_id
+    if user.customer_id == 0 and not ib_account_id:
+        ib_account_id = ib_client.get_primary_account()
+
+    if not ib_account_id:
+        return {
+            "connected": True,
+            "cash_balance": 0,
+            "portfolio_value": 0,
+            "total_value": 0,
+            "message": "No account linked"
+        }
+
+    try:
+        # Get account values from IB
+        account_values = await ib_client.get_account_values(ib_account_id)
+
+        cash_balance = account_values.get("CashBalance", 0)
+        portfolio_value = account_values.get("GrossPositionValue", 0)
+        net_liquidation = account_values.get("NetLiquidation", 0)
+
+        return {
+            "connected": True,
+            "account_id": ib_account_id,
+            "cash_balance": float(cash_balance),
+            "portfolio_value": float(portfolio_value),
+            "total_value": float(net_liquidation),
+            "currency": "EUR"
+        }
+    except Exception as e:
+        logger.error(f"Error getting account summary: {e}")
+        return {
+            "connected": True,
+            "cash_balance": 0,
+            "portfolio_value": 0,
+            "total_value": 0,
+            "error": str(e)
+        }
+
+
 @router.post("/session/reconnect")
 async def reconnect_session(
     user: UserContext = Depends(get_current_user)

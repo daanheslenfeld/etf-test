@@ -5,6 +5,7 @@ import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
+import LivePortfolioOverview from './components/LivePortfolioOverview';
 import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
 
 // Helper: Get categories that have tradable ETFs
@@ -2518,6 +2519,18 @@ useEffect(() => {
             >
               Bekijk Portfolio
             </button>
+          </div>
+        )}
+
+        {/* Live Broker Portfolio */}
+        {user?.account_type === 'betaald' && (
+          <div className="mt-6 sm:mt-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+              <h2 className="text-xl font-bold text-white">Broker Portfolio</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            </div>
+            <LivePortfolioOverview user={user} />
           </div>
         )}
       </div>

@@ -653,6 +653,29 @@ class IBClient:
             logger.error(f"Error getting positions: {e}")
             return []
 
+    async def get_account_values(self, account_id: str) -> dict:
+        """Get account values including cash balance."""
+        if not self.is_connected():
+            return {}
+
+        try:
+            # Request account summary
+            account_values = {}
+
+            # Get account values from ib_insync
+            self._ib.reqAccountSummary()
+            await asyncio.sleep(0.5)  # Wait for data
+
+            for av in self._ib.accountSummary():
+                if av.account == account_id or not account_id:
+                    account_values[av.tag] = float(av.value) if av.value else 0
+
+            self._ib.cancelAccountSummary()
+            return account_values
+        except Exception as e:
+            logger.error(f"Error getting account values: {e}")
+            return {}
+
     async def get_market_data_snapshot(self, conids: list[int]) -> list[dict]:
         """Get market data snapshot."""
         if not self.is_connected():
