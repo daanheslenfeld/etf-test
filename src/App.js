@@ -3911,7 +3911,7 @@ useEffect(() => {
         }
 
         try {
-          const response = await fetch(`${API_URL}/verify-email?token=${token}`);
+          const response = await fetch(`${API_URL}/verify?token=${token}`);
           const data = await response.json();
 
           if (data.success) {
@@ -4284,7 +4284,7 @@ useEffect(() => {
       setError('');
 
       try {
-        const response = await fetch(`${API_URL}/verify-code`, {
+        const response = await fetch(`${API_URL}/verify`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
