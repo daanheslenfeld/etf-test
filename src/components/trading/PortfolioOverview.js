@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3, Eye } from 'lucide-react';
-import HoldingsModal from './HoldingsModal';
+import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3 } from 'lucide-react';
+import ETFDetailsModal from './ETFDetailsModal';
 
 // Helper to format time ago
 const formatTimeAgo = (timestamp) => {
@@ -33,8 +33,8 @@ export default function PortfolioOverview() {
     tradingMode
   } = useTrading();
 
-  // Holdings modal state
-  const [holdingsSymbol, setHoldingsSymbol] = useState(null);
+  // ETF details modal state
+  const [selectedEtf, setSelectedEtf] = useState(null);
 
   const formatCurrency = (value) => {
     const num = parseFloat(value) || 0;
@@ -46,27 +46,15 @@ export default function PortfolioOverview() {
     return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`;
   };
 
-  // Use backend-calculated values, with fallback to local calculation
-  const displayPortfolioValue = portfolioValue > 0
-    ? portfolioValue
-    : positions.reduce((sum, p) => sum + (parseFloat(p.market_value) || 0), 0);
-
-  const displayUnrealizedPnL = unrealizedPnL !== 0
-    ? unrealizedPnL
-    : positions.reduce((sum, p) => sum + (parseFloat(p.unrealized_pnl) || 0), 0);
-
-  const displayPnLPercent = unrealizedPnLPercent !== 0
-    ? unrealizedPnLPercent
-    : (() => {
-        const totalCost = positions.reduce((sum, p) => {
-          const qty = parseFloat(p.quantity) || 0;
-          const avg = parseFloat(p.avg_cost) || 0;
-          return sum + (qty * avg);
-        }, 0);
-        return totalCost > 0 ? (displayUnrealizedPnL / totalCost * 100) : 0;
-      })();
-
-  const displayAvailableFunds = availableFunds > 0 ? availableFunds : cashBalance;
+  // Use backend as single source of truth - no local recalculation
+  // Portfolio Value = sum(position_quantity × last_price) - from backend
+  // Available Cash = AvailableFunds from IB - from backend
+  // Total Value = Portfolio Value + Available Cash - from backend
+  const displayPortfolioValue = portfolioValue;
+  const displayUnrealizedPnL = unrealizedPnL;
+  const displayPnLPercent = unrealizedPnLPercent;
+  const displayAvailableFunds = availableFunds;
+  const displayTotalValue = totalValue;
 
   // Check if any positions have stale prices
   const hasStaleData = isDataStale || positions.some(p => p.price_stale);
@@ -122,14 +110,14 @@ export default function PortfolioOverview() {
           </div>
         </div>
 
-        {/* Net Liquidation = positions + cash */}
+        {/* Total Account Value = positions + cash */}
         <div className="bg-gray-900/50 rounded-lg p-3">
           <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
             <PiggyBank className="w-3 h-3" />
-            Net Liquidation
+            Total Value
           </div>
           <div className="text-lg font-bold text-white">
-            {formatCurrency(totalValue > 0 ? totalValue : displayPortfolioValue + displayAvailableFunds)}
+            {formatCurrency(displayTotalValue)}
           </div>
         </div>
 
@@ -181,24 +169,24 @@ export default function PortfolioOverview() {
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Market Value</th>
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L (EUR)</th>
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L %</th>
-              <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Holdings</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
             {positions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center text-gray-500 py-8">
+                <td colSpan={7} className="text-center text-gray-500 py-8">
                   No positions found
                 </td>
               </tr>
             ) : (
               positions.map((position, idx) => {
+                // Use backend-provided values directly (single source of truth)
                 const qty = parseFloat(position.quantity) || 0;
                 const avgCost = parseFloat(position.avg_cost) || 0;
                 const lastPrice = parseFloat(position.last_price) || avgCost;
-                const marketValue = parseFloat(position.market_value) || (qty * lastPrice);
-                const pnl = parseFloat(position.unrealized_pnl) || (marketValue - (qty * avgCost));
-                const pnlPercent = position.unrealized_pnl_pct ?? (avgCost > 0 ? ((lastPrice - avgCost) / avgCost * 100) : 0);
+                const marketValue = parseFloat(position.market_value) || 0;
+                const pnl = parseFloat(position.unrealized_pnl) || 0;
+                const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
                 const isPositive = pnl >= 0;
                 const isStale = position.price_stale;
 
@@ -206,7 +194,12 @@ export default function PortfolioOverview() {
                   <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="font-medium text-white">{position.symbol}</div>
+                        <button
+                          onClick={() => setSelectedEtf(position.symbol)}
+                          className="font-medium text-white hover:text-[#28EBCF] hover:underline cursor-pointer transition-colors"
+                        >
+                          {position.symbol}
+                        </button>
                         {isStale && (
                           <AlertTriangle className="w-3 h-3 text-orange-400" title="Price may be stale" />
                         )}
@@ -231,25 +224,16 @@ export default function PortfolioOverview() {
                     <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                       {formatPercent(pnlPercent)}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => setHoldingsSymbol(position.symbol)}
-                        className="p-1.5 text-gray-400 hover:text-[#28EBCF] hover:bg-[#28EBCF]/10 rounded transition-colors"
-                        title="View holdings"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
                   </tr>
                 );
               })
             )}
           </tbody>
-          {/* Totals Footer */}
+          {/* Totals Footer - uses backend-calculated values */}
           {positions.length > 0 && (
             <tfoot className="bg-gray-800/50 border-t border-gray-700">
               <tr>
-                <td className="px-4 py-3 font-bold text-white">Total</td>
+                <td className="px-4 py-3 font-bold text-white">Positions Total</td>
                 <td className="px-4 py-3"></td>
                 <td className="px-4 py-3"></td>
                 <td className="px-4 py-3"></td>
@@ -262,18 +246,17 @@ export default function PortfolioOverview() {
                 <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {formatPercent(displayPnLPercent)}
                 </td>
-                <td className="px-4 py-3"></td>
               </tr>
             </tfoot>
           )}
         </table>
       </div>
 
-      {/* Holdings Modal */}
-      <HoldingsModal
-        symbol={holdingsSymbol}
-        isOpen={!!holdingsSymbol}
-        onClose={() => setHoldingsSymbol(null)}
+      {/* ETF Details Modal */}
+      <ETFDetailsModal
+        symbol={selectedEtf}
+        isOpen={!!selectedEtf}
+        onClose={() => setSelectedEtf(null)}
       />
     </div>
   );

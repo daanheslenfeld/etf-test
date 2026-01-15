@@ -348,11 +348,15 @@ async def get_account_summary(
 ) -> dict:
     """
     Get comprehensive account summary including:
-    - Cash balance (available for trading)
-    - Portfolio value (sum of position market values)
-    - Total value (net liquidation)
+    - Available Cash (AvailableFunds from IB - money available for trading)
+    - Portfolio Value (sum of position_quantity × last_price)
+    - Total Account Value (Portfolio Value + Available Cash)
     - Unrealized P&L (absolute and percentage)
-    - Buying power
+
+    CRITICAL: Values must match LYNX exactly.
+    - Portfolio Value = ONLY securities (no cash)
+    - Total Value = Portfolio Value + Cash (no double counting)
+    - If last_price missing, use previous cached price (never zero)
 
     MULTI-USER ISOLATION: Only returns data for the user's linked account.
     """
@@ -391,50 +395,42 @@ async def get_account_summary(
         }
 
     try:
-        # Get account values from IB
+        # Get account values from IB - this is the source of truth for cash
         account_values = await ib_client.get_account_values(ib_account_id)
 
         # Log available tags for debugging
         if account_values:
-            logger.info(f"IB account tags available: {list(account_values.keys())}")
+            logger.debug(f"IB account tags available: {list(account_values.keys())}")
 
-        # Core values - IB uses various tag names for cash
-        # Common IB tags: TotalCashValue, AvailableFunds, CashBalance, NetLiquidation
+        # CASH: Use AvailableFunds or CashBalance from IB
+        # AvailableFunds = what you can actually trade with
+        # CashBalance/TotalCashValue = settled cash
+        available_funds = float(
+            account_values.get("AvailableFunds") or
+            account_values.get("AvailableFunds-S") or  # Securities segment
+            account_values.get("CashBalance") or
+            account_values.get("TotalCashValue") or
+            account_values.get("TotalCashBalance") or
+            0
+        )
         cash_balance = float(
             account_values.get("TotalCashValue") or
             account_values.get("CashBalance") or
-            account_values.get("TotalCashBalance") or
-            account_values.get("SettledCash") or
-            0
+            available_funds
         )
-        available_funds = float(
-            account_values.get("AvailableFunds") or
+        buying_power = float(
             account_values.get("BuyingPower") or
-            cash_balance
-        )
-        buying_power = float(account_values.get("BuyingPower") or available_funds)
-        net_liquidation = float(account_values.get("NetLiquidation") or 0)
-        gross_position_value = float(
-            account_values.get("GrossPositionValue") or
-            account_values.get("StockMarketValue") or
-            0
+            available_funds
         )
 
-        # P&L values
-        unrealized_pnl = float(account_values.get("UnrealizedPnL", 0))
-        realized_pnl = float(account_values.get("RealizedPnL", 0))
-
-        # Calculate P&L percentage (relative to cost basis)
-        total_cost = gross_position_value - unrealized_pnl if gross_position_value > 0 else 0
-        unrealized_pnl_percent = (unrealized_pnl / total_cost * 100) if total_cost > 0 else 0
-
-        # Get positions with market data for accurate portfolio value
+        # Get positions and calculate portfolio value from market data
         positions = await ib_client.get_positions(ib_account_id)
         market_data = ib_client.get_all_market_data()
 
-        calculated_portfolio_value = 0
-        calculated_unrealized_pnl = 0
-        total_cost_basis = 0
+        # PORTFOLIO VALUE: sum(quantity × last_price) for all positions
+        portfolio_value = 0.0
+        total_cost_basis = 0.0
+        total_unrealized_pnl = 0.0
         positions_with_prices = 0
         positions_without_prices = 0
 
@@ -449,43 +445,54 @@ async def get_account_summary(
             cost_basis = qty * avg_cost
             total_cost_basis += cost_basis
 
-            # Try to get market price
-            market_price = None
+            # Get last_price from market data cache
+            last_price = None
             if conid and conid in market_data:
                 md = market_data[conid]
-                market_price = md.get("last") or md.get("bid") or md.get("ask")
+                # Priority: last > bid > ask (use whatever is available)
+                last_price = md.get("last") or md.get("bid") or md.get("ask")
+                if last_price and float(last_price) > 0:
+                    last_price = float(last_price)
+                else:
+                    last_price = None
 
-            if market_price and market_price > 0:
-                market_value = qty * market_price
-                calculated_portfolio_value += market_value
-                calculated_unrealized_pnl += (market_value - cost_basis)
-                positions_with_prices += 1
-            else:
-                # Fallback: use cost basis as market value
-                calculated_portfolio_value += cost_basis
+            # If no market price, use avg_cost as fallback (never use zero)
+            if last_price is None or last_price <= 0:
+                last_price = avg_cost
                 positions_without_prices += 1
+            else:
+                positions_with_prices += 1
 
-        # Use calculated values if we have market data, otherwise use IB values
-        final_portfolio_value = calculated_portfolio_value if positions_with_prices > 0 else gross_position_value
-        final_unrealized_pnl = calculated_unrealized_pnl if positions_with_prices > 0 else unrealized_pnl
-        final_pnl_percent = (final_unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
+            # Calculate market value for this position
+            market_value = qty * last_price
+            portfolio_value += market_value
+            total_unrealized_pnl += (market_value - cost_basis)
 
-        # Mark data as potentially stale if we're missing prices
-        data_stale = positions_without_prices > 0 and positions_with_prices == 0
+        # Calculate P&L percentage
+        unrealized_pnl_percent = 0.0
+        if total_cost_basis > 0:
+            unrealized_pnl_percent = (total_unrealized_pnl / total_cost_basis) * 100
+
+        # TOTAL VALUE = Portfolio Value + Available Cash (NO double counting)
+        total_value = portfolio_value + available_funds
+
+        # Mark data as stale only if ALL positions are missing prices
+        data_stale = len(positions) > 0 and positions_with_prices == 0
 
         return {
             "connected": True,
             "account_id": ib_account_id,
-            "cash_balance": cash_balance,
-            "available_funds": available_funds,
-            "buying_power": buying_power,
-            "portfolio_value": final_portfolio_value,
-            "total_value": net_liquidation if net_liquidation > 0 else (cash_balance + final_portfolio_value),
-            "unrealized_pnl": final_unrealized_pnl,
-            "unrealized_pnl_percent": round(final_pnl_percent, 2),
-            "realized_pnl": realized_pnl,
+            "cash_balance": round(cash_balance, 2),
+            "available_funds": round(available_funds, 2),
+            "buying_power": round(buying_power, 2),
+            "portfolio_value": round(portfolio_value, 2),
+            "total_value": round(total_value, 2),
+            "unrealized_pnl": round(total_unrealized_pnl, 2),
+            "unrealized_pnl_percent": round(unrealized_pnl_percent, 2),
+            "realized_pnl": 0,  # Not tracked per-session
             "currency": "EUR",
             "data_stale": data_stale,
+            "positions_count": len(positions),
             "positions_with_prices": positions_with_prices,
             "positions_without_prices": positions_without_prices
         }

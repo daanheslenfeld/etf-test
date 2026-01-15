@@ -34,12 +34,14 @@ async def get_positions(
 
     Each position includes:
     - Symbol, quantity, average cost
-    - Last price (from market data)
+    - Last price (from market data cache)
     - Market value (qty × last price)
     - Unrealized P&L (€ and %)
 
-    Market values are NEVER €0 if quantity > 0.
-    Falls back to cost basis if market data unavailable.
+    CRITICAL: Values must match LYNX exactly.
+    - Market value = quantity × last_price
+    - If last_price missing from cache, use avg_cost (never zero)
+    - This matches the account summary calculation exactly
     """
     ib_client = get_ib_client()
 
@@ -61,27 +63,25 @@ async def get_positions(
         # Calculate cost basis
         cost_basis = quantity * avg_cost
 
-        # Get market price from streaming data
+        # Get market price from streaming data cache
         last_price: Optional[Decimal] = None
         price_stale = False
 
         if conid and conid in market_data:
             md = market_data[conid]
-            # Priority: last > bid > ask
+            # Priority: last > bid > ask (use whatever is available)
             raw_price = md.get("last") or md.get("bid") or md.get("ask")
             if raw_price and float(raw_price) > 0:
                 last_price = safe_decimal(raw_price)
             price_stale = md.get("delayed", False)
 
-        # Calculate market value
-        if last_price and last_price > 0:
-            market_value = quantity * last_price
-        else:
-            # CRITICAL: Never show €0 for held positions
-            # Fallback to cost basis if no market price
-            market_value = cost_basis
+        # If no market price available, use avg_cost as fallback (never zero)
+        if last_price is None or last_price <= 0:
             last_price = avg_cost
             price_stale = True
+
+        # Calculate market value = quantity × last_price
+        market_value = quantity * last_price
 
         # Calculate unrealized P&L
         unrealized_pnl = market_value - cost_basis
@@ -101,7 +101,7 @@ async def get_positions(
             price_stale=price_stale
         ))
 
-    # Calculate totals
+    # Calculate totals (must match account summary calculation exactly)
     total_market_value = sum(p.market_value for p in positions)
     total_cost = sum(p.quantity * p.avg_cost for p in positions)
     total_unrealized_pnl = sum(p.unrealized_pnl for p in positions)
