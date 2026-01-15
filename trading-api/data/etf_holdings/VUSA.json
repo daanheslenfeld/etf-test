@@ -1,0 +1,81 @@
+{
+  "symbol": "VUSA",
+  "name": "Vanguard S&P 500 UCITS ETF",
+  "isin": "IE00B3XXRP09",
+  "issuer": "Vanguard",
+  "index": "S&P 500",
+  "last_updated": "2025-01-15",
+  "total_holdings": 503,
+  "holdings": [
+    {
+      "name": "Apple Inc",
+      "ticker": "AAPL",
+      "weight_percent": 7.12,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Microsoft Corp",
+      "ticker": "MSFT",
+      "weight_percent": 6.58,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "NVIDIA Corp",
+      "ticker": "NVDA",
+      "weight_percent": 6.21,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Amazon.com Inc",
+      "ticker": "AMZN",
+      "weight_percent": 3.92,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class A",
+      "ticker": "GOOGL",
+      "weight_percent": 2.24,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Meta Platforms Inc",
+      "ticker": "META",
+      "weight_percent": 2.18,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class C",
+      "ticker": "GOOG",
+      "weight_percent": 1.88,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Berkshire Hathaway Inc",
+      "ticker": "BRK.B",
+      "weight_percent": 1.82,
+      "sector": "Financials",
+      "country": "United States"
+    },
+    {
+      "name": "Broadcom Inc",
+      "ticker": "AVGO",
+      "weight_percent": 1.76,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Tesla Inc",
+      "ticker": "TSLA",
+      "weight_percent": 1.68,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    }
+  ]
+}

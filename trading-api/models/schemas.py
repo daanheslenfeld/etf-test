@@ -102,22 +102,28 @@ class OrdersResponse(BaseModel):
 
 # Position Models
 class Position(BaseModel):
-    """Portfolio position."""
+    """Portfolio position with real-time values."""
     symbol: str
     conid: int
     quantity: Decimal
     avg_cost: Decimal
+    last_price: Optional[Decimal] = None
     market_value: Optional[Decimal] = None
     unrealized_pnl: Optional[Decimal] = None
+    unrealized_pnl_pct: Optional[float] = None
     realized_pnl: Optional[Decimal] = None
     currency: str
+    price_stale: bool = False
 
 
 class PositionsResponse(BaseModel):
-    """Response for positions endpoint."""
+    """Response for positions endpoint with portfolio totals."""
     positions: list[Position]
     account_id: str
     count: int
+    total_market_value: Optional[Decimal] = None
+    total_unrealized_pnl: Optional[Decimal] = None
+    total_unrealized_pnl_pct: Optional[float] = None
 
 
 # Account Models

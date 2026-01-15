@@ -38,6 +38,9 @@ class SafetyCheckResponse(BaseModel):
     warnings: list = []
     trading_mode: str
     is_live: bool
+    available_funds: Optional[float] = None
+    required_funds: Optional[float] = None
+    estimated_price: Optional[float] = None
 
 
 class UserLimitsResponse(BaseModel):
@@ -87,17 +90,55 @@ async def check_order_safety(
     user: UserContext = Depends(require_trading_approved)
 ) -> SafetyCheckResponse:
     """
-    Pre-check if an order would pass safety limits.
+    Pre-check if an order would pass safety limits AND balance validation.
 
-    Call this before submission to get confirmation requirements.
+    Call this before submission to get confirmation requirements and validate funds.
     """
     settings = get_settings()
     safety = get_safety_service()
+    ib_client = get_ib_client()
     is_live = settings.trading_mode == TradingMode.LIVE
 
-    # Estimate order value
-    estimated_value = (check.estimated_price or 100.0) * check.quantity
+    # Get market price if not provided
+    estimated_price = check.estimated_price
+    if not estimated_price:
+        market_data = ib_client.get_all_market_data()
+        for conid, data in market_data.items():
+            if data.get("symbol") == check.symbol or conid == check.conid:
+                estimated_price = data.get("last") or data.get("bid") or 100.0
+                break
+        if not estimated_price:
+            estimated_price = 100.0
 
+    estimated_value = estimated_price * check.quantity
+    required_with_buffer = estimated_value * 1.01  # 1% buffer
+
+    # Get available funds
+    available_funds = 0
+    try:
+        account_values = await ib_client.get_account_values(user.ib_account_id)
+        avail = float(account_values.get("AvailableFunds", 0))
+        cash = float(account_values.get("TotalCashValue", account_values.get("CashBalance", 0)))
+        available_funds = min(avail, cash) if avail > 0 else cash
+    except Exception as e:
+        logger.warning(f"Could not get available funds: {e}")
+
+    # Balance check for BUY orders
+    if check.side.upper() == "BUY" and required_with_buffer > available_funds:
+        return SafetyCheckResponse(
+            allowed=False,
+            reason=f"Insufficient liquidity. Available: €{available_funds:.2f}, Required: €{required_with_buffer:.2f}",
+            requires_confirmation=False,
+            confirmation_type=None,
+            warnings=["INSUFFICIENT_BALANCE"],
+            trading_mode=settings.trading_mode.value,
+            is_live=is_live,
+            available_funds=available_funds,
+            required_funds=required_with_buffer,
+            estimated_price=estimated_price
+        )
+
+    # Standard safety checks
     result = await safety.check_order_safety(
         customer_id=user.customer_id,
         ib_account_id=user.ib_account_id,
@@ -116,7 +157,10 @@ async def check_order_safety(
         confirmation_type=result.confirmation_type,
         warnings=result.warnings,
         trading_mode=settings.trading_mode.value,
-        is_live=is_live
+        is_live=is_live,
+        available_funds=available_funds,
+        required_funds=required_with_buffer,
+        estimated_price=estimated_price
     )
 
 
@@ -185,6 +229,49 @@ async def place_order(
         estimated_price = order.limit_price
 
     estimated_value = estimated_price * order.quantity
+
+    # ==========================================================================
+    # BALANCE VALIDATION: Block orders exceeding available funds
+    # ==========================================================================
+    if order.side == OrderSide.BUY:
+        try:
+            account_values = await ib_client.get_account_values(user.ib_account_id)
+            available_funds = float(account_values.get("AvailableFunds", 0))
+            cash_balance = float(account_values.get("TotalCashValue", account_values.get("CashBalance", 0)))
+
+            # Use the more conservative value
+            available = min(available_funds, cash_balance) if available_funds > 0 else cash_balance
+
+            # Add 1% buffer for potential fees/slippage
+            required_with_buffer = estimated_value * 1.01
+
+            if required_with_buffer > available:
+                error_msg = f"Insufficient liquidity. Available: €{available:.2f}, Required: €{required_with_buffer:.2f}"
+                logger.warning(f"Order blocked - {error_msg} - user={user.customer_id}")
+                await audit.log_safety_block(
+                    customer_id=user.customer_id,
+                    ib_account_id=user.ib_account_id,
+                    symbol=order.symbol,
+                    side=order.side.value,
+                    quantity=order.quantity,
+                    reason=error_msg,
+                    trading_mode=trading_mode,
+                    ip_address=client_ip
+                )
+                return OrderResponse(
+                    success=False,
+                    message=error_msg,
+                    details={
+                        "error": "INSUFFICIENT_BALANCE",
+                        "available_funds": available,
+                        "required_funds": required_with_buffer,
+                        "estimated_price": estimated_price,
+                        "trading_mode": trading_mode,
+                        "is_live": is_live
+                    }
+                )
+        except Exception as e:
+            logger.warning(f"Could not validate balance (non-blocking): {e}")
 
     # ==========================================================================
     # SAFETY CHECKS: Per-user limits

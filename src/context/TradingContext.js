@@ -58,8 +58,12 @@ const initialState = {
   // Portfolio data
   positions: [],
   cashBalance: 0,
+  availableFunds: 0,
   portfolioValue: 0,
-  todayPnL: 0,
+  totalValue: 0,
+  unrealizedPnL: 0,
+  unrealizedPnLPercent: 0,
+  buyingPower: 0,
 
   // ETFs available for trading
   etfs: [],
@@ -150,7 +154,16 @@ function tradingReducer(state, action) {
     case ACTIONS.UPDATE_ORDER_STATUS:
       return { ...state, executionResults: state.executionResults.map(r => r.id === action.payload.id ? { ...r, ...action.payload.updates } : r) };
     case ACTIONS.SET_ACCOUNT_SUMMARY:
-      return { ...state, cashBalance: action.payload.cashBalance, portfolioValue: action.payload.portfolioValue, todayPnL: action.payload.todayPnL };
+      return {
+        ...state,
+        cashBalance: action.payload.cashBalance ?? state.cashBalance,
+        availableFunds: action.payload.availableFunds ?? state.availableFunds,
+        portfolioValue: action.payload.portfolioValue ?? state.portfolioValue,
+        totalValue: action.payload.totalValue ?? state.totalValue,
+        unrealizedPnL: action.payload.unrealizedPnL ?? state.unrealizedPnL,
+        unrealizedPnLPercent: action.payload.unrealizedPnLPercent ?? state.unrealizedPnLPercent,
+        buyingPower: action.payload.buyingPower ?? state.buyingPower,
+      };
     case ACTIONS.SET_MARKET_DATA:
       return { ...state, marketData: action.payload };
     case ACTIONS.SET_MARKET_DATA_LOADING:
@@ -269,7 +282,10 @@ export function TradingProvider({ user, children }) {
         confirmationType: data.confirmation_type,
         warnings: data.warnings || [],
         tradingMode: data.trading_mode,
-        isLive: data.is_live
+        isLive: data.is_live,
+        availableFunds: data.available_funds,
+        requiredFunds: data.required_funds,
+        estimatedPrice: data.estimated_price
       };
     } catch (error) {
       return { allowed: false, reason: error.message, warnings: [] };
@@ -362,32 +378,65 @@ export function TradingProvider({ user, children }) {
     }
   }, [getAuthHeaders]);
 
-  // API: Fetch positions with caching
-  const fetchPositions = useCallback(async () => {
+  // API: Fetch account summary
+  const fetchAccountSummary = useCallback(async () => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/trading/positions`, {
+      const res = await fetch(`${TRADING_API_URL}/trading/account/summary`, {
         headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
+        const summary = {
+          cashBalance: data.cash_balance || 0,
+          availableFunds: data.available_funds || 0,
+          portfolioValue: data.portfolio_value || 0,
+          totalValue: data.total_value || 0,
+          unrealizedPnL: data.unrealized_pnl || 0,
+          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
+          buyingPower: data.buying_power || 0,
+        };
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
+        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, summary);
+        return summary;
+      }
+    } catch (error) {
+      console.error('Error fetching account summary:', error);
+    }
+    return null;
+  }, [getAuthHeaders]);
+
+  // API: Fetch positions with caching
+  const fetchPositions = useCallback(async () => {
+    try {
+      // Fetch positions and account summary in parallel
+      const [posRes, summaryRes] = await Promise.all([
+        fetch(`${TRADING_API_URL}/trading/positions`, { headers: getAuthHeaders() }),
+        fetch(`${TRADING_API_URL}/trading/account/summary`, { headers: getAuthHeaders() })
+      ]);
+
+      if (posRes.ok) {
+        const data = await posRes.json();
         const positions = data.positions || [];
 
         dispatch({ type: ACTIONS.SET_POSITIONS, payload: positions });
         dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
         dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: Date.now() });
-
-        // Calculate totals
-        const totalValue = positions.reduce((sum, p) => sum + (parseFloat(p.market_value) || 0), 0);
-        const totalPnL = positions.reduce((sum, p) => sum + (parseFloat(p.unrealized_pnl) || 0), 0);
-        const accountSummary = { portfolioValue: totalValue, todayPnL: totalPnL, cashBalance: 0 };
-
-        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: accountSummary });
-
-        // Save to cache
         saveToCache(CACHE_KEYS.POSITIONS, positions);
-        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, accountSummary);
-      } else {
-        throw new Error('API returned error');
+      }
+
+      if (summaryRes.ok) {
+        const data = await summaryRes.json();
+        const summary = {
+          cashBalance: data.cash_balance || 0,
+          availableFunds: data.available_funds || 0,
+          portfolioValue: data.portfolio_value || 0,
+          totalValue: data.total_value || 0,
+          unrealizedPnL: data.unrealized_pnl || 0,
+          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
+          buyingPower: data.buying_power || 0,
+        };
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
+        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, summary);
       }
     } catch (error) {
       console.error('Error fetching positions:', error);
@@ -730,6 +779,7 @@ export function TradingProvider({ user, children }) {
     getAvailableAccounts,
     fetchETFs,
     fetchPositions,
+    fetchAccountSummary,
     fetchOrders,
     fetchMarketData,
     fetchSafetyLimits,

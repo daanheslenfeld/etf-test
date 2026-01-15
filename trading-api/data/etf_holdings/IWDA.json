@@ -1,0 +1,81 @@
+{
+  "symbol": "IWDA",
+  "name": "iShares Core MSCI World UCITS ETF",
+  "isin": "IE00B4L5Y983",
+  "issuer": "iShares (BlackRock)",
+  "index": "MSCI World",
+  "last_updated": "2025-01-15",
+  "total_holdings": 1400,
+  "holdings": [
+    {
+      "name": "Apple Inc",
+      "ticker": "AAPL",
+      "weight_percent": 4.82,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Microsoft Corp",
+      "ticker": "MSFT",
+      "weight_percent": 4.51,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "NVIDIA Corp",
+      "ticker": "NVDA",
+      "weight_percent": 4.12,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Amazon.com Inc",
+      "ticker": "AMZN",
+      "weight_percent": 2.68,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class A",
+      "ticker": "GOOGL",
+      "weight_percent": 1.52,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Meta Platforms Inc",
+      "ticker": "META",
+      "weight_percent": 1.48,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class C",
+      "ticker": "GOOG",
+      "weight_percent": 1.32,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Broadcom Inc",
+      "ticker": "AVGO",
+      "weight_percent": 1.21,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Tesla Inc",
+      "ticker": "TSLA",
+      "weight_percent": 1.15,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    },
+    {
+      "name": "JPMorgan Chase & Co",
+      "ticker": "JPM",
+      "weight_percent": 0.98,
+      "sector": "Financials",
+      "country": "United States"
+    }
+  ]
+}

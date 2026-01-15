@@ -1,0 +1,81 @@
+{
+  "symbol": "VWRL",
+  "name": "Vanguard FTSE All-World UCITS ETF",
+  "isin": "IE00B3RBWM25",
+  "issuer": "Vanguard",
+  "index": "FTSE All-World",
+  "last_updated": "2025-01-15",
+  "total_holdings": 3644,
+  "holdings": [
+    {
+      "name": "Apple Inc",
+      "ticker": "AAPL",
+      "weight_percent": 4.18,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Microsoft Corp",
+      "ticker": "MSFT",
+      "weight_percent": 3.86,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "NVIDIA Corp",
+      "ticker": "NVDA",
+      "weight_percent": 3.48,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Amazon.com Inc",
+      "ticker": "AMZN",
+      "weight_percent": 2.28,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class A",
+      "ticker": "GOOGL",
+      "weight_percent": 1.29,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Meta Platforms Inc",
+      "ticker": "META",
+      "weight_percent": 1.25,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Alphabet Inc Class C",
+      "ticker": "GOOG",
+      "weight_percent": 1.09,
+      "sector": "Communication Services",
+      "country": "United States"
+    },
+    {
+      "name": "Broadcom Inc",
+      "ticker": "AVGO",
+      "weight_percent": 1.02,
+      "sector": "Technology",
+      "country": "United States"
+    },
+    {
+      "name": "Taiwan Semiconductor",
+      "ticker": "TSM",
+      "weight_percent": 0.95,
+      "sector": "Technology",
+      "country": "Taiwan"
+    },
+    {
+      "name": "Tesla Inc",
+      "ticker": "TSLA",
+      "weight_percent": 0.92,
+      "sector": "Consumer Discretionary",
+      "country": "United States"
+    }
+  ]
+}

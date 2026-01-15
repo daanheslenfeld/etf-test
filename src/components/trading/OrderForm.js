@@ -10,7 +10,7 @@ const ORDER_TYPES = [
 ];
 
 export default function OrderForm({ onAddToBasket }) {
-  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode } = useTrading();
+  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode, availableFunds, cashBalance, checkOrderSafety } = useTrading();
 
   const [form, setForm] = useState({
     symbol: '',
@@ -106,6 +106,17 @@ export default function OrderForm({ onAddToBasket }) {
   // Check if quantity exceeds limit
   const isLargeOrder = form.quantity >= (safetyLimits?.largeOrderThreshold || 25);
   const exceedsMaxSize = form.quantity > (safetyLimits?.maxOrderSize || 100);
+
+  // Calculate estimated order value
+  const estimatedPrice = form.limitPrice
+    ? parseFloat(form.limitPrice)
+    : currentMarketData?.last || currentMarketData?.ask || currentMarketData?.bid || 0;
+  const estimatedOrderValue = estimatedPrice * form.quantity;
+  const requiredWithBuffer = estimatedOrderValue * 1.01; // 1% buffer for fees
+
+  // Balance check for BUY orders
+  const available = availableFunds > 0 ? availableFunds : cashBalance;
+  const insufficientBalance = form.side === 'BUY' && requiredWithBuffer > available && available > 0;
 
   return (
     <div className={`bg-[#1A1B1F] border rounded-xl p-4 ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
@@ -364,14 +375,53 @@ export default function OrderForm({ onAddToBasket }) {
           </div>
         )}
 
+        {/* Estimated Order Value & Balance Check */}
+        {form.side === 'BUY' && estimatedPrice > 0 && (
+          <div className={`rounded-lg p-3 ${insufficientBalance ? 'bg-red-900/30 border border-red-600/50' : 'bg-gray-800/50'}`}>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-gray-400">Estimated Cost</span>
+              <span className="text-white font-medium">€{estimatedOrderValue.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm mb-1">
+              <span className="text-gray-400">+ Buffer (1%)</span>
+              <span className="text-gray-300">€{(estimatedOrderValue * 0.01).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm pt-1 border-t border-gray-700">
+              <span className="text-gray-400">Available Cash</span>
+              <span className={`font-medium ${insufficientBalance ? 'text-red-400' : 'text-green-400'}`}>
+                €{available.toFixed(2)}
+              </span>
+            </div>
+            {insufficientBalance && (
+              <div className="mt-2 flex items-center gap-2 text-red-400 text-xs">
+                <ShieldAlert className="w-4 h-4" />
+                <span>Insufficient liquidity. Available: €{available.toFixed(2)}, Required: €{requiredWithBuffer.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Add to Basket Button */}
         <button
           onClick={handleAddToBasket}
-          disabled={!form.conid || exceedsMaxSize}
-          className="w-full py-3 bg-[#28EBCF] text-gray-900 font-bold rounded-lg hover:bg-[#20D4BA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          disabled={!form.conid || exceedsMaxSize || insufficientBalance}
+          className={`w-full py-3 font-bold rounded-lg transition-colors flex items-center justify-center gap-2 ${
+            insufficientBalance
+              ? 'bg-red-900/50 text-red-400 cursor-not-allowed'
+              : 'bg-[#28EBCF] text-gray-900 hover:bg-[#20D4BA] disabled:opacity-50 disabled:cursor-not-allowed'
+          }`}
         >
-          <ShoppingCart className="w-5 h-5" />
-          Add to Basket
+          {insufficientBalance ? (
+            <>
+              <ShieldAlert className="w-5 h-5" />
+              Insufficient Liquidity
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-5 h-5" />
+              Add to Basket
+            </>
+          )}
         </button>
       </div>
     </div>

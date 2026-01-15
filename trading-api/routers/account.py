@@ -347,10 +347,14 @@ async def get_account_summary(
     user: UserContext = Depends(get_current_user)
 ) -> dict:
     """
-    Get account summary including cash balance and portfolio value.
+    Get comprehensive account summary including:
+    - Cash balance (available for trading)
+    - Portfolio value (sum of position market values)
+    - Total value (net liquidation)
+    - Unrealized P&L (absolute and percentage)
+    - Buying power
 
     MULTI-USER ISOLATION: Only returns data for the user's linked account.
-    No automatic fallback to IB Gateway's primary account.
     """
     ib_client = get_ib_client()
 
@@ -358,46 +362,146 @@ async def get_account_summary(
         return {
             "connected": False,
             "cash_balance": 0,
+            "available_funds": 0,
             "portfolio_value": 0,
             "total_value": 0,
+            "unrealized_pnl": 0,
+            "unrealized_pnl_percent": 0,
+            "buying_power": 0,
+            "currency": "EUR",
+            "data_stale": True,
             "message": "IB Gateway not connected"
         }
 
-    # STRICT: Only use the user's own linked account
     ib_account_id = user.ib_account_id
 
     if not ib_account_id:
         return {
             "connected": True,
             "cash_balance": 0,
+            "available_funds": 0,
             "portfolio_value": 0,
             "total_value": 0,
+            "unrealized_pnl": 0,
+            "unrealized_pnl_percent": 0,
+            "buying_power": 0,
+            "currency": "EUR",
+            "data_stale": False,
             "message": "No broker account linked. Please link your LYNX account first."
         }
 
     try:
-        # Get account values from IB for THIS user's account only
+        # Get account values from IB
         account_values = await ib_client.get_account_values(ib_account_id)
 
-        cash_balance = account_values.get("CashBalance", 0)
-        portfolio_value = account_values.get("GrossPositionValue", 0)
-        net_liquidation = account_values.get("NetLiquidation", 0)
+        # Log available tags for debugging
+        if account_values:
+            logger.info(f"IB account tags available: {list(account_values.keys())}")
+
+        # Core values - IB uses various tag names for cash
+        # Common IB tags: TotalCashValue, AvailableFunds, CashBalance, NetLiquidation
+        cash_balance = float(
+            account_values.get("TotalCashValue") or
+            account_values.get("CashBalance") or
+            account_values.get("TotalCashBalance") or
+            account_values.get("SettledCash") or
+            0
+        )
+        available_funds = float(
+            account_values.get("AvailableFunds") or
+            account_values.get("BuyingPower") or
+            cash_balance
+        )
+        buying_power = float(account_values.get("BuyingPower") or available_funds)
+        net_liquidation = float(account_values.get("NetLiquidation") or 0)
+        gross_position_value = float(
+            account_values.get("GrossPositionValue") or
+            account_values.get("StockMarketValue") or
+            0
+        )
+
+        # P&L values
+        unrealized_pnl = float(account_values.get("UnrealizedPnL", 0))
+        realized_pnl = float(account_values.get("RealizedPnL", 0))
+
+        # Calculate P&L percentage (relative to cost basis)
+        total_cost = gross_position_value - unrealized_pnl if gross_position_value > 0 else 0
+        unrealized_pnl_percent = (unrealized_pnl / total_cost * 100) if total_cost > 0 else 0
+
+        # Get positions with market data for accurate portfolio value
+        positions = await ib_client.get_positions(ib_account_id)
+        market_data = ib_client.get_all_market_data()
+
+        calculated_portfolio_value = 0
+        calculated_unrealized_pnl = 0
+        total_cost_basis = 0
+        positions_with_prices = 0
+        positions_without_prices = 0
+
+        for pos in positions:
+            qty = float(pos.get("position", 0))
+            avg_cost = float(pos.get("avgCost", 0))
+            conid = pos.get("conid")
+
+            if qty == 0:
+                continue
+
+            cost_basis = qty * avg_cost
+            total_cost_basis += cost_basis
+
+            # Try to get market price
+            market_price = None
+            if conid and conid in market_data:
+                md = market_data[conid]
+                market_price = md.get("last") or md.get("bid") or md.get("ask")
+
+            if market_price and market_price > 0:
+                market_value = qty * market_price
+                calculated_portfolio_value += market_value
+                calculated_unrealized_pnl += (market_value - cost_basis)
+                positions_with_prices += 1
+            else:
+                # Fallback: use cost basis as market value
+                calculated_portfolio_value += cost_basis
+                positions_without_prices += 1
+
+        # Use calculated values if we have market data, otherwise use IB values
+        final_portfolio_value = calculated_portfolio_value if positions_with_prices > 0 else gross_position_value
+        final_unrealized_pnl = calculated_unrealized_pnl if positions_with_prices > 0 else unrealized_pnl
+        final_pnl_percent = (final_unrealized_pnl / total_cost_basis * 100) if total_cost_basis > 0 else 0
+
+        # Mark data as potentially stale if we're missing prices
+        data_stale = positions_without_prices > 0 and positions_with_prices == 0
 
         return {
             "connected": True,
             "account_id": ib_account_id,
-            "cash_balance": float(cash_balance),
-            "portfolio_value": float(portfolio_value),
-            "total_value": float(net_liquidation),
-            "currency": "EUR"
+            "cash_balance": cash_balance,
+            "available_funds": available_funds,
+            "buying_power": buying_power,
+            "portfolio_value": final_portfolio_value,
+            "total_value": net_liquidation if net_liquidation > 0 else (cash_balance + final_portfolio_value),
+            "unrealized_pnl": final_unrealized_pnl,
+            "unrealized_pnl_percent": round(final_pnl_percent, 2),
+            "realized_pnl": realized_pnl,
+            "currency": "EUR",
+            "data_stale": data_stale,
+            "positions_with_prices": positions_with_prices,
+            "positions_without_prices": positions_without_prices
         }
     except Exception as e:
         logger.error(f"Error getting account summary for {ib_account_id}: {e}")
         return {
             "connected": True,
             "cash_balance": 0,
+            "available_funds": 0,
             "portfolio_value": 0,
             "total_value": 0,
+            "unrealized_pnl": 0,
+            "unrealized_pnl_percent": 0,
+            "buying_power": 0,
+            "currency": "EUR",
+            "data_stale": True,
             "error": str(e)
         }
 

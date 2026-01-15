@@ -204,6 +204,13 @@ class IBClient:
                 except Exception as e:
                     logger.warning(f"Position subscription failed (non-critical): {e}")
 
+                # Subscribe to account updates for real-time account values
+                try:
+                    self._ib.reqAccountUpdates(subscribe=True, account=self._primary_account)
+                    logger.info(f"Subscribed to account updates for {self._primary_account}")
+                except Exception as e:
+                    logger.warning(f"Account updates subscription failed (non-critical): {e}")
+
                 # Fire callbacks
                 for cb in self._on_connect_callbacks:
                     try:
@@ -654,23 +661,44 @@ class IBClient:
             return []
 
     async def get_account_values(self, account_id: str) -> dict:
-        """Get account values including cash balance."""
+        """Get account values including cash balance from IB."""
         if not self.is_connected():
             return {}
 
         try:
-            # Request account summary
             account_values = {}
 
-            # Get account values from ib_insync
+            # Method 1: Use accountValues() - works with subscribed account updates
+            for av in self._ib.accountValues(account_id):
+                if av.currency in ('EUR', 'BASE', ''):
+                    try:
+                        account_values[av.tag] = float(av.value) if av.value else 0
+                    except (ValueError, TypeError):
+                        pass
+
+            # If we got values, return them
+            if account_values:
+                logger.debug(f"Account values from accountValues(): {list(account_values.keys())}")
+                return account_values
+
+            # Method 2: Request account summary explicitly
             self._ib.reqAccountSummary()
-            await asyncio.sleep(0.5)  # Wait for data
+            await asyncio.sleep(1.0)  # Wait longer for data
 
             for av in self._ib.accountSummary():
                 if av.account == account_id or not account_id:
-                    account_values[av.tag] = float(av.value) if av.value else 0
+                    try:
+                        account_values[av.tag] = float(av.value) if av.value else 0
+                    except (ValueError, TypeError):
+                        pass
 
             self._ib.cancelAccountSummary()
+
+            if account_values:
+                logger.debug(f"Account values from accountSummary(): {list(account_values.keys())}")
+            else:
+                logger.warning(f"No account values retrieved for {account_id}")
+
             return account_values
         except Exception as e:
             logger.error(f"Error getting account values: {e}")

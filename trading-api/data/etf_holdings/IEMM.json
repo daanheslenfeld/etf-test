@@ -1,0 +1,81 @@
+{
+  "symbol": "IEMM",
+  "name": "iShares MSCI EM UCITS ETF",
+  "isin": "IE00B0M63177",
+  "issuer": "iShares (BlackRock)",
+  "index": "MSCI Emerging Markets",
+  "last_updated": "2025-01-15",
+  "total_holdings": 1400,
+  "holdings": [
+    {
+      "name": "Taiwan Semiconductor",
+      "ticker": "TSM",
+      "weight_percent": 9.82,
+      "sector": "Technology",
+      "country": "Taiwan"
+    },
+    {
+      "name": "Tencent Holdings Ltd",
+      "ticker": "0700.HK",
+      "weight_percent": 4.15,
+      "sector": "Communication Services",
+      "country": "China"
+    },
+    {
+      "name": "Samsung Electronics Co",
+      "ticker": "005930.KS",
+      "weight_percent": 3.62,
+      "sector": "Technology",
+      "country": "South Korea"
+    },
+    {
+      "name": "Alibaba Group Holding",
+      "ticker": "BABA",
+      "weight_percent": 2.41,
+      "sector": "Consumer Discretionary",
+      "country": "China"
+    },
+    {
+      "name": "Reliance Industries Ltd",
+      "ticker": "RELIANCE.NS",
+      "weight_percent": 1.58,
+      "sector": "Energy",
+      "country": "India"
+    },
+    {
+      "name": "PDD Holdings Inc",
+      "ticker": "PDD",
+      "weight_percent": 1.42,
+      "sector": "Consumer Discretionary",
+      "country": "China"
+    },
+    {
+      "name": "Meituan",
+      "ticker": "3690.HK",
+      "weight_percent": 1.28,
+      "sector": "Consumer Discretionary",
+      "country": "China"
+    },
+    {
+      "name": "ICICI Bank Ltd",
+      "ticker": "IBN",
+      "weight_percent": 1.15,
+      "sector": "Financials",
+      "country": "India"
+    },
+    {
+      "name": "Infosys Ltd",
+      "ticker": "INFY",
+      "weight_percent": 1.08,
+      "sector": "Technology",
+      "country": "India"
+    },
+    {
+      "name": "China Construction Bank",
+      "ticker": "0939.HK",
+      "weight_percent": 0.98,
+      "sector": "Financials",
+      "country": "China"
+    }
+  ]
+}

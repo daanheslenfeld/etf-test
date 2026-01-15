@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 # Environment flag for local development without database
 LOCAL_DEV_MODE = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
 
+# TEMPORARY: Disable auth for local testing
+AUTH_DISABLED = True
+
 
 def get_dev_mode_linked_accounts() -> Dict[int, dict]:
     """
@@ -41,6 +44,18 @@ async def get_current_user(
     - User will get customer_id=0 but NO automatic IB account access
     - Must still link their own broker account via /trading/broker/link
     """
+    # TEMPORARY: Auth bypass for local testing
+    if AUTH_DISABLED:
+        ib_client = get_ib_client()
+        ib_account = ib_client.get_primary_account()
+        return UserContext(
+            customer_id=0,
+            email="local@localhost",
+            trading_status=TradingStatus.APPROVED,
+            broker_account_id=None,
+            ib_account_id=ib_account
+        )
+
     # If no customer ID provided
     if not x_customer_id:
         if LOCAL_DEV_MODE:

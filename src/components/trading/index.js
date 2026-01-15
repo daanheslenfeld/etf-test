@@ -5,3 +5,4 @@ export { default as OrderBasket } from './OrderBasket';
 export { default as OrderStatus } from './OrderStatus';
 export { default as OrderHistory } from './OrderHistory';
 export { default as ConfirmationModal } from './ConfirmationModal';
+export { default as HoldingsModal } from './HoldingsModal';
