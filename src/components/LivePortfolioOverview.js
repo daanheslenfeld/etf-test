@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, RefreshCw, Clock, Wifi, WifiOff, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, Clock, Wifi, WifiOff, AlertCircle, Wallet, PiggyBank, BarChart3 } from 'lucide-react';
 
 const TRADING_API_URL = 'http://localhost:8002';
 
-// Cache keys
+// Shared cache keys (same as TradingContext for consistency)
 const CACHE_KEYS = {
-  POSITIONS: 'portal_cache_positions',
-  MARKET_DATA: 'portal_cache_marketData',
-  ACCOUNT_SUMMARY: 'portal_cache_accountSummary',
+  POSITIONS: 'trading_cache_positions',
+  ACCOUNT_SUMMARY: 'trading_cache_accountSummary',
 };
 
 // Cache helpers
@@ -40,9 +39,15 @@ const formatTimeAgo = (timestamp) => {
 };
 
 export default function LivePortfolioOverview({ user }) {
+  // Portfolio data from backend
   const [positions, setPositions] = useState([]);
-  const [marketData, setMarketData] = useState({});
-  const [cashBalance, setCashBalance] = useState(0);
+  const [portfolioValue, setPortfolioValue] = useState(0);
+  const [availableFunds, setAvailableFunds] = useState(0);
+  const [totalValue, setTotalValue] = useState(0);
+  const [unrealizedPnL, setUnrealizedPnL] = useState(0);
+  const [unrealizedPnLPercent, setUnrealizedPnLPercent] = useState(0);
+
+  // Connection state
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDataStale, setIsDataStale] = useState(false);
@@ -59,113 +64,23 @@ export default function LivePortfolioOverview({ user }) {
     return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`;
   };
 
-  // Fetch positions from trading API
-  const fetchPositions = useCallback(async () => {
-    try {
-      const res = await fetch(`${TRADING_API_URL}/trading/positions`, {
-        headers: {
-          'X-Customer-ID': user?.id?.toString() || '0',
-          'X-Customer-Email': user?.email || '',
-        }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const positionsData = data.positions || [];
-        setPositions(positionsData);
-        setIsDataStale(false);
-        setLastUpdate(Date.now());
-        saveToCache(CACHE_KEYS.POSITIONS, positionsData);
-        return true;
-      }
-      throw new Error('Failed to fetch positions');
-    } catch (err) {
-      console.error('Error fetching positions:', err);
-      // Load from cache
-      const cached = loadFromCache(CACHE_KEYS.POSITIONS);
-      if (cached?.data) {
-        setPositions(cached.data);
-        setLastUpdate(cached.timestamp);
-        setIsDataStale(true);
-      }
-      return false;
-    }
+  const getAuthHeaders = useCallback(() => {
+    return {
+      'Content-Type': 'application/json',
+      'X-Customer-ID': user?.id?.toString() || '0',
+      'X-Customer-Email': user?.email || '',
+    };
   }, [user]);
 
-  // Fetch account summary for cash balance
-  const fetchAccountSummary = useCallback(async () => {
-    try {
-      const res = await fetch(`${TRADING_API_URL}/trading/account/summary`, {
-        headers: {
-          'X-Customer-ID': user?.id?.toString() || '0',
-          'X-Customer-Email': user?.email || '',
-        }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.cash_balance !== undefined) {
-          setCashBalance(data.cash_balance);
-          saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, { cashBalance: data.cash_balance });
-        }
-        return true;
-      }
-      return false;
-    } catch (err) {
-      console.error('Error fetching account summary:', err);
-      const cached = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
-      if (cached?.data?.cashBalance !== undefined) {
-        setCashBalance(cached.data.cashBalance);
-      }
-      return false;
-    }
-  }, [user]);
-
-  // Fetch market data
-  const fetchMarketData = useCallback(async () => {
-    try {
-      const res = await fetch(`${TRADING_API_URL}/trading/marketdata`, {
-        headers: {
-          'X-Customer-ID': user?.id?.toString() || '0',
-          'X-Customer-Email': user?.email || '',
-        }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const marketDataBySymbol = {};
-        (data.data || []).forEach(item => {
-          marketDataBySymbol[item.symbol] = {
-            bid: item.bid,
-            ask: item.ask,
-            last: item.last,
-            midPrice: item.midPrice,
-            timestamp: item.timestamp,
-          };
-        });
-        setMarketData(marketDataBySymbol);
-        saveToCache(CACHE_KEYS.MARKET_DATA, marketDataBySymbol);
-        return true;
-      }
-      throw new Error('Failed to fetch market data');
-    } catch (err) {
-      console.error('Error fetching market data:', err);
-      const cached = loadFromCache(CACHE_KEYS.MARKET_DATA);
-      if (cached?.data) {
-        setMarketData(cached.data);
-      }
-      return false;
-    }
-  }, [user]);
-
-  // Check connection
+  // Check connection to IB Gateway
   const checkConnection = useCallback(async () => {
     try {
       const res = await fetch(`${TRADING_API_URL}/health`);
       if (res.ok) {
         const data = await res.json();
-        setConnected(data.ib_gateway?.connected || false);
-        return data.ib_gateway?.connected || false;
+        const isConnected = data.ib_gateway?.connected || false;
+        setConnected(isConnected);
+        return isConnected;
       }
       setConnected(false);
       return false;
@@ -175,96 +90,133 @@ export default function LivePortfolioOverview({ user }) {
     }
   }, []);
 
+  // Fetch positions and account summary from backend (single source of truth)
+  const fetchData = useCallback(async () => {
+    try {
+      const [posRes, summaryRes] = await Promise.all([
+        fetch(`${TRADING_API_URL}/trading/positions`, { headers: getAuthHeaders() }),
+        fetch(`${TRADING_API_URL}/trading/account/summary`, { headers: getAuthHeaders() })
+      ]);
+
+      let dataUpdated = false;
+
+      if (posRes.ok) {
+        const data = await posRes.json();
+        const positionsData = data.positions || [];
+        setPositions(positionsData);
+        saveToCache(CACHE_KEYS.POSITIONS, positionsData);
+        dataUpdated = true;
+      }
+
+      if (summaryRes.ok) {
+        const data = await summaryRes.json();
+        // Use backend values directly - backend is single source of truth
+        setPortfolioValue(data.portfolio_value || 0);
+        setAvailableFunds(data.available_funds || 0);
+        setTotalValue(data.total_value || 0);
+        setUnrealizedPnL(data.unrealized_pnl || 0);
+        setUnrealizedPnLPercent(data.unrealized_pnl_percent || 0);
+
+        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, {
+          portfolioValue: data.portfolio_value || 0,
+          availableFunds: data.available_funds || 0,
+          totalValue: data.total_value || 0,
+          unrealizedPnL: data.unrealized_pnl || 0,
+          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
+        });
+        dataUpdated = true;
+      }
+
+      if (dataUpdated) {
+        setIsDataStale(false);
+        setLastUpdate(Date.now());
+        setError(null);
+        return true;
+      }
+
+      throw new Error('Failed to fetch data');
+    } catch (err) {
+      console.error('Error fetching portfolio data:', err);
+      return false;
+    }
+  }, [getAuthHeaders]);
+
+  // Load from cache (used when backend unavailable)
+  const loadCachedData = useCallback(() => {
+    const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
+    const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+    let hasData = false;
+
+    if (cachedPositions?.data) {
+      setPositions(cachedPositions.data);
+      setLastUpdate(cachedPositions.timestamp);
+      hasData = true;
+    }
+
+    if (cachedSummary?.data) {
+      setPortfolioValue(cachedSummary.data.portfolioValue || 0);
+      setAvailableFunds(cachedSummary.data.availableFunds || 0);
+      setTotalValue(cachedSummary.data.totalValue || 0);
+      setUnrealizedPnL(cachedSummary.data.unrealizedPnL || 0);
+      setUnrealizedPnLPercent(cachedSummary.data.unrealizedPnLPercent || 0);
+      hasData = true;
+    }
+
+    if (hasData) {
+      setIsDataStale(true);
+    }
+
+    return hasData;
+  }, []);
+
   // Refresh all data
   const refreshData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     // Load cache first for instant display
-    const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
-    const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
-    const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+    loadCachedData();
 
-    if (cachedPositions?.data) {
-      setPositions(cachedPositions.data);
-      setLastUpdate(cachedPositions.timestamp);
-    }
-    if (cachedMarketData?.data) {
-      setMarketData(cachedMarketData.data);
-    }
-    if (cachedSummary?.data?.cashBalance !== undefined) {
-      setCashBalance(cachedSummary.data.cashBalance);
-    }
-
+    // Check connection
     const isConnected = await checkConnection();
-    const posSuccess = await fetchPositions();
-    await fetchMarketData();
-    await fetchAccountSummary();
 
-    if (!posSuccess && !cachedPositions?.data) {
-      setError('Unable to load portfolio data');
+    // Fetch fresh data
+    const fetchSuccess = await fetchData();
+
+    // If fetch failed but we have cache, mark as stale
+    if (!fetchSuccess) {
+      const hasCache = loadCachedData();
+      if (!hasCache) {
+        setError('Unable to load portfolio data');
+      }
     }
 
-    if (!isConnected && (cachedPositions?.data || cachedMarketData?.data)) {
+    // Mark stale if disconnected
+    if (!isConnected) {
       setIsDataStale(true);
     }
 
     setLoading(false);
-  }, [checkConnection, fetchPositions, fetchMarketData, fetchAccountSummary]);
+  }, [checkConnection, fetchData, loadCachedData]);
 
   // Initial load
   useEffect(() => {
     refreshData();
   }, [refreshData]);
 
-  // Polling
+  // Polling - continue even when disconnected to detect reconnection
   useEffect(() => {
-    const interval = setInterval(() => {
-      checkConnection();
-      fetchPositions();
-      fetchMarketData();
-      fetchAccountSummary();
+    const interval = setInterval(async () => {
+      const isConnected = await checkConnection();
+      if (isConnected) {
+        await fetchData();
+      }
     }, 10000); // Poll every 10 seconds
 
     return () => clearInterval(interval);
-  }, [checkConnection, fetchPositions, fetchMarketData, fetchAccountSummary]);
+  }, [checkConnection, fetchData]);
 
-  // Calculate position value using market data
-  const getPositionValue = (position) => {
-    const md = marketData[position.symbol];
-    const qty = parseFloat(position.quantity) || 0;
-
-    if (md?.last) {
-      return qty * md.last;
-    }
-    // Fallback to market_value from positions
-    return parseFloat(position.market_value) || 0;
-  };
-
-  // Calculate P&L
-  const calculatePnL = (position) => {
-    const avgCost = parseFloat(position.avg_cost) || 0;
-    const qty = parseFloat(position.quantity) || 0;
-    const totalCost = avgCost * qty;
-    const currentValue = getPositionValue(position);
-    return currentValue - totalCost;
-  };
-
-  const calculatePnLPercent = (position) => {
-    const avgCost = parseFloat(position.avg_cost) || 0;
-    const qty = parseFloat(position.quantity) || 0;
-    const totalCost = avgCost * qty;
-    if (totalCost === 0) return 0;
-    const pnl = calculatePnL(position);
-    return (pnl / totalCost) * 100;
-  };
-
-  // Totals
-  const totalMarketValue = positions.reduce((sum, p) => sum + getPositionValue(p), 0);
-  const totalUnrealizedPnL = positions.reduce((sum, p) => sum + calculatePnL(p), 0);
-  const totalPortfolioValue = totalMarketValue + cashBalance;
-
-  if (loading && positions.length === 0) {
+  if (loading && positions.length === 0 && portfolioValue === 0) {
     return (
       <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6">
         <div className="flex items-center justify-center gap-3">
@@ -275,7 +227,7 @@ export default function LivePortfolioOverview({ user }) {
     );
   }
 
-  if (error && positions.length === 0) {
+  if (error && positions.length === 0 && portfolioValue === 0) {
     return (
       <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6">
         <div className="flex items-center gap-3 text-gray-400">
@@ -325,21 +277,46 @@ export default function LivePortfolioOverview({ user }) {
         </button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 p-4 border-b border-gray-700">
-        <div className="bg-gray-800/50 rounded-lg p-3">
-          <div className="text-gray-400 text-xs mb-1">Portfolio Value</div>
-          <div className="text-lg font-bold text-white">{formatCurrency(totalPortfolioValue)}</div>
+      {/* Summary Cards - Using backend values directly (single source of truth) */}
+      <div className="grid grid-cols-4 gap-3 p-4 border-b border-gray-700 bg-gray-800/30">
+        {/* Positions Value */}
+        <div className="bg-gray-900/50 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+            <BarChart3 className="w-3 h-3" />
+            Positions Value
+          </div>
+          <div className="text-lg font-bold text-white">{formatCurrency(portfolioValue)}</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-3">
-          <div className="text-gray-400 text-xs mb-1">Cash Balance</div>
-          <div className="text-lg font-bold text-white">{formatCurrency(cashBalance)}</div>
+
+        {/* Available Cash */}
+        <div className="bg-gray-900/50 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+            <Wallet className="w-3 h-3" />
+            Available Cash
+          </div>
+          <div className={`text-lg font-bold ${availableFunds > 0 ? 'text-green-400' : 'text-white'}`}>
+            {formatCurrency(availableFunds)}
+          </div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-3">
-          <div className="text-gray-400 text-xs mb-1">Unrealized P&L</div>
-          <div className={`text-lg font-bold flex items-center gap-1 ${totalUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {totalUnrealizedPnL >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-            {formatCurrency(totalUnrealizedPnL)}
+
+        {/* Total Value = Positions + Cash */}
+        <div className="bg-gray-900/50 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+            <PiggyBank className="w-3 h-3" />
+            Total Value
+          </div>
+          <div className="text-lg font-bold text-white">{formatCurrency(totalValue)}</div>
+        </div>
+
+        {/* Unrealized P&L */}
+        <div className="bg-gray-900/50 rounded-lg p-3">
+          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+            {unrealizedPnL >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            Unrealized P&L
+          </div>
+          <div className={`text-lg font-bold flex items-center gap-2 ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {formatCurrency(unrealizedPnL)}
+            <span className="text-sm">({formatPercent(unrealizedPnLPercent)})</span>
           </div>
         </div>
       </div>
@@ -353,7 +330,7 @@ export default function LivePortfolioOverview({ user }) {
               <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Qty</th>
               <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Avg Cost</th>
               <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Last Price</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Value</th>
+              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Market Value</th>
               <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">P&L</th>
               <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">P&L %</th>
             </tr>
@@ -367,11 +344,15 @@ export default function LivePortfolioOverview({ user }) {
               </tr>
             ) : (
               positions.map((position, idx) => {
-                const pnl = calculatePnL(position);
-                const pnlPercent = calculatePnLPercent(position);
+                // Use backend-provided values directly (single source of truth)
+                const qty = parseFloat(position.quantity) || 0;
+                const avgCost = parseFloat(position.avg_cost) || 0;
+                const lastPrice = parseFloat(position.last_price) || avgCost;
+                const marketValue = parseFloat(position.market_value) || 0;
+                const pnl = parseFloat(position.unrealized_pnl) || 0;
+                const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
                 const isPositive = pnl >= 0;
-                const md = marketData[position.symbol];
-                const lastPrice = md?.last || parseFloat(position.avg_cost) || 0;
+                const isStale = position.price_stale;
 
                 return (
                   <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
@@ -380,19 +361,17 @@ export default function LivePortfolioOverview({ user }) {
                       <div className="text-xs text-gray-500">{position.currency}</div>
                     </td>
                     <td className="px-4 py-2 text-right text-white text-sm">
-                      {parseFloat(position.quantity).toFixed(0)}
+                      {qty.toFixed(0)}
                     </td>
                     <td className="px-4 py-2 text-right text-gray-300 text-sm">
-                      {formatCurrency(position.avg_cost)}
+                      {formatCurrency(avgCost)}
                     </td>
-                    <td className="px-4 py-2 text-right text-sm">
-                      <span className={md?.last ? 'text-white' : 'text-gray-500'}>
-                        {formatCurrency(lastPrice)}
-                      </span>
-                      {!md?.last && <span className="text-xs text-gray-600 ml-1">(est)</span>}
+                    <td className={`px-4 py-2 text-right text-sm ${isStale ? 'text-orange-400' : 'text-white'}`}>
+                      {formatCurrency(lastPrice)}
+                      {isStale && <span className="text-xs text-gray-600 ml-1">(stale)</span>}
                     </td>
                     <td className="px-4 py-2 text-right text-white font-medium text-sm">
-                      {formatCurrency(getPositionValue(position))}
+                      {formatCurrency(marketValue)}
                     </td>
                     <td className={`px-4 py-2 text-right font-medium text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                       {formatCurrency(pnl)}
@@ -405,6 +384,26 @@ export default function LivePortfolioOverview({ user }) {
               })
             )}
           </tbody>
+          {/* Totals Footer */}
+          {positions.length > 0 && (
+            <tfoot className="bg-gray-800/50 border-t border-gray-700">
+              <tr>
+                <td className="px-4 py-2 font-bold text-white text-sm">Positions Total</td>
+                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2"></td>
+                <td className="px-4 py-2 text-right font-bold text-white text-sm">
+                  {formatCurrency(portfolioValue)}
+                </td>
+                <td className={`px-4 py-2 text-right font-bold text-sm ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {formatCurrency(unrealizedPnL)}
+                </td>
+                <td className={`px-4 py-2 text-right font-bold text-sm ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {formatPercent(unrealizedPnLPercent)}
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 
