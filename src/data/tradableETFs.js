@@ -1,14 +1,27 @@
 /**
  * Tradable ETFs Registry
  *
- * Single source of truth for ETF tradability via LYNX/Interactive Brokers.
- * Maps ISIN to trading metadata (symbol, conid, exchange, currency).
+ * IMPORTANT: This file provides STATIC FALLBACK data only.
+ * The TradingContext fetches dynamic tradability data from the backend.
  *
- * This registry must stay in sync with trading-api/services/ib_client.py MVP_ETFS
+ * Single source of truth: trading-api/data/etf_tradability.json
+ *
+ * To update tradability data:
+ * 1. Ensure IB Gateway is running
+ * 2. Run: python trading-api/scripts/check_etf_tradability.py --port 4001
+ * 3. The script checks ALL ETFs from public/ETF_overzicht_met_subcategorie.xlsx
+ * 4. Results are saved to trading-api/data/etf_tradability.json
+ * 5. Frontend automatically fetches from /trading/tradability API
+ *
+ * Classification of blocked ETFs:
+ * - no_contract: ETF not found in IB system
+ * - no_trading_permission: Account doesn't have permission
+ * - regulatory_restriction: PRIIPs/MiFID II restrictions
+ * - unknown: Other/unclassified reason
  */
 
-// ISIN → Trading Metadata
-// Updated based on IB Gateway investigation (investigate_etfs.py)
+// ISIN → Trading Metadata (STATIC FALLBACK)
+// These are known-good ETFs that were pre-verified via IB Gateway
 export const TRADABLE_ETFS = {
   // === S&P 500 ETFs ===
   // Vanguard S&P 500 UCITS ETF (USD) Distributing

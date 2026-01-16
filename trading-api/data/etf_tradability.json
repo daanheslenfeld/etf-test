@@ -1,0 +1,373 @@
+{
+  "metadata": {
+    "checked_at": "2026-01-15T16:54:37.534233",
+    "total_checked": 20,
+    "total_tradable": 20,
+    "total_blocked": 0,
+    "ib_port": 4001,
+    "account": "U23449486",
+    "blocked_by_reason": {}
+  },
+  "etfs": {
+    "IE00B5BMR087": {
+      "isin": "IE00B5BMR087",
+      "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 75776072,
+        "symbol": "SXR8",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SXR8",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:25.258262"
+    },
+    "IE00B4L5Y983": {
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 100292038,
+        "symbol": "IWDA",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "IWDA",
+        "tradingClass": "IWDA"
+      },
+      "checked_at": "2026-01-15T16:54:25.767507"
+    },
+    "IE00B3XXRP09": {
+      "isin": "IE00B3XXRP09",
+      "name": "Vanguard S&P 500 UCITS ETF (USD) Distributing",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 128884495,
+        "symbol": "VUSA",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "VUSA",
+        "tradingClass": "VUSA"
+      },
+      "checked_at": "2026-01-15T16:54:26.369881"
+    },
+    "IE00B3YCGJ38": {
+      "isin": "IE00B3YCGJ38",
+      "name": "Invesco S&P 500 UCITS ETF",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 166084812,
+        "symbol": "SPXS",
+        "exchange": "SMART",
+        "primaryExchange": "BVME.ETF",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SPXS",
+        "tradingClass": "SPXS"
+      },
+      "checked_at": "2026-01-15T16:54:27.035728"
+    },
+    "IE00BKM4GZ66": {
+      "isin": "IE00BKM4GZ66",
+      "name": "iShares Core MSCI Emerging Markets IMI UCITS ETF (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 153454120,
+        "symbol": "EMIM",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "EMIM",
+        "tradingClass": "EMIM"
+      },
+      "checked_at": "2026-01-15T16:54:27.659635"
+    },
+    "IE00BFMXXD54": {
+      "isin": "IE00BFMXXD54",
+      "name": "Vanguard S&P 500 UCITS ETF (USD) Accumulating",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 399364021,
+        "symbol": "VUAA",
+        "exchange": "SMART",
+        "primaryExchange": "BVME.ETF",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "VUAA",
+        "tradingClass": "VUAA"
+      },
+      "checked_at": "2026-01-15T16:54:28.305066"
+    },
+    "IE00BK5BQT80": {
+      "isin": "IE00BK5BQT80",
+      "name": "Vanguard FTSE All-World UCITS ETF (USD) Accumulating",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 375858281,
+        "symbol": "VWCE",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "VWCE",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:28.939477"
+    },
+    "IE00B6R52259": {
+      "isin": "IE00B6R52259",
+      "name": "iShares MSCI ACWI UCITS ETF USD (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 239363241,
+        "symbol": "IUSQ",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "IUSQ",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:29.556560"
+    },
+    "IE00B3RBWM25": {
+      "isin": "IE00B3RBWM25",
+      "name": "Vanguard FTSE All-World UCITS ETF (USD) Distributing",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 128831206,
+        "symbol": "VWRL",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "VWRL",
+        "tradingClass": "VWRL"
+      },
+      "checked_at": "2026-01-15T16:54:30.158944"
+    },
+    "IE00B53SZB19": {
+      "isin": "IE00B53SZB19",
+      "name": "iShares Nasdaq 100 UCITS ETF (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 81910701,
+        "symbol": "SXRV",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SXRV",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:30.806703"
+    },
+    "IE0031442068": {
+      "isin": "IE0031442068",
+      "name": "iShares Core S&P 500 UCITS ETF USD (Dist)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 29651319,
+        "symbol": "IUSA",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "IUSA",
+        "tradingClass": "IUSA"
+      },
+      "checked_at": "2026-01-15T16:54:31.400908"
+    },
+    "IE00BJ0KDQ92": {
+      "isin": "IE00BJ0KDQ92",
+      "name": "Xtrackers MSCI World UCITS ETF 1C",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 163606916,
+        "symbol": "XDWD",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "XDWD",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:31.994389"
+    },
+    "IE0005042456": {
+      "isin": "IE0005042456",
+      "name": "iShares Core FTSE 100 UCITS ETF GBP (Dist)",
+      "input_currency": "GBP",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 14223075,
+        "symbol": "ISFA",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "ISFA",
+        "tradingClass": "ISFA"
+      },
+      "checked_at": "2026-01-15T16:54:32.593735"
+    },
+    "IE00B6YX5C33": {
+      "isin": "IE00B6YX5C33",
+      "name": "SPDR S&P 500 UCITS ETF (Dist)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 104754270,
+        "symbol": "SPY5",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SPY5",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:33.187847"
+    },
+    "LU0908500753": {
+      "isin": "LU0908500753",
+      "name": "Amundi Stoxx Europe 600 UCITS ETF Acc",
+      "input_currency": "EUR",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 125902391,
+        "symbol": "MEUD",
+        "exchange": "SMART",
+        "primaryExchange": "SBF",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "MEUD",
+        "tradingClass": "MEUD"
+      },
+      "checked_at": "2026-01-15T16:54:33.795777"
+    },
+    "IE00BFY0GT14": {
+      "isin": "IE00BFY0GT14",
+      "name": "SPDR MSCI World UCITS ETF",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 355720826,
+        "symbol": "SPPW",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SPPW",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:34.454246"
+    },
+    "IE00B4K48X80": {
+      "isin": "IE00B4K48X80",
+      "name": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
+      "input_currency": "EUR",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 79000336,
+        "symbol": "IMAE",
+        "exchange": "SMART",
+        "primaryExchange": "AEB",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "IMAE",
+        "tradingClass": "IMAE"
+      },
+      "checked_at": "2026-01-15T16:54:35.065863"
+    },
+    "IE00B3WJKG14": {
+      "isin": "IE00B3WJKG14",
+      "name": "iShares S&P 500 Information Technology Sector UCITS ETF USD (Acc)",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 242717020,
+        "symbol": "QDVE",
+        "exchange": "SMART",
+        "primaryExchange": "IBIS2",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "QDVE",
+        "tradingClass": "ETF"
+      },
+      "checked_at": "2026-01-15T16:54:35.687165"
+    },
+    "LU1135865084": {
+      "isin": "LU1135865084",
+      "name": "Amundi S&P 500 II UCITS ETF Acc",
+      "input_currency": "EUR",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 233772665,
+        "symbol": "SP5C",
+        "exchange": "SMART",
+        "primaryExchange": "SBF",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "SP5C",
+        "tradingClass": "SP5C"
+      },
+      "checked_at": "2026-01-15T16:54:36.299877"
+    },
+    "IE00B4X9L533": {
+      "isin": "IE00B4X9L533",
+      "name": "HSBC MSCI World UCITS ETF USD",
+      "input_currency": "USD",
+      "tradable_via_lynx": true,
+      "reason_if_not_tradable": null,
+      "contract": {
+        "conId": 87836659,
+        "symbol": "WRD",
+        "exchange": "SMART",
+        "primaryExchange": "SBF",
+        "currency": "EUR",
+        "secType": "STK",
+        "localSymbol": "WRD",
+        "tradingClass": "WRD"
+      },
+      "checked_at": "2026-01-15T16:54:36.904866"
+    }
+  }
+}

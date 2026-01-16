@@ -32,7 +32,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import get_settings, TradingMode
-from routers import etfs_router, quotes_router, orders_router, positions_router, account_router, health_router, marketdata_router, holdings_router
+from routers import etfs_router, quotes_router, orders_router, positions_router, account_router, health_router, marketdata_router, holdings_router, tradability_router
 
 
 # =============================================================================
@@ -201,6 +201,7 @@ app.include_router(account_router)
 app.include_router(health_router)
 app.include_router(marketdata_router)
 app.include_router(holdings_router)
+app.include_router(tradability_router)
 
 
 # =============================================================================

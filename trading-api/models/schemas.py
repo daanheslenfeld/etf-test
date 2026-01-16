@@ -35,6 +35,46 @@ class ETFInfo(BaseModel):
     conid: int  # IB Contract ID
     exchange: str
     currency: str
+    isin: Optional[str] = None
+
+
+class ETFContract(BaseModel):
+    """IB contract details for a tradable ETF."""
+    conId: int
+    symbol: str
+    exchange: str
+    primaryExchange: Optional[str] = None
+    currency: str
+    secType: Optional[str] = None
+    localSymbol: Optional[str] = None
+    tradingClass: Optional[str] = None
+
+
+class ETFTradability(BaseModel):
+    """ETF tradability information."""
+    isin: str
+    name: str
+    input_currency: Optional[str] = None
+    tradable_via_lynx: bool
+    reason_if_not_tradable: Optional[str] = None
+    contract: Optional[ETFContract] = None
+    checked_at: Optional[str] = None
+
+
+class TradabilityMetadata(BaseModel):
+    """Metadata for tradability check results."""
+    checked_at: Optional[str] = None
+    total_checked: int = 0
+    total_tradable: int = 0
+    total_blocked: int = 0
+    ib_port: Optional[int] = None
+
+
+class TradabilityResponse(BaseModel):
+    """Response for tradability endpoint."""
+    metadata: TradabilityMetadata
+    tradable_etfs: list[ETFTradability]
+    count: int
 
 
 class ETFQuote(BaseModel):

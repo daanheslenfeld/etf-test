@@ -57,7 +57,7 @@ export default function OrderBasket({ onExecute }) {
   const hasLargeOrder = orderBasket.some(o => o.quantity >= (safetyLimits?.largeOrderThreshold || 25));
 
   return (
-    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
+    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-blue-600/50' : 'border-gray-700'}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -72,7 +72,7 @@ export default function OrderBasket({ onExecute }) {
         <div className="flex items-center gap-3">
           <div className={`px-2 py-0.5 rounded text-xs font-bold ${
             isLive
-              ? 'bg-red-600/30 text-red-400 border border-red-600'
+              ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
               : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
           }`}>
             {tradingMode}
@@ -200,12 +200,12 @@ export default function OrderBasket({ onExecute }) {
 
             {/* Safety Warnings */}
             {(isBulkOrder || hasLargeOrder || isLive) && orderBasket.length > 0 && (
-              <div className={`mb-3 p-2 rounded text-xs ${isLive ? 'bg-red-900/30 border border-red-600/50' : 'bg-orange-900/30 border border-orange-600/50'}`}>
-                <div className={`flex items-center gap-1 font-medium ${isLive ? 'text-red-400' : 'text-orange-400'}`}>
+              <div className={`mb-3 p-2 rounded text-xs ${isLive ? 'bg-blue-900/30 border border-blue-600/50' : 'bg-orange-900/30 border border-orange-600/50'}`}>
+                <div className={`flex items-center gap-1 font-medium ${isLive ? 'text-blue-400' : 'text-orange-400'}`}>
                   <AlertTriangle className="w-3 h-3" />
                   Confirmation Required:
                 </div>
-                <ul className={`mt-1 space-y-0.5 ${isLive ? 'text-red-300' : 'text-orange-300'}`}>
+                <ul className={`mt-1 space-y-0.5 ${isLive ? 'text-blue-300' : 'text-orange-300'}`}>
                   {isLive && <li>• Live trading - real money</li>}
                   {isBulkOrder && <li>• Bulk order ({orderBasket.length} orders)</li>}
                   {hasLargeOrder && <li>• Large order in basket</li>}
@@ -219,7 +219,7 @@ export default function OrderBasket({ onExecute }) {
               disabled={isExecuting || orderBasket.length === 0}
               className={`w-full py-3 font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                 isLive
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-[#28EBCF] hover:bg-[#20D4BA] text-gray-900'
               }`}
             >

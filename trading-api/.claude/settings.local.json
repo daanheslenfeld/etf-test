@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c:*)",
+      "Bash(python -m py_compile:*)",
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(uvicorn main:app:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(dir:*)",
+      "Bash(npm start)",
+      "Bash(timeout 15 python:*)",
+      "Bash(timeout 20 uvicorn:*)",
+      "Bash(pip install:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(taskkill /F /PID 9848)",
+      "Bash(powershell -Command \"Stop-Process -Id 8544 -Force; Stop-Process -Id 8564 -Force; Stop-Process -Id 9848 -Force\")"
+    ]
+  }
+}

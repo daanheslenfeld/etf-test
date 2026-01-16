@@ -103,14 +103,14 @@ export default function PortfolioOverview({ onPrefillOrder }) {
   const hasStaleData = isDataStale || positions.some(p => p.price_stale);
 
   return (
-    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
+    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-blue-600/50' : 'border-gray-700'}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-bold text-white">Portfolio Overview</h2>
           <div className={`px-2 py-0.5 rounded text-xs font-bold ${
             isLive
-              ? 'bg-red-600/30 text-red-400 border border-red-600'
+              ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
               : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
           }`}>
             {tradingMode}

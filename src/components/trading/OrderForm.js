@@ -189,7 +189,7 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
   const insufficientBalance = form.side === 'BUY' && requiredWithBuffer > available && available > 0;
 
   return (
-    <div className={`bg-[#1A1B1F] border rounded-xl p-4 ${isLive ? 'border-red-600/50' : 'border-gray-700'}`}>
+    <div className={`bg-[#1A1B1F] border rounded-xl p-4 ${isLive ? 'border-blue-600/50' : 'border-gray-700'}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
           <Plus className="w-5 h-5 text-[#28EBCF]" />
@@ -197,7 +197,7 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
         </h3>
         <div className={`px-2 py-0.5 rounded text-xs font-bold ${
           isLive
-            ? 'bg-red-600/30 text-red-400 border border-red-600'
+            ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
             : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
         }`}>
           {tradingMode}

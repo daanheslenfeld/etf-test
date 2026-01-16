@@ -7,3 +7,4 @@ from .account import router as account_router
 from .health import router as health_router
 from .marketdata import router as marketdata_router
 from .holdings import router as holdings_router
+from .tradability import router as tradability_router

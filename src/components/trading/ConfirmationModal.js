@@ -34,16 +34,16 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl max-w-lg w-full shadow-2xl">
         {/* Header */}
-        <div className={`p-4 border-b border-gray-700 flex items-center justify-between ${isLive ? 'bg-red-900/30' : 'bg-yellow-900/20'}`}>
+        <div className={`p-4 border-b border-gray-700 flex items-center justify-between ${isLive ? 'bg-blue-900/30' : 'bg-yellow-900/20'}`}>
           <div className="flex items-center gap-3">
             {isLive ? (
-              <ShieldAlert className="w-6 h-6 text-red-400" />
+              <ShieldAlert className="w-6 h-6 text-blue-400" />
             ) : (
               <AlertTriangle className="w-6 h-6 text-yellow-400" />
             )}
             <div>
               <h2 className="text-lg font-bold text-white">Confirm Order Execution</h2>
-              <div className={`text-sm ${isLive ? 'text-red-400' : 'text-yellow-400'}`}>
+              <div className={`text-sm ${isLive ? 'text-blue-400' : 'text-yellow-400'}`}>
                 {isLive ? 'LIVE TRADING - REAL MONEY' : 'Paper Trading Mode'}
               </div>
             </div>
@@ -61,9 +61,9 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
         <div className="p-6">
           {/* Warning for Live Trading */}
           {isLive && (
-            <div className="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
-              <p className="text-red-400 font-medium">
-                WARNING: You are about to execute orders with REAL MONEY.
+            <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-4 mb-6">
+              <p className="text-blue-400 font-medium">
+                LIVE TRADING: You are about to execute orders with REAL MONEY.
                 These orders cannot be undone once submitted.
               </p>
             </div>
@@ -139,7 +139,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
               disabled={isSubmitting}
               className={`flex-1 py-3 font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
                 isLive
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : 'bg-[#28EBCF] hover:bg-[#20D4BA] text-gray-900'
               }`}
             >

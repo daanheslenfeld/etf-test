@@ -261,7 +261,7 @@ function TradingDashboardContent({ onBack }) {
               {/* Trading Mode Badge */}
               <div className={`px-3 py-1 rounded-full text-sm font-bold ${
                 tradingMode === 'LIVE'
-                  ? 'bg-red-600/30 text-red-400 border border-red-600'
+                  ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
                   : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
               }`}>
                 {tradingMode === 'LIVE' ? 'LIVE' : 'PAPER'}
