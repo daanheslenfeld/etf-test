@@ -265,12 +265,7 @@ export function TradingProvider({ user, children }) {
             totalExposure: data.total_exposure,
           }
         });
-        // Also update trading mode from response (normalize to uppercase)
-        const safetyMode = (data.trading_mode || 'paper').toUpperCase();
-        dispatch({
-          type: ACTIONS.SET_TRADING_MODE,
-          payload: { mode: safetyMode, isLive: data.is_live === true }
-        });
+        // NOTE: Do NOT update trading mode here - it's derived from account ID in checkConnection
       }
     } catch (error) {
       console.error('Error fetching safety limits:', error);
