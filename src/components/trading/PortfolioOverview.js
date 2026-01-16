@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3, Plus, Minus, Scale } from 'lucide-react';
 import ETFDetailsModal from './ETFDetailsModal';
+import RebalanceModal from './RebalanceModal';
 
 // Helper to format time ago
 const formatTimeAgo = (timestamp) => {
@@ -15,7 +16,7 @@ const formatTimeAgo = (timestamp) => {
   return `${Math.floor(hours / 24)}d ago`;
 };
 
-export default function PortfolioOverview() {
+export default function PortfolioOverview({ onPrefillOrder }) {
   const {
     positions,
     portfolioValue,
@@ -30,11 +31,53 @@ export default function PortfolioOverview() {
     lastPositionsUpdate,
     safetyLimits,
     isLive,
-    tradingMode
+    tradingMode,
+    tradableETFs,
+    marketData
   } = useTrading();
 
   // ETF details modal state
   const [selectedEtf, setSelectedEtf] = useState(null);
+  // Rebalance modal state
+  const [showRebalanceModal, setShowRebalanceModal] = useState(false);
+
+  // Helper to get conid for a position
+  const getConidForPosition = (position) => {
+    // Try to find the conid from tradability data or position
+    if (position.conid) return position.conid;
+    // Check tradableETFs by symbol (need to find by matching symbol)
+    const tradInfo = Object.values(tradableETFs).find(t => t.contract?.symbol === position.symbol);
+    if (tradInfo?.contract?.conId) return tradInfo.contract.conId;
+    return null;
+  };
+
+  // Handle BUY MORE action
+  const handleBuyMore = (position) => {
+    const conid = getConidForPosition(position);
+    if (onPrefillOrder && conid) {
+      onPrefillOrder({
+        symbol: position.symbol,
+        conid: conid,
+        side: 'BUY',
+        quantity: 1,
+      });
+    }
+  };
+
+  // Handle SELL action
+  const handleSell = (position) => {
+    const conid = getConidForPosition(position);
+    const maxQty = Math.floor(parseFloat(position.quantity) || 0);
+    if (onPrefillOrder && conid && maxQty > 0) {
+      onPrefillOrder({
+        symbol: position.symbol,
+        conid: conid,
+        side: 'SELL',
+        quantity: 1,
+        maxQuantity: maxQty,
+      });
+    }
+  };
 
   const formatCurrency = (value) => {
     const num = parseFloat(value) || 0;
@@ -79,13 +122,24 @@ export default function PortfolioOverview() {
             </div>
           )}
         </div>
-        <button
-          onClick={fetchPositions}
-          disabled={loading}
-          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          {positions.length > 0 && (
+            <button
+              onClick={() => setShowRebalanceModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600/20 text-purple-400 border border-purple-600/50 rounded-lg hover:bg-purple-600/30 transition-colors text-sm font-medium"
+            >
+              <Scale className="w-4 h-4" />
+              Rebalance
+            </button>
+          )}
+          <button
+            onClick={fetchPositions}
+            disabled={loading}
+            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Portfolio Summary - Always visible at top */}
@@ -169,12 +223,13 @@ export default function PortfolioOverview() {
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Market Value</th>
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L (EUR)</th>
               <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L %</th>
+              <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
             {positions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-gray-500 py-8">
+                <td colSpan={8} className="text-center text-gray-500 py-8">
                   No positions found
                 </td>
               </tr>
@@ -224,6 +279,28 @@ export default function PortfolioOverview() {
                     <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                       {formatPercent(pnlPercent)}
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleBuyMore(position)}
+                          disabled={!getConidForPosition(position)}
+                          className="flex items-center gap-1 px-2 py-1 bg-green-600/20 text-green-400 border border-green-600/40 rounded text-xs font-medium hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Buy more shares"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Buy
+                        </button>
+                        <button
+                          onClick={() => handleSell(position)}
+                          disabled={qty <= 0 || !getConidForPosition(position)}
+                          className="flex items-center gap-1 px-2 py-1 bg-red-600/20 text-red-400 border border-red-600/40 rounded text-xs font-medium hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={qty <= 0 ? 'No shares to sell' : 'Sell shares'}
+                        >
+                          <Minus className="w-3 h-3" />
+                          Sell
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })
@@ -246,6 +323,7 @@ export default function PortfolioOverview() {
                 <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {formatPercent(displayPnLPercent)}
                 </td>
+                <td className="px-4 py-3"></td>
               </tr>
             </tfoot>
           )}
@@ -257,6 +335,15 @@ export default function PortfolioOverview() {
         symbol={selectedEtf}
         isOpen={!!selectedEtf}
         onClose={() => setSelectedEtf(null)}
+      />
+
+      {/* Rebalance Modal */}
+      <RebalanceModal
+        isOpen={showRebalanceModal}
+        onClose={() => setShowRebalanceModal(false)}
+        positions={positions}
+        portfolioValue={displayPortfolioValue}
+        availableCash={displayAvailableFunds}
       />
     </div>
   );

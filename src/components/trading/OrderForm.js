@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTrading } from '../../context/TradingContext';
 import { Plus, ShoppingCart, TrendingUp, TrendingDown, Clock, AlertTriangle, ShieldAlert } from 'lucide-react';
 
@@ -9,8 +9,8 @@ const ORDER_TYPES = [
   { value: 'STP_LMT', label: 'Stop Limit', requiresLimit: true, requiresStop: true },
 ];
 
-export default function OrderForm({ onAddToBasket }) {
-  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode, availableFunds, cashBalance, checkOrderSafety } = useTrading();
+export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill }) {
+  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode, availableFunds, cashBalance, checkOrderSafety, tradableETFs, isTradableByIsin, tradabilityStats, validateSellOrder, positions } = useTrading();
 
   const [form, setForm] = useState({
     symbol: '',
@@ -23,18 +23,85 @@ export default function OrderForm({ onAddToBasket }) {
   });
 
   const [selectedETF, setSelectedETF] = useState(null);
+  const [maxSellQuantity, setMaxSellQuantity] = useState(null);
+  const [sellError, setSellError] = useState(null);
+
+  // Handle prefill from PortfolioOverview
+  useEffect(() => {
+    if (prefillOrder) {
+      setForm(prev => ({
+        ...prev,
+        symbol: prefillOrder.symbol,
+        conid: prefillOrder.conid,
+        side: prefillOrder.side,
+        quantity: prefillOrder.quantity || 1,
+        orderType: 'MKT',
+        limitPrice: '',
+        stopPrice: '',
+      }));
+      setMaxSellQuantity(prefillOrder.maxQuantity || null);
+      setSellError(null);
+      // Find the ETF for selected symbol
+      const etf = etfs.find(e => e.symbol === prefillOrder.symbol);
+      if (etf) setSelectedETF(etf);
+    }
+  }, [prefillOrder, etfs]);
+
+  // Update max sell quantity when side changes to SELL
+  useEffect(() => {
+    if (form.side === 'SELL' && form.symbol) {
+      const position = positions.find(p => p.symbol === form.symbol);
+      if (position) {
+        setMaxSellQuantity(Math.floor(parseFloat(position.quantity) || 0));
+      } else {
+        setMaxSellQuantity(0);
+      }
+    } else {
+      setMaxSellQuantity(null);
+    }
+    setSellError(null);
+  }, [form.side, form.symbol, positions]);
+
+  // Validate sell quantity
+  useEffect(() => {
+    if (form.side === 'SELL' && maxSellQuantity !== null) {
+      if (form.quantity > maxSellQuantity) {
+        setSellError(`Cannot sell ${form.quantity} shares. You only own ${maxSellQuantity}.`);
+      } else if (maxSellQuantity === 0) {
+        setSellError(`No shares owned for ${form.symbol}`);
+      } else {
+        setSellError(null);
+      }
+    } else {
+      setSellError(null);
+    }
+  }, [form.quantity, form.side, maxSellQuantity, form.symbol]);
+
+  // Filter ETFs to only show tradable ones
+  // Use tradableETFs from backend tradability check as the source of truth
+  const tradableETFsList = useMemo(() => {
+    if (!tradableETFs || Object.keys(tradableETFs).length === 0) {
+      // Fallback to all ETFs if tradability data not loaded yet
+      return etfs;
+    }
+    // Filter to only ETFs that are tradable via LYNX
+    return etfs.filter(etf => {
+      const tradInfo = tradableETFs[etf.isin];
+      return tradInfo?.tradable_via_lynx === true;
+    });
+  }, [etfs, tradableETFs]);
 
   // Get current market data for selected symbol
   const currentMarketData = form.symbol ? marketData[form.symbol] : null;
 
-  // Set default ETF on load
+  // Set default ETF on load (from tradable list only)
   useEffect(() => {
-    if (etfs.length > 0 && !form.conid) {
-      const first = etfs[0];
+    if (tradableETFsList.length > 0 && !form.conid) {
+      const first = tradableETFsList[0];
       setForm(prev => ({ ...prev, symbol: first.symbol, conid: first.conid }));
       setSelectedETF(first);
     }
-  }, [etfs, form.conid]);
+  }, [tradableETFsList, form.conid]);
 
   // Auto-fill limit price with mid-price when switching to limit order type
   useEffect(() => {
@@ -44,12 +111,15 @@ export default function OrderForm({ onAddToBasket }) {
     }
   }, [form.orderType, currentMarketData?.midPrice, form.limitPrice]);
 
-  // Update selected ETF when symbol changes
+  // Update selected ETF when symbol changes (from tradable list)
   const handleSymbolChange = (e) => {
     const symbol = e.target.value;
-    const etf = etfs.find(e => e.symbol === symbol);
+    const etf = tradableETFsList.find(e => e.symbol === symbol);
     if (etf) {
-      setForm(prev => ({ ...prev, symbol: etf.symbol, conid: etf.conid, limitPrice: '', stopPrice: '' }));
+      // Get contract info from tradability data for accurate conid
+      const tradInfo = tradableETFs[etf.isin];
+      const conid = tradInfo?.contract?.conId || etf.conid;
+      setForm(prev => ({ ...prev, symbol: etf.symbol, conid: conid, limitPrice: '', stopPrice: '' }));
       setSelectedETF(etf);
     }
   };
@@ -159,20 +229,36 @@ export default function OrderForm({ onAddToBasket }) {
           </button>
         </div>
 
-        {/* Symbol Select */}
+        {/* Symbol Select - Only shows tradable ETFs */}
         <div>
-          <label className="block text-gray-400 text-sm mb-1">Symbol</label>
+          <label className="block text-gray-400 text-sm mb-1">
+            Symbol
+            {tradabilityStats?.totalTradable > 0 && (
+              <span className="text-gray-500 ml-2 text-xs">
+                ({tradableETFsList.length} tradable)
+              </span>
+            )}
+          </label>
           <select
             value={form.symbol}
             onChange={handleSymbolChange}
             className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
           >
-            {etfs.map(etf => (
-              <option key={etf.conid} value={etf.symbol}>
-                {etf.symbol} - {etf.name}
-              </option>
-            ))}
+            {tradableETFsList.length === 0 ? (
+              <option value="" disabled>No tradable ETFs available</option>
+            ) : (
+              tradableETFsList.map(etf => (
+                <option key={etf.isin || etf.conid} value={etf.symbol}>
+                  {etf.symbol} - {etf.name}
+                </option>
+              ))
+            )}
           </select>
+          {tradableETFsList.length === 0 && etfs.length > 0 && (
+            <p className="text-yellow-400 text-xs mt-1">
+              Tradability data loading... or no ETFs verified as tradable yet.
+            </p>
+          )}
         </div>
 
         {/* Market Data Display */}
@@ -243,33 +329,75 @@ export default function OrderForm({ onAddToBasket }) {
         <div>
           <label className="block text-gray-400 text-sm mb-1">
             Quantity
-            <span className="text-gray-500 ml-2">(max: {safetyLimits?.maxOrderSize || 100})</span>
+            {form.side === 'SELL' && maxSellQuantity !== null ? (
+              <span className="text-gray-500 ml-2">(max owned: {maxSellQuantity})</span>
+            ) : (
+              <span className="text-gray-500 ml-2">(max: {safetyLimits?.maxOrderSize || 100})</span>
+            )}
           </label>
           <input
             type="number"
             min="1"
-            max={safetyLimits?.maxOrderSize || 100}
+            max={form.side === 'SELL' && maxSellQuantity !== null ? maxSellQuantity : (safetyLimits?.maxOrderSize || 100)}
             value={form.quantity}
             onChange={(e) => setForm(prev => ({ ...prev, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
             className={`w-full bg-gray-800 border rounded-lg px-4 py-3 text-white focus:outline-none ${
-              exceedsMaxSize
+              sellError || exceedsMaxSize
                 ? 'border-red-500 focus:border-red-500'
                 : isLargeOrder
                   ? 'border-orange-500 focus:border-orange-500'
                   : 'border-gray-600 focus:border-[#28EBCF]'
             }`}
           />
-          {exceedsMaxSize && (
+          {sellError && (
+            <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3" />
+              {sellError}
+            </p>
+          )}
+          {!sellError && exceedsMaxSize && (
             <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
               Exceeds max order size ({safetyLimits?.maxOrderSize || 100})
             </p>
           )}
-          {isLargeOrder && !exceedsMaxSize && (
+          {!sellError && isLargeOrder && !exceedsMaxSize && (
             <p className="text-orange-400 text-xs mt-1 flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
               Large order - will require confirmation
             </p>
+          )}
+          {form.side === 'SELL' && maxSellQuantity !== null && maxSellQuantity > 0 && !sellError && (
+            <div className="flex gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity / 4) || 1 }))}
+                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+              >
+                25%
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity / 2) || 1 }))}
+                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+              >
+                50%
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity * 0.75) || 1 }))}
+                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+              >
+                75%
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm(prev => ({ ...prev, quantity: maxSellQuantity }))}
+                className="flex-1 text-xs py-1 px-2 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+              >
+                100%
+              </button>
+            </div>
           )}
         </div>
 
@@ -404,14 +532,19 @@ export default function OrderForm({ onAddToBasket }) {
         {/* Add to Basket Button */}
         <button
           onClick={handleAddToBasket}
-          disabled={!form.conid || exceedsMaxSize || insufficientBalance}
+          disabled={!form.conid || exceedsMaxSize || insufficientBalance || tradableETFsList.length === 0 || !!sellError}
           className={`w-full py-3 font-bold rounded-lg transition-colors flex items-center justify-center gap-2 ${
-            insufficientBalance
+            insufficientBalance || sellError
               ? 'bg-red-900/50 text-red-400 cursor-not-allowed'
               : 'bg-[#28EBCF] text-gray-900 hover:bg-[#20D4BA] disabled:opacity-50 disabled:cursor-not-allowed'
           }`}
         >
-          {insufficientBalance ? (
+          {sellError ? (
+            <>
+              <ShieldAlert className="w-5 h-5" />
+              Cannot Sell More Than Owned
+            </>
+          ) : insufficientBalance ? (
             <>
               <ShieldAlert className="w-5 h-5" />
               Insufficient Liquidity
@@ -419,7 +552,7 @@ export default function OrderForm({ onAddToBasket }) {
           ) : (
             <>
               <ShoppingCart className="w-5 h-5" />
-              Add to Basket
+              Add {form.side} to Basket
             </>
           )}
         </button>

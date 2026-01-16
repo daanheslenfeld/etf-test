@@ -51,6 +51,18 @@ function TradingDashboardContent({ onBack }) {
   const [linkingAccount, setLinkingAccount] = useState(false);
   const [availableAccounts, setAvailableAccounts] = useState([]);
   const [linkError, setLinkError] = useState(null);
+  const [prefillOrder, setPrefillOrder] = useState(null);
+
+  // Handle prefill order from portfolio actions
+  const handlePrefillOrder = (orderData) => {
+    setPrefillOrder(orderData);
+    // Scroll to order form for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleClearPrefill = () => {
+    setPrefillOrder(null);
+  };
 
   const handleExecuteClick = () => {
     if (orderBasket.length === 0) return;
@@ -351,13 +363,16 @@ function TradingDashboardContent({ onBack }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           {/* Left Column: Order Form + Order Basket */}
           <div className="space-y-6">
-            <OrderForm />
+            <OrderForm
+              prefillOrder={prefillOrder}
+              onClearPrefill={handleClearPrefill}
+            />
             <OrderBasket onExecute={handleExecuteClick} />
           </div>
 
           {/* Right Column: Portfolio + Order History */}
           <div className="lg:col-span-2 space-y-6">
-            <PortfolioOverview />
+            <PortfolioOverview onPrefillOrder={handlePrefillOrder} />
             <OrderHistory />
           </div>
         </div>

@@ -7,6 +7,7 @@ const CACHE_KEYS = {
   MARKET_DATA: 'trading_cache_marketData',
   POSITIONS: 'trading_cache_positions',
   ACCOUNT_SUMMARY: 'trading_cache_accountSummary',
+  TRADABILITY: 'trading_cache_tradability',
 };
 
 // Cache helper functions
@@ -69,6 +70,10 @@ const initialState = {
   etfs: [],
   quotes: {},
 
+  // Tradability data (which ETFs can be traded via LYNX)
+  tradableETFs: {},  // { [isin]: { tradable_via_lynx, contract, ... } }
+  tradabilityStats: { totalChecked: 0, totalTradable: 0, totalBlocked: 0, checkedAt: null },
+
   // Market data: { [symbol]: { bid, ask, last, spread, midPrice, delayed, timestamp } }
   marketData: {},
   marketDataLoading: false,
@@ -114,6 +119,7 @@ const ACTIONS = {
   SET_DATA_STALE: 'SET_DATA_STALE',
   SET_LAST_MARKET_DATA_UPDATE: 'SET_LAST_MARKET_DATA_UPDATE',
   SET_LAST_POSITIONS_UPDATE: 'SET_LAST_POSITIONS_UPDATE',
+  SET_TRADABILITY: 'SET_TRADABILITY',
 };
 
 // Reducer
@@ -174,6 +180,12 @@ function tradingReducer(state, action) {
       return { ...state, lastMarketDataUpdate: action.payload };
     case ACTIONS.SET_LAST_POSITIONS_UPDATE:
       return { ...state, lastPositionsUpdate: action.payload };
+    case ACTIONS.SET_TRADABILITY:
+      return {
+        ...state,
+        tradableETFs: action.payload.etfs,
+        tradabilityStats: action.payload.stats,
+      };
     default:
       return state;
   }
@@ -378,6 +390,53 @@ export function TradingProvider({ user, children }) {
     }
   }, [getAuthHeaders]);
 
+  // API: Fetch tradability data (which ETFs can be traded via LYNX)
+  const fetchTradability = useCallback(async () => {
+    try {
+      const res = await fetch(`${TRADING_API_URL}/trading/tradability`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Convert array to object keyed by ISIN
+        const etfsByIsin = {};
+        (data.tradable_etfs || []).forEach(etf => {
+          etfsByIsin[etf.isin] = etf;
+        });
+        const stats = {
+          totalChecked: data.metadata?.total_checked || 0,
+          totalTradable: data.metadata?.total_tradable || 0,
+          totalBlocked: data.metadata?.total_blocked || 0,
+          checkedAt: data.metadata?.checked_at || null,
+        };
+        dispatch({ type: ACTIONS.SET_TRADABILITY, payload: { etfs: etfsByIsin, stats } });
+        saveToCache(CACHE_KEYS.TRADABILITY, { etfs: etfsByIsin, stats });
+      }
+    } catch (error) {
+      console.error('Error fetching tradability:', error);
+      // Load from cache on failure
+      const cached = loadFromCache(CACHE_KEYS.TRADABILITY);
+      if (cached?.data) {
+        dispatch({ type: ACTIONS.SET_TRADABILITY, payload: cached.data });
+      }
+    }
+  }, [getAuthHeaders]);
+
+  // Check if an ETF is tradable by ISIN
+  const isTradableByIsin = useCallback((isin) => {
+    const etf = state.tradableETFs[isin];
+    return etf?.tradable_via_lynx || false;
+  }, [state.tradableETFs]);
+
+  // Get contract info for a tradable ETF
+  const getContractByIsin = useCallback((isin) => {
+    const etf = state.tradableETFs[isin];
+    if (etf?.tradable_via_lynx && etf?.contract) {
+      return etf.contract;
+    }
+    return null;
+  }, [state.tradableETFs]);
+
   // API: Fetch account summary
   const fetchAccountSummary = useCallback(async () => {
     try {
@@ -534,6 +593,34 @@ export function TradingProvider({ user, children }) {
   const getMarketDataForSymbol = useCallback((symbol) => {
     return state.marketData[symbol] || null;
   }, [state.marketData]);
+
+  // Get position by symbol (for sell validation)
+  const getPositionBySymbol = useCallback((symbol) => {
+    return state.positions.find(p => p.symbol === symbol) || null;
+  }, [state.positions]);
+
+  // Validate sell order: check we have enough shares
+  const validateSellOrder = useCallback((symbol, quantity) => {
+    const position = state.positions.find(p => p.symbol === symbol);
+    if (!position) {
+      return { valid: false, reason: `No position found for ${symbol}`, maxQuantity: 0 };
+    }
+    const ownedQty = parseFloat(position.quantity) || 0;
+    if (quantity > ownedQty) {
+      return { valid: false, reason: `Cannot sell ${quantity} shares. You only own ${ownedQty}`, maxQuantity: ownedQty };
+    }
+    return { valid: true, maxQuantity: ownedQty };
+  }, [state.positions]);
+
+  // Validate buy order: check we have enough cash
+  const validateBuyOrder = useCallback((estimatedCost) => {
+    const available = state.availableFunds > 0 ? state.availableFunds : state.cashBalance;
+    const requiredWithBuffer = estimatedCost * 1.01; // 1% buffer for fees
+    if (requiredWithBuffer > available && available > 0) {
+      return { valid: false, reason: `Insufficient funds. Need €${requiredWithBuffer.toFixed(2)}, have €${available.toFixed(2)}`, availableFunds: available };
+    }
+    return { valid: true, availableFunds: available };
+  }, [state.availableFunds, state.cashBalance]);
 
   // API: Place single order (with optional confirmation)
   const placeOrder = useCallback(async (order, confirmed = false) => {
@@ -731,6 +818,9 @@ export function TradingProvider({ user, children }) {
       const connected = await checkConnection();
       const hasLinkedAccount = await checkBrokerLink();
 
+      // Fetch tradability data (cached, doesn't change often)
+      await fetchTradability();
+
       // Only fetch trading data if user has linked account
       if (hasLinkedAccount) {
         await Promise.all([fetchETFs(), fetchPositions(), fetchOrders(), fetchSafetyLimits()]);
@@ -750,7 +840,7 @@ export function TradingProvider({ user, children }) {
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
-  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, fetchSafetyLimits, subscribeToMarketData, fetchMarketData]);
+  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, fetchSafetyLimits, subscribeToMarketData, fetchMarketData, fetchTradability]);
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
@@ -794,6 +884,14 @@ export function TradingProvider({ user, children }) {
     clearBasket,
     clearError,
     clearExecutionResults,
+    // Tradability functions
+    fetchTradability,
+    isTradableByIsin,
+    getContractByIsin,
+    // Position helpers
+    getPositionBySymbol,
+    validateSellOrder,
+    validateBuyOrder,
   };
 
   return (

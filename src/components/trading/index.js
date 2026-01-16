@@ -6,3 +6,5 @@ export { default as OrderStatus } from './OrderStatus';
 export { default as OrderHistory } from './OrderHistory';
 export { default as ConfirmationModal } from './ConfirmationModal';
 export { default as HoldingsModal } from './HoldingsModal';
+export { default as ETFDetailsModal } from './ETFDetailsModal';
+export { default as RebalanceModal } from './RebalanceModal';
