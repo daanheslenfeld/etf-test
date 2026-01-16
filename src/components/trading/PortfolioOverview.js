@@ -113,7 +113,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
               ? 'bg-red-600/30 text-red-400 border border-red-600'
               : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
           }`}>
-            {tradingMode || 'PAPER'}
+            {tradingMode}
           </div>
           {hasStaleData && (
             <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-600/20 border border-orange-600/40 rounded text-xs text-orange-400">

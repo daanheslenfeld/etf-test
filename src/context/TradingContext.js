@@ -215,8 +215,13 @@ export function TradingProvider({ user, children }) {
 
       const health = await healthRes.json();
 
-      const tradingMode = health.trading_mode || 'PAPER';
-      const isLive = tradingMode === 'LIVE';
+      // Determine trading mode from account ID (DU/DF = paper, else = live)
+      const accountId = health.ib_gateway?.account || '';
+      const isPaperAccount = accountId.startsWith('DU') || accountId.startsWith('DF');
+
+      // If account is real (not DU/DF), it's LIVE regardless of backend config
+      const isLive = accountId && !isPaperAccount;
+      const tradingMode = isLive ? 'LIVE' : 'PAPER';
 
       dispatch({
         type: ACTIONS.SET_CONNECTION,
@@ -260,10 +265,11 @@ export function TradingProvider({ user, children }) {
             totalExposure: data.total_exposure,
           }
         });
-        // Also update trading mode from response
+        // Also update trading mode from response (normalize to uppercase)
+        const safetyMode = (data.trading_mode || 'paper').toUpperCase();
         dispatch({
           type: ACTIONS.SET_TRADING_MODE,
-          payload: { mode: data.trading_mode, isLive: data.is_live }
+          payload: { mode: safetyMode, isLive: data.is_live === true }
         });
       }
     } catch (error) {
@@ -293,8 +299,8 @@ export function TradingProvider({ user, children }) {
         requiresConfirmation: data.requires_confirmation,
         confirmationType: data.confirmation_type,
         warnings: data.warnings || [],
-        tradingMode: data.trading_mode,
-        isLive: data.is_live,
+        tradingMode: (data.trading_mode || 'paper').toUpperCase(),
+        isLive: data.is_live === true,
         availableFunds: data.available_funds,
         requiredFunds: data.required_funds,
         estimatedPrice: data.estimated_price
@@ -653,8 +659,8 @@ export function TradingProvider({ user, children }) {
           confirmationType: data.details.confirmation_type,
           warnings: data.details.warnings || [],
           message: data.message,
-          isLive: data.details.is_live,
-          tradingMode: data.details.trading_mode
+          isLive: data.details.is_live === true,
+          tradingMode: (data.details.trading_mode || 'paper').toUpperCase()
         };
       }
 
@@ -664,8 +670,8 @@ export function TradingProvider({ user, children }) {
           success: false,
           safetyBlocked: true,
           message: data.message,
-          isLive: data.details.is_live,
-          tradingMode: data.details.trading_mode
+          isLive: data.details.is_live === true,
+          tradingMode: (data.details.trading_mode || 'paper').toUpperCase()
         };
       }
 
@@ -674,8 +680,8 @@ export function TradingProvider({ user, children }) {
         orderId: data.order_id,
         message: data.message || (res.ok ? 'Order placed' : 'Order failed'),
         details: data.details,
-        isLive: data.details?.is_live,
-        tradingMode: data.details?.trading_mode
+        isLive: data.details?.is_live === true,
+        tradingMode: (data.details?.trading_mode || 'paper').toUpperCase()
       };
     } catch (error) {
       return { success: false, message: error.message };

@@ -200,7 +200,7 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
             ? 'bg-red-600/30 text-red-400 border border-red-600'
             : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
         }`}>
-          {tradingMode || 'PAPER'}
+          {tradingMode}
         </div>
       </div>
 
