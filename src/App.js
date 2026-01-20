@@ -5,8 +5,15 @@ import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
+import { TradingProvider } from './context/TradingContext';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
+import FinancialOverviewCards from './components/FinancialOverviewCards';
+import MarketIndicesTicker from './components/MarketIndicesTicker';
+import PortfolioPositionsCard from './components/PortfolioPositionsCard';
+import PremadePortfolioCard from './components/PremadePortfolioCard';
 import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
+import BulkBuyFlow from './components/portfolio/BulkBuyFlow';
+import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from './data/tradablePortfolioDefinitions';
 
 // Helper: Get categories that have tradable ETFs
 const getTradableCategories = (etfList) => {
@@ -1342,6 +1349,24 @@ const ETFPortal = () => {
     return saved ? JSON.parse(saved) : {};
   });
 
+  // Bulk buy modal state
+  const [bulkBuyModalOpen, setBulkBuyModalOpen] = useState(false);
+  const [selectedBulkPortfolioKey, setSelectedBulkPortfolioKey] = useState(null);
+
+  // Handler for opening bulk buy modal
+  const handleBulkBuyNow = (portfolioKey) => {
+    setSelectedBulkPortfolioKey(portfolioKey);
+    setBulkBuyModalOpen(true);
+  };
+
+  // Handler for when orders are added to basket
+  const handleBulkBuyAddedToBasket = () => {
+    // Navigate to trading page to see the basket
+    setCurrentPage('trading');
+    setBulkBuyModalOpen(false);
+    setSelectedBulkPortfolioKey(null);
+  };
+
   const premadePortfolios = {
     'bonds100': {
       name: '100% Obligaties',
@@ -1525,6 +1550,26 @@ useEffect(() => {
         etf.naam?.toLowerCase().includes(searchLower) ||
         etf.isin?.toLowerCase().includes(searchLower)
       );
+    }
+
+    // Apply issuer filter
+    if (activeFilters.issuer) {
+      const issuerLower = activeFilters.issuer.toLowerCase();
+      filtered = filtered.filter(etf => etf.naam?.toLowerCase().includes(issuerLower));
+    }
+
+    // Apply tradable filter from activeFilters
+    if (activeFilters.tradable) {
+      if (activeFilters.tradable === 'Ja (LYNX)') {
+        filtered = filtered.filter(etf => etf.isTradableViaLynx === true);
+      } else {
+        filtered = filtered.filter(etf => !etf.isTradableViaLynx);
+      }
+    }
+
+    // Apply showOnlyTradable toggle (overrides tradable filter if enabled)
+    if (showOnlyTradable && !activeFilters.tradable) {
+      filtered = filtered.filter(etf => etf.isTradableViaLynx === true);
     }
 
     setFilteredEtfs(filtered);
@@ -2348,6 +2393,9 @@ useEffect(() => {
 
   const MainDashboard = () => (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Market Indices Ticker - Beurskoersen balk */}
+      <MarketIndicesTicker />
+
       <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
@@ -2411,6 +2459,11 @@ useEffect(() => {
             Wat wil je vandaag doen?
           </p>
         </div>
+
+        {/* Financial Overview Cards - wrapped with TradingProvider */}
+        <TradingProvider user={user}>
+          <FinancialOverviewCards />
+        </TradingProvider>
 
         {/* Portfolio Beheer Section */}
         <div className="mb-8">
@@ -2496,10 +2549,16 @@ useEffect(() => {
           </div>
         </div>
 
+        {/* Je Huidige Portfolio - Live posities van broker */}
+        <TradingProvider user={user}>
+          <PortfolioPositionsCard />
+        </TradingProvider>
+
+        {/* Link naar Monte Carlo simulatie (losgekoppeld) */}
         {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (
           <div className="mt-6 sm:mt-8 bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5">
             <div className="flex justify-between items-start mb-2">
-              <h2 className="text-lg sm:text-xl font-bold text-white">Je Huidige Portfolio</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-white">Portfolio Simulatie</h2>
               {investmentDetails.pricesLastUpdated && (
                 <div className="text-xs text-gray-500">
                   Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
@@ -2512,25 +2571,15 @@ useEffect(() => {
                 </div>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-gray-400 mb-4">Je hebt {portfolio.length} ETF's in je portfolio</p>
+            <p className="text-xs sm:text-sm text-gray-400 mb-4">
+              Bekijk de Monte Carlo simulatie van je portfolio met {portfolio.length} ETF's
+            </p>
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="px-5 py-2.5 bg-[#28EBCF] text-[#0A0B0D] rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-sm"
+              className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all font-semibold text-sm"
             >
-              Bekijk Portfolio
+              Bekijk Simulatie
             </button>
-          </div>
-        )}
-
-        {/* Live Broker Portfolio */}
-        {user?.account_type === 'betaald' && (
-          <div className="mt-6 sm:mt-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-              <h2 className="text-xl font-bold text-white">Broker Portfolio</h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            </div>
-            <LivePortfolioOverview user={user} />
           </div>
         )}
       </div>
@@ -4446,21 +4495,23 @@ useEffect(() => {
 
   // Define filters per category (moved outside component for performance)
   const categoryFiltersMap = useMemo(() => ({
-    'Aandelen': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-    'Obligaties': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
-    'Commodities': ['soort', 'valuta', 'sustainability', 'dividend', 'replication'],
-    'Vastgoed': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-    'Money market': ['region', 'valuta', 'sustainability', 'dividend', 'replication'],
-    'Crypto': ['soort', 'valuta', 'sustainability', 'dividend', 'replication']
+    'Aandelen': ['region', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable'],
+    'Obligaties': ['soort', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable'],
+    'Commodities': ['soort', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable'],
+    'Vastgoed': ['region', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable'],
+    'Money market': ['region', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable'],
+    'Crypto': ['soort', 'valuta', 'issuer', 'sustainability', 'dividend', 'replication', 'tradable']
   }), []);
 
   const filterLabels = useMemo(() => ({
     'region': 'Regio',
     'soort': 'Soort',
     'valuta': 'Valuta',
+    'issuer': 'Uitgevende instelling',
     'sustainability': 'Sustainability',
     'dividend': 'Dividend',
-    'replication': 'Replication'
+    'replication': 'Replication',
+    'tradable': 'LYNX Handelbaar'
   }), []);
 
   // Memoize filter options calculation for performance
@@ -4482,6 +4533,14 @@ useEffect(() => {
           currentEtfs = currentEtfs.filter(e => e.distribution === activeFilters[key]);
         } else if (key === 'replication') {
           currentEtfs = currentEtfs.filter(e => e.replication === activeFilters[key]);
+        } else if (key === 'issuer') {
+          currentEtfs = currentEtfs.filter(e => e.naam && e.naam.toLowerCase().includes(activeFilters[key].toLowerCase()));
+        } else if (key === 'tradable') {
+          if (activeFilters[key] === 'Ja (LYNX)') {
+            currentEtfs = currentEtfs.filter(e => e.isTradableViaLynx === true);
+          } else {
+            currentEtfs = currentEtfs.filter(e => !e.isTradableViaLynx);
+          }
         }
       }
     });
@@ -4496,6 +4555,21 @@ useEffect(() => {
       return [...new Set(currentEtfs.map(e => e.distribution).filter(Boolean))];
     } else if (filterType === 'replication') {
       return [...new Set(currentEtfs.map(e => e.replication).filter(Boolean))];
+    } else if (filterType === 'issuer') {
+      // Extract issuer from ETF name
+      const knownIssuers = ['iShares', 'Vanguard', 'Amundi', 'Xtrackers', 'SPDR', 'Lyxor', 'WisdomTree', 'VanEck', 'Invesco', 'UBS', 'HSBC'];
+      const issuers = currentEtfs.map(e => {
+        const name = e.naam || '';
+        for (const issuer of knownIssuers) {
+          if (name.toLowerCase().includes(issuer.toLowerCase())) {
+            return issuer;
+          }
+        }
+        return null;
+      }).filter(Boolean);
+      return [...new Set(issuers)].sort();
+    } else if (filterType === 'tradable') {
+      return ['Ja (LYNX)', 'Nee'];
     }
     return [];
   }, [etfs, selectedMainCategory, activeFilters]);
@@ -5401,21 +5475,49 @@ useEffect(() => {
           <p className="text-center text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12">
-            <button onClick={() => {
-              setPortfolioType('custom');
-              setCustomBuildStep('profile');
-              setSelectedProfile(null);
-              setSelectedCategory(null);
-              setCategoriesCompleted({});
-              setPortfolio([]);
-            }} className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-800 text-left">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🎯</div>
+            <button
+              onClick={() => {
+                if (portfolioType === 'custom') return;
+                setPortfolioType('custom');
+                setCustomBuildStep('profile');
+                setSelectedProfile(null);
+                setSelectedCategory(null);
+                setCategoriesCompleted({});
+                setPortfolio([]);
+              }}
+              className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
+                portfolioType === 'custom'
+                  ? 'border-[#28EBCF] ring-2 ring-[#28EBCF]/30 cursor-default'
+                  : 'border-gray-800 hover:shadow-xl hover:border-gray-700'
+              }`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🎯</div>
+                {portfolioType === 'custom' && (
+                  <span className="px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] text-xs font-medium rounded-full">Actief</span>
+                )}
+              </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Zelf Samenstellen</h3>
               <p className="text-sm sm:text-base text-gray-400">Kies een profiel en selecteer je eigen ETF's per categorie</p>
             </button>
 
-            <button onClick={() => setPortfolioType('premade')} className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition-all border border-gray-800 text-left">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📊</div>
+            <button
+              onClick={() => {
+                if (portfolioType === 'premade') return;
+                setPortfolioType('premade');
+              }}
+              className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
+                portfolioType === 'premade'
+                  ? 'border-[#28EBCF] ring-2 ring-[#28EBCF]/30 cursor-default'
+                  : 'border-gray-800 hover:shadow-xl hover:border-gray-700'
+              }`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📊</div>
+                {portfolioType === 'premade' && (
+                  <span className="px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] text-xs font-medium rounded-full">Actief</span>
+                )}
+              </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Vooraf Samengesteld</h3>
               <p className="text-sm sm:text-base text-gray-400">Kies een portfolio op basis van risicoprofiel</p>
             </button>
@@ -5769,18 +5871,23 @@ useEffect(() => {
           
           {portfolioType === 'premade' && (
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-white">Risicoprofielen</h2>
-              <div className="grid grid-cols-3 gap-6">
-                {Object.entries(premadePortfolios).map(([key, config]) => (
-                  <button key={key} onClick={() => createPremadePortfolio(key)} className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all text-left border border-gray-800 hover:border-[#28EBCF]">
-                    <h4 className="font-bold text-lg mb-2 text-white">{config.name}</h4>
-                    <div className="text-sm text-gray-400 mb-2">
-                      {Object.entries(config.allocation).map(([cat, pct]) => <div key={cat}>{cat}: {pct}%</div>)}
-                    </div>
-                    <div className="text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                    <div className="text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
-                  </button>
-                ))}
+              <h2 className="text-2xl font-bold mb-2 text-white">Kies je Risicoprofiel</h2>
+              <p className="text-gray-400 mb-6">Selecteer een vooraf samengestelde portfolio die past bij jouw beleggingsdoelen</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(premadePortfolios).map(([key, config]) => {
+                  const tradableCategories = getTradableCategories(etfs);
+                  const fullyTradable = isProfileFullyTradable(config.allocation, tradableCategories);
+                  return (
+                    <PremadePortfolioCard
+                      key={key}
+                      portfolioKey={key}
+                      config={config}
+                      onSelect={createPremadePortfolio}
+                      onBuyNow={handleBulkBuyNow}
+                      isTradable={fullyTradable}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -5876,7 +5983,7 @@ useEffect(() => {
               >
                 Fictieve Portfolio Behouden
               </button>
-              <button onClick={() => setCurrentPage('purchase')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
+              <button onClick={() => setCurrentPage('trading')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
             </div>
           </div>
 
@@ -6520,10 +6627,10 @@ useEffect(() => {
                   </div>
                 </div>
                 <button
-                  onClick={() => setCurrentPage('purchase')}
+                  onClick={() => setCurrentPage('trading')}
                   className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold"
                 >
-                  Upgrade naar Betaald Account
+                  Portfolio Aankopen via LYNX
                 </button>
               </div>
             </div>
@@ -6976,22 +7083,68 @@ useEffect(() => {
       }
     };
 
-    // Check if portfolio is empty
+    // Check if portfolio is empty - show quick start options instead of blocking
     if (!portfolio || portfolio.length === 0) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-          <div className="text-center bg-[#1A1B1F] rounded-2xl shadow-lg p-12 max-w-md border border-gray-800">
-            <div className="text-6xl mb-6">📊</div>
-            <h2 className="text-2xl font-bold mb-4 text-white">Geen Portfolio</h2>
-            <p className="text-gray-400 mb-6">
-              Je hebt nog geen portfolio samengesteld. Ga terug om een portfolio te maken.
-            </p>
-            <button
-              onClick={() => setCurrentPage('mainDashboard')}
-              className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
-            >
-              Terug naar Dashboard
-            </button>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 sm:p-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="text-6xl mb-4">🚀</div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+                Begin met beleggen
+              </h1>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                Kies een kant-en-klaar portfolio dat past bij jouw risicoprofiel en begin direct met investeren.
+              </p>
+            </div>
+
+            {/* Portfolio Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {Object.entries(TRADABLE_PORTFOLIO_DEFINITIONS)
+                .filter(([key]) => key !== 'free')
+                .map(([key, config]) => (
+                  <PremadePortfolioCard
+                    key={key}
+                    portfolioKey={key}
+                    config={{
+                      name: config.name,
+                      allocation: config.holdings.reduce((acc, h) => {
+                        acc[h.category] = (acc[h.category] || 0) + h.weight;
+                        return acc;
+                      }, {}),
+                      expectedReturn: config.expectedReturn,
+                      stdDev: config.stdDev
+                    }}
+                    onSelect={(profileKey) => {
+                      // Navigate to portfolio builder with this profile
+                      setSelectedProfile(profileKey);
+                      setCurrentPage('portfolioBuilder');
+                    }}
+                    onBuyNow={handleBulkBuyNow}
+                    isTradable={true}
+                  />
+                ))}
+            </div>
+
+            {/* Alternative options */}
+            <div className="text-center">
+              <p className="text-gray-500 mb-4">Of bouw je eigen portfolio</p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <button
+                  onClick={() => setCurrentPage('portfolioBuilder')}
+                  className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-medium border border-gray-700"
+                >
+                  Custom Portfolio Bouwen
+                </button>
+                <button
+                  onClick={() => setCurrentPage('trading')}
+                  className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-medium border border-gray-700"
+                >
+                  Direct naar Trading
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -7031,9 +7184,12 @@ useEffect(() => {
       .filter(([name, value]) => value > 0) // Filter out 0% categories
       .map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }))
       .sort((a, b) => b.value - a.value); // Sort by value descending (highest first)
-    
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* Market Indices Ticker - Beurskoersen balk */}
+        <MarketIndicesTicker />
+
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
@@ -10484,6 +10640,18 @@ useEffect(() => {
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
+
+      {/* Bulk Buy Modal */}
+      <BulkBuyFlow
+        user={user}
+        isOpen={bulkBuyModalOpen}
+        onClose={() => {
+          setBulkBuyModalOpen(false);
+          setSelectedBulkPortfolioKey(null);
+        }}
+        portfolioKey={selectedBulkPortfolioKey}
+        onAddedToBasket={handleBulkBuyAddedToBasket}
+      />
 
       {/* Chat Widget */}
       <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
