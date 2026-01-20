@@ -6,7 +6,9 @@ import OrderBasket from './OrderBasket';
 import OrderStatus from './OrderStatus';
 import OrderHistory from './OrderHistory';
 import ConfirmationModal from './ConfirmationModal';
-import { ArrowLeft, Wifi, WifiOff, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
+import ETFBrowser from './ETFBrowser';
+import MarketIndicesTicker from '../MarketIndicesTicker';
+import { ArrowLeft, Wifi, WifiOff, AlertTriangle, RefreshCw, Clock, List, ShoppingCart } from 'lucide-react';
 
 // Helper to format time ago
 const formatTimeAgo = (timestamp) => {
@@ -52,6 +54,7 @@ function TradingDashboardContent({ onBack }) {
   const [availableAccounts, setAvailableAccounts] = useState([]);
   const [linkError, setLinkError] = useState(null);
   const [prefillOrder, setPrefillOrder] = useState(null);
+  const [activeTab, setActiveTab] = useState('etfs'); // 'etfs' or 'orders'
 
   // Handle prefill order from portfolio actions
   const handlePrefillOrder = (orderData) => {
@@ -109,10 +112,13 @@ function TradingDashboardContent({ onBack }) {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
-          <div className="text-white text-xl">Connecting to Trading API...</div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <MarketIndicesTicker />
+        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 48px)' }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
+            <div className="text-white text-xl">Connecting to Trading API...</div>
+          </div>
         </div>
       </div>
     );
@@ -122,6 +128,7 @@ function TradingDashboardContent({ onBack }) {
   if (!brokerLinked) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <MarketIndicesTicker />
         <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex justify-between items-center">
@@ -243,6 +250,9 @@ function TradingDashboardContent({ onBack }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Market Indices Ticker */}
+      <MarketIndicesTicker />
+
       {/* Navigation */}
       <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
@@ -359,23 +369,75 @@ function TradingDashboardContent({ onBack }) {
         {/* Execution Results */}
         <OrderStatus />
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          {/* Left Column: Order Form + Order Basket */}
-          <div className="space-y-6">
-            <OrderForm
-              prefillOrder={prefillOrder}
-              onClearPrefill={handleClearPrefill}
-            />
-            <OrderBasket onExecute={handleExecuteClick} />
-          </div>
-
-          {/* Right Column: Portfolio + Order History */}
-          <div className="lg:col-span-2 space-y-6">
-            <PortfolioOverview onPrefillOrder={handlePrefillOrder} />
-            <OrderHistory />
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mt-6 mb-4">
+          <button
+            onClick={() => setActiveTab('etfs')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+              activeTab === 'etfs'
+                ? 'bg-[#28EBCF] text-gray-900'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            ETF Browser
+          </button>
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+              activeTab === 'orders'
+                ? 'bg-[#28EBCF] text-gray-900'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Orders & Portfolio
+            {orderBasket.length > 0 && (
+              <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                {orderBasket.length}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* ETF Browser Tab */}
+        {activeTab === 'etfs' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* ETF Browser - Full width on mobile, 2/3 on desktop */}
+            <div className="lg:col-span-2">
+              <ETFBrowser onAddToOrder={handlePrefillOrder} />
+            </div>
+
+            {/* Order Form Sidebar */}
+            <div className="space-y-6">
+              <OrderForm
+                prefillOrder={prefillOrder}
+                onClearPrefill={handleClearPrefill}
+              />
+              <OrderBasket onExecute={handleExecuteClick} />
+            </div>
+          </div>
+        )}
+
+        {/* Orders & Portfolio Tab */}
+        {activeTab === 'orders' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column: Order Form + Order Basket */}
+            <div className="space-y-6">
+              <OrderForm
+                prefillOrder={prefillOrder}
+                onClearPrefill={handleClearPrefill}
+              />
+              <OrderBasket onExecute={handleExecuteClick} />
+            </div>
+
+            {/* Right Column: Portfolio + Order History */}
+            <div className="lg:col-span-2 space-y-6">
+              <PortfolioOverview onPrefillOrder={handlePrefillOrder} />
+              <OrderHistory />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Modal */}
