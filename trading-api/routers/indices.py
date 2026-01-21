@@ -5,9 +5,15 @@ from typing import Optional
 from datetime import datetime
 import httpx
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/trading", tags=["Market Indices"])
+
+# In-memory cache for indices data
+_indices_cache: Optional[dict] = None
+_cache_timestamp: Optional[datetime] = None
+CACHE_TTL_SECONDS = 30  # Cache for 30 seconds
 
 
 class IndexData(BaseModel):
@@ -26,6 +32,7 @@ class AllIndicesResponse(BaseModel):
     """Response containing all market indices."""
     indices: list[IndexData]
     timestamp: str
+    cached: bool = False
 
 
 # Market indices configuration with Yahoo Finance symbols
@@ -66,7 +73,6 @@ async def fetch_index_data(symbol: str, name: str, display: str, currency: str) 
 
             quote = result[0]
             meta = quote.get("meta", {})
-            indicators = quote.get("indicators", {}).get("quote", [{}])[0]
 
             # Get current price
             current_price = meta.get("regularMarketPrice", 0)
@@ -92,10 +98,21 @@ async def fetch_index_data(symbol: str, name: str, display: str, currency: str) 
         return None
 
 
+def _is_cache_valid() -> bool:
+    """Check if the cache is still valid."""
+    global _cache_timestamp
+    if _cache_timestamp is None or _indices_cache is None:
+        return False
+    age = (datetime.utcnow() - _cache_timestamp).total_seconds()
+    return age < CACHE_TTL_SECONDS
+
+
 @router.get("/indices", response_model=AllIndicesResponse)
 async def get_market_indices() -> AllIndicesResponse:
     """
     Get current data for major market indices.
+
+    Data is cached for 30 seconds to reduce API calls.
 
     Returns data for:
     - AEX (Amsterdam)
@@ -105,7 +122,15 @@ async def get_market_indices() -> AllIndicesResponse:
     - Shanghai Composite (China)
     - EURO STOXX 50 (Europe)
     """
-    import asyncio
+    global _indices_cache, _cache_timestamp
+
+    # Return cached data if valid
+    if _is_cache_valid():
+        return AllIndicesResponse(
+            indices=_indices_cache["indices"],
+            timestamp=_indices_cache["timestamp"],
+            cached=True
+        )
 
     # Fetch all indices concurrently
     tasks = [
@@ -132,16 +157,42 @@ async def get_market_indices() -> AllIndicesResponse:
                 timestamp=datetime.utcnow().isoformat(),
                 is_open=False
             ))
+        elif result is None:
+            # Fetch returned None - use placeholder
+            indices.append(IndexData(
+                symbol=MARKET_INDICES[i]["display"],
+                name=MARKET_INDICES[i]["name"],
+                price=0,
+                change=0,
+                change_percent=0,
+                currency=MARKET_INDICES[i]["currency"],
+                timestamp=datetime.utcnow().isoformat(),
+                is_open=False
+            ))
+
+    # Update cache
+    _indices_cache = {
+        "indices": indices,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    _cache_timestamp = datetime.utcnow()
 
     return AllIndicesResponse(
         indices=indices,
-        timestamp=datetime.utcnow().isoformat()
+        timestamp=_indices_cache["timestamp"],
+        cached=False
     )
 
 
 @router.get("/indices/{symbol}", response_model=IndexData)
 async def get_single_index(symbol: str) -> IndexData:
     """Get data for a single market index by symbol."""
+    # Check cache first
+    if _is_cache_valid() and _indices_cache:
+        for idx in _indices_cache["indices"]:
+            if idx.symbol.upper() == symbol.upper():
+                return idx
+
     # Find the index configuration
     idx_config = next(
         (idx for idx in MARKET_INDICES if idx["display"].upper() == symbol.upper() or idx["symbol"] == symbol),

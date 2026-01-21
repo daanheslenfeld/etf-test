@@ -161,6 +161,10 @@ async def require_trading_approved(
     STRICT ISOLATION: Each user can ONLY access their own linked IB account.
     No automatic fallbacks to shared gateway accounts.
     """
+    # Skip all checks in local dev mode with auth disabled
+    if AUTH_DISABLED:
+        return user
+
     # Check trading status is approved
     if user.trading_status != TradingStatus.APPROVED:
         raise HTTPException(
@@ -187,6 +191,10 @@ async def require_broker_linked(
 
     STRICT ISOLATION: Each user can ONLY access their own linked IB account.
     """
+    # Skip check in local dev mode with auth disabled
+    if AUTH_DISABLED:
+        return user
+
     if not user.ib_account_id:
         raise HTTPException(
             status_code=403,

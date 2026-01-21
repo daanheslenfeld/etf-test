@@ -1,14 +1,47 @@
-"""Streaming market data endpoints."""
+"""Streaming market data endpoints with offline caching."""
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+import json
+import os
+import logging
 
 from services.ib_client import get_ib_client
 from middleware.auth import require_trading_approved
 from models.schemas import UserContext
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/trading", tags=["Market Data"])
+
+# Cache file path
+CACHE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+MARKET_DATA_CACHE_FILE = os.path.join(CACHE_DIR, "market_data_cache.json")
+
+
+def _save_cache(data: dict):
+    """Save market data to persistent cache."""
+    try:
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        cache = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "data": data
+        }
+        with open(MARKET_DATA_CACHE_FILE, "w") as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:
+        logger.warning(f"Failed to save market data cache: {e}")
+
+
+def _load_cache() -> Optional[dict]:
+    """Load market data from persistent cache."""
+    try:
+        if os.path.exists(MARKET_DATA_CACHE_FILE):
+            with open(MARKET_DATA_CACHE_FILE, "r") as f:
+                return json.load(f)
+    except Exception as e:
+        logger.warning(f"Failed to load market data cache: {e}")
+    return None
 
 
 class MarketDataResponse(BaseModel):
@@ -85,20 +118,26 @@ async def get_market_data_by_symbol(
 ) -> MarketDataResponse:
     """
     Get streaming market data for a symbol.
-
-    Automatically subscribes to market data if not already subscribed.
-    Returns bid, ask, last, spread, and mid price.
+    Returns cached data when IB is disconnected.
     """
     ib_client = get_ib_client()
 
+    # If not connected, try to return cached data
     if not ib_client.is_connected():
-        raise HTTPException(status_code=503, detail="IB Gateway not connected")
+        cached = _load_cache()
+        if cached and cached.get("data"):
+            for conid, data in cached["data"].items():
+                if data.get("symbol", "").upper() == symbol.upper():
+                    result = _format_market_data(data, subscribed=False)
+                    if result:
+                        result.delayed = True
+                        return result
+        raise HTTPException(status_code=503, detail="IB Gateway not connected and no cached data")
 
     # Get market data (will subscribe if not already)
     data = await ib_client.get_market_data_for_symbol(symbol.upper())
 
     if not data:
-        # Symbol not found in MVP ETFs
         raise HTTPException(status_code=404, detail=f"Symbol {symbol} not found in available ETFs")
 
     result = _format_market_data(data, subscribed=True)
@@ -114,13 +153,26 @@ async def get_all_market_data(
 ) -> AllMarketDataResponse:
     """
     Get streaming market data for all subscribed symbols.
-
-    Use POST /marketdata/subscribe/all to subscribe to all MVP ETFs first.
+    Returns cached data when IB is disconnected.
     """
     ib_client = get_ib_client()
 
+    # If not connected, return cached data
     if not ib_client.is_connected():
-        raise HTTPException(status_code=503, detail="IB Gateway not connected")
+        cached = _load_cache()
+        if cached and cached.get("data"):
+            results = []
+            for conid, data in cached["data"].items():
+                formatted = _format_market_data(data, subscribed=False)
+                if formatted:
+                    formatted.delayed = True  # Mark as cached/delayed
+                    results.append(formatted)
+            return AllMarketDataResponse(
+                data=results,
+                timestamp=cached.get("timestamp", datetime.utcnow().isoformat()),
+                subscriptionCount=len(results)
+            )
+        raise HTTPException(status_code=503, detail="IB Gateway not connected and no cached data")
 
     all_data = ib_client.get_all_market_data()
 
@@ -139,6 +191,9 @@ async def get_all_market_data(
             timestamp=datetime.utcnow().isoformat(),
             subscriptionCount=count
         )
+
+    # Save to cache for offline use
+    _save_cache(all_data)
 
     return AllMarketDataResponse(
         data=results,

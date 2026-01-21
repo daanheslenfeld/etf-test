@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTrading } from '../../context/TradingContext';
 import { Plus, ShoppingCart, TrendingUp, TrendingDown, Clock, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { TRADABLE_ETFS, getTradableCount } from '../../data/tradableETFs';
 
 const ORDER_TYPES = [
   { value: 'MKT', label: 'Market', requiresLimit: false, requiresStop: false },
@@ -10,7 +11,7 @@ const ORDER_TYPES = [
 ];
 
 export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill }) {
-  const { etfs, marketData, addToBasket, marketDataLoading, isDataStale, lastMarketDataUpdate, safetyLimits, isLive, tradingMode, availableFunds, cashBalance, checkOrderSafety, tradableETFs, isTradableByIsin, tradabilityStats, validateSellOrder, positions } = useTrading();
+  const { marketData, addToBasket, marketDataLoading, isDataStale, safetyLimits, isLive, tradingMode, availableFunds, cashBalance, positions } = useTrading();
 
   const [form, setForm] = useState({
     symbol: '',
@@ -26,14 +27,14 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
   const [maxSellQuantity, setMaxSellQuantity] = useState(null);
   const [sellError, setSellError] = useState(null);
 
-  // Handle prefill from PortfolioOverview
+  // Handle prefill from ETFBrowser or PortfolioOverview
   useEffect(() => {
     if (prefillOrder) {
       setForm(prev => ({
         ...prev,
         symbol: prefillOrder.symbol,
         conid: prefillOrder.conid,
-        side: prefillOrder.side,
+        side: prefillOrder.side || 'BUY',
         quantity: prefillOrder.quantity || 1,
         orderType: 'MKT',
         limitPrice: '',
@@ -41,11 +42,17 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
       }));
       setMaxSellQuantity(prefillOrder.maxQuantity || null);
       setSellError(null);
-      // Find the ETF for selected symbol
-      const etf = etfs.find(e => e.symbol === prefillOrder.symbol);
-      if (etf) setSelectedETF(etf);
+      // Directly use the prefill data as selectedETF (no need to search)
+      setSelectedETF({
+        isin: prefillOrder.isin,
+        symbol: prefillOrder.symbol,
+        name: prefillOrder.name,
+        conid: prefillOrder.conid,
+        exchange: prefillOrder.exchange,
+        currency: prefillOrder.currency,
+      });
     }
-  }, [prefillOrder, etfs]);
+  }, [prefillOrder]);
 
   // Update max sell quantity when side changes to SELL
   useEffect(() => {
@@ -77,19 +84,18 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
     }
   }, [form.quantity, form.side, maxSellQuantity, form.symbol]);
 
-  // Filter ETFs to only show tradable ones
-  // Use tradableETFs from backend tradability check as the source of truth
+  // Use static TRADABLE_ETFS data for offline support
+  // This contains all 2,478 tradable ETFs from the pre-generated file
   const tradableETFsList = useMemo(() => {
-    if (!tradableETFs || Object.keys(tradableETFs).length === 0) {
-      // Fallback to all ETFs if tradability data not loaded yet
-      return etfs;
-    }
-    // Filter to only ETFs that are tradable via LYNX
-    return etfs.filter(etf => {
-      const tradInfo = tradableETFs[etf.isin];
-      return tradInfo?.tradable_via_lynx === true;
-    });
-  }, [etfs, tradableETFs]);
+    return Object.entries(TRADABLE_ETFS).map(([isin, data]) => ({
+      isin,
+      symbol: data.symbol,
+      name: data.name,
+      conid: data.conid,
+      exchange: data.exchange,
+      currency: data.currency,
+    }));
+  }, []);
 
   // Get current market data for selected symbol
   const currentMarketData = form.symbol ? marketData[form.symbol] : null;
@@ -111,15 +117,12 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
     }
   }, [form.orderType, currentMarketData?.midPrice, form.limitPrice]);
 
-  // Update selected ETF when symbol changes (from tradable list)
+  // Update selected ETF when symbol changes (from static tradable list)
   const handleSymbolChange = (e) => {
     const symbol = e.target.value;
     const etf = tradableETFsList.find(e => e.symbol === symbol);
     if (etf) {
-      // Get contract info from tradability data for accurate conid
-      const tradInfo = tradableETFs[etf.isin];
-      const conid = tradInfo?.contract?.conId || etf.conid;
-      setForm(prev => ({ ...prev, symbol: etf.symbol, conid: conid, limitPrice: '', stopPrice: '' }));
+      setForm(prev => ({ ...prev, symbol: etf.symbol, conid: etf.conid, limitPrice: '', stopPrice: '' }));
       setSelectedETF(etf);
     }
   };
@@ -229,15 +232,13 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
           </button>
         </div>
 
-        {/* Symbol Select - Only shows tradable ETFs */}
+        {/* Symbol Select - Shows all tradable ETFs from static file */}
         <div>
           <label className="block text-gray-400 text-sm mb-1">
             Symbol
-            {tradabilityStats?.totalTradable > 0 && (
-              <span className="text-gray-500 ml-2 text-xs">
-                ({tradableETFsList.length} tradable)
-              </span>
-            )}
+            <span className="text-gray-500 ml-2 text-xs">
+              ({getTradableCount()} tradable)
+            </span>
           </label>
           <select
             value={form.symbol}

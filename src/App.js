@@ -2460,9 +2460,11 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* Financial Overview Cards - wrapped with TradingProvider */}
+        {/* Financial Overview + Positions - shared TradingProvider */}
         <TradingProvider user={user}>
           <FinancialOverviewCards />
+          {/* Je Huidige Portfolio - Live posities van broker */}
+          <PortfolioPositionsCard />
         </TradingProvider>
 
         {/* Portfolio Beheer Section */}
@@ -2548,11 +2550,6 @@ useEffect(() => {
             </button>
           </div>
         </div>
-
-        {/* Je Huidige Portfolio - Live posities van broker */}
-        <TradingProvider user={user}>
-          <PortfolioPositionsCard />
-        </TradingProvider>
 
         {/* Link naar Monte Carlo simulatie (losgekoppeld) */}
         {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (

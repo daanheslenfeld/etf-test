@@ -127,12 +127,12 @@ export default function MarketIndicesTicker() {
                     {index.symbol}
                   </span>
 
-                  {/* Price */}
+                  {/* Price with percentage */}
                   <span className="text-xs sm:text-sm text-gray-300">
                     {formatPrice(index.price, index.currency)}
                   </span>
 
-                  {/* Change with arrow */}
+                  {/* Percentage change */}
                   <span className={`flex items-center gap-0.5 text-xs sm:text-sm ${changeColor}`}>
                     {index.change !== 0 && (
                       isUp ? (

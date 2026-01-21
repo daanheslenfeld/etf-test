@@ -107,6 +107,7 @@ const ACTIONS = {
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
   ADD_TO_BASKET: 'ADD_TO_BASKET',
+  ADD_MULTIPLE_TO_BASKET: 'ADD_MULTIPLE_TO_BASKET',
   REMOVE_FROM_BASKET: 'REMOVE_FROM_BASKET',
   UPDATE_BASKET_ORDER: 'UPDATE_BASKET_ORDER',
   CLEAR_BASKET: 'CLEAR_BASKET',
@@ -147,6 +148,14 @@ function tradingReducer(state, action) {
       return { ...state, error: action.payload };
     case ACTIONS.ADD_TO_BASKET:
       return { ...state, orderBasket: [...state.orderBasket, { ...action.payload, id: Date.now() }] };
+    case ACTIONS.ADD_MULTIPLE_TO_BASKET:
+      // Add multiple orders at once with sequential IDs and bulk grouping
+      const bulkOrders = action.payload.map((order, index) => ({
+        ...order,
+        id: Date.now() + index,
+        bulkId: action.bulkId || Date.now()
+      }));
+      return { ...state, orderBasket: [...state.orderBasket, ...bulkOrders] };
     case ACTIONS.REMOVE_FROM_BASKET:
       return { ...state, orderBasket: state.orderBasket.filter(o => o.id !== action.payload) };
     case ACTIONS.UPDATE_BASKET_ORDER:
@@ -773,6 +782,15 @@ export function TradingProvider({ user, children }) {
     dispatch({ type: ACTIONS.ADD_TO_BASKET, payload: order });
   }, []);
 
+  const addMultipleToBasket = useCallback((orders, bulkId = Date.now()) => {
+    if (!orders || orders.length === 0) return;
+    dispatch({
+      type: ACTIONS.ADD_MULTIPLE_TO_BASKET,
+      payload: orders,
+      bulkId
+    });
+  }, []);
+
   const removeFromBasket = useCallback((id) => {
     dispatch({ type: ACTIONS.REMOVE_FROM_BASKET, payload: id });
   }, []);
@@ -793,55 +811,70 @@ export function TradingProvider({ user, children }) {
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: [] });
   }, []);
 
-  // Initial load - load cache first, then fetch fresh data
+  // Initial load - FAST: show UI immediately, load data in background
   useEffect(() => {
     const init = async () => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
 
-      // Load cached data immediately for instant display
-      const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
-      const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
-      const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+      try {
+        // Load cached data immediately for instant display
+        const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
+        const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
+        const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
 
-      if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
-        dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
-        dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
+        if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
+          dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
+          dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
+        }
+        if (cachedPositions?.data) {
+          dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
+          dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+        }
+        if (cachedSummary?.data) {
+          dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+        }
+
+        // Quick connection check with timeout
+        const connectionPromise = Promise.race([
+          checkConnection(),
+          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+        ]);
+
+        const brokerLinkPromise = Promise.race([
+          checkBrokerLink(),
+          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+        ]);
+
+        const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
+
+        // Set loading false IMMEDIATELY after broker check - show UI now
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+
+        // Load all other data in background (non-blocking)
+        fetchTradability().catch(console.error);
+        fetchETFs().catch(console.error);
+
+        if (hasLinkedAccount) {
+          fetchPositions().catch(console.error);
+          fetchOrders().catch(console.error);
+          fetchSafetyLimits().catch(console.error);
+          subscribeToMarketData().catch(console.error);
+          fetchMarketData().catch(console.error);
+        }
+
+        // Mark data as stale if we couldn't connect
+        if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
+          dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+        }
+      } catch (error) {
+        console.error('Error during init:', error);
+        // Always set loading false even on error
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       }
-      if (cachedPositions?.data) {
-        dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
-        dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
-      }
-      if (cachedSummary?.data) {
-        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
-      }
-
-      // Check connection and broker link status
-      const connected = await checkConnection();
-      const hasLinkedAccount = await checkBrokerLink();
-
-      // Fetch tradability data (cached, doesn't change often)
-      await fetchTradability();
-
-      // Only fetch trading data if user has linked account
-      if (hasLinkedAccount) {
-        await Promise.all([fetchETFs(), fetchPositions(), fetchOrders(), fetchSafetyLimits()]);
-        // Subscribe to market data after connection
-        await subscribeToMarketData();
-        await fetchMarketData();
-      } else {
-        // Still fetch ETFs for display
-        await fetchETFs();
-      }
-
-      // If we loaded cache but couldn't connect, mark as stale
-      if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
-        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
-      }
-
-      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     };
     init();
-  }, [checkConnection, checkBrokerLink, fetchETFs, fetchPositions, fetchOrders, fetchSafetyLimits, subscribeToMarketData, fetchMarketData, fetchTradability]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
@@ -880,6 +913,7 @@ export function TradingProvider({ user, children }) {
     placeOrder,
     executeBasket,
     addToBasket,
+    addMultipleToBasket,
     removeFromBasket,
     updateBasketOrder,
     clearBasket,
