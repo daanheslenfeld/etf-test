@@ -1687,15 +1687,8 @@ useEffect(() => {
         }
       } else if (user.role === 'customer') {
         if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
-          // Check if customer has portfolio or active investments
-          if (user.portfolio && user.portfolio.length > 0) {
-            setCurrentPage('welcome');
-          } else if (user.account_type && user.account_type !== 'fictief') {
-            setCurrentPage('welcome');
-          } else {
-            // First-time user with no portfolio - show FirstTimeWelcome
-            setCurrentPage('firstTimeWelcome');
-          }
+          // Always redirect to Trading Dashboard after login
+          setCurrentPage('trading');
         }
       }
     } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register' && currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending' && currentPage !== 'resetPassword' && currentPage !== 'verify-code')) {
@@ -1758,9 +1751,10 @@ useEffect(() => {
       setUser({
         ...demoUser,
         email_verified: true,
-        role: 'user'
+        role: 'customer'
       });
-      setCurrentPage('welcome');
+      // Redirect to Trading Dashboard
+      setCurrentPage('trading');
       return { success: true };
     }
 
@@ -1837,20 +1831,9 @@ useEffect(() => {
           role: 'customer'
         });
 
-        // Check if customer has portfolio or active investments
-        if (customer.portfolio && customer.portfolio.length > 0) {
-          console.log('➡️ Redirecting to welcome page (has portfolio)');
-          // Has portfolio → go to welcome page
-          setCurrentPage('welcome');
-        } else if (customer.account_type && customer.account_type !== 'fictief') {
-          console.log('➡️ Redirecting to welcome page (paid account)');
-          // Has paid account → go to welcome page
-          setCurrentPage('welcome');
-        } else {
-          console.log('➡️ Redirecting to firstTimeWelcome (no portfolio)');
-          // New user or fictitious account without portfolio → go to first-time welcome
-          setCurrentPage('firstTimeWelcome');
-        }
+        // Always redirect to Trading Dashboard after login
+        console.log('➡️ Redirecting to Trading Dashboard');
+        setCurrentPage('trading');
         return { success: true };
       } else {
         return { success: false, message: data.message };
