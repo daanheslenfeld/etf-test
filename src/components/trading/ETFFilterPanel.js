@@ -5,34 +5,81 @@ import { CATEGORY_FILTERS, getFilterOptions } from '../../data/filterDefinitions
 import { CollapsibleFilterSection } from '../common/CollapsibleSection';
 
 /**
- * Premium single-select dropdown filter
+ * Premium single-select dropdown filter with fixed positioning
  */
 function FilterDropdown({ label, options, value, onChange, placeholder = "Alle", icon: Icon, compact = false }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState({});
+  const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
 
+  // Calculate dropdown position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 200; // approximate max height
+
+      // Check if dropdown would go off-screen at bottom
+      const spaceBelow = viewportHeight - rect.bottom;
+      const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+
+      setDropdownStyle({
+        position: 'fixed',
+        left: rect.left,
+        width: rect.width,
+        ...(openUpward
+          ? { bottom: viewportHeight - rect.top + 4 }
+          : { top: rect.bottom + 4 }
+        ),
+      });
+    }
+  }, [isOpen]);
+
+  // Close on click outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        buttonRef.current && !buttonRef.current.contains(event.target) &&
+        dropdownRef.current && !dropdownRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // Close on page scroll (not dropdown scroll)
+  useEffect(() => {
+    if (isOpen) {
+      const handleScroll = (e) => {
+        // Don't close if scrolling inside the dropdown
+        if (dropdownRef.current && dropdownRef.current.contains(e.target)) {
+          return;
+        }
+        setIsOpen(false);
+      };
+      window.addEventListener('scroll', handleScroll, true);
+      return () => window.removeEventListener('scroll', handleScroll, true);
+    }
+  }, [isOpen]);
 
   const selectedOption = options.find(o => o.value === value);
   const displayValue = selectedOption && value !== 'all' ? selectedOption.label : placeholder;
   const hasValue = value && value !== 'all';
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative">
       {!compact && (
         <label className="block text-[11px] text-gray-500 mb-1.5 font-medium uppercase tracking-wider">
           {label}
         </label>
       )}
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between px-3.5 py-2.5 text-sm min-h-[44px] rounded-lg border transition-all duration-200 ${
           hasValue
@@ -64,8 +111,12 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1.5 w-full bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl">
-          <div className="max-h-60 overflow-y-auto py-1">
+        <div
+          ref={dropdownRef}
+          style={dropdownStyle}
+          className="z-[9999] bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl"
+        >
+          <div className="max-h-48 overflow-y-auto py-1">
             {options.map((option) => (
               <button
                 key={option.value}
@@ -73,7 +124,7 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-4 py-3 text-sm min-h-[44px] text-left transition-all ${
+                className={`w-full flex items-center justify-between px-4 py-2.5 text-sm text-left transition-all ${
                   value === option.value
                     ? 'bg-[#28EBCF]/10 text-[#28EBCF]'
                     : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
@@ -221,7 +272,7 @@ export default function ETFFilterPanel({
   const categoryConfig = CATEGORY_FILTERS[category];
 
   if (!categoryConfig) {
-    return null;
+    return <div className="text-red-500 p-4">No config for category: {category}</div>;
   }
 
   // Count active filters per section

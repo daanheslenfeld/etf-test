@@ -152,10 +152,10 @@ export function CollapsibleFilterSection({
         </div>
       </button>
 
-      {/* Content */}
+      {/* Content - overflow-visible when open so dropdowns can escape */}
       <div
-        className={`transition-all duration-200 overflow-hidden ${
-          isOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+        className={`transition-all duration-200 ${
+          isOpen ? 'max-h-[1000px] opacity-100 mt-3 overflow-visible' : 'max-h-0 opacity-0 overflow-hidden'
         }`}
       >
         {children}
