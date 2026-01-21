@@ -146,8 +146,8 @@ export default function ETFBrowser({ onAddToOrder }) {
             </div>
           </div>
 
-          {/* Category Cards - Premium Design */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 mb-6">
+          {/* Category Cards - Premium Design with Left Border Accent */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 mb-6">
             {categories.map((cat) => {
               const config = CATEGORY_CONFIG[cat.value];
               const Icon = config?.icon || TrendingUp;
@@ -158,40 +158,53 @@ export default function ETFBrowser({ onAddToOrder }) {
                 <button
                   key={cat.value}
                   onClick={() => changeCategory(cat.value)}
-                  className={`group relative flex flex-col items-center p-3 rounded-xl transition-all duration-300 ${
+                  className={`group relative flex flex-col items-center p-3 rounded-xl transition-all duration-200 overflow-hidden ${
                     isActive
-                      ? `bg-gradient-to-br ${config?.gradient || 'from-gray-500/20 to-gray-600/10'} border-2 shadow-lg`
-                      : 'bg-gray-800/30 border border-gray-700/50 hover:bg-gray-800/50 hover:border-gray-600/50'
+                      ? `bg-gradient-to-br ${config?.gradient || 'from-gray-500/20 to-gray-600/10'} border border-gray-700/30`
+                      : 'bg-gray-800/20 border border-gray-700/30 hover:bg-gray-800/40 hover:border-gray-600/50'
                   }`}
                   style={{
-                    borderColor: isActive ? `${config?.color}40` : undefined,
-                    boxShadow: isActive ? `0 4px 20px ${config?.color}15` : undefined,
+                    boxShadow: isActive ? `0 4px 20px ${config?.color}10` : undefined,
                   }}
                 >
-                  {/* Active indicator dot */}
+                  {/* Left border accent for active state */}
                   {isActive && (
                     <div
-                      className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse"
+                      className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
                       style={{ backgroundColor: config?.color }}
                     />
                   )}
 
-                  <div className={`p-2 rounded-lg mb-1.5 transition-colors ${
-                    isActive ? 'bg-white/10' : 'bg-gray-700/30 group-hover:bg-gray-700/50'
-                  }`}>
+                  {/* Icon container */}
+                  <div
+                    className={`p-2.5 rounded-xl mb-2 transition-all duration-200 ${
+                      isActive ? '' : 'bg-gray-700/20 group-hover:bg-gray-700/40'
+                    }`}
+                    style={{
+                      backgroundColor: isActive ? `${config?.color}15` : undefined,
+                    }}
+                  >
                     <Icon
                       className="w-4 h-4 transition-colors"
-                      style={{ color: isActive ? config?.color : '#9CA3AF' }}
+                      style={{ color: isActive ? config?.color : '#6B7280' }}
                     />
                   </div>
+
+                  {/* Label */}
                   <span className={`text-xs font-medium transition-colors ${
                     isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'
                   }`}>
                     {config?.label || cat.label}
                   </span>
-                  <span className={`text-[10px] mt-0.5 transition-colors ${
-                    isActive ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
+
+                  {/* Count badge */}
+                  <span
+                    className={`text-[10px] mt-1 px-1.5 py-0.5 rounded transition-colors ${
+                      isActive
+                        ? 'bg-white/10 text-gray-200 font-medium'
+                        : 'text-gray-600 group-hover:text-gray-500'
+                    }`}
+                  >
                     {count}
                   </span>
                 </button>
@@ -255,35 +268,6 @@ export default function ETFBrowser({ onAddToOrder }) {
             </div>
           )}
 
-          {/* Active filter chips - Premium Style */}
-          {activeFilterCount > 0 && (
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              {chips.map((chip) => (
-                <span
-                  key={`${chip.filterId}-${chip.value}`}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all hover:scale-105 ${
-                    chip.bg || 'bg-gray-800/80'
-                  } ${chip.text || 'text-gray-300'} ${chip.border || 'border-gray-700/50'}`}
-                >
-                  <span className="text-gray-400 font-normal">{chip.filterLabel}:</span>
-                  <span>{chip.label || chip.valueLabel}</span>
-                  <button
-                    onClick={() => removeFilter(chip.filterId, chip.value)}
-                    className="p-0.5 hover:bg-white/10 rounded transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-              <button
-                onClick={resetFilters}
-                className="text-xs text-gray-500 hover:text-[#28EBCF] transition-colors font-medium ml-1"
-              >
-                Wis alles
-              </button>
-            </div>
-          )}
-
           {/* Results count - Premium Style */}
           <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -303,6 +287,41 @@ export default function ETFBrowser({ onAddToOrder }) {
           </div>
         </div>
       </div>
+
+      {/* Sticky Active Filters Bar */}
+      {activeFilterCount > 0 && (
+        <div className="sticky top-0 z-20 px-5 py-3 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/30">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider mr-1 hidden sm:inline">
+                Actief:
+              </span>
+              {chips.map((chip) => (
+                <span
+                  key={`${chip.filterId}-${chip.value}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#28EBCF]/10 text-[#28EBCF] border border-[#28EBCF]/20 hover:bg-[#28EBCF]/20 transition-all"
+                >
+                  <span className="text-[#28EBCF]/70">{chip.filterLabel}:</span>
+                  <span>{chip.label || chip.valueLabel}</span>
+                  <button
+                    onClick={() => removeFilter(chip.filterId, chip.value)}
+                    className="ml-0.5 p-0.5 hover:bg-[#28EBCF]/20 rounded-full transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <button
+              onClick={resetFilters}
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white px-2.5 py-1.5 hover:bg-gray-700/50 rounded-lg transition-colors whitespace-nowrap"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span className="hidden sm:inline">Wis alles</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Table - Premium Style */}
       <div className="overflow-x-auto max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">

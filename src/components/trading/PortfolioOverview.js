@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, Pigg
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import { DataCard, DataCardHeader, DataCardTitle, DataCardRow, DataCardActions, DataCardList, DataCardEmpty } from '../common/DataCard';
 import { Button } from '../common';
+import { StatsCard } from '../dashboard/StatsCard';
 import ETFDetailsModal from './ETFDetailsModal';
 import RebalanceModal from './RebalanceModal';
 
@@ -147,49 +148,39 @@ export default function PortfolioOverview({ onPrefillOrder }) {
         </div>
       </div>
 
-      {/* Portfolio Summary - Always visible at top */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4 border-b border-gray-700 bg-gray-800/30">
-        {/* Stock Market Value (positions only) */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <BarChart3 className="w-3 h-3" />
-            Positions Value
+      {/* Portfolio Summary - Premium Stats Cards */}
+      <div className="p-5 border-b border-gray-700/50 bg-gradient-to-b from-gray-800/20 to-transparent">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total Portfolio Value - Hero Card spanning 2 cols on mobile */}
+          <div className="col-span-2">
+            <StatsCard
+              variant="hero"
+              label="Total Portfolio Value"
+              value={formatCurrency(displayTotalValue)}
+              change={displayUnrealizedPnL}
+              changePercent={displayPnLPercent}
+              icon={PiggyBank}
+              trend={displayUnrealizedPnL >= 0 ? 'up' : 'down'}
+            />
           </div>
-          <div className="text-lg font-bold text-white">{formatCurrency(displayPortfolioValue)}</div>
-        </div>
 
-        {/* Available Cash / Liquidity */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <Wallet className="w-3 h-3" />
-            Available Cash
-          </div>
-          <div className={`text-lg font-bold ${displayAvailableFunds > 0 ? 'text-green-400' : 'text-white'}`}>
-            {formatCurrency(displayAvailableFunds)}
-          </div>
-        </div>
+          {/* Positions Value */}
+          <StatsCard
+            label="Invested"
+            value={formatCurrency(displayPortfolioValue)}
+            icon={BarChart3}
+            iconColor="text-blue-400"
+            iconBg="bg-blue-500/10"
+          />
 
-        {/* Total Account Value = positions + cash */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <PiggyBank className="w-3 h-3" />
-            Total Value
-          </div>
-          <div className="text-lg font-bold text-white">
-            {formatCurrency(displayTotalValue)}
-          </div>
-        </div>
-
-        {/* Unrealized P&L */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            {displayUnrealizedPnL >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            Unrealized P&L
-          </div>
-          <div className={`text-lg font-bold flex items-center gap-2 ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {formatCurrency(displayUnrealizedPnL)}
-            <span className="text-sm">({formatPercent(displayPnLPercent)})</span>
-          </div>
+          {/* Available Cash */}
+          <StatsCard
+            label="Available Cash"
+            value={formatCurrency(displayAvailableFunds)}
+            icon={Wallet}
+            iconColor={displayAvailableFunds > 0 ? 'text-emerald-400' : 'text-gray-400'}
+            iconBg={displayAvailableFunds > 0 ? 'bg-emerald-500/10' : 'bg-gray-500/10'}
+          />
         </div>
       </div>
 

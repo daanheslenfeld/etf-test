@@ -1,24 +1,26 @@
 import React from 'react';
 
 /**
- * Card Component
+ * Card Component - Premium Fintech Style
  *
- * Variants: default, elevated, interactive, bordered
+ * Variants: default, elevated, interactive, bordered, glass, hero, stat
  */
 const VARIANTS = {
-  default: 'bg-[#1A1B1F] border border-gray-800/50',
-  elevated: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border border-gray-800/50 shadow-2xl',
-  interactive: 'bg-[#1A1B1F] border border-gray-800/50 hover:border-gray-700 cursor-pointer transition-colors',
-  bordered: 'bg-transparent border border-gray-800/50',
+  default: 'bg-[#1A1B1F] border border-gray-700/30',
+  elevated: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border border-gray-700/30 shadow-2xl shadow-black/20',
+  interactive: 'bg-[#1A1B1F] border border-gray-700/30 hover:border-gray-600/50 hover:bg-[#1E1F24] cursor-pointer transition-all duration-200',
+  bordered: 'bg-transparent border border-gray-700/30',
   glass: 'bg-gray-800/20 border border-gray-700/30 backdrop-blur-sm',
+  hero: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border-l-4 border-[#28EBCF] border-y border-r border-y-gray-700/30 border-r-gray-700/30 shadow-lg shadow-[#28EBCF]/5',
+  stat: 'bg-[#1A1B1F] border border-gray-700/30 hover:border-gray-600/40 transition-colors',
 };
 
 const PADDING = {
   none: '',
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-5',
-  xl: 'p-6',
+  sm: 'p-3 sm:p-4',
+  md: 'p-4 sm:p-5',
+  lg: 'p-5 sm:p-6',
+  xl: 'p-6 sm:p-7',
 };
 
 const RADIUS = {
