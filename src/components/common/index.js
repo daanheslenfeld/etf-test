@@ -64,3 +64,19 @@ export {
   NetworkStatusBanner,
   useNetworkStatus,
 } from './OfflineIndicator';
+
+// Mobile drawer component
+export { MobileDrawer, DrawerSection } from './MobileDrawer';
+
+// Data card components (mobile table alternatives)
+export {
+  DataCard,
+  DataCardHeader,
+  DataCardTitle,
+  DataCardRow,
+  DataCardGrid,
+  DataCardValue,
+  DataCardActions,
+  DataCardList,
+  DataCardEmpty,
+} from './DataCard';

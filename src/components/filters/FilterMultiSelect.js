@@ -101,22 +101,28 @@ export function FilterMultiSelect({
 
   const sizes = {
     sm: {
-      button: 'px-2.5 py-1.5 text-xs',
+      button: 'px-2.5 py-2 text-xs min-h-[40px]',
       label: 'text-[10px] mb-1',
-      option: 'px-3 py-2 text-xs',
-      search: 'px-2 py-1.5 text-xs',
+      option: 'px-3 py-2.5 text-xs min-h-[40px]',
+      search: 'px-2 py-2 text-xs min-h-[40px]',
+      checkbox: 'w-4 h-4',
+      checkIcon: 'w-2.5 h-2.5',
     },
     md: {
-      button: 'px-3.5 py-2.5 text-sm',
+      button: 'px-3.5 py-2.5 text-sm min-h-[44px]',
       label: 'text-[11px] mb-1.5',
-      option: 'px-4 py-2.5 text-sm',
-      search: 'px-3 py-2 text-sm',
+      option: 'px-4 py-3 text-sm min-h-[44px]',
+      search: 'px-3 py-2.5 text-sm min-h-[44px]',
+      checkbox: 'w-5 h-5',
+      checkIcon: 'w-3 h-3',
     },
     lg: {
-      button: 'px-4 py-3 text-base',
+      button: 'px-4 py-3.5 text-base min-h-[48px]',
       label: 'text-xs mb-2',
-      option: 'px-4 py-3 text-base',
-      search: 'px-3 py-2.5 text-base',
+      option: 'px-4 py-3.5 text-base min-h-[48px]',
+      search: 'px-3 py-3 text-base min-h-[48px]',
+      checkbox: 'w-6 h-6',
+      checkIcon: 'w-3.5 h-3.5',
     },
   };
 
@@ -226,10 +232,10 @@ export function FilterMultiSelect({
                 >
                   <span className="flex items-center gap-3">
                     <span className={`
-                      w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0
+                      ${sizeConfig.checkbox} rounded border-2 flex items-center justify-center transition-all flex-shrink-0
                       ${isSelected ? 'bg-[#28EBCF] border-[#28EBCF]' : 'border-gray-600 hover:border-gray-500'}
                     `}>
-                      {isSelected && <Check className="w-3 h-3 text-gray-900" />}
+                      {isSelected && <Check className={`${sizeConfig.checkIcon} text-gray-900`} />}
                     </span>
                     <span className="flex items-center gap-2">
                       {option.icon && <option.icon className="w-4 h-4 opacity-60" />}

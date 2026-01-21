@@ -52,19 +52,19 @@ export function FilterDropdown({
 
   const sizes = {
     sm: {
-      button: 'px-2.5 py-1.5 text-xs',
+      button: 'px-2.5 py-2 text-xs min-h-[40px]',
       label: 'text-[10px] mb-1',
-      option: 'px-3 py-2 text-xs',
+      option: 'px-3 py-2.5 text-xs min-h-[40px]',
     },
     md: {
-      button: 'px-3.5 py-2.5 text-sm',
+      button: 'px-3.5 py-2.5 text-sm min-h-[44px]',
       label: 'text-[11px] mb-1.5',
-      option: 'px-4 py-2.5 text-sm',
+      option: 'px-4 py-3 text-sm min-h-[44px]',
     },
     lg: {
-      button: 'px-4 py-3 text-base',
+      button: 'px-4 py-3.5 text-base min-h-[48px]',
       label: 'text-xs mb-2',
-      option: 'px-4 py-3 text-base',
+      option: 'px-4 py-3.5 text-base min-h-[48px]',
     },
   };
 

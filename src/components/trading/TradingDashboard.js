@@ -373,25 +373,27 @@ function TradingDashboardContent({ onBack }) {
         <div className="flex gap-2 mt-6 mb-4">
           <button
             onClick={() => setActiveTab('etfs')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 min-h-[44px] rounded-lg font-medium transition-colors ${
               activeTab === 'etfs'
                 ? 'bg-[#28EBCF] text-gray-900'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
             <List className="w-4 h-4" />
-            ETF Browser
+            <span className="hidden sm:inline">ETF Browser</span>
+            <span className="sm:hidden">ETFs</span>
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 min-h-[44px] rounded-lg font-medium transition-colors ${
               activeTab === 'orders'
                 ? 'bg-[#28EBCF] text-gray-900'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
             <ShoppingCart className="w-4 h-4" />
-            Orders & Portfolio
+            <span className="hidden sm:inline">Orders & Portfolio</span>
+            <span className="sm:hidden">Orders</span>
             {orderBasket.length > 0 && (
               <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
                 {orderBasket.length}
@@ -403,18 +405,18 @@ function TradingDashboardContent({ onBack }) {
         {/* ETF Browser Tab */}
         {activeTab === 'etfs' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* ETF Browser - Full width on mobile, 2/3 on desktop */}
-            <div className="lg:col-span-2">
-              <ETFBrowser onAddToOrder={handlePrefillOrder} />
-            </div>
-
-            {/* Order Form Sidebar */}
-            <div className="space-y-6">
+            {/* Order Form Sidebar - Appears first on mobile for quick access */}
+            <div className="order-first lg:order-last space-y-6">
               <OrderForm
                 prefillOrder={prefillOrder}
                 onClearPrefill={handleClearPrefill}
               />
               <OrderBasket onExecute={handleExecuteClick} />
+            </div>
+
+            {/* ETF Browser - Full width on mobile, 2/3 on desktop */}
+            <div className="lg:col-span-2 order-last lg:order-first">
+              <ETFBrowser onAddToOrder={handlePrefillOrder} />
             </div>
           </div>
         )}
@@ -422,8 +424,8 @@ function TradingDashboardContent({ onBack }) {
         {/* Orders & Portfolio Tab */}
         {activeTab === 'orders' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column: Order Form + Order Basket */}
-            <div className="space-y-6">
+            {/* Order Form + Order Basket - Appears first on mobile for quick access */}
+            <div className="order-first lg:order-none space-y-6">
               <OrderForm
                 prefillOrder={prefillOrder}
                 onClearPrefill={handleClearPrefill}
@@ -431,7 +433,7 @@ function TradingDashboardContent({ onBack }) {
               <OrderBasket onExecute={handleExecuteClick} />
             </div>
 
-            {/* Right Column: Portfolio + Order History */}
+            {/* Portfolio + Order History */}
             <div className="lg:col-span-2 space-y-6">
               <PortfolioOverview onPrefillOrder={handlePrefillOrder} />
               <OrderHistory />
