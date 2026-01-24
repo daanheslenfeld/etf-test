@@ -2996,11 +2996,55 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="relative flex justify-center items-center">
-            {/* iPhone Mockup */}
-            <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
-              {/* iPhone Frame with realistic bezels */}
-              <div className="relative bg-gradient-to-br from-[#2D3436] to-[#1a1a1a] rounded-[3.5rem] p-3 shadow-2xl phone-float" style={{boxShadow: '0 0 0 2px #4a5568, 0 0 0 12px #2D3436, 0 20px 40px rgba(124, 152, 133, 0.2), 0 0 60px rgba(124, 152, 133, 0.1)'}}>
+          <div className="relative flex justify-center items-center" style={{ perspective: '1200px' }}>
+            {/* iPhone Mockup - 3D */}
+            <div
+              className="relative w-[280px] sm:w-[320px] md:w-[360px]"
+              style={{
+                transform: 'rotateY(-12deg) rotateX(5deg)',
+                transformStyle: 'preserve-3d'
+              }}
+            >
+              {/* iPhone Frame with realistic 3D bezels */}
+              <div
+                className="relative rounded-[3.5rem] p-3 phone-float"
+                style={{
+                  background: 'linear-gradient(145deg, #3d4447 0%, #2D3436 50%, #1a1a1a 100%)',
+                  boxShadow: `
+                    inset 2px 2px 4px rgba(255,255,255,0.1),
+                    inset -2px -2px 4px rgba(0,0,0,0.3),
+                    0 0 0 2px #4a5568,
+                    0 0 0 4px #3d4447,
+                    0 0 0 6px #2D3436,
+                    -20px 20px 40px rgba(0,0,0,0.4),
+                    -10px 10px 20px rgba(0,0,0,0.3),
+                    0 30px 60px rgba(124, 152, 133, 0.15),
+                    0 0 80px rgba(124, 152, 133, 0.1)
+                  `,
+                  transformStyle: 'preserve-3d'
+                }}
+              >
+                {/* Side edge highlight for 3D effect */}
+                <div
+                  className="absolute top-8 -right-1 bottom-8 w-1 rounded-full"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.05), rgba(255,255,255,0.1))'
+                  }}
+                ></div>
+                {/* Volume buttons */}
+                <div
+                  className="absolute -left-1 top-28 w-1 h-8 rounded-l-sm"
+                  style={{ background: 'linear-gradient(to right, #1a1a1a, #2D3436)' }}
+                ></div>
+                <div
+                  className="absolute -left-1 top-40 w-1 h-12 rounded-l-sm"
+                  style={{ background: 'linear-gradient(to right, #1a1a1a, #2D3436)' }}
+                ></div>
+                {/* Power button */}
+                <div
+                  className="absolute -right-1 top-32 w-1 h-16 rounded-r-sm"
+                  style={{ background: 'linear-gradient(to left, #1a1a1a, #2D3436)' }}
+                ></div>
                 {/* Status bar indicators */}
                 <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
                   <div className="text-[#2D3436] text-[10px] font-semibold bg-[#F5F6F4] px-1 rounded">9:41</div>
@@ -3028,7 +3072,14 @@ useEffect(() => {
                 </div>
 
                 {/* Screen Content */}
-                <div className="bg-[#F5F6F4] rounded-[3rem] overflow-hidden aspect-[9/19]">
+                <div className="bg-[#F5F6F4] rounded-[3rem] overflow-hidden aspect-[9/19] relative">
+                  {/* Glass reflection overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none z-30 rounded-[3rem]"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.05) 100%)'
+                    }}
+                  ></div>
                   {/* Portfolio Dashboard Preview */}
                   <div className="p-3 sm:p-4 pt-10">
                     {/* Header with Logo */}
@@ -3185,8 +3236,23 @@ useEffect(() => {
               </div>
 
               {/* Glow Effect */}
-              <div className="absolute inset-0 bg-[#7C9885] opacity-20 blur-3xl rounded-full -z-10"></div>
+              <div className="absolute inset-0 bg-[#7C9885] opacity-15 blur-3xl rounded-full -z-10"></div>
+
+              {/* 3D Shadow/Reflection under phone */}
+              <div
+                className="absolute -bottom-8 left-1/2 w-[80%] h-8 -z-10"
+                style={{
+                  transform: 'translateX(-50%) rotateX(80deg)',
+                  background: 'radial-gradient(ellipse at center, rgba(45,52,54,0.4) 0%, transparent 70%)',
+                  filter: 'blur(8px)'
+                }}
+              ></div>
             </div>
+
+            {/* Floating particles/dots for depth */}
+            <div className="absolute top-10 -right-4 w-2 h-2 bg-[#7C9885] rounded-full opacity-40 animate-pulse"></div>
+            <div className="absolute top-1/3 -left-6 w-3 h-3 bg-[#7C9885] rounded-full opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute bottom-20 -right-8 w-2 h-2 bg-[#20D4BA] rounded-full opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
         </div>
       </div>
