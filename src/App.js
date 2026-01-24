@@ -1339,6 +1339,19 @@ const ETFPortal = () => {
     const saved = localStorage.getItem('language');
     return saved || 'nl';
   });
+  const [languageDetected, setLanguageDetected] = useState(false);
+
+  // Helper function to get flag country code from language code
+  const getFlagCode = (lang) => {
+    const flagMap = {
+      'en': 'gb',
+      'nl': 'nl',
+      'de': 'de',
+      'fr': 'fr',
+      'es': 'es'
+    };
+    return flagMap[lang] || lang;
+  };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(() => {
     const saved = localStorage.getItem('selectedProfile');
@@ -1417,6 +1430,52 @@ const ETFPortal = () => {
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
+
+  // Auto-detect language based on IP address (only if no saved preference)
+  useEffect(() => {
+    const detectLanguage = async () => {
+      // Skip if user already has a saved language preference
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage || languageDetected) return;
+
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+
+        // Map country codes to supported languages
+        const countryToLanguage = {
+          'NL': 'nl', // Netherlands
+          'BE': 'nl', // Belgium (Dutch speaking)
+          'SR': 'nl', // Suriname
+          'GB': 'en', // United Kingdom
+          'US': 'en', // United States
+          'AU': 'en', // Australia
+          'CA': 'en', // Canada
+          'IE': 'en', // Ireland
+          'NZ': 'en', // New Zealand
+          'DE': 'de', // Germany
+          'AT': 'de', // Austria
+          'CH': 'de', // Switzerland (German)
+          'FR': 'fr', // France
+          'ES': 'es', // Spain
+          'MX': 'es', // Mexico
+          'AR': 'es', // Argentina
+          'CO': 'es', // Colombia
+        };
+
+        const detectedLang = countryToLanguage[data.country_code];
+        if (detectedLang && detectedLang !== language) {
+          setLanguage(detectedLang);
+        }
+        setLanguageDetected(true);
+      } catch (error) {
+        console.log('Could not detect language from IP:', error);
+        setLanguageDetected(true);
+      }
+    };
+
+    detectLanguage();
+  }, [languageDetected]);
 
   // iOS Capacitor INPUT FIX - Force all inputs to be focusable
   useEffect(() => {
@@ -2858,11 +2917,12 @@ useEffect(() => {
               {/* Language Selector */}
               <div className="relative">
                 <select
+                  key={`mobile-lang-${language}`}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   className="lg:hidden pl-8 pr-2 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-xs hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[70px]"
                   style={{
-                    backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
+                    backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: '6px center',
                     backgroundSize: '18px 13px'
@@ -2877,11 +2937,12 @@ useEffect(() => {
 
                 {/* Desktop Language Selector */}
                 <select
+                  key={`desktop-lang-${language}`}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   className="hidden lg:block pl-10 pr-4 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-sm hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[140px]"
                   style={{
-                    backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
+                    backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: '8px center',
                     backgroundSize: '24px 18px'
