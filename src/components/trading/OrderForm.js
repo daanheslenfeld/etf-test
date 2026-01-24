@@ -192,16 +192,16 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
   const insufficientBalance = form.side === 'BUY' && requiredWithBuffer > available && available > 0;
 
   return (
-    <div className={`bg-[#1A1B1F] border rounded-xl p-4 ${isLive ? 'border-blue-600/50' : 'border-gray-700'}`}>
+    <div className={`bg-[#FEFEFE] border rounded-xl p-4 shadow-[0_2px_8px_rgba(45,52,54,0.06)] ${isLive ? 'border-[#6B7B8A]/30' : 'border-[#E8E8E6]'}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <Plus className="w-5 h-5 text-[#28EBCF]" />
+        <h3 className="text-lg font-bold text-[#2D3436] flex items-center gap-2">
+          <Plus className="w-5 h-5 text-[#7C9885]" />
           Add Order to Basket
         </h3>
         <div className={`px-2 py-0.5 rounded text-xs font-bold ${
           isLive
-            ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
-            : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
+            ? 'bg-[#6B7B8A]/10 text-[#6B7B8A] border border-[#6B7B8A]/30'
+            : 'bg-[#C9A962]/10 text-[#C9A962] border border-[#C9A962]/30'
         }`}>
           {tradingMode}
         </div>
@@ -214,8 +214,8 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
             onClick={() => setForm(prev => ({ ...prev, side: 'BUY' }))}
             className={`flex-1 py-3 rounded-lg font-bold transition-all ${
               form.side === 'BUY'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                ? 'bg-[#7C9885] text-white'
+                : 'bg-[#ECEEED] text-[#636E72] hover:bg-[#E8E8E6]'
             }`}
           >
             BUY
@@ -224,8 +224,8 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
             onClick={() => setForm(prev => ({ ...prev, side: 'SELL' }))}
             className={`flex-1 py-3 rounded-lg font-bold transition-all ${
               form.side === 'SELL'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                ? 'bg-[#C0736D] text-white'
+                : 'bg-[#ECEEED] text-[#636E72] hover:bg-[#E8E8E6]'
             }`}
           >
             SELL
@@ -234,16 +234,16 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
 
         {/* Symbol Select - Shows all tradable ETFs from static file */}
         <div>
-          <label className="block text-gray-400 text-sm mb-1">
+          <label className="block text-[#636E72] text-sm mb-1">
             Symbol
-            <span className="text-gray-500 ml-2 text-xs">
+            <span className="text-[#B2BEC3] ml-2 text-xs">
               ({getTradableCount()} tradable)
             </span>
           </label>
           <select
             value={form.symbol}
             onChange={handleSymbolChange}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+            className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg px-4 py-3 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
           >
             {tradableETFsList.length === 0 ? (
               <option value="" disabled>No tradable ETFs available</option>
@@ -255,8 +255,8 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
               ))
             )}
           </select>
-          {tradableETFsList.length === 0 && etfs.length > 0 && (
-            <p className="text-yellow-400 text-xs mt-1">
+          {tradableETFsList.length === 0 && (
+            <p className="text-[#C9A962] text-xs mt-1">
               Tradability data loading... or no ETFs verified as tradable yet.
             </p>
           )}
@@ -264,62 +264,62 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
 
         {/* Market Data Display */}
         {form.symbol && (
-          <div className={`bg-gray-800/50 rounded-lg p-3 ${isDataStale ? 'border border-orange-600/30' : ''}`}>
+          <div className={`bg-[#F5F6F4] rounded-lg p-3 ${isDataStale ? 'border border-[#C9A962]/30' : ''}`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">Market Data</span>
+              <span className="text-sm text-[#636E72]">Market Data</span>
               <div className="flex items-center gap-2">
                 {isDataStale && (
-                  <span className="text-xs text-orange-400 flex items-center gap-1 px-1.5 py-0.5 bg-orange-600/20 rounded">
+                  <span className="text-xs text-[#C9A962] flex items-center gap-1 px-1.5 py-0.5 bg-[#C9A962]/10 rounded">
                     <Clock className="w-3 h-3" />
                     Cached
                   </span>
                 )}
                 {currentMarketData?.delayed && !isDataStale && (
-                  <span className="text-xs text-yellow-400 flex items-center gap-1">
+                  <span className="text-xs text-[#C9A962] flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     Delayed
                   </span>
                 )}
                 {marketDataLoading && (
-                  <div className="animate-spin h-3 w-3 border border-[#28EBCF] border-t-transparent rounded-full" />
+                  <div className="animate-spin h-3 w-3 border border-[#7C9885] border-t-transparent rounded-full" />
                 )}
               </div>
             </div>
 
             {currentMarketData ? (
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-gray-900/50 rounded p-2">
-                  <div className="text-xs text-gray-500 mb-1">Bid</div>
-                  <div className="text-green-400 font-mono font-medium">
+                <div className="bg-[#FEFEFE] rounded p-2 border border-[#E8E8E6]">
+                  <div className="text-xs text-[#636E72] mb-1">Bid</div>
+                  <div className="text-[#7C9885] font-mono font-medium">
                     {formatPrice(currentMarketData.bid)}
                   </div>
                   {currentMarketData.bidSize && (
-                    <div className="text-xs text-gray-500">{currentMarketData.bidSize}</div>
+                    <div className="text-xs text-[#B2BEC3]">{currentMarketData.bidSize}</div>
                   )}
                 </div>
-                <div className="bg-gray-900/50 rounded p-2">
-                  <div className="text-xs text-gray-500 mb-1">Last</div>
-                  <div className="text-white font-mono font-medium">
+                <div className="bg-[#FEFEFE] rounded p-2 border border-[#E8E8E6]">
+                  <div className="text-xs text-[#636E72] mb-1">Last</div>
+                  <div className="text-[#2D3436] font-mono font-medium">
                     {formatPrice(currentMarketData.last)}
                   </div>
                   {currentMarketData.spread && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-[#B2BEC3]">
                       Spread: {formatPrice(currentMarketData.spread)}
                     </div>
                   )}
                 </div>
-                <div className="bg-gray-900/50 rounded p-2">
-                  <div className="text-xs text-gray-500 mb-1">Ask</div>
-                  <div className="text-red-400 font-mono font-medium">
+                <div className="bg-[#FEFEFE] rounded p-2 border border-[#E8E8E6]">
+                  <div className="text-xs text-[#636E72] mb-1">Ask</div>
+                  <div className="text-[#C0736D] font-mono font-medium">
                     {formatPrice(currentMarketData.ask)}
                   </div>
                   {currentMarketData.askSize && (
-                    <div className="text-xs text-gray-500">{currentMarketData.askSize}</div>
+                    <div className="text-xs text-[#B2BEC3]">{currentMarketData.askSize}</div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-2">
+              <div className="text-center text-[#B2BEC3] py-2">
                 {marketDataLoading ? 'Loading...' : 'No market data available'}
               </div>
             )}
@@ -328,12 +328,12 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
 
         {/* Quantity */}
         <div>
-          <label className="block text-gray-400 text-sm mb-1">
+          <label className="block text-[#636E72] text-sm mb-1">
             Quantity
             {form.side === 'SELL' && maxSellQuantity !== null ? (
-              <span className="text-gray-500 ml-2">(max owned: {maxSellQuantity})</span>
+              <span className="text-[#B2BEC3] ml-2">(max owned: {maxSellQuantity})</span>
             ) : (
-              <span className="text-gray-500 ml-2">(max: {safetyLimits?.maxOrderSize || 100})</span>
+              <span className="text-[#B2BEC3] ml-2">(max: {safetyLimits?.maxOrderSize || 100})</span>
             )}
           </label>
           <input
@@ -342,28 +342,28 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
             max={form.side === 'SELL' && maxSellQuantity !== null ? maxSellQuantity : (safetyLimits?.maxOrderSize || 100)}
             value={form.quantity}
             onChange={(e) => setForm(prev => ({ ...prev, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
-            className={`w-full bg-gray-800 border rounded-lg px-4 py-3 text-white focus:outline-none ${
+            className={`w-full bg-[#FEFEFE] border rounded-lg px-4 py-3 text-[#2D3436] focus:outline-none ${
               sellError || exceedsMaxSize
-                ? 'border-red-500 focus:border-red-500'
+                ? 'border-[#C0736D] focus:border-[#C0736D]'
                 : isLargeOrder
-                  ? 'border-orange-500 focus:border-orange-500'
-                  : 'border-gray-600 focus:border-[#28EBCF]'
+                  ? 'border-[#C9A962] focus:border-[#C9A962]'
+                  : 'border-[#E8E8E6] focus:border-[#7C9885]'
             }`}
           />
           {sellError && (
-            <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+            <p className="text-[#C0736D] text-xs mt-1 flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
               {sellError}
             </p>
           )}
           {!sellError && exceedsMaxSize && (
-            <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+            <p className="text-[#C0736D] text-xs mt-1 flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
               Exceeds max order size ({safetyLimits?.maxOrderSize || 100})
             </p>
           )}
           {!sellError && isLargeOrder && !exceedsMaxSize && (
-            <p className="text-orange-400 text-xs mt-1 flex items-center gap-1">
+            <p className="text-[#C9A962] text-xs mt-1 flex items-center gap-1">
               <AlertTriangle className="w-3 h-3" />
               Large order - will require confirmation
             </p>
@@ -373,28 +373,28 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity / 4) || 1 }))}
-                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
               >
                 25%
               </button>
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity / 2) || 1 }))}
-                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
               >
                 50%
               </button>
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, quantity: Math.floor(maxSellQuantity * 0.75) || 1 }))}
-                className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
               >
                 75%
               </button>
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, quantity: maxSellQuantity }))}
-                className="flex-1 text-xs py-1 px-2 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+                className="flex-1 text-xs py-1 px-2 bg-[#C0736D]/10 text-[#C0736D] rounded hover:bg-[#C0736D]/20"
               >
                 100%
               </button>
@@ -404,11 +404,11 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
 
         {/* Order Type */}
         <div>
-          <label className="block text-gray-400 text-sm mb-1">Order Type</label>
+          <label className="block text-[#636E72] text-sm mb-1">Order Type</label>
           <select
             value={form.orderType}
             onChange={(e) => setForm(prev => ({ ...prev, orderType: e.target.value, limitPrice: '', stopPrice: '' }))}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+            className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg px-4 py-3 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
           >
             {ORDER_TYPES.map(type => (
               <option key={type.value} value={type.value}>
@@ -421,7 +421,7 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
         {/* Stop Price (for Stop and Stop Limit) */}
         {currentOrderType?.requiresStop && (
           <div>
-            <label className="block text-gray-400 text-sm mb-1">Stop Price</label>
+            <label className="block text-[#636E72] text-sm mb-1">Stop Price</label>
             <input
               type="number"
               step="0.01"
@@ -429,41 +429,41 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
               value={form.stopPrice}
               onChange={(e) => setForm(prev => ({ ...prev, stopPrice: e.target.value }))}
               placeholder="Enter stop trigger price"
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+              className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg px-4 py-3 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
             />
             {currentMarketData && (
               <div className="flex gap-2 mt-2">
                 <button
                   type="button"
                   onClick={() => setStopToPrice(currentMarketData.bid)}
-                  className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                  className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
                 >
                   Bid ({formatPrice(currentMarketData.bid)})
                 </button>
                 <button
                   type="button"
                   onClick={() => setStopToPrice(currentMarketData.last)}
-                  className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                  className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
                 >
                   Last ({formatPrice(currentMarketData.last)})
                 </button>
                 <button
                   type="button"
                   onClick={() => setStopToPrice(currentMarketData.ask)}
-                  className="flex-1 text-xs py-1 px-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+                  className="flex-1 text-xs py-1 px-2 bg-[#ECEEED] text-[#636E72] rounded hover:bg-[#E8E8E6]"
                 >
                   Ask ({formatPrice(currentMarketData.ask)})
                 </button>
               </div>
             )}
-            <p className="text-xs text-gray-500 mt-1">Order triggers when price reaches this level</p>
+            <p className="text-xs text-[#B2BEC3] mt-1">Order triggers when price reaches this level</p>
           </div>
         )}
 
         {/* Limit Price (for Limit and Stop Limit) */}
         {currentOrderType?.requiresLimit && (
           <div>
-            <label className="block text-gray-400 text-sm mb-1">Limit Price</label>
+            <label className="block text-[#636E72] text-sm mb-1">Limit Price</label>
             <input
               type="number"
               step="0.01"
@@ -471,34 +471,34 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
               value={form.limitPrice}
               onChange={(e) => setForm(prev => ({ ...prev, limitPrice: e.target.value }))}
               placeholder="Enter limit price"
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+              className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg px-4 py-3 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
             />
             {currentMarketData && (
               <div className="flex gap-2 mt-2">
                 <button
                   type="button"
                   onClick={() => setLimitToPrice(currentMarketData.bid)}
-                  className="flex-1 text-xs py-1 px-2 bg-green-900/30 text-green-400 rounded hover:bg-green-900/50"
+                  className="flex-1 text-xs py-1 px-2 bg-[#7C9885]/10 text-[#7C9885] rounded hover:bg-[#7C9885]/20"
                 >
                   Bid ({formatPrice(currentMarketData.bid)})
                 </button>
                 <button
                   type="button"
                   onClick={() => setLimitToPrice(currentMarketData.midPrice)}
-                  className="flex-1 text-xs py-1 px-2 bg-blue-900/30 text-blue-400 rounded hover:bg-blue-900/50"
+                  className="flex-1 text-xs py-1 px-2 bg-[#6B7B8A]/10 text-[#6B7B8A] rounded hover:bg-[#6B7B8A]/20"
                 >
                   Mid ({formatPrice(currentMarketData.midPrice)})
                 </button>
                 <button
                   type="button"
                   onClick={() => setLimitToPrice(currentMarketData.ask)}
-                  className="flex-1 text-xs py-1 px-2 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+                  className="flex-1 text-xs py-1 px-2 bg-[#C0736D]/10 text-[#C0736D] rounded hover:bg-[#C0736D]/20"
                 >
                   Ask ({formatPrice(currentMarketData.ask)})
                 </button>
               </div>
             )}
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[#B2BEC3] mt-1">
               {form.side === 'BUY' ? 'Maximum price to pay' : 'Minimum price to receive'}
             </p>
           </div>
@@ -506,23 +506,23 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
 
         {/* Estimated Order Value & Balance Check */}
         {form.side === 'BUY' && estimatedPrice > 0 && (
-          <div className={`rounded-lg p-3 ${insufficientBalance ? 'bg-red-900/30 border border-red-600/50' : 'bg-gray-800/50'}`}>
+          <div className={`rounded-lg p-3 ${insufficientBalance ? 'bg-[#C0736D]/10 border border-[#C0736D]/30' : 'bg-[#F5F6F4]'}`}>
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-gray-400">Estimated Cost</span>
-              <span className="text-white font-medium">€{estimatedOrderValue.toFixed(2)}</span>
+              <span className="text-[#636E72]">Estimated Cost</span>
+              <span className="text-[#2D3436] font-medium">€{estimatedOrderValue.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-sm mb-1">
-              <span className="text-gray-400">+ Buffer (1%)</span>
-              <span className="text-gray-300">€{(estimatedOrderValue * 0.01).toFixed(2)}</span>
+              <span className="text-[#636E72]">+ Buffer (1%)</span>
+              <span className="text-[#636E72]">€{(estimatedOrderValue * 0.01).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center text-sm pt-1 border-t border-gray-700">
-              <span className="text-gray-400">Available Cash</span>
-              <span className={`font-medium ${insufficientBalance ? 'text-red-400' : 'text-green-400'}`}>
+            <div className="flex justify-between items-center text-sm pt-1 border-t border-[#E8E8E6]">
+              <span className="text-[#636E72]">Available Cash</span>
+              <span className={`font-medium ${insufficientBalance ? 'text-[#C0736D]' : 'text-[#7C9885]'}`}>
                 €{available.toFixed(2)}
               </span>
             </div>
             {insufficientBalance && (
-              <div className="mt-2 flex items-center gap-2 text-red-400 text-xs">
+              <div className="mt-2 flex items-center gap-2 text-[#C0736D] text-xs">
                 <ShieldAlert className="w-4 h-4" />
                 <span>Insufficient liquidity. Available: €{available.toFixed(2)}, Required: €{requiredWithBuffer.toFixed(2)}</span>
               </div>
@@ -536,8 +536,8 @@ export default function OrderForm({ onAddToBasket, prefillOrder, onClearPrefill 
           disabled={!form.conid || exceedsMaxSize || insufficientBalance || tradableETFsList.length === 0 || !!sellError}
           className={`w-full py-3 font-bold rounded-lg transition-colors flex items-center justify-center gap-2 ${
             insufficientBalance || sellError
-              ? 'bg-red-900/50 text-red-400 cursor-not-allowed'
-              : 'bg-[#28EBCF] text-gray-900 hover:bg-[#20D4BA] disabled:opacity-50 disabled:cursor-not-allowed'
+              ? 'bg-[#C0736D]/20 text-[#C0736D] cursor-not-allowed'
+              : 'bg-[#7C9885] text-white hover:bg-[#6B8A74] disabled:opacity-50 disabled:cursor-not-allowed'
           }`}
         >
           {sellError ? (

@@ -21,10 +21,10 @@ const formatPrice = (price, currency) => {
 };
 
 const formatChange = (change, changePercent) => {
-  if (change === 0 && changePercent === 0) return { text: '-', color: 'text-gray-400' };
+  if (change === 0 && changePercent === 0) return { text: '-', color: 'text-[#636E72]' };
 
   const sign = change >= 0 ? '+' : '';
-  const color = change >= 0 ? 'text-green-400' : 'text-red-400';
+  const color = change >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]';
 
   return {
     text: `${sign}${changePercent.toFixed(2)}%`,
@@ -71,9 +71,9 @@ export default function MarketIndicesTicker() {
 
   if (loading && indices.length === 0) {
     return (
-      <div className="bg-[#0D0E10] border-b border-gray-800">
+      <div className="bg-[#FEFEFE] border-b border-[#E8E8E6]">
         <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+          <div className="flex items-center justify-center gap-2 text-[#B2BEC3] text-sm">
             <RefreshCw className="w-4 h-4 animate-spin" />
             <span>Beurskoersen laden...</span>
           </div>
@@ -84,14 +84,14 @@ export default function MarketIndicesTicker() {
 
   if (error && indices.length === 0) {
     return (
-      <div className="bg-[#0D0E10] border-b border-gray-800">
+      <div className="bg-[#FEFEFE] border-b border-[#E8E8E6]">
         <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+          <div className="flex items-center justify-center gap-2 text-[#B2BEC3] text-sm">
             <Globe className="w-4 h-4" />
             <span>{error}</span>
             <button
               onClick={fetchIndices}
-              className="text-[#28EBCF] hover:underline ml-2"
+              className="text-[#7C9885] hover:underline ml-2"
             >
               Opnieuw proberen
             </button>
@@ -102,13 +102,13 @@ export default function MarketIndicesTicker() {
   }
 
   return (
-    <div className="bg-[#0D0E10] border-b border-gray-800 overflow-hidden">
+    <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center gap-1 py-2 overflow-x-auto scrollbar-hide">
           {/* Market icon */}
-          <div className="flex items-center gap-2 pr-4 border-r border-gray-700 shrink-0">
-            <Globe className="w-4 h-4 text-gray-500" />
-            <span className="text-xs text-gray-500 hidden sm:inline">Beurzen</span>
+          <div className="flex items-center gap-2 pr-4 border-r border-[#E8E8E6] shrink-0">
+            <Globe className="w-4 h-4 text-[#B2BEC3]" />
+            <span className="text-xs text-[#B2BEC3] hidden sm:inline">Beurzen</span>
           </div>
 
           {/* Index items */}
@@ -123,12 +123,12 @@ export default function MarketIndicesTicker() {
                   className="flex items-center gap-2 shrink-0"
                 >
                   {/* Index name */}
-                  <span className="text-xs sm:text-sm font-medium text-white">
+                  <span className="text-xs sm:text-sm font-medium text-[#2D3436]">
                     {index.symbol}
                   </span>
 
                   {/* Price with percentage */}
-                  <span className="text-xs sm:text-sm text-gray-300">
+                  <span className="text-xs sm:text-sm text-[#636E72]">
                     {formatPrice(index.price, index.currency)}
                   </span>
 
@@ -151,7 +151,7 @@ export default function MarketIndicesTicker() {
           {/* Refresh button */}
           <button
             onClick={fetchIndices}
-            className="shrink-0 ml-auto p-1 text-gray-500 hover:text-gray-300 transition-colors"
+            className="shrink-0 ml-auto p-1 text-[#B2BEC3] hover:text-[#636E72] transition-colors"
             title={lastUpdate ? `Laatste update: ${lastUpdate.toLocaleTimeString('nl-NL')}` : 'Verversen'}
           >
             <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />

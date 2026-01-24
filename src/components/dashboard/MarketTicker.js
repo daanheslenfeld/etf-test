@@ -73,37 +73,37 @@ export function MarketTicker({
     return 'neutral';
   };
 
-  // Trend styling
+  // Trend styling - Premium banking palette
   const trendStyles = {
     up: {
-      text: 'text-emerald-400',
-      bg: 'bg-emerald-500/10',
+      text: 'text-[#7C9885]',
+      bg: 'bg-[#7C9885]/10',
       icon: TrendingUp,
     },
     down: {
-      text: 'text-red-400',
-      bg: 'bg-red-500/10',
+      text: 'text-[#C0736D]',
+      bg: 'bg-[#C0736D]/10',
       icon: TrendingDown,
     },
     neutral: {
-      text: 'text-gray-400',
-      bg: 'bg-gray-500/10',
+      text: 'text-[#636E72]',
+      bg: 'bg-[#ECEEED]',
       icon: Minus,
     },
   };
 
   if (variant === 'card') {
     return (
-      <div className={`bg-[#1A1B1F] border border-gray-800/50 rounded-xl overflow-hidden ${className}`}>
+      <div className={`bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)] ${className}`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800/50">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#E8E8E6]">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-[#28EBCF]" />
-            <span className="text-sm font-medium text-white">Markt Overzicht</span>
+            <TrendingUp className="w-4 h-4 text-[#7C9885]" />
+            <span className="text-sm font-medium text-[#2D3436]">Markt Overzicht</span>
           </div>
           <div className="flex items-center gap-2">
             {lastUpdated && (
-              <span className="text-xs text-gray-500 flex items-center gap-1">
+              <span className="text-xs text-[#B2BEC3] flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {formatTime(lastUpdated)}
               </span>
@@ -112,7 +112,7 @@ export function MarketTicker({
               <button
                 onClick={onRefresh}
                 disabled={loading}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors disabled:opacity-50"
+                className="p-1.5 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               </button>
@@ -121,7 +121,7 @@ export function MarketTicker({
         </div>
 
         {/* Indices grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-gray-800/30">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-[#E8E8E6]">
           {indices.map((index) => {
             const indexData = data[index.symbol] || {};
             const trend = getTrend(indexData.changePercent);
@@ -131,14 +131,14 @@ export function MarketTicker({
             return (
               <div
                 key={index.symbol}
-                className="bg-[#1A1B1F] p-4 hover:bg-gray-800/30 transition-colors"
+                className="bg-[#FEFEFE] p-4 hover:bg-[#F5F6F4] transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-gray-500 font-medium">{index.name}</span>
-                  <span className="text-[10px] text-gray-600 uppercase">{index.region}</span>
+                  <span className="text-xs text-[#636E72] font-medium">{index.name}</span>
+                  <span className="text-[10px] text-[#B2BEC3] uppercase">{index.region}</span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-semibold text-white font-mono tabular-nums">
+                  <span className="text-lg font-semibold text-[#2D3436] font-mono tabular-nums">
                     {formatPrice(indexData.price)}
                   </span>
                   <div className={`flex items-center gap-1 ${style.text}`}>
@@ -154,8 +154,8 @@ export function MarketTicker({
         </div>
 
         {error && (
-          <div className="px-4 py-2 bg-red-500/10 border-t border-red-500/20">
-            <p className="text-xs text-red-400 flex items-center gap-1.5">
+          <div className="px-4 py-2 bg-[#C0736D]/10 border-t border-[#C0736D]/20">
+            <p className="text-xs text-[#C0736D] flex items-center gap-1.5">
               <AlertCircle className="w-3.5 h-3.5" />
               {error}
             </p>
@@ -175,8 +175,8 @@ export function MarketTicker({
 
           return (
             <div key={index.symbol} className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xs text-gray-500">{index.name}</span>
-              <span className="text-sm text-white font-mono tabular-nums">
+              <span className="text-xs text-[#636E72]">{index.name}</span>
+              <span className="text-sm text-[#2D3436] font-mono tabular-nums">
                 {formatPrice(indexData.price)}
               </span>
               <span className={`text-xs font-medium font-mono tabular-nums ${style.text}`}>
@@ -192,13 +192,13 @@ export function MarketTicker({
   // Default scrolling ticker
   return (
     <div
-      className={`relative overflow-hidden bg-[#1A1B1F] border border-gray-800/50 rounded-xl ${className}`}
+      className={`relative overflow-hidden bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-[0_2px_8px_rgba(45,52,54,0.06)] ${className}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className="flex items-center px-4 py-3">
         {/* Gradient fade left */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#1A1B1F] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#FEFEFE] to-transparent z-10 pointer-events-none" />
 
         {/* Scrolling content */}
         <div
@@ -221,8 +221,8 @@ export function MarketTicker({
                 key={`${index.symbol}-${i}`}
                 className="flex items-center gap-3 flex-shrink-0"
               >
-                <span className="text-sm text-gray-400 font-medium">{index.name}</span>
-                <span className="text-sm text-white font-mono tabular-nums font-medium">
+                <span className="text-sm text-[#636E72] font-medium">{index.name}</span>
+                <span className="text-sm text-[#2D3436] font-mono tabular-nums font-medium">
                   {formatPrice(indexData.price)}
                 </span>
                 <div className={`flex items-center gap-1 px-2 py-0.5 rounded ${style.bg}`}>
@@ -237,14 +237,14 @@ export function MarketTicker({
         </div>
 
         {/* Gradient fade right */}
-        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#1A1B1F] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#FEFEFE] to-transparent z-10 pointer-events-none" />
 
         {/* Refresh button */}
         {onRefresh && (
           <button
             onClick={onRefresh}
             disabled={loading}
-            className="absolute right-2 p-1.5 text-gray-500 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors z-20 disabled:opacity-50"
+            className="absolute right-2 p-1.5 text-[#B2BEC3] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors z-20 disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -274,13 +274,13 @@ export function MarketTicker({
  */
 export function MarketTickerSkeleton({ className = '' }) {
   return (
-    <div className={`bg-[#1A1B1F] border border-gray-800/50 rounded-xl px-4 py-3 ${className}`}>
+    <div className={`bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl px-4 py-3 ${className}`}>
       <div className="flex items-center gap-8">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
-            <div className="animate-pulse bg-gray-800/50 h-4 w-16 rounded" />
-            <div className="animate-pulse bg-gray-800/50 h-4 w-20 rounded" />
-            <div className="animate-pulse bg-gray-800/50 h-5 w-16 rounded" />
+            <div className="animate-pulse bg-[#ECEEED] h-4 w-16 rounded" />
+            <div className="animate-pulse bg-[#ECEEED] h-4 w-20 rounded" />
+            <div className="animate-pulse bg-[#ECEEED] h-5 w-16 rounded" />
           </div>
         ))}
       </div>

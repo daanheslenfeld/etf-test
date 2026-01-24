@@ -2,31 +2,31 @@ import React from 'react';
 import { X, RotateCcw } from 'lucide-react';
 
 /**
- * ActiveFilterChips Component
+ * ActiveFilterChips Component - Premium Banking Style
  *
  * Displays active filters as removable chips
- * Color-coded by filter type
+ * Muted color scheme for professional look
  */
 
-// Default color scheme for filter types
+// Premium banking color scheme for filter types
 const DEFAULT_COLORS = {
-  region: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
-  sector: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-  marketCap: { bg: 'bg-violet-500/20', text: 'text-violet-400', border: 'border-violet-500/30' },
-  strategy: { bg: 'bg-teal-500/20', text: 'text-teal-400', border: 'border-teal-500/30' },
-  currency: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
-  bondType: { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
-  duration: { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
-  creditRating: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
-  commodityType: { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
-  replication: { bg: 'bg-rose-500/20', text: 'text-rose-400', border: 'border-rose-500/30' },
-  propertyType: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
-  cryptoType: { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' },
-  riskLevel: { bg: 'bg-pink-500/20', text: 'text-pink-400', border: 'border-pink-500/30' },
-  allocation: { bg: 'bg-indigo-500/20', text: 'text-indigo-400', border: 'border-indigo-500/30' },
-  providers: { bg: 'bg-gray-500/20', text: 'text-gray-300', border: 'border-gray-500/30' },
-  search: { bg: 'bg-gray-500/20', text: 'text-gray-300', border: 'border-gray-500/30' },
-  default: { bg: 'bg-gray-500/20', text: 'text-gray-300', border: 'border-gray-500/30' },
+  region: { bg: 'bg-[#6B7B8A]/10', text: 'text-[#6B7B8A]', border: 'border-[#6B7B8A]/20' },
+  sector: { bg: 'bg-[#7C9885]/10', text: 'text-[#7C9885]', border: 'border-[#7C9885]/20' },
+  marketCap: { bg: 'bg-[#8B7B9A]/10', text: 'text-[#8B7B9A]', border: 'border-[#8B7B9A]/20' },
+  strategy: { bg: 'bg-[#7C9885]/10', text: 'text-[#7C9885]', border: 'border-[#7C9885]/20' },
+  currency: { bg: 'bg-[#C9A962]/10', text: 'text-[#C9A962]', border: 'border-[#C9A962]/20' },
+  bondType: { bg: 'bg-[#C9A962]/10', text: 'text-[#C9A962]', border: 'border-[#C9A962]/20' },
+  duration: { bg: 'bg-[#C9A962]/10', text: 'text-[#C9A962]', border: 'border-[#C9A962]/20' },
+  creditRating: { bg: 'bg-[#C0736D]/10', text: 'text-[#C0736D]', border: 'border-[#C0736D]/20' },
+  commodityType: { bg: 'bg-[#C9A962]/10', text: 'text-[#C9A962]', border: 'border-[#C9A962]/20' },
+  replication: { bg: 'bg-[#8B7B9A]/10', text: 'text-[#8B7B9A]', border: 'border-[#8B7B9A]/20' },
+  propertyType: { bg: 'bg-[#6B7B8A]/10', text: 'text-[#6B7B8A]', border: 'border-[#6B7B8A]/20' },
+  cryptoType: { bg: 'bg-[#8B7B9A]/10', text: 'text-[#8B7B9A]', border: 'border-[#8B7B9A]/20' },
+  riskLevel: { bg: 'bg-[#C0736D]/10', text: 'text-[#C0736D]', border: 'border-[#C0736D]/20' },
+  allocation: { bg: 'bg-[#6B7B8A]/10', text: 'text-[#6B7B8A]', border: 'border-[#6B7B8A]/20' },
+  providers: { bg: 'bg-[#ECEEED]', text: 'text-[#636E72]', border: 'border-[#E8E8E6]' },
+  search: { bg: 'bg-[#ECEEED]', text: 'text-[#636E72]', border: 'border-[#E8E8E6]' },
+  default: { bg: 'bg-[#ECEEED]', text: 'text-[#636E72]', border: 'border-[#E8E8E6]' },
 };
 
 export function ActiveFilterChips({
@@ -67,7 +67,7 @@ export function ActiveFilterChips({
       return {
         bg: chip.bg,
         text: chip.text,
-        border: chip.border || 'border-gray-700/50',
+        border: chip.border || 'border-[#E8E8E6]',
       };
     }
     // Fall back to color map
@@ -86,12 +86,12 @@ export function ActiveFilterChips({
             className={`
               inline-flex items-center gap-2 ${sizeConfig.chip}
               rounded-lg font-medium border transition-all
-              hover:scale-105 hover:shadow-sm
+              hover:shadow-sm
               ${colors.bg} ${colors.text} ${colors.border}
             `}
           >
             {showLabel && chip.filterLabel && (
-              <span className="text-gray-400 font-normal">
+              <span className="text-[#B2BEC3] font-normal">
                 {chip.filterLabel}:
               </span>
             )}
@@ -99,7 +99,7 @@ export function ActiveFilterChips({
             {onRemove && (
               <button
                 onClick={() => onRemove(chip.filterId, chip.value)}
-                className="p-0.5 hover:bg-white/10 rounded transition-colors"
+                className="p-0.5 hover:bg-[#2D3436]/10 rounded transition-colors"
               >
                 <X className={sizeConfig.icon} />
               </button>
@@ -113,7 +113,7 @@ export function ActiveFilterChips({
           onClick={onClearAll}
           className={`
             inline-flex items-center gap-1.5 ${sizeConfig.clearAll}
-            text-gray-500 hover:text-[#28EBCF] transition-colors font-medium ml-1
+            text-[#636E72] hover:text-[#7C9885] transition-colors font-medium ml-1
           `}
         >
           <RotateCcw className={sizeConfig.icon} />
@@ -150,19 +150,18 @@ export function FilterChip({
       className={`
         inline-flex items-center gap-2 ${sizeConfig.chip}
         rounded-lg font-medium border transition-all
-        hover:scale-105
         ${colors.bg} ${colors.text} ${colors.border}
         ${className}
       `}
     >
       {filterLabel && (
-        <span className="text-gray-400 font-normal">{filterLabel}:</span>
+        <span className="text-[#B2BEC3] font-normal">{filterLabel}:</span>
       )}
       <span>{label}</span>
       {onRemove && (
         <button
           onClick={onRemove}
-          className="p-0.5 hover:bg-white/10 rounded transition-colors"
+          className="p-0.5 hover:bg-[#2D3436]/10 rounded transition-colors"
         >
           <X className={sizeConfig.icon} />
         </button>

@@ -4,7 +4,7 @@ import { Sidebar } from './Sidebar';
 import { LoadingSpinner } from '../common';
 
 /**
- * DashboardLayout Component
+ * DashboardLayout Component - Premium Banking Style
  *
  * Main layout wrapper for all dashboard pages
  * Provides consistent header, sidebar, and content structure
@@ -23,7 +23,7 @@ export function DashboardLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0D0E10]">
+    <div className="min-h-screen bg-[#F5F6F4]">
       {/* Header */}
       <Header
         user={user}
@@ -83,12 +83,12 @@ export function PageContainer({
         <div className="flex items-center justify-between mb-6">
           <div>
             {title && (
-              <h1 className="text-2xl font-semibold text-white tracking-tight">
+              <h1 className="text-2xl font-semibold text-[#2D3436] tracking-tight">
                 {title}
               </h1>
             )}
             {subtitle && (
-              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+              <p className="text-sm text-[#636E72] mt-1">{subtitle}</p>
             )}
           </div>
           {action && <div>{action}</div>}
@@ -115,10 +115,10 @@ export function PageSection({
         <div className="flex items-center justify-between mb-4">
           <div>
             {title && (
-              <h2 className="text-lg font-semibold text-white">{title}</h2>
+              <h2 className="text-lg font-semibold text-[#2D3436]">{title}</h2>
             )}
             {subtitle && (
-              <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
+              <p className="text-sm text-[#636E72] mt-0.5">{subtitle}</p>
             )}
           </div>
           {action && <div>{action}</div>}

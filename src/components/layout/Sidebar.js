@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 /**
- * Sidebar Component
+ * Sidebar Component - Pastel Design System
  *
  * Navigation sidebar with collapsible state
  */
@@ -74,7 +74,7 @@ export function Sidebar({
         {/* Backdrop */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+            className="fixed inset-0 bg-[#2D3436]/20 z-40 lg:hidden backdrop-blur-sm"
             onClick={onClose}
           />
         )}
@@ -82,32 +82,32 @@ export function Sidebar({
         {/* Sidebar */}
         <aside
           className={`
-            fixed top-0 left-0 h-full w-64 bg-[#1A1B1F] border-r border-gray-800/50 z-50
+            fixed top-0 left-0 h-full w-64 bg-[#FEFEFE] border-r border-[#E8E8E6] z-50 shadow-[4px_0_16px_rgba(45,52,54,0.06)]
             transform transition-transform duration-300 ease-out lg:hidden
             ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
           <div className="h-full flex flex-col">
             {/* Header */}
-            <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800/50">
-              <span className="text-white font-semibold">Menu</span>
+            <div className="h-16 flex items-center justify-between px-4 border-b border-[#E8E8E6]">
+              <span className="text-[#2D3436] font-semibold">Menu</span>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+                className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-xl transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
               {NAV_ITEMS.map((item) => (
                 <NavItem key={item.id} item={item} onClick={onClose} />
               ))}
             </nav>
 
             {/* Bottom nav */}
-            <div className="px-3 py-4 border-t border-gray-800/50 space-y-1">
+            <div className="px-3 py-4 border-t border-[#E8E8E6] space-y-1.5">
               {BOTTOM_NAV_ITEMS.map((item) => (
                 <NavItem key={item.id} item={item} onClick={onClose} />
               ))}
@@ -122,17 +122,17 @@ export function Sidebar({
   return (
     <aside
       className={`
-        hidden lg:flex flex-col h-full border-r border-gray-800/50 bg-[#1A1B1F]
+        hidden lg:flex flex-col h-full border-r border-[#E8E8E6] bg-[#FEFEFE]
         transition-all duration-300 ease-out
         ${collapsed ? 'w-16' : 'w-64'}
         ${className}
       `}
     >
       {/* Collapse toggle */}
-      <div className="h-16 flex items-center justify-end px-3 border-b border-gray-800/50">
+      <div className="h-16 flex items-center justify-end px-3 border-b border-[#E8E8E6]">
         <button
           onClick={onToggleCollapse}
-          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+          className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-xl transition-colors"
           title={collapsed ? 'Uitklappen' : 'Inklappen'}
         >
           <ChevronLeft className={`w-5 h-5 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
@@ -140,14 +140,14 @@ export function Sidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => (
           <NavItem key={item.id} item={item} collapsed={collapsed} />
         ))}
       </nav>
 
       {/* Bottom nav */}
-      <div className="px-3 py-4 border-t border-gray-800/50 space-y-1">
+      <div className="px-3 py-4 border-t border-[#E8E8E6] space-y-1.5">
         {BOTTOM_NAV_ITEMS.map((item) => (
           <NavItem key={item.id} item={item} collapsed={collapsed} />
         ))}
@@ -167,10 +167,10 @@ function NavItem({ item, collapsed = false, onClick }) {
       to={item.path}
       onClick={onClick}
       className={({ isActive }) => `
-        flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+        flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
         ${isActive
-          ? 'bg-gradient-to-r from-[#28EBCF]/10 to-transparent text-[#28EBCF] border-l-2 border-[#28EBCF]'
-          : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+          ? 'bg-[#7C9885]/10 text-[#7C9885] border-l-2 border-[#7C9885] font-medium'
+          : 'text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4]'
         }
         ${collapsed ? 'justify-center' : ''}
       `}

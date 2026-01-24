@@ -3,12 +3,12 @@ import { useTrading } from '../../context/TradingContext';
 import { CheckCircle, XCircle, Clock, AlertCircle, Loader, X } from 'lucide-react';
 
 const STATUS_CONFIG = {
-  pending: { icon: Clock, color: 'text-yellow-400', bg: 'bg-yellow-900/20', label: 'Pending' },
-  submitted: { icon: Loader, color: 'text-blue-400', bg: 'bg-blue-900/20', label: 'Submitted' },
-  filled: { icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-900/20', label: 'Filled' },
-  partially_filled: { icon: AlertCircle, color: 'text-orange-400', bg: 'bg-orange-900/20', label: 'Partial' },
-  cancelled: { icon: XCircle, color: 'text-gray-400', bg: 'bg-gray-900/20', label: 'Cancelled' },
-  rejected: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-900/20', label: 'Rejected' },
+  pending: { icon: Clock, color: 'text-[#C9A962]', bg: 'bg-[#C9A962]/10', label: 'Pending' },
+  submitted: { icon: Loader, color: 'text-[#6B7B8A]', bg: 'bg-[#6B7B8A]/10', label: 'Submitted' },
+  filled: { icon: CheckCircle, color: 'text-[#7C9885]', bg: 'bg-[#7C9885]/10', label: 'Filled' },
+  partially_filled: { icon: AlertCircle, color: 'text-[#C9A962]', bg: 'bg-[#C9A962]/10', label: 'Partial' },
+  cancelled: { icon: XCircle, color: 'text-[#636E72]', bg: 'bg-[#ECEEED]', label: 'Cancelled' },
+  rejected: { icon: XCircle, color: 'text-[#C0736D]', bg: 'bg-[#C0736D]/10', label: 'Rejected' },
 };
 
 export default function OrderStatus() {
@@ -40,16 +40,16 @@ export default function OrderStatus() {
   const failCount = enrichedResults.filter(r => ['rejected', 'cancelled'].includes(r.status)).length;
 
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
+    <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-bold text-white">
+      <div className="p-4 border-b border-[#E8E8E6] flex justify-between items-center">
+        <h3 className="text-lg font-bold text-[#2D3436]">
           {isExecuting ? 'Executing Orders...' : 'Execution Results'}
         </h3>
         {!isExecuting && (
           <button
             onClick={clearExecutionResults}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -58,20 +58,20 @@ export default function OrderStatus() {
 
       {/* Summary */}
       {!isExecuting && (
-        <div className="grid grid-cols-2 gap-4 p-4 border-b border-gray-700 bg-gray-800/30">
+        <div className="grid grid-cols-2 gap-4 p-4 border-b border-[#E8E8E6] bg-[#F5F6F4]">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-400">{successCount}</div>
-            <div className="text-sm text-gray-400">Submitted</div>
+            <div className="text-2xl font-bold text-[#7C9885]">{successCount}</div>
+            <div className="text-sm text-[#636E72]">Submitted</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-red-400">{failCount}</div>
-            <div className="text-sm text-gray-400">Failed</div>
+            <div className="text-2xl font-bold text-[#C0736D]">{failCount}</div>
+            <div className="text-sm text-[#636E72]">Failed</div>
           </div>
         </div>
       )}
 
       {/* Order Results */}
-      <div className="max-h-80 overflow-y-auto divide-y divide-gray-800">
+      <div className="max-h-80 overflow-y-auto divide-y divide-[#E8E8E6]">
         {enrichedResults.map((result) => {
           const config = STATUS_CONFIG[result.status] || STATUS_CONFIG.pending;
           const StatusIcon = config.icon;
@@ -84,13 +84,13 @@ export default function OrderStatus() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                        result.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                        result.side === 'BUY' ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
                       }`}>
                         {result.side}
                       </span>
-                      <span className="font-medium text-white">{result.symbol}</span>
+                      <span className="font-medium text-[#2D3436]">{result.symbol}</span>
                     </div>
-                    <div className="text-sm text-gray-400 mt-1">
+                    <div className="text-sm text-[#636E72] mt-1">
                       {result.message}
                     </div>
                   </div>
@@ -100,12 +100,12 @@ export default function OrderStatus() {
                     {config.label}
                   </div>
                   {result.filledQty !== undefined && (
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-[#636E72]">
                       {result.filledQty}/{result.totalQty || result.quantity} filled
                     </div>
                   )}
                   {result.avgPrice && (
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-[#636E72]">
                       @ {parseFloat(result.avgPrice).toFixed(2)}
                     </div>
                   )}

@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, X } from 'lucide-react';
 
 /**
- * FilterDropdown Component
+ * FilterDropdown Component - Pastel Design System
  *
- * Single-select dropdown filter with premium styling
+ * Single-select dropdown filter with soft pastel styling
  * Reusable across ETF browser, portfolio filters, etc.
  */
 export function FilterDropdown({
@@ -52,19 +52,19 @@ export function FilterDropdown({
 
   const sizes = {
     sm: {
-      button: 'px-2.5 py-2 text-xs min-h-[40px]',
+      button: 'px-3 py-2 text-xs min-h-[40px]',
       label: 'text-[10px] mb-1',
-      option: 'px-3 py-2.5 text-xs min-h-[40px]',
+      option: 'px-3.5 py-2.5 text-xs min-h-[40px]',
     },
     md: {
-      button: 'px-3.5 py-2.5 text-sm min-h-[44px]',
+      button: 'px-4 py-2.5 text-sm min-h-[44px]',
       label: 'text-[11px] mb-1.5',
       option: 'px-4 py-3 text-sm min-h-[44px]',
     },
     lg: {
-      button: 'px-4 py-3.5 text-base min-h-[48px]',
+      button: 'px-5 py-3.5 text-base min-h-[48px]',
       label: 'text-xs mb-2',
-      option: 'px-4 py-3.5 text-base min-h-[48px]',
+      option: 'px-5 py-3.5 text-base min-h-[48px]',
     },
   };
 
@@ -73,7 +73,7 @@ export function FilterDropdown({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       {label && (
-        <label className={`block ${sizeConfig.label} text-gray-500 font-medium uppercase tracking-wider`}>
+        <label className={`block ${sizeConfig.label} text-[#5F7066] font-medium uppercase tracking-wider`}>
           {label}
         </label>
       )}
@@ -82,16 +82,16 @@ export function FilterDropdown({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={`
-          w-full flex items-center justify-between ${sizeConfig.button} rounded-lg border transition-all duration-200
+          w-full flex items-center justify-between ${sizeConfig.button} rounded-2xl border transition-all duration-200
           ${disabled
-            ? 'bg-gray-900/20 border-gray-800/30 text-gray-600 cursor-not-allowed'
+            ? 'bg-[#F0F2EE] border-[#E4E8E5] text-[#95A39A] cursor-not-allowed'
             : hasValue
-              ? 'bg-gradient-to-r from-[#28EBCF]/10 to-[#28EBCF]/5 border-[#28EBCF]/30 text-white shadow-sm shadow-[#28EBCF]/5'
-              : 'bg-gray-900/40 border-gray-700/50 text-gray-300 hover:border-gray-600 hover:bg-gray-800/60'
+              ? 'bg-[#E6F0EB] border-[#8AB4A0]/30 text-[#2D3E36] shadow-[0_1px_3px_rgba(45,62,54,0.05)]'
+              : 'bg-white border-[#E4E8E5] text-[#5F7066] hover:border-[#C8D0CA] hover:bg-[#FAFBF9]'
           }
         `}
       >
-        <span className={`flex items-center gap-2 truncate ${hasValue ? 'text-white' : 'text-gray-400'}`}>
+        <span className={`flex items-center gap-2 truncate ${hasValue ? 'text-[#2D3E36]' : 'text-[#95A39A]'}`}>
           {Icon && <Icon className="w-3.5 h-3.5 opacity-60 flex-shrink-0" />}
           <span className="truncate">{displayValue}</span>
         </span>
@@ -102,19 +102,19 @@ export function FilterDropdown({
                 e.stopPropagation();
                 onChange('all');
               }}
-              className="p-0.5 hover:bg-white/10 rounded transition-colors"
+              className="p-0.5 hover:bg-[#F0F2EE] rounded-lg transition-colors"
             >
-              <X className="w-3.5 h-3.5 text-gray-400 hover:text-white" />
+              <X className="w-3.5 h-3.5 text-[#95A39A] hover:text-[#5F7066]" />
             </span>
           )}
-          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-[#95A39A] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-1.5 w-full bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl">
-          <div className="max-h-60 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-gray-700">
+        <div className="absolute z-50 mt-1.5 w-full bg-white border border-[#E4E8E5] rounded-2xl shadow-[0_4px_16px_rgba(45,62,54,0.10)] overflow-hidden">
+          <div className="max-h-60 overflow-y-auto py-1.5">
             {options.map((option) => (
               <button
                 key={option.value}
@@ -126,8 +126,8 @@ export function FilterDropdown({
                 className={`
                   w-full flex items-center justify-between ${sizeConfig.option} text-left transition-all
                   ${value === option.value
-                    ? 'bg-[#28EBCF]/10 text-[#28EBCF]'
-                    : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                    ? 'bg-[#E6F0EB] text-[#5F8A74]'
+                    : 'text-[#2D3E36] hover:bg-[#FAFBF9]'
                   }
                 `}
               >
@@ -137,14 +137,14 @@ export function FilterDropdown({
                 </span>
                 <div className="flex items-center gap-2">
                   {option.count !== undefined && (
-                    <span className="text-gray-600 text-xs">{option.count}</span>
+                    <span className="text-[#95A39A] text-xs">{option.count}</span>
                   )}
-                  {value === option.value && <Check className="w-4 h-4 text-[#28EBCF]" />}
+                  {value === option.value && <Check className="w-4 h-4 text-[#8AB4A0]" />}
                 </div>
               </button>
             ))}
             {options.length === 0 && (
-              <div className="px-4 py-6 text-center text-gray-500 text-sm">
+              <div className="px-4 py-6 text-center text-[#95A39A] text-sm">
                 Geen opties beschikbaar
               </div>
             )}

@@ -96,9 +96,6 @@ export default function PortfolioOverview({ onPrefillOrder }) {
   };
 
   // Use backend as single source of truth - no local recalculation
-  // Portfolio Value = sum(position_quantity × last_price) - from backend
-  // Available Cash = AvailableFunds from IB - from backend
-  // Total Value = Portfolio Value + Available Cash - from backend
   const displayPortfolioValue = portfolioValue;
   const displayUnrealizedPnL = unrealizedPnL;
   const displayPnLPercent = unrealizedPnLPercent;
@@ -109,20 +106,20 @@ export default function PortfolioOverview({ onPrefillOrder }) {
   const hasStaleData = isDataStale || positions.some(p => p.price_stale);
 
   return (
-    <div className={`bg-[#1A1B1F] border rounded-xl overflow-hidden ${isLive ? 'border-blue-600/50' : 'border-gray-700'}`}>
+    <div className={`bg-[#FEFEFE] border rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)] ${isLive ? 'border-[#6B7B8A]/30' : 'border-[#E8E8E6]'}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+      <div className="p-4 border-b border-[#E8E8E6] flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-white">Portfolio Overview</h2>
+          <h2 className="text-lg font-bold text-[#2D3436]">Portfolio Overview</h2>
           <div className={`px-2 py-0.5 rounded text-xs font-bold ${
             isLive
-              ? 'bg-blue-600/30 text-blue-400 border border-blue-600'
-              : 'bg-yellow-600/30 text-yellow-400 border border-yellow-600'
+              ? 'bg-[#6B7B8A]/10 text-[#6B7B8A] border border-[#6B7B8A]/30'
+              : 'bg-[#C9A962]/10 text-[#C9A962] border border-[#C9A962]/30'
           }`}>
             {tradingMode}
           </div>
           {hasStaleData && (
-            <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-600/20 border border-orange-600/40 rounded text-xs text-orange-400">
+            <div className="flex items-center gap-1 px-2 py-0.5 bg-[#C9A962]/10 border border-[#C9A962]/30 rounded text-xs text-[#C9A962]">
               <Clock className="w-3 h-3" />
               <span>Stale {formatTimeAgo(lastPositionsUpdate)}</span>
             </div>
@@ -132,7 +129,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
           {positions.length > 0 && (
             <button
               onClick={() => setShowRebalanceModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600/20 text-purple-400 border border-purple-600/50 rounded-lg hover:bg-purple-600/30 transition-colors text-sm font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#8B7B9A]/10 text-[#8B7B9A] border border-[#8B7B9A]/30 rounded-lg hover:bg-[#8B7B9A]/20 transition-colors text-sm font-medium"
             >
               <Scale className="w-4 h-4" />
               Rebalance
@@ -141,7 +138,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
           <button
             onClick={fetchPositions}
             disabled={loading}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -149,7 +146,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
       </div>
 
       {/* Portfolio Summary - Premium Stats Cards */}
-      <div className="p-5 border-b border-gray-700/50 bg-gradient-to-b from-gray-800/20 to-transparent">
+      <div className="p-5 border-b border-[#E8E8E6] bg-[#F5F6F4]">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Portfolio Value - Hero Card spanning 2 cols on mobile */}
           <div className="col-span-2">
@@ -169,8 +166,8 @@ export default function PortfolioOverview({ onPrefillOrder }) {
             label="Invested"
             value={formatCurrency(displayPortfolioValue)}
             icon={BarChart3}
-            iconColor="text-blue-400"
-            iconBg="bg-blue-500/10"
+            iconColor="text-[#6B7B8A]"
+            iconBg="bg-[#6B7B8A]/10"
           />
 
           {/* Available Cash */}
@@ -178,27 +175,27 @@ export default function PortfolioOverview({ onPrefillOrder }) {
             label="Available Cash"
             value={formatCurrency(displayAvailableFunds)}
             icon={Wallet}
-            iconColor={displayAvailableFunds > 0 ? 'text-emerald-400' : 'text-gray-400'}
-            iconBg={displayAvailableFunds > 0 ? 'bg-emerald-500/10' : 'bg-gray-500/10'}
+            iconColor={displayAvailableFunds > 0 ? 'text-[#7C9885]' : 'text-[#636E72]'}
+            iconBg={displayAvailableFunds > 0 ? 'bg-[#7C9885]/10' : 'bg-[#ECEEED]'}
           />
         </div>
       </div>
 
       {/* Daily Limits */}
       {safetyLimits && (
-        <div className="px-4 py-3 border-b border-gray-700">
-          <div className="bg-gray-800/30 rounded-lg p-3">
-            <div className="text-xs text-gray-400 mb-2">Daily Trading Limits</div>
+        <div className="px-4 py-3 border-b border-[#E8E8E6]">
+          <div className="bg-[#F5F6F4] rounded-lg p-3">
+            <div className="text-xs text-[#636E72] mb-2">Daily Trading Limits</div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-gray-500 text-xs">Orders Remaining</div>
-                <div className="text-white font-medium">
+                <div className="text-[#B2BEC3] text-xs">Orders Remaining</div>
+                <div className="text-[#2D3436] font-medium">
                   {safetyLimits.ordersRemaining ?? '-'} / {safetyLimits.maxDailyOrders ?? '-'}
                 </div>
               </div>
               <div>
-                <div className="text-gray-500 text-xs">Exposure Remaining</div>
-                <div className="text-white font-medium">
+                <div className="text-[#B2BEC3] text-xs">Exposure Remaining</div>
+                <div className="text-[#2D3436] font-medium">
                   {formatCurrency(safetyLimits.exposureRemaining ?? 0)} / {formatCurrency(safetyLimits.maxDailyExposure ?? 0)}
                 </div>
               </div>
@@ -284,11 +281,11 @@ export default function PortfolioOverview({ onPrefillOrder }) {
               </DataCardList>
 
               {/* Mobile Totals */}
-              <div className="mt-4 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
-                <div className="text-sm text-gray-400 mb-2">Totaal</div>
+              <div className="mt-4 p-4 bg-[#F5F6F4] rounded-xl border border-[#E8E8E6]">
+                <div className="text-sm text-[#636E72] mb-2">Totaal</div>
                 <div className="flex justify-between items-center">
-                  <span className="text-white font-bold">{formatCurrency(displayPortfolioValue)}</span>
-                  <span className={`font-bold ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className="text-[#2D3436] font-bold">{formatCurrency(displayPortfolioValue)}</span>
+                  <span className={`font-bold ${displayUnrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {formatCurrency(displayUnrealizedPnL)} ({formatPercent(displayPnLPercent)})
                   </span>
                 </div>
@@ -300,22 +297,22 @@ export default function PortfolioOverview({ onPrefillOrder }) {
         /* Desktop Table View */
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-800/50">
+            <thead className="bg-[#F5F6F4]">
               <tr>
-                <th className="text-left text-gray-400 text-sm font-medium px-4 py-3">Symbol</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Qty</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Avg Cost</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Last Price</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Market Value</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L (EUR)</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">P&L %</th>
-                <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Actions</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Symbol</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Qty</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Avg Cost</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Last Price</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Market Value</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">P&L (EUR)</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">P&L %</th>
+                <th className="text-center text-[#636E72] text-sm font-medium px-4 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800">
+            <tbody className="divide-y divide-[#E8E8E6]">
               {positions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center text-gray-500 py-8">
+                  <td colSpan={8} className="text-center text-[#B2BEC3] py-8">
                     No positions found
                   </td>
                 </tr>
@@ -331,37 +328,37 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                   const isStale = position.price_stale;
 
                   return (
-                    <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
+                    <tr key={idx} className="hover:bg-[#F5F6F4] transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedEtf(position.symbol)}
-                            className="font-medium text-white hover:text-[#28EBCF] hover:underline cursor-pointer transition-colors"
+                            className="font-medium text-[#2D3436] hover:text-[#7C9885] hover:underline cursor-pointer transition-colors"
                           >
                             {position.symbol}
                           </button>
                           {isStale && (
-                            <AlertTriangle className="w-3 h-3 text-orange-400" title="Price may be stale" />
+                            <AlertTriangle className="w-3 h-3 text-[#C9A962]" title="Price may be stale" />
                           )}
                         </div>
-                        <div className="text-xs text-gray-500">{position.currency}</div>
+                        <div className="text-xs text-[#B2BEC3]">{position.currency}</div>
                       </td>
-                      <td className="px-4 py-3 text-right text-white">
+                      <td className="px-4 py-3 text-right text-[#2D3436]">
                         {qty.toFixed(0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-300">
+                      <td className="px-4 py-3 text-right text-[#636E72]">
                         {formatCurrency(avgCost)}
                       </td>
-                      <td className={`px-4 py-3 text-right ${isStale ? 'text-orange-400' : 'text-white'}`}>
+                      <td className={`px-4 py-3 text-right ${isStale ? 'text-[#C9A962]' : 'text-[#2D3436]'}`}>
                         {formatCurrency(lastPrice)}
                       </td>
-                      <td className="px-4 py-3 text-right text-white font-medium">
+                      <td className="px-4 py-3 text-right text-[#2D3436] font-medium">
                         {formatCurrency(marketValue)}
                       </td>
-                      <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                      <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                         {formatCurrency(pnl)}
                       </td>
-                      <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                      <td className={`px-4 py-3 text-right font-medium ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                         {formatPercent(pnlPercent)}
                       </td>
                       <td className="px-4 py-3">
@@ -369,7 +366,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                           <button
                             onClick={() => handleBuyMore(position)}
                             disabled={!getConidForPosition(position)}
-                            className="flex items-center gap-1 px-2 py-1 bg-green-600/20 text-green-400 border border-green-600/40 rounded text-xs font-medium hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-2 py-1 bg-[#7C9885]/10 text-[#7C9885] border border-[#7C9885]/30 rounded text-xs font-medium hover:bg-[#7C9885]/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Buy more shares"
                           >
                             <Plus className="w-3 h-3" />
@@ -378,7 +375,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                           <button
                             onClick={() => handleSell(position)}
                             disabled={qty <= 0 || !getConidForPosition(position)}
-                            className="flex items-center gap-1 px-2 py-1 bg-red-600/20 text-red-400 border border-red-600/40 rounded text-xs font-medium hover:bg-red-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1 px-2 py-1 bg-[#C0736D]/10 text-[#C0736D] border border-[#C0736D]/30 rounded text-xs font-medium hover:bg-[#C0736D]/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title={qty <= 0 ? 'No shares to sell' : 'Sell shares'}
                           >
                             <Minus className="w-3 h-3" />
@@ -393,19 +390,19 @@ export default function PortfolioOverview({ onPrefillOrder }) {
             </tbody>
             {/* Totals Footer */}
             {positions.length > 0 && (
-              <tfoot className="bg-gray-800/50 border-t border-gray-700">
+              <tfoot className="bg-[#F5F6F4] border-t border-[#E8E8E6]">
                 <tr>
-                  <td className="px-4 py-3 font-bold text-white">Positions Total</td>
+                  <td className="px-4 py-3 font-bold text-[#2D3436]">Positions Total</td>
                   <td className="px-4 py-3"></td>
                   <td className="px-4 py-3"></td>
                   <td className="px-4 py-3"></td>
-                  <td className="px-4 py-3 text-right font-bold text-white">
+                  <td className="px-4 py-3 text-right font-bold text-[#2D3436]">
                     {formatCurrency(displayPortfolioValue)}
                   </td>
-                  <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {formatCurrency(displayUnrealizedPnL)}
                   </td>
-                  <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <td className={`px-4 py-3 text-right font-bold ${displayUnrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {formatPercent(displayPnLPercent)}
                   </td>
                   <td className="px-4 py-3"></td>

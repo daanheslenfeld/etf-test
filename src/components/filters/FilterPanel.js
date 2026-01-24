@@ -5,7 +5,7 @@ import { FilterSection, FilterGrid } from './FilterSection';
 import { CATEGORY_FILTERS, getFilterOptions } from '../../data/filterDefinitions';
 
 /**
- * FilterPanel Component
+ * FilterPanel Component - Premium Banking Style
  *
  * Dynamic filter panel that renders filters based on category configuration
  * Supports single-select dropdowns and multi-select for providers
@@ -124,9 +124,9 @@ export function FilterPanel({
  */
 function FilterTip() {
   return (
-    <div className="flex items-center gap-4 pt-2 border-t border-gray-800/30">
-      <span className="text-[10px] text-gray-600 uppercase tracking-wider">Tip</span>
-      <span className="text-xs text-gray-500">
+    <div className="flex items-center gap-4 pt-2 border-t border-[#E8E8E6]">
+      <span className="text-[10px] text-[#636E72] uppercase tracking-wider">Tip</span>
+      <span className="text-xs text-[#B2BEC3]">
         Combineer filters voor precisere resultaten
       </span>
     </div>

@@ -52,21 +52,21 @@ export function ErrorModal({
 
       <ModalBody>
         {message && (
-          <p className="text-gray-300 mb-4">{message}</p>
+          <p className="text-[#636E72] mb-4">{message}</p>
         )}
 
         {(details || errorCode) && (
-          <div className="bg-gray-800/50 rounded-lg p-4 space-y-2">
+          <div className="bg-[#F5F6F4] rounded-lg p-4 space-y-2">
             {errorCode && (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500 uppercase tracking-wider">Error Code</span>
-                <code className="text-xs text-red-400 font-mono">{errorCode}</code>
+                <span className="text-xs text-[#B2BEC3] uppercase tracking-wider">Error Code</span>
+                <code className="text-xs text-[#C0736D] font-mono">{errorCode}</code>
               </div>
             )}
             {details && (
               <div>
-                <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Details</span>
-                <pre className="text-xs text-gray-400 font-mono whitespace-pre-wrap break-all bg-gray-900/50 rounded p-2 max-h-32 overflow-y-auto">
+                <span className="text-xs text-[#B2BEC3] uppercase tracking-wider block mb-1">Details</span>
+                <pre className="text-xs text-[#636E72] font-mono whitespace-pre-wrap break-all bg-[#ECEEED] rounded p-2 max-h-32 overflow-y-auto">
                   {details}
                 </pre>
               </div>

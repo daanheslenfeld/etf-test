@@ -13,6 +13,7 @@ import PortfolioPositionsCard from './components/PortfolioPositionsCard';
 import PremadePortfolioCard from './components/PremadePortfolioCard';
 import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
 import BulkBuyFlow from './components/portfolio/BulkBuyFlow';
+import { ModelPortfoliosPage } from './components/portfolio';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from './data/tradablePortfolioDefinitions';
 
 // Helper: Get categories that have tradable ETFs
@@ -1687,8 +1688,8 @@ useEffect(() => {
         }
       } else if (user.role === 'customer') {
         if (currentPage === 'landing' || currentPage === 'login' || currentPage === 'register') {
-          // Always redirect to Trading Dashboard after login
-          setCurrentPage('trading');
+          // Redirect to Main Dashboard (Portfolio, LYNX Trading, Vooraf Samengesteld)
+          setCurrentPage('mainDashboard');
         }
       }
     } else if (!user && (currentPage !== 'landing' && currentPage !== 'login' && currentPage !== 'register' && currentPage !== 'verify-email' && currentPage !== 'emailVerificationPending' && currentPage !== 'resetPassword' && currentPage !== 'verify-code')) {
@@ -1753,8 +1754,8 @@ useEffect(() => {
         email_verified: true,
         role: 'customer'
       });
-      // Redirect to Trading Dashboard
-      setCurrentPage('trading');
+      // Redirect to Main Dashboard (Portfolio, LYNX Trading, Vooraf Samengesteld)
+      setCurrentPage('mainDashboard');
       return { success: true };
     }
 
@@ -1831,9 +1832,9 @@ useEffect(() => {
           role: 'customer'
         });
 
-        // Always redirect to Trading Dashboard after login
-        console.log('➡️ Redirecting to Trading Dashboard');
-        setCurrentPage('trading');
+        // Redirect to Main Dashboard (Portfolio, LYNX Trading, Vooraf Samengesteld)
+        console.log('➡️ Redirecting to Main Dashboard');
+        setCurrentPage('mainDashboard');
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -2256,13 +2257,13 @@ useEffect(() => {
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+        <div className="bg-[#FEFEFE] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="sticky top-0 bg-[#FEFEFE] border-b px-6 py-4 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">Portfolio Aanpassen</h2>
               <p className="text-sm text-gray-600 mt-1">Wijzig de wegingen van je ETF's</p>
             </div>
-            <button onClick={onClose} className="text-2xl text-gray-500 hover:text-gray-700">×</button>
+            <button onClick={onClose} className="text-2xl text-[#636E72] hover:text-gray-700">×</button>
           </div>
           
           <div className="p-6 space-y-6">
@@ -2276,7 +2277,7 @@ useEffect(() => {
                 </div>
                 <button
                   onClick={normalizeWeights}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                  className="px-4 py-2 bg-blue-600 text-[#2D3436] rounded-lg hover:bg-blue-700 text-sm"
                 >
                   Normaliseer naar 100%
                 </button>
@@ -2341,7 +2342,7 @@ useEffect(() => {
             </div>
             
             {tempPortfolio.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#636E72]">
                 Je portfolio is leeg. Voeg ETF's toe vanaf de ETF Database pagina.
               </div>
             )}
@@ -2355,7 +2356,7 @@ useEffect(() => {
               </button>
               <button
                 onClick={saveChanges}
-                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                className="flex-1 py-3 bg-blue-600 text-[#2D3436] rounded-lg hover:bg-blue-700 font-medium"
               >
                 Wijzigingen Opslaan
               </button>
@@ -2375,17 +2376,18 @@ useEffect(() => {
   };
 
   const MainDashboard = () => (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-[#F5F6F4]">
       {/* Market Indices Ticker - Beurskoersen balk */}
       <MarketIndicesTicker />
 
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      {/* Navigation */}
+      <nav className="bg-[#FEFEFE] border-b border-[#E8E8E6]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -2415,16 +2417,16 @@ useEffect(() => {
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
-              <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
             </button>
             <div className="flex items-center gap-4 sm:gap-6">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium text-sm sm:text-base">Home</button>
-              <div className="text-sm text-gray-400 hidden sm:block">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#7C9885] font-medium text-sm sm:text-base">Home</button>
+              <div className="text-sm text-[#636E72] hidden sm:block">
                 {user?.name?.split(' ')[0]}
               </div>
               <button
                 onClick={handleLogout}
-                className="text-gray-400 hover:text-white transition-colors font-medium text-sm sm:text-base"
+                className="text-[#636E72] hover:text-[#2D3436] transition-colors font-medium text-sm sm:text-base"
               >
                 {t.common.logout}
               </button>
@@ -2433,12 +2435,14 @@ useEffect(() => {
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div className="mb-12 sm:mb-16">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white">
+      {/* Content Section */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Welcome Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light italic mb-3 sm:mb-4 text-[#636E72]">
             Welkom, {user?.name?.split(' ')[0]}
           </h1>
-          <p className="text-base sm:text-lg text-gray-400">
+          <p className="text-base sm:text-lg text-[#B2BEC3]">
             Wat wil je vandaag doen?
           </p>
         </div>
@@ -2453,9 +2457,9 @@ useEffect(() => {
         {/* Portfolio Beheer Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <h2 className="text-xl font-bold text-white">Portfolio Beheer</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
+            <h2 className="text-xl font-bold text-[#2D3436]">Portfolio Beheer</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -2467,13 +2471,13 @@ useEffect(() => {
               return (
                 <button
                   onClick={() => setCurrentPage('trading')}
-                  className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+                  className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="text-3xl sm:text-4xl">📈</div>
                     {totalInPortfolio > 0 && (
                       isFullyTradable ? (
-                        <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">
+                        <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
                           {tradableInPortfolio} ETFs klaar
                         </span>
                       ) : (
@@ -2483,8 +2487,8 @@ useEffect(() => {
                       )
                     )}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">LYNX Trading</h3>
-                  <p className="text-xs sm:text-sm text-gray-400">
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">LYNX Trading</h3>
+                  <p className="text-xs sm:text-sm text-[#636E72]">
                     Handel ETFs via je LYNX broker account
                   </p>
                   {totalInPortfolio > 0 && !isFullyTradable && (
@@ -2497,17 +2501,20 @@ useEffect(() => {
             })()}
 
             <button
-              onClick={() => {
-                setPortfolioType('premade');
-                setCurrentPage('portfolioBuilder');
-              }}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+              onClick={() => setCurrentPage('modelPortfolios')}
+              className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
             >
               <div className="text-3xl sm:text-4xl mb-3">✨</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Vooraf Samengesteld</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Kies uit onze kant-en-klare portfolio's
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Model Portfolios</h3>
+              <p className="text-xs sm:text-sm text-[#636E72]">
+                Kies uit 20+ kant-en-klare portfolio's
               </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">Risico</span>
+                <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">Thema</span>
+                <span className="text-xs px-2 py-0.5 bg-teal-500/20 text-teal-400 rounded">Strategie</span>
+                <span className="text-xs px-2 py-0.5 bg-pink-500/20 text-pink-400 rounded">Community</span>
+              </div>
             </button>
           </div>
         </div>
@@ -2515,19 +2522,19 @@ useEffect(() => {
         {/* Financiële Planning Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <h2 className="text-xl font-bold text-white">Financiële Planning</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
+            <h2 className="text-xl font-bold text-[#2D3436]">Financiële Planning</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:gap-4">
             <button
               onClick={() => setCurrentPage('incomeCalculator')}
-              className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF] transition-all group text-left"
+              className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
             >
               <div className="text-3xl sm:text-4xl mb-3">💰</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-white group-hover:text-[#28EBCF] transition-colors">Inkomen Calculator</h3>
-              <p className="text-xs sm:text-sm text-gray-400">
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Inkomen Calculator</h3>
+              <p className="text-xs sm:text-sm text-[#636E72]">
                 Bereken je toekomstige inkomen en vermogensopbouw
               </p>
             </button>
@@ -2536,11 +2543,11 @@ useEffect(() => {
 
         {/* Link naar Monte Carlo simulatie (losgekoppeld) */}
         {portfolio.length > 0 && investmentDetails.amount && investmentDetails.riskProfile && (
-          <div className="mt-6 sm:mt-8 bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5">
+          <div className="mt-6 sm:mt-8 bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5">
             <div className="flex justify-between items-start mb-2">
-              <h2 className="text-lg sm:text-xl font-bold text-white">Portfolio Simulatie</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-[#2D3436]">Portfolio Simulatie</h2>
               {investmentDetails.pricesLastUpdated && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-[#636E72]">
                   Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
                     day: '2-digit',
                     month: '2-digit',
@@ -2551,12 +2558,12 @@ useEffect(() => {
                 </div>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-gray-400 mb-4">
+            <p className="text-xs sm:text-sm text-[#636E72] mb-4">
               Bekijk de Monte Carlo simulatie van je portfolio met {portfolio.length} ETF's
             </p>
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all font-semibold text-sm"
+              className="px-5 py-2.5 bg-[#7C9885] text-white rounded-lg hover:bg-[#6B8A74] transition-all font-semibold text-sm"
             >
               Bekijk Simulatie
             </button>
@@ -2609,16 +2616,16 @@ useEffect(() => {
       <div className="max-w-5xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
-          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-white mb-6">Jouw situatie</h3>
+          <div className="bg-[#ECEEED]/50 border border-[#E8E8E6] rounded-2xl p-8">
+            <h3 className="text-2xl font-bold text-[#2D3436] mb-6">Jouw situatie</h3>
 
             <div className="space-y-6">
               <div>
-                <label className="block text-gray-300 mb-2 font-medium">
+                <label className="block text-[#636E72] mb-2 font-medium">
                   Inleg (eenmalig)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#636E72]">€</span>
                   <input
                     type="text"
                     value={initialInvestment.toLocaleString('nl-NL')}
@@ -2628,17 +2635,17 @@ useEffect(() => {
                       if (!isNaN(num)) setInitialInvestment(num);
                       else if (e.target.value === '') setInitialInvestment(0);
                     }}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full bg-[#ECEEED] border border-[#D5D5D3] rounded-lg px-4 py-3 pl-8 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2 font-medium">
+                <label className="block text-[#636E72] mb-2 font-medium">
                   Periodieke inleg (per maand)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">€</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#636E72]">€</span>
                   <input
                     type="text"
                     value={periodicDeposit.toLocaleString('nl-NL')}
@@ -2648,13 +2655,13 @@ useEffect(() => {
                       if (!isNaN(num)) setPeriodicDeposit(num);
                       else if (e.target.value === '') setPeriodicDeposit(0);
                     }}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pl-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full bg-[#ECEEED] border border-[#D5D5D3] rounded-lg px-4 py-3 pl-8 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2 font-medium">
+                <label className="block text-[#636E72] mb-2 font-medium">
                   Verwacht rendement (per jaar)
                 </label>
                 <div className="relative">
@@ -2667,26 +2674,26 @@ useEffect(() => {
                       if (!isNaN(num)) setExpectedReturn(num);
                       else if (e.target.value === '') setExpectedReturn(0);
                     }}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full bg-[#ECEEED] border border-[#D5D5D3] rounded-lg px-4 py-3 pr-8 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#636E72]">%</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2 font-medium">
+                <label className="block text-[#636E72] mb-2 font-medium">
                   Periode (jaren)
                 </label>
                 <input
                   type="number"
                   value={period}
                   onChange={(e) => setPeriod(Number(e.target.value))}
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#28EBCF] focus:outline-none"
+                  className="w-full bg-[#ECEEED] border border-[#D5D5D3] rounded-lg px-4 py-3 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2 font-medium">
+                <label className="block text-[#636E72] mb-2 font-medium">
                   Kosten vermogensbeheerder (per jaar)
                 </label>
                 <div className="relative">
@@ -2699,16 +2706,16 @@ useEffect(() => {
                       if (!isNaN(num)) setWealthManagerFee(num);
                       else if (e.target.value === '') setWealthManagerFee(0);
                     }}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 pr-8 text-white focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full bg-[#ECEEED] border border-[#D5D5D3] rounded-lg px-4 py-3 pr-8 text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#636E72]">%</span>
                 </div>
               </div>
 
-              <div className="bg-[#28EBCF]/10 border border-[#28EBCF]/30 rounded-lg p-4">
+              <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300 font-medium">Betaald account PIGG (per jaar)</span>
-                  <span className="text-xl font-bold text-[#28EBCF]">€ 200</span>
+                  <span className="text-[#636E72] font-medium">Betaald account PIGG (per jaar)</span>
+                  <span className="text-xl font-bold text-[#7C9885]">€ 200</span>
                 </div>
               </div>
             </div>
@@ -2717,27 +2724,27 @@ useEffect(() => {
           {/* Results Section */}
           <div className="space-y-6">
             {/* Final Wealth Comparison */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-white mb-6">Eindvermogen na {period} jaar</h3>
+            <div className="bg-[#ECEEED]/50 border border-[#E8E8E6] rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-[#2D3436] mb-6">Eindvermogen na {period} jaar</h3>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-4 border-b border-gray-700">
-                  <span className="text-gray-300">Vermogensbeheerder</span>
-                  <span className="text-xl font-bold text-white">
+                <div className="flex justify-between items-center pb-4 border-b border-[#E8E8E6]">
+                  <span className="text-[#636E72]">Vermogensbeheerder</span>
+                  <span className="text-xl font-bold text-[#2D3436]">
                     € {results.managerWealth.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center pb-4 border-b border-gray-700">
-                  <span className="text-[#28EBCF] font-medium">PIGG</span>
-                  <span className="text-xl font-bold text-[#28EBCF]">
+                <div className="flex justify-between items-center pb-4 border-b border-[#E8E8E6]">
+                  <span className="text-[#7C9885] font-medium">PIGG</span>
+                  <span className="text-xl font-bold text-[#7C9885]">
                     € {results.huchaWealth.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                  <span className="text-gray-400 text-sm">Verschil</span>
-                  <span className="text-lg font-bold text-green-400">
+                  <span className="text-[#636E72] text-sm">Verschil</span>
+                  <span className="text-lg font-bold text-[#7C9885]">
                     + € {(results.huchaWealth - results.managerWealth).toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
@@ -2745,28 +2752,28 @@ useEffect(() => {
             </div>
 
             {/* Cost Breakdown */}
-            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-white mb-6">Totale kosten (incl. misgelopen rendement)</h3>
+            <div className="bg-gradient-to-br from-[#7C9885]/10 to-[#20D4BA]/5 border-2 border-[#7C9885] rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-[#2D3436] mb-6">Totale kosten (incl. misgelopen rendement)</h3>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
-                  <span className="text-gray-300">Vermogensbeheerder</span>
-                  <span className="text-xl font-bold text-red-400">
+                <div className="flex justify-between items-center pb-4 border-b border-[#E8E8E6]/50">
+                  <span className="text-[#636E72]">Vermogensbeheerder</span>
+                  <span className="text-xl font-bold text-[#C0736D]">
                     € {results.managerTotalCost.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center pb-4 border-b border-gray-700/50">
-                  <span className="text-[#28EBCF] font-medium">PIGG</span>
-                  <span className="text-xl font-bold text-[#28EBCF]">
+                <div className="flex justify-between items-center pb-4 border-b border-[#E8E8E6]/50">
+                  <span className="text-[#7C9885] font-medium">PIGG</span>
+                  <span className="text-xl font-bold text-[#7C9885]">
                     € {results.huchaTotalCost.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
 
-                <div className="bg-[#28EBCF]/20 rounded-lg p-4 mt-4">
+                <div className="bg-[#7C9885]/20 rounded-lg p-4 mt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-white font-semibold">Jouw besparing</span>
-                    <span className="text-2xl font-bold text-[#28EBCF]">
+                    <span className="text-[#2D3436] font-semibold">Jouw besparing</span>
+                    <span className="text-2xl font-bold text-[#7C9885]">
                       € {results.savings.toLocaleString('nl-NL', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
@@ -2785,16 +2792,16 @@ useEffect(() => {
     };
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-[#F5F6F4]">
       {/* Navigation with Menu */}
-      <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
+      <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
               <svg viewBox="0 0 48 48" fill="none" className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -2825,23 +2832,23 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
-                <div className="text-xs sm:text-sm md:text-base text-gray-400 hidden sm:block">{t.tagline}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-xs sm:text-sm md:text-base text-[#636E72] hidden sm:block">{t.tagline}</div>
               </div>
             </div>
 
             {/* Desktop Menu Items */}
             <div className="hidden lg:flex gap-6">
-              <button onClick={() => scrollToSection('hero')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+              <button onClick={() => scrollToSection('hero')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                 {t.nav.home}
               </button>
-              <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+              <button onClick={() => scrollToSection('features')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                 {t.nav.features}
               </button>
-              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+              <button onClick={() => scrollToSection('how-it-works')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                 {t.nav.howItWorks}
               </button>
-              <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+              <button onClick={() => scrollToSection('pricing')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                 {t.nav.pricing}
               </button>
             </div>
@@ -2853,7 +2860,7 @@ useEffect(() => {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="lg:hidden pl-8 pr-2 py-2 bg-gray-800 border border-gray-700 rounded text-white text-xs hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[70px]"
+                  className="lg:hidden pl-8 pr-2 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-xs hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[70px]"
                   style={{
                     backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
                     backgroundRepeat: 'no-repeat',
@@ -2872,7 +2879,7 @@ useEffect(() => {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="hidden lg:block pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:border-[#28EBCF] focus:outline-none focus:border-[#28EBCF] transition-colors appearance-none cursor-pointer w-[140px]"
+                  className="hidden lg:block pl-10 pr-4 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-sm hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[140px]"
                   style={{
                     backgroundImage: `url(https://flagcdn.com/24x18/${language === 'en' ? 'gb' : language}.png)`,
                     backgroundRepeat: 'no-repeat',
@@ -2891,13 +2898,13 @@ useEffect(() => {
               {/* Login and Start Now buttons - visible on all screens */}
               <button
                 onClick={() => setCurrentPage('login')}
-                className="px-3 py-2 text-white hover:text-[#28EBCF] transition-colors font-medium text-sm lg:text-base lg:px-4"
+                className="px-3 py-2 text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium text-sm lg:text-base lg:px-4"
               >
                 {t.nav.login}
               </button>
               <button
                 onClick={() => setCurrentPage('register')}
-                className="px-3 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap text-sm lg:text-base lg:px-4"
+                className="px-3 py-2 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap text-sm lg:text-base lg:px-4"
               >
                 {t.nav.startNow}
               </button>
@@ -2905,7 +2912,7 @@ useEffect(() => {
               {/* Hamburger Menu Button - Mobile only */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-white hover:text-[#28EBCF] transition-colors"
+                className="lg:hidden p-2 text-[#2D3436] hover:text-[#7C9885] transition-colors"
                 aria-label="Menu"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2921,44 +2928,44 @@ useEffect(() => {
 
           {/* Mobile Menu Dropdown */}
           {mobileMenuOpen && (
-            <div className="lg:hidden mt-4 pb-4 border-t border-gray-700 pt-4 animate-fadeIn">
+            <div className="lg:hidden mt-4 pb-4 border-t border-[#E8E8E6] pt-4 animate-fadeIn">
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {scrollToSection('hero'); setMobileMenuOpen(false);}}
-                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
                 >
                   {t.nav.home}
                 </button>
                 <button
                   onClick={() => {scrollToSection('features'); setMobileMenuOpen(false);}}
-                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
                 >
                   {t.nav.features}
                 </button>
                 <button
                   onClick={() => {scrollToSection('how-it-works'); setMobileMenuOpen(false);}}
-                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
                 >
                   {t.nav.howItWorks}
                 </button>
                 <button
                   onClick={() => {scrollToSection('pricing'); setMobileMenuOpen(false);}}
-                  className="text-left text-gray-300 hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
                 >
                   {t.nav.pricing}
                 </button>
 
                 {/* Mobile menu buttons */}
-                <div className="border-t border-gray-700 pt-3 mt-2 flex flex-col gap-2">
+                <div className="border-t border-[#E8E8E6] pt-3 mt-2 flex flex-col gap-2">
                   <button
                     onClick={() => {setCurrentPage('login'); setMobileMenuOpen(false);}}
-                    className="text-left text-white hover:text-[#28EBCF] transition-colors font-medium py-2 px-2 rounded hover:bg-gray-800/50"
+                    className="text-left text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
                   >
                     {t.nav.login}
                   </button>
                   <button
                     onClick={() => {setCurrentPage('register'); setMobileMenuOpen(false);}}
-                    className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-center"
+                    className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-center"
                   >
                     {t.nav.startNow}
                   </button>
@@ -2974,16 +2981,16 @@ useEffect(() => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12 sm:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
-          <div className="text-white">
+          <div className="text-[#2D3436]">
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
               {t.hero.title}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-gray-300 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl mb-8 sm:mb-10 text-[#636E72] leading-relaxed">
               {t.hero.subtitle}
             </p>
             <button
               onClick={() => setCurrentPage('register')}
-              className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
+              className="px-8 sm:px-10 py-3.5 sm:py-4 bg-[#7C9885] text-gray-900 rounded-lg text-base sm:text-lg hover:bg-[#20D4BA] transition-all font-bold"
             >
               {t.hero.cta}
             </button>
@@ -2993,23 +3000,23 @@ useEffect(() => {
             {/* iPhone Mockup */}
             <div className="relative w-[280px] sm:w-[320px] md:w-[360px]">
               {/* iPhone Frame with realistic bezels */}
-              <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3.5rem] p-3 shadow-2xl phone-float" style={{boxShadow: '0 0 0 2px #1e3a5f, 0 0 0 12px #2c4f7c, 0 20px 40px rgba(40, 235, 207, 0.15), 0 0 60px rgba(40, 235, 207, 0.1)'}}>
+              <div className="relative bg-gradient-to-br from-[#2D3436] to-[#1a1a1a] rounded-[3.5rem] p-3 shadow-2xl phone-float" style={{boxShadow: '0 0 0 2px #4a5568, 0 0 0 12px #2D3436, 0 20px 40px rgba(124, 152, 133, 0.2), 0 0 60px rgba(124, 152, 133, 0.1)'}}>
                 {/* Status bar indicators */}
                 <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
-                  <div className="text-white text-[10px] font-semibold">9:41</div>
-                  <div className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="white" viewBox="0 0 24 24">
+                  <div className="text-[#2D3436] text-[10px] font-semibold bg-[#F5F6F4] px-1 rounded">9:41</div>
+                  <div className="flex items-center gap-1 bg-[#F5F6F4] px-1.5 py-0.5 rounded">
+                    <svg className="w-3 h-3" fill="#2D3436" viewBox="0 0 24 24">
                       <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
                     </svg>
-                    <svg className="w-3 h-3" fill="white" viewBox="0 0 16 16">
+                    <svg className="w-3 h-3" fill="#2D3436" viewBox="0 0 16 16">
                       <rect x="1" y="4" width="3" height="8" rx="1"/>
                       <rect x="5" y="2" width="3" height="10" rx="1"/>
                       <rect x="9" y="1" width="3" height="11" rx="1"/>
                       <rect x="13" y="3" width="3" height="9" rx="1" opacity="0.4"/>
                     </svg>
-                    <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-                      <rect x="2" y="7" width="18" height="10" rx="2" stroke="white" strokeWidth="1.5" fill="none"/>
-                      <rect x="4" y="9" width="12" height="6" fill="white"/>
+                    <svg className="w-5 h-5" fill="#2D3436" viewBox="0 0 24 24">
+                      <rect x="2" y="7" width="18" height="10" rx="2" stroke="#2D3436" strokeWidth="1.5" fill="none"/>
+                      <rect x="4" y="9" width="12" height="6" fill="#7C9885"/>
                       <rect x="20" y="10" width="2" height="4" rx="0.5"/>
                     </svg>
                   </div>
@@ -3017,18 +3024,18 @@ useEffect(() => {
 
                 {/* Dynamic Island / Notch */}
                 <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex items-center justify-center">
-                  <div className="w-12 h-3 bg-gray-900 rounded-full"></div>
+                  <div className="w-12 h-3 bg-[#FEFEFE] rounded-full"></div>
                 </div>
 
                 {/* Screen Content */}
-                <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-[3rem] overflow-hidden aspect-[9/19]">
+                <div className="bg-[#F5F6F4] rounded-[3rem] overflow-hidden aspect-[9/19]">
                   {/* Portfolio Dashboard Preview */}
                   <div className="p-3 sm:p-4 pt-10">
                     {/* Header with Logo */}
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex items-center gap-2">
                         <svg viewBox="0 0 48 48" fill="none" className="w-7 h-7">
-                          <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                          <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                           <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                           <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                           <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
@@ -3036,34 +3043,34 @@ useEffect(() => {
                           <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                           <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                         </svg>
-                        <div className="text-white font-bold text-base">PIGG</div>
+                        <div className="text-[#2D3436] font-bold text-base">PIGG</div>
                       </div>
-                      <div className="text-gray-400 text-xs">Jan</div>
+                      <div className="text-[#636E72] text-xs">Jan</div>
                     </div>
 
                     {/* Portfolio Value Card */}
-                    <div className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] rounded-xl p-3 mb-3">
+                    <div className="bg-gradient-to-br from-[#7C9885] to-[#20D4BA] rounded-xl p-3 mb-3">
                       <div className="text-[#0A0B0D] text-xs font-medium mb-1">Totale Waarde</div>
                       <div className="text-[#0A0B0D] text-2xl font-bold mb-1">€52,450</div>
                       <div className="text-[#0A0B0D] text-xs">+€2,450 (+4.9%)</div>
                     </div>
 
                     {/* Performance Chart */}
-                    <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-xl p-3 mb-3">
+                    <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-3 mb-3 shadow-sm">
                       <div className="flex justify-between items-center mb-2">
-                        <div className="text-white text-xs font-semibold">Performance</div>
+                        <div className="text-[#2D3436] text-xs font-semibold">Performance</div>
                         <div className="flex gap-2 text-[8px]">
                           <div className="flex items-center gap-1">
                             <div className="w-2 h-0.5 bg-red-500"></div>
-                            <span className="text-gray-400">Slecht</span>
+                            <span className="text-[#636E72]">Slecht</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <div className="w-2 h-0.5 bg-[#28EBCF]"></div>
-                            <span className="text-gray-400">Goed</span>
+                            <div className="w-2 h-0.5 bg-[#7C9885]"></div>
+                            <span className="text-[#636E72]">Goed</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <div className="w-2 h-0.5 bg-yellow-500 border-yellow-500" style={{borderStyle: 'dashed', borderWidth: '1px', height: '0'}}></div>
-                            <span className="text-gray-400">Verwacht</span>
+                            <span className="text-[#636E72]">Verwacht</span>
                           </div>
                         </div>
                       </div>
@@ -3081,7 +3088,7 @@ useEffect(() => {
                           <path
                             d="M 0,30 L 20,25 L 40,22 L 60,16 L 80,12 L 100,8"
                             fill="none"
-                            stroke="#28EBCF"
+                            stroke="#7C9885"
                             strokeWidth="2"
                           />
                           {/* Expected scenario (yellow dashed) - moderate growth */}
@@ -3100,7 +3107,7 @@ useEffect(() => {
                           />
                           <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#28EBCF" />
+                              <stop offset="0%" stopColor="#7C9885" />
                               <stop offset="100%" stopColor="transparent" />
                             </linearGradient>
                           </defs>
@@ -3109,34 +3116,34 @@ useEffect(() => {
                     </div>
 
                     {/* Portfolio Holdings - ETF Names */}
-                    <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-xl p-3 mb-3">
-                      <div className="text-white text-xs font-semibold mb-2">Mijn ETF's</div>
+                    <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-3 mb-3 shadow-sm">
+                      <div className="text-[#2D3436] text-xs font-semibold mb-2">Mijn ETF's</div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="text-white text-[10px] font-medium truncate">iShares Core MSCI World</div>
-                            <div className="text-gray-400 text-[9px]">IE00B4L5Y983</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium truncate">iShares Core MSCI World</div>
+                            <div className="text-[#636E72] text-[9px]">IE00B4L5Y983</div>
                           </div>
                           <div className="text-right ml-2">
-                            <div className="text-white text-[10px] font-medium">50%</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium">50%</div>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="text-white text-[10px] font-medium truncate">Xtrackers MSCI EM</div>
-                            <div className="text-gray-400 text-[9px]">IE00BTJRMP35</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium truncate">Xtrackers MSCI EM</div>
+                            <div className="text-[#636E72] text-[9px]">IE00BTJRMP35</div>
                           </div>
                           <div className="text-right ml-2">
-                            <div className="text-white text-[10px] font-medium">15%</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium">15%</div>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="text-white text-[10px] font-medium truncate">iShares Euro Bond</div>
-                            <div className="text-gray-400 text-[9px]">IE00B3F81R35</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium truncate">iShares Euro Bond</div>
+                            <div className="text-[#636E72] text-[9px]">IE00B3F81R35</div>
                           </div>
                           <div className="text-right ml-2">
-                            <div className="text-white text-[10px] font-medium">20%</div>
+                            <div className="text-[#2D3436] text-[10px] font-medium">20%</div>
                           </div>
                         </div>
                       </div>
@@ -3144,41 +3151,41 @@ useEffect(() => {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2 mb-3">
-                      <button className="flex-1 bg-[#28EBCF] text-gray-900 rounded-lg py-2 text-[10px] font-semibold">
+                      <button className="flex-1 bg-[#7C9885] text-gray-900 rounded-lg py-2 text-[10px] font-semibold">
                         Geld Storten
                       </button>
-                      <button className="flex-1 border border-gray-700 text-white rounded-lg py-2 text-[10px] font-semibold">
+                      <button className="flex-1 border border-[#E8E8E6] text-[#2D3436] rounded-lg py-2 text-[10px] font-semibold">
                         Geld Opnemen
                       </button>
                     </div>
 
                     {/* Quick Stats */}
                     <div className="grid grid-cols-3 gap-2 mb-3">
-                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
-                        <div className="text-[#28EBCF] text-xs font-bold">+12.5%</div>
-                        <div className="text-gray-400 text-[8px]">Dit jaar</div>
+                      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg p-2 text-center shadow-sm">
+                        <div className="text-[#7C9885] text-xs font-bold">+12.5%</div>
+                        <div className="text-[#636E72] text-[8px]">Dit jaar</div>
                       </div>
-                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
-                        <div className="text-[#28EBCF] text-xs font-bold">€450</div>
-                        <div className="text-gray-400 text-[8px]">Dividend</div>
+                      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg p-2 text-center shadow-sm">
+                        <div className="text-[#7C9885] text-xs font-bold">€450</div>
+                        <div className="text-[#636E72] text-[8px]">Dividend</div>
                       </div>
-                      <div className="bg-gradient-to-br from-[#1a2332] to-[#1A1B1F] border border-[#28EBCF]/20 rounded-lg p-2 text-center">
-                        <div className="text-[#28EBCF] text-xs font-bold">5</div>
-                        <div className="text-gray-400 text-[8px]">ETF's</div>
+                      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg p-2 text-center shadow-sm">
+                        <div className="text-[#7C9885] text-xs font-bold">5</div>
+                        <div className="text-[#636E72] text-[8px]">ETF's</div>
                       </div>
                     </div>
 
                     {/* Bottom branding */}
-                    <div className="flex items-center justify-center gap-1 pt-2 border-t border-gray-800">
-                      <div className="text-gray-500 text-[8px]">Powered by</div>
-                      <div className="text-[#28EBCF] text-[9px] font-bold">PIGG</div>
+                    <div className="flex items-center justify-center gap-1 pt-2 border-t border-[#E8E8E6]">
+                      <div className="text-[#636E72] text-[8px]">Powered by</div>
+                      <div className="text-[#7C9885] text-[9px] font-bold">PIGG</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Glow Effect */}
-              <div className="absolute inset-0 bg-[#28EBCF] opacity-20 blur-3xl rounded-full -z-10"></div>
+              <div className="absolute inset-0 bg-[#7C9885] opacity-20 blur-3xl rounded-full -z-10"></div>
             </div>
           </div>
         </div>
@@ -3186,57 +3193,57 @@ useEffect(() => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-800/50">
+      <section id="features" className="py-20 bg-[#ECEEED]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Bij PIGG wordt beleggen leuk!</h2>
-            <p className="text-xl text-gray-300">Je hebt toegang tot ruim 3000 ETF's wereldwijd.</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-[#2D3436] mb-6">Bij PIGG wordt beleggen leuk!</h2>
+            <p className="text-xl text-[#636E72]">Je hebt toegang tot ruim 3000 ETF's wereldwijd.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-900/95 backdrop-blur-sm border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
-              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
-                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+            <div className="bg-[#FEFEFE]/95 backdrop-blur-sm border border-[#7C9885]/30 rounded-2xl p-8 text-center hover:border-[#7C9885] hover:shadow-lg hover:shadow-[#7C9885]/20 transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#7C9885]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#7C9885" viewBox="0 0 24 24" strokeWidth="2">
                   <rect x="3" y="3" width="7" height="7" rx="1"/>
                   <rect x="14" y="3" width="7" height="7" rx="1"/>
                   <rect x="3" y="14" width="7" height="7" rx="1"/>
                   <rect x="14" y="14" width="7" height="7" rx="1"/>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Overzichtelijk</h3>
-              <p className="text-gray-300">Alle ETF's overzichtelijk op één plek. Filter en vergelijk eenvoudig.</p>
+              <h3 className="text-2xl font-bold text-[#2D3436] mb-4">Overzichtelijk</h3>
+              <p className="text-[#636E72]">Alle ETF's overzichtelijk op één plek. Filter en vergelijk eenvoudig.</p>
             </div>
 
-            <div className="bg-gray-900/95 backdrop-blur-sm border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
-              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
-                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+            <div className="bg-[#FEFEFE]/95 backdrop-blur-sm border border-[#7C9885]/30 rounded-2xl p-8 text-center hover:border-[#7C9885] hover:shadow-lg hover:shadow-[#7C9885]/20 transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#7C9885]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#7C9885" viewBox="0 0 24 24" strokeWidth="2">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Makkelijk</h3>
-              <p className="text-gray-300">Stel in een paar klikken je eigen portfolio samen. Simpel en intuïtief.</p>
+              <h3 className="text-2xl font-bold text-[#2D3436] mb-4">Makkelijk</h3>
+              <p className="text-[#636E72]">Stel in een paar klikken je eigen portfolio samen. Simpel en intuïtief.</p>
             </div>
 
-            <div className="bg-gray-900/95 backdrop-blur-sm border border-[#28EBCF]/30 rounded-2xl p-8 text-center hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 transition-all">
-              <div className="w-16 h-16 mx-auto mb-6 bg-[#28EBCF]/20 rounded-xl flex items-center justify-center">
-                <svg className="w-10 h-10" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="2">
+            <div className="bg-[#FEFEFE]/95 backdrop-blur-sm border border-[#7C9885]/30 rounded-2xl p-8 text-center hover:border-[#7C9885] hover:shadow-lg hover:shadow-[#7C9885]/20 transition-all">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#7C9885]/20 rounded-xl flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="#7C9885" viewBox="0 0 24 24" strokeWidth="2">
                   <path d="M9 12l2 2 4-4"/>
                   <circle cx="12" cy="12" r="10"/>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Geen overbodige kosten</h3>
-              <p className="text-gray-300">Transparante prijzen zonder verborgen beheerkosten.</p>
+              <h3 className="text-2xl font-bold text-[#2D3436] mb-4">Geen overbodige kosten</h3>
+              <p className="text-[#636E72]">Transparante prijzen zonder verborgen beheerkosten.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Cost Comparison Calculator */}
-      <section className="py-20 bg-gray-900/50">
+      <section className="py-20 bg-[#FEFEFE]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Kostenvergelijking</h2>
-            <p className="text-xl text-gray-300">Zie hoeveel je bespaart met PIGG</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-[#2D3436] mb-6">Kostenvergelijking</h2>
+            <p className="text-xl text-[#636E72]">Zie hoeveel je bespaart met PIGG</p>
           </div>
 
           <CostComparisonCalculator />
@@ -3247,20 +3254,20 @@ useEffect(() => {
       <section id="how-it-works" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">Hoe het werkt</h2>
-            <p className="text-xl text-gray-300">Bij PIGG hoef je geen professional te zijn om je eigen vermogen te beheren</p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-[#2D3436] mb-6">Hoe het werkt</h2>
+            <p className="text-xl text-[#636E72]">Bij PIGG hoef je geen professional te zijn om je eigen vermogen te beheren</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
-            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30 flex items-center justify-center">
-              <svg className="w-32 h-32" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="1.5">
+            <div className="bg-gradient-to-br from-[#7C9885]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#7C9885]/30 flex items-center justify-center">
+              <svg className="w-32 h-32" fill="none" stroke="#7C9885" viewBox="0 0 24 24" strokeWidth="1.5">
                 <rect x="2" y="3" width="20" height="18" rx="2"/>
                 <path d="M8 3v18M16 3v18M2 9h20M2 15h20"/>
               </svg>
             </div>
-            <div className="text-white">
+            <div className="text-[#2D3436]">
               <h3 className="text-3xl font-bold mb-6">Stel je eigen portefeuille samen</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <p className="text-lg text-[#636E72] leading-relaxed">
                 Stel heel eenvoudig je eigen portefeuille samen met hulp van onze tools.
                 Je kunt ook kiezen voor van te voren samengestelde portefeuilles.
               </p>
@@ -3268,15 +3275,15 @@ useEffect(() => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-white md:order-2">
+            <div className="text-[#2D3436] md:order-2">
               <h3 className="text-3xl font-bold mb-6">Maak een account en begin</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <p className="text-lg text-[#636E72] leading-relaxed">
                 Maak een account aan en begin met beleggen.
                 Toegang tot de hele database aan ETF's en alle tools om je eigen modelportefeuille te maken.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-[#28EBCF]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#28EBCF]/30 md:order-1 flex items-center justify-center">
-              <svg className="w-32 h-32" fill="none" stroke="#28EBCF" viewBox="0 0 24 24" strokeWidth="1.5">
+            <div className="bg-gradient-to-br from-[#7C9885]/20 to-[#20D4BA]/10 rounded-3xl p-12 border border-[#7C9885]/30 md:order-1 flex items-center justify-center">
+              <svg className="w-32 h-32" fill="none" stroke="#7C9885" viewBox="0 0 24 24" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
               </svg>
@@ -3286,46 +3293,46 @@ useEffect(() => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-gray-800/50">
+      <section id="pricing" className="py-20 bg-[#ECEEED]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">{t.pricing.title}</h2>
+            <h2 className="text-4xl sm:text-5xl font-bold text-[#2D3436] mb-6">{t.pricing.title}</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             {/* Free Plan */}
-            <div className="bg-gray-900/95 backdrop-blur-sm border-2 border-gray-700 rounded-2xl p-8 flex flex-col h-full">
-              <h3 className="text-2xl font-bold text-white mb-4">{t.pricing.free.title}</h3>
-              <div className="text-5xl font-bold text-white mb-6">{t.pricing.free.price}<span className="text-xl text-gray-400">{t.pricing.free.period}</span></div>
+            <div className="bg-[#FEFEFE]/95 backdrop-blur-sm border-2 border-[#E8E8E6] rounded-2xl p-8 flex flex-col h-full">
+              <h3 className="text-2xl font-bold text-[#2D3436] mb-4">{t.pricing.free.title}</h3>
+              <div className="text-5xl font-bold text-[#2D3436] mb-6">{t.pricing.free.price}<span className="text-xl text-[#636E72]">{t.pricing.free.period}</span></div>
               <ul className="space-y-4 mb-8 flex-1">
                 {t.pricing.free.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <span className="text-[#28EBCF] text-xl">✓</span>
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-[#7C9885] text-xl">✓</span>
+                    <span className="text-[#636E72]">{feature}</span>
                   </li>
                 ))}
               </ul>
-              <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-gray-600 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold mt-auto">
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 border-2 border-[#D5D5D3] text-[#2D3436] rounded-lg hover:border-[#7C9885] transition-all font-semibold mt-auto">
                 {t.pricing.free.cta}
               </button>
             </div>
 
             {/* Paid Plan */}
-            <div className="bg-gradient-to-br from-[#28EBCF]/10 to-[#20D4BA]/5 border-2 border-[#28EBCF] rounded-2xl p-8 relative flex flex-col h-full">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#28EBCF] text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+            <div className="bg-gradient-to-br from-[#7C9885]/10 to-[#20D4BA]/5 border-2 border-[#7C9885] rounded-2xl p-8 relative flex flex-col h-full">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#7C9885] text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
                 {t.pricing.paid.badge}
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{t.pricing.paid.title}</h3>
-              <div className="text-5xl font-bold text-white mb-6">{t.pricing.paid.price}<span className="text-xl text-gray-400">{t.pricing.paid.period}</span></div>
+              <h3 className="text-2xl font-bold text-[#2D3436] mb-4">{t.pricing.paid.title}</h3>
+              <div className="text-5xl font-bold text-[#2D3436] mb-6">{t.pricing.paid.price}<span className="text-xl text-[#636E72]">{t.pricing.paid.period}</span></div>
               <ul className="space-y-4 mb-8 flex-1">
                 {t.pricing.paid.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <span className="text-[#28EBCF] text-xl">✓</span>
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-[#7C9885] text-xl">✓</span>
+                    <span className="text-[#636E72]">{feature}</span>
                   </li>
                 ))}
               </ul>
-              <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold mt-auto">
+              <button onClick={() => setCurrentPage('register')} className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold mt-auto">
                 {t.pricing.paid.cta}
               </button>
             </div>
@@ -3334,33 +3341,33 @@ useEffect(() => {
       </section>
 
       {/* ETF Database Preview Section */}
-      <section id="etf-preview" className="py-20 bg-gray-900/30">
+      <section id="etf-preview" className="py-20 bg-[#FEFEFE]/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 text-center">{t.etfPreview.title}</h2>
-          <p className="text-lg text-gray-300 mb-10 text-center">{t.etfPreview.subtitle}</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-4 text-center">{t.etfPreview.title}</h2>
+          <p className="text-lg text-[#636E72] mb-10 text-center">{t.etfPreview.subtitle}</p>
 
-          <div className="bg-[#1A1B1F] rounded-2xl shadow-xl p-6 border border-gray-800 mb-8">
+          <div className="bg-[#FEFEFE] rounded-2xl shadow-xl p-6 border border-[#E8E8E6] mb-8">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-800">
-                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.name}</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm hidden md:table-cell">{t.etfPreview.isin}</th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-semibold text-sm hidden lg:table-cell">{t.etfPreview.category}</th>
-                    <th className="text-right py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.ter}</th>
-                    <th className="text-right py-3 px-4 text-gray-400 font-semibold text-sm">{t.etfPreview.ytd}</th>
+                  <tr className="border-b border-[#E8E8E6]">
+                    <th className="text-left py-3 px-4 text-[#636E72] font-semibold text-sm">{t.etfPreview.name}</th>
+                    <th className="text-left py-3 px-4 text-[#636E72] font-semibold text-sm hidden md:table-cell">{t.etfPreview.isin}</th>
+                    <th className="text-left py-3 px-4 text-[#636E72] font-semibold text-sm hidden lg:table-cell">{t.etfPreview.category}</th>
+                    <th className="text-right py-3 px-4 text-[#636E72] font-semibold text-sm">{t.etfPreview.ter}</th>
+                    <th className="text-right py-3 px-4 text-[#636E72] font-semibold text-sm">{t.etfPreview.ytd}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {SAMPLE_ETFS.slice(0, 5).map((etf, idx) => (
-                    <tr key={idx} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
+                    <tr key={idx} className="border-b border-[#E8E8E6] hover:bg-[#ECEEED]/30 transition-colors">
                       <td className="py-3 px-4">
-                        <div className="text-white font-medium text-sm">{etf.naam}</div>
-                        <div className="text-gray-500 text-xs md:hidden">{etf.isin}</div>
+                        <div className="text-[#2D3436] font-medium text-sm">{etf.naam}</div>
+                        <div className="text-[#636E72] text-xs md:hidden">{etf.isin}</div>
                       </td>
-                      <td className="py-3 px-4 text-gray-300 text-sm hidden md:table-cell">{etf.isin}</td>
-                      <td className="py-3 px-4 text-gray-300 text-sm hidden lg:table-cell">{etf.categorie}</td>
-                      <td className="py-3 px-4 text-right text-[#28EBCF] font-medium text-sm">{etf['ter p.a.']}</td>
+                      <td className="py-3 px-4 text-[#636E72] text-sm hidden md:table-cell">{etf.isin}</td>
+                      <td className="py-3 px-4 text-[#636E72] text-sm hidden lg:table-cell">{etf.categorie}</td>
+                      <td className="py-3 px-4 text-right text-[#7C9885] font-medium text-sm">{etf['ter p.a.']}</td>
                       <td className={`py-3 px-4 text-right font-medium text-sm ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {etf.ytd}
                       </td>
@@ -3372,7 +3379,7 @@ useEffect(() => {
             <div className="text-center mt-6">
               <button
                 onClick={() => setCurrentPage('register')}
-                className="px-8 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
+                className="px-8 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
               >
                 {t.etfPreview.cta}
               </button>
@@ -3384,40 +3391,40 @@ useEffect(() => {
       {/* ETF Detail Preview Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 text-center">{t.etfDetail.title}</h2>
-          <p className="text-lg text-gray-300 mb-10 text-center">{t.etfDetail.subtitle}</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-4 text-center">{t.etfDetail.title}</h2>
+          <p className="text-lg text-[#636E72] mb-10 text-center">{t.etfDetail.subtitle}</p>
 
-          <div className="max-w-3xl mx-auto bg-[#1A1B1F] rounded-xl shadow-2xl border border-gray-800">
-            <div className="bg-[#1A1B1F] border-b border-gray-800 px-4 py-3 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white">{SAMPLE_ETFS[0].naam}</h3>
-              <div className="text-2xl text-gray-400">×</div>
+          <div className="max-w-3xl mx-auto bg-[#FEFEFE] rounded-xl shadow-2xl border border-[#E8E8E6]">
+            <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] px-4 py-3 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-[#2D3436]">{SAMPLE_ETFS[0].naam}</h3>
+              <div className="text-2xl text-[#636E72]">×</div>
             </div>
 
             <div className="p-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="font-semibold mb-2 text-white">{t.etfDetail.basicInfo}</div>
+                  <div className="font-semibold mb-2 text-[#2D3436]">{t.etfDetail.basicInfo}</div>
                   <div className="space-y-1">
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.isin}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].isin}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.category}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].categorie}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.ter}:</span><span className="text-[#28EBCF] font-medium">{SAMPLE_ETFS[0]['ter p.a.']}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfPreview.ytd}:</span><span className="text-green-500">{SAMPLE_ETFS[0].ytd}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfPreview.isin}:</span><span className="text-[#636E72]">{SAMPLE_ETFS[0].isin}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfPreview.category}:</span><span className="text-[#636E72]">{SAMPLE_ETFS[0].categorie}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfPreview.ter}:</span><span className="text-[#7C9885] font-medium">{SAMPLE_ETFS[0]['ter p.a.']}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfPreview.ytd}:</span><span className="text-green-500">{SAMPLE_ETFS[0].ytd}</span></div>
                   </div>
                 </div>
 
                 <div>
-                  <div className="font-semibold mb-2 text-white">{t.etfDetail.details}</div>
+                  <div className="font-semibold mb-2 text-[#2D3436]">{t.etfDetail.details}</div>
                   <div className="space-y-1">
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.fundSize}:</span><span className="text-gray-300">€{SAMPLE_ETFS[0]['fund size (in m €)']}M</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.vol1y}:</span><span className="text-gray-300">{SAMPLE_ETFS[0]['volatility 1y']}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.holdings}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].holdings}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">{t.etfDetail.distribution}:</span><span className="text-gray-300">{SAMPLE_ETFS[0].distribution}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfDetail.fundSize}:</span><span className="text-[#636E72]">€{SAMPLE_ETFS[0]['fund size (in m €)']}M</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfDetail.vol1y}:</span><span className="text-[#636E72]">{SAMPLE_ETFS[0]['volatility 1y']}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfDetail.holdings}:</span><span className="text-[#636E72]">{SAMPLE_ETFS[0].holdings}</span></div>
+                    <div className="flex justify-between"><span className="text-[#636E72]">{t.etfDetail.distribution}:</span><span className="text-[#636E72]">{SAMPLE_ETFS[0].distribution}</span></div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <div className="font-semibold mb-2 text-sm text-white">{t.etfDetail.historicalReturns}</div>
+                <div className="font-semibold mb-2 text-sm text-[#2D3436]">{t.etfDetail.historicalReturns}</div>
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={[
                     { year: '2021', return: safeParseFloat(SAMPLE_ETFS[0]['2021']) },
@@ -3428,13 +3435,13 @@ useEffect(() => {
                     <XAxis dataKey="year" tick={{fontSize: 12, fill: '#9CA3AF'}} />
                     <YAxis tick={{fontSize: 12, fill: '#9CA3AF'}} />
                     <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
-                    <Bar dataKey="return" fill="#28EBCF" />
+                    <Bar dataKey="return" fill="#7C9885" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
               <div>
-                <div className="font-semibold mb-3 text-sm text-white">{t.etfDetail.topHoldings}</div>
+                <div className="font-semibold mb-3 text-sm text-[#2D3436]">{t.etfDetail.topHoldings}</div>
                 <div className="space-y-2">
                   {[
                     { name: 'Apple Inc.', weight: '7.2%' },
@@ -3448,12 +3455,12 @@ useEffect(() => {
                     { name: 'Tesla Inc.', weight: '1.5%' },
                     { name: 'Eli Lilly and Co.', weight: '1.4%' }
                   ].map((holding, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1.5 px-2 bg-gray-800/30 rounded">
+                    <div key={idx} className="flex justify-between items-center py-1.5 px-2 bg-[#ECEEED]/30 rounded">
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-500 text-xs font-mono">{idx + 1}.</span>
-                        <span className="text-gray-300 text-xs">{holding.name}</span>
+                        <span className="text-[#636E72] text-xs font-mono">{idx + 1}.</span>
+                        <span className="text-[#636E72] text-xs">{holding.name}</span>
                       </div>
-                      <span className="text-[#28EBCF] text-xs font-semibold">{holding.weight}</span>
+                      <span className="text-[#7C9885] text-xs font-semibold">{holding.weight}</span>
                     </div>
                   ))}
                 </div>
@@ -3462,7 +3469,7 @@ useEffect(() => {
               <div className="text-center pt-2">
                 <button
                   onClick={() => setCurrentPage('register')}
-                  className="px-8 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
+                  className="px-8 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-bold"
                 >
                   {t.etfDetail.cta}
                 </button>
@@ -3475,11 +3482,11 @@ useEffect(() => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">{t.cta.title}</h2>
-          <p className="text-xl text-gray-300 mb-10">{t.cta.subtitle}</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-[#2D3436] mb-6">{t.cta.title}</h2>
+          <p className="text-xl text-[#636E72] mb-10">{t.cta.subtitle}</p>
           <button
             onClick={() => setCurrentPage('register')}
-            className="px-12 py-4 bg-[#28EBCF] text-gray-900 rounded-lg text-xl hover:bg-[#20D4BA] transition-all font-bold"
+            className="px-12 py-4 bg-[#7C9885] text-gray-900 rounded-lg text-xl hover:bg-[#20D4BA] transition-all font-bold"
           >
             {t.cta.button}
           </button>
@@ -3511,13 +3518,13 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -3548,26 +3555,26 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">{t.common.welcomeBack}</h2>
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#7C9885]">{t.common.welcomeBack}</h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-[#C0736D] rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.common.email}</label>
                 <input
                   type="email"
                   inputMode="email"
@@ -3575,21 +3582,21 @@ useEffect(() => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onTouchStart={(e) => e.target.focus()}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   placeholder={t.common.email}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.password}</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.auth.password}</label>
                 <input
                   type="password"
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onTouchStart={(e) => e.target.focus()}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   placeholder={t.auth.password}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
                 />
@@ -3597,28 +3604,28 @@ useEffect(() => {
 
               <button
                 onClick={handleLoginClick}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
               </button>
 
               <button
                 onClick={handleDemoLogin}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-white border-2 border-[#28EBCF] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-3"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-[#2D3436] border-2 border-[#7C9885] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-3"
               >
                 🚀 Probeer Demo Account
               </button>
             </div>
 
-            <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-400">
-              <button onClick={() => setCurrentPage('resetPassword')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
+            <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-[#636E72]">
+              <button onClick={() => setCurrentPage('resetPassword')} className="text-[#7C9885] hover:text-[#20D4BA] hover:underline font-semibold">
                 {t.auth.forgotPassword}
               </button>
             </div>
 
-            <p className="text-center mt-3 text-xs sm:text-sm text-gray-400">
+            <p className="text-center mt-3 text-xs sm:text-sm text-[#636E72]">
               Geen account?{' '}
-              <button onClick={() => setCurrentPage('register')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
+              <button onClick={() => setCurrentPage('register')} className="text-[#7C9885] hover:text-[#20D4BA] hover:underline font-semibold">
                 Registreer hier
               </button>
             </p>
@@ -3685,13 +3692,13 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -3722,50 +3729,50 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#28EBCF]">
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-[#7C9885]">
               {t.auth.resetPassword}
             </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-red-400 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 text-[#C0736D] rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 p-3 bg-green-600/20 border border-green-600/50 text-green-400 rounded-lg text-sm">
+              <div className="mb-4 p-3 bg-green-600/20 border border-green-600/50 text-[#7C9885] rounded-lg text-sm">
                 {success}
               </div>
             )}
 
             {step === 1 ? (
               <div className="space-y-3 sm:space-y-4">
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-[#636E72] mb-4">
                   {t.auth.enterEmailReset}
                 </p>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.common.email}</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.common.email}</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     placeholder={t.common.email}
                   />
                 </div>
 
                 <button
                   onClick={handleEmailSubmit}
-                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
                 >
                   Volgende
                 </button>
@@ -3773,38 +3780,38 @@ useEffect(() => {
             ) : (
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.newPassword}</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.auth.newPassword}</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     placeholder={t.auth.newPassword}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-gray-300">{t.auth.confirmPassword}</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.auth.confirmPassword}</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     placeholder={t.auth.confirmPassword}
                   />
                 </div>
 
                 <button
                   onClick={handlePasswordReset}
-                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
                 >
                   {t.auth.resetPassword}
                 </button>
               </div>
             )}
 
-            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-gray-400">
-              <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline font-semibold">
+            <p className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-[#636E72]">
+              <button onClick={() => setCurrentPage('login')} className="text-[#7C9885] hover:text-[#20D4BA] hover:underline font-semibold">
                 Terug naar inloggen
               </button>
             </p>
@@ -3816,13 +3823,13 @@ useEffect(() => {
 
   const EmailVerificationPendingPage = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -3853,29 +3860,29 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
             <div className="text-6xl mb-6">📧</div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#28EBCF]">Bevestig je Email</h2>
-            <p className="text-gray-300 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#7C9885]">Bevestig je Email</h2>
+            <p className="text-[#636E72] mb-6">
               We hebben een verificatie link naar je emailadres gestuurd.
               Klik op de link in de email om je account te activeren.
             </p>
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-400">
+            <div className="bg-[#ECEEED]/50 border border-[#E8E8E6] rounded-lg p-4 mb-6">
+              <p className="text-sm text-[#636E72]">
                 Geen email ontvangen? Controleer je spam folder of probeer het opnieuw te registreren.
               </p>
             </div>
             <button
               onClick={() => setCurrentPage('login')}
-              className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+              className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
             >
               Ga naar Login
             </button>
@@ -3938,13 +3945,13 @@ useEffect(() => {
     }, [success, countdown]);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -3975,32 +3982,32 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-8 sm:mt-12 md:mt-20 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8 text-center">
             {verifying ? (
               <>
                 <div className="text-6xl mb-6">⏳</div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-white">Email Verifiëren...</h2>
-                <p className="text-gray-400">Even geduld terwijl we je email verifiëren.</p>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#2D3436]">Email Verifiëren...</h2>
+                <p className="text-[#636E72]">Even geduld terwijl we je email verifiëren.</p>
               </>
             ) : success ? (
               <>
                 <div className="text-6xl mb-6">✅</div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-green-400">Verificatie Gelukt!</h2>
-                <p className="text-gray-300 mb-4">{message}</p>
-                <p className="text-gray-400 mb-6 text-sm">Je wordt automatisch doorgestuurd naar de login pagina in {countdown} seconden...</p>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#7C9885]">Verificatie Gelukt!</h2>
+                <p className="text-[#636E72] mb-4">{message}</p>
+                <p className="text-[#636E72] mb-6 text-sm">Je wordt automatisch doorgestuurd naar de login pagina in {countdown} seconden...</p>
                 <button
                   onClick={() => {
                     window.location.replace('/?page=login');
                   }}
-                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+                  className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
                 >
                   Direct naar Login
                 </button>
@@ -4008,18 +4015,18 @@ useEffect(() => {
             ) : (
               <>
                 <div className="text-6xl mb-6">❌</div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-red-400">Verificatie Mislukt</h2>
-                <p className="text-gray-300 mb-6">{message}</p>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-[#C0736D]">Verificatie Mislukt</h2>
+                <p className="text-[#636E72] mb-6">{message}</p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setCurrentPage('register')}
-                    className="flex-1 py-3 border-2 border-gray-700 text-white rounded-lg hover:border-[#28EBCF] transition-all font-semibold"
+                    className="flex-1 py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-lg hover:border-[#7C9885] transition-all font-semibold"
                   >
                     Opnieuw Registreren
                   </button>
                   <button
                     onClick={() => setCurrentPage('login')}
-                    className="flex-1 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
+                    className="flex-1 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold"
                   >
                     Naar Login
                   </button>
@@ -4058,13 +4065,13 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pb-8">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4] pb-8">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -4095,39 +4102,39 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-6 sm:mt-8 md:mt-12 mb-8 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 text-[#28EBCF]">Maak een gratis account</h2>
-            <p className="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 text-[#7C9885]">Maak een gratis account</h2>
+            <p className="text-xs sm:text-sm text-[#636E72] mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
             <div className="space-y-3 sm:space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Voornaam *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Voornaam *</label>
                   <input
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Jan"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Achternaam *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Achternaam *</label>
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Jansen"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     required
                   />
                 </div>
@@ -4135,122 +4142,122 @@ useEffect(() => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Adres *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Adres *</label>
                   <input
                     type="text"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="Straatnaam"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Huisnummer *</label>
+                  <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Huisnummer *</label>
                   <input
                     type="text"
                     value={houseNumber}
                     onChange={(e) => setHouseNumber(e.target.value)}
                     placeholder="12"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Postcode *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Postcode *</label>
                 <input
                   type="text"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="1234AB"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Woonplaats *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Woonplaats *</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Amsterdam"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Telefoonnummer *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Telefoonnummer *</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="06 12345678"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Geboortedatum *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Geboortedatum *</label>
                 <input
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Email *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Email *</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jan@voorbeeld.nl"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Wachtwoord *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Wachtwoord *</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimaal 8 tekens"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-300">Herhaal Wachtwoord *</label>
+                <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Herhaal Wachtwoord *</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Herhaal wachtwoord"
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-gray-900 border-2 border-gray-700 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   required
                 />
               </div>
 
               <button
                 onClick={handleSubmit}
-                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#28EBCF] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
+                className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Account aanmaken
               </button>
 
-              <p className="text-center text-xs sm:text-sm text-gray-400 mt-3 sm:mt-4">
+              <p className="text-center text-xs sm:text-sm text-[#636E72] mt-3 sm:mt-4">
                 Heeft u al een account?{' '}
-                <button onClick={() => setCurrentPage('login')} className="text-[#28EBCF] font-semibold hover:text-[#20D4BA] hover:underline">
+                <button onClick={() => setCurrentPage('login')} className="text-[#7C9885] font-semibold hover:text-[#20D4BA] hover:underline">
                   Log in
                 </button>
               </p>
@@ -4339,13 +4346,13 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <button onClick={() => setCurrentPage('landing')} className="flex items-center gap-4">
               <svg viewBox="0 0 48 48" fill="none" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -4376,15 +4383,15 @@ useEffect(() => {
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
               <div className="flex flex-col">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-400">Your digital Piggy Bank for global Investing</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                <div className="text-sm sm:text-base md:text-lg text-[#636E72]">Your digital Piggy Bank for global Investing</div>
               </div>
             </button>
           </div>
         </nav>
 
         <div className="max-w-md mx-auto mt-12 px-4">
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-xl p-8">
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-xl p-8">
             {success ? (
               <div className="text-center">
                 <div className="mb-4 text-green-500">
@@ -4392,27 +4399,27 @@ useEffect(() => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Email Geverifieerd!</h2>
-                <p className="text-gray-400">Je wordt doorgestuurd naar de login pagina...</p>
+                <h2 className="text-2xl font-bold text-[#2D3436] mb-2">Email Geverifieerd!</h2>
+                <p className="text-[#636E72]">Je wordt doorgestuurd naar de login pagina...</p>
               </div>
             ) : (
               <>
                 <div className="text-center mb-6">
-                  <div className="mb-4 text-[#28EBCF]">
+                  <div className="mb-4 text-[#7C9885]">
                     <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold text-[#28EBCF] mb-2">Verifieer je Email</h2>
-                  <p className="text-gray-400 text-sm">
+                  <h2 className="text-2xl font-bold text-[#7C9885] mb-2">Verifieer je Email</h2>
+                  <p className="text-[#636E72] text-sm">
                     We hebben een 6-cijferige code verzonden naar<br />
-                    <span className="font-semibold text-white">{pendingVerificationEmail}</span>
+                    <span className="font-semibold text-[#2D3436]">{pendingVerificationEmail}</span>
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-300">Verificatiecode</label>
+                    <label className="block text-sm font-semibold mb-2 text-[#636E72]">Verificatiecode</label>
                     <input
                       type="text"
                       value={code}
@@ -4423,7 +4430,7 @@ useEffect(() => {
                       }}
                       placeholder="000000"
                       maxLength={6}
-                      className="w-full px-4 py-3 text-center text-2xl font-bold tracking-widest bg-gray-900 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-600"
+                      className="w-full px-4 py-3 text-center text-2xl font-bold tracking-widest bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-gray-600"
                       autoFocus
                     />
                     {error && (
@@ -4434,7 +4441,7 @@ useEffect(() => {
                   <button
                     onClick={handleVerifyCode}
                     disabled={loading || code.length !== 6}
-                    className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed"
                   >
                     {loading ? 'Verifiëren...' : 'Verifieer Email'}
                   </button>
@@ -4443,23 +4450,23 @@ useEffect(() => {
                     <button
                       onClick={handleResendCode}
                       disabled={loading}
-                      className="text-[#28EBCF] hover:text-[#20D4BA] font-semibold text-sm disabled:text-gray-600 disabled:cursor-not-allowed"
+                      className="text-[#7C9885] hover:text-[#20D4BA] font-semibold text-sm disabled:text-gray-600 disabled:cursor-not-allowed"
                     >
                       Nieuwe code versturen
                     </button>
                   </div>
 
-                  <p className="text-center text-xs text-gray-400 mt-4">
+                  <p className="text-center text-xs text-[#636E72] mt-4">
                     Code niet ontvangen? Check je spam folder of vraag een nieuwe code aan.
                   </p>
 
-                  <div className="border-t border-gray-700 mt-6 pt-4">
+                  <div className="border-t border-[#E8E8E6] mt-6 pt-4">
                     <button
                       onClick={() => {
                         setPendingVerificationEmail(null);
                         setCurrentPage('login');
                       }}
-                      className="w-full text-gray-400 hover:text-white transition-colors text-sm"
+                      className="w-full text-[#636E72] hover:text-[#2D3436] transition-colors text-sm"
                     >
                       ← Terug naar login
                     </button>
@@ -4560,22 +4567,22 @@ useEffect(() => {
       return (
         <div className="min-h-screen bg-[#0A0B0D] flex items-center justify-center">
           <div className="text-center">
-            <div className="text-2xl font-bold mb-4 text-white">ETF data laden...</div>
-            <div className="text-gray-400">Even geduld aub</div>
+            <div className="text-2xl font-bold mb-4 text-[#2D3436]">ETF data laden...</div>
+            <div className="text-[#636E72]">Even geduld aub</div>
           </div>
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                   {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -4605,23 +4612,23 @@ useEffect(() => {
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
-                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#7C9885]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
+                <button onClick={() => setCurrentPage('welcome')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">
                   Home
                 </button>
                 {portfolio.length > 0 && (
-                  <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">
+                  <button onClick={() => setCurrentPage('dashboard')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">
                     Portfolio ({portfolio.length})
                   </button>
                 )}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#7C9885]/20 rounded-full text-[#7C9885] font-semibold truncate max-w-[100px]">
                   {user?.name?.split(' ')[0]}
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
+                  className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -4631,9 +4638,9 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">ETF Database</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-[#2D3436]">ETF Database</h1>
 
-          <div className="bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-gray-800">
+          <div className="bg-[#FEFEFE] rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-[#E8E8E6]">
             {/* Search bar */}
             <div className="mb-4">
               <input
@@ -4641,12 +4648,12 @@ useEffect(() => {
                 placeholder="Zoek op naam of ISIN..."
                 value={filters.search}
                 onChange={(e) => setFilters({...filters, search: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl focus:outline-none focus:border-[#28EBCF] transition-colors text-white placeholder-gray-500"
+                className="w-full px-4 py-3 bg-[#ECEEED] border-2 border-[#E8E8E6] rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
               />
             </div>
 
             {/* Tradability toggle */}
-            <div className="mb-4 flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+            <div className="mb-4 flex items-center justify-between p-3 bg-[#ECEEED]/50 rounded-lg border border-[#E8E8E6]">
               <div className="flex items-center gap-3">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -4655,19 +4662,19 @@ useEffect(() => {
                     onChange={(e) => setShowOnlyTradable(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#28EBCF]"></div>
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#FEFEFE] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7C9885]"></div>
                 </label>
-                <span className="text-sm text-gray-300">
+                <span className="text-sm text-[#636E72]">
                   {showOnlyTradable ? 'Alleen LYNX-handelbare ETFs' : 'Alle ETFs (incl. niet-handelbaar)'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {showOnlyTradable ? (
-                  <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">
+                  <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
                     {filteredEtfs.length} handelbaar
                   </span>
                 ) : (
-                  <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded-full">
+                  <span className="text-xs px-2 py-1 bg-gray-700 text-[#636E72] rounded-full">
                     {filteredEtfs.filter(e => e.isTradableViaLynx).length} van {filteredEtfs.length} handelbaar
                   </span>
                 )}
@@ -4677,7 +4684,7 @@ useEffect(() => {
             {/* Step 1: Category Selection - Only show if no category selected or in filterSelect step */}
             {(filterStep === 'category' || !selectedMainCategory) && (
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-400 mb-2">Selecteer Categorie</h3>
+                <h3 className="text-sm font-semibold text-[#636E72] mb-2">Selecteer Categorie</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                   {['Aandelen', 'Obligaties', 'Commodities', 'Vastgoed', 'Money market', 'Crypto'].map(cat => (
                     <button
@@ -4687,7 +4694,7 @@ useEffect(() => {
                         setFilterStep('filterSelect');
                         setActiveFilters({});
                       }}
-                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                      className="px-4 py-3 rounded-lg font-medium transition-all bg-[#ECEEED] text-[#636E72] hover:bg-gray-700 hover:text-[#2D3436]"
                     >
                       {cat}
                     </button>
@@ -4698,9 +4705,9 @@ useEffect(() => {
 
             {/* Step 2: Filter Selection - Show available filters for selected category */}
             {selectedMainCategory && filterStep === 'filterSelect' && (
-              <div className="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+              <div className="mb-4 p-4 bg-[#ECEEED]/50 rounded-lg border border-[#E8E8E6]">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-sm font-semibold text-[#28EBCF]">
+                  <h3 className="text-sm font-semibold text-[#7C9885]">
                     Filters voor {selectedMainCategory}
                   </h3>
                   <button
@@ -4710,24 +4717,24 @@ useEffect(() => {
                       setActiveFilters({});
                       setCurrentFilter('');
                     }}
-                    className="text-xs text-gray-400 hover:text-white transition-colors"
+                    className="text-xs text-[#636E72] hover:text-[#2D3436] transition-colors"
                   >
                     ← Terug naar categorieën
                   </button>
                 </div>
 
                 {/* Show selected category */}
-                <div className="mb-3 p-3 bg-gray-900/50 rounded-lg">
-                  <p className="text-xs text-gray-400 mb-2">Geselecteerde categorie:</p>
-                  <span className="px-3 py-1 bg-[#28EBCF] text-gray-900 rounded-full text-xs font-medium">
+                <div className="mb-3 p-3 bg-[#FEFEFE]/50 rounded-lg">
+                  <p className="text-xs text-[#636E72] mb-2">Geselecteerde categorie:</p>
+                  <span className="px-3 py-1 bg-[#7C9885] text-gray-900 rounded-full text-xs font-medium">
                     {selectedMainCategory}
                   </span>
                 </div>
 
                 {/* Show active filters */}
                 {Object.keys(activeFilters).length > 0 && (
-                  <div className="mb-3 p-3 bg-gray-900/50 rounded-lg">
-                    <p className="text-xs text-gray-400 mb-2">Actieve filters (klik om te verwijderen):</p>
+                  <div className="mb-3 p-3 bg-[#FEFEFE]/50 rounded-lg">
+                    <p className="text-xs text-[#636E72] mb-2">Actieve filters (klik om te verwijderen):</p>
                     <div className="flex flex-wrap gap-2">
                       {Object.entries(activeFilters).map(([key, value]) => (
                         <button
@@ -4737,7 +4744,7 @@ useEffect(() => {
                             delete newFilters[key];
                             setActiveFilters(newFilters);
                           }}
-                          className="px-3 py-1 bg-[#28EBCF] text-gray-900 rounded-full text-xs font-medium hover:bg-[#20D4BA] transition-colors"
+                          className="px-3 py-1 bg-[#7C9885] text-gray-900 rounded-full text-xs font-medium hover:bg-[#20D4BA] transition-colors"
                         >
                           {filterLabels[key]}: {value} ✕
                         </button>
@@ -4757,7 +4764,7 @@ useEffect(() => {
                           setCurrentFilter(filterType);
                           setFilterStep('filterOptions');
                         }}
-                        className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                        className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-[#636E72] hover:bg-gray-600 hover:text-[#2D3436]"
                       >
                         {filterLabels[filterType]}
                       </button>
@@ -4771,7 +4778,7 @@ useEffect(() => {
                     setActiveFilters({});
                     setCurrentFilter('');
                   }}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-[#2D3436] rounded-lg text-sm font-medium transition-colors"
                 >
                   Klaar
                 </button>
@@ -4780,9 +4787,9 @@ useEffect(() => {
 
             {/* Step 3: Filter Options - Show options for selected filter */}
             {selectedMainCategory && filterStep === 'filterOptions' && currentFilter && (
-              <div className="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+              <div className="mb-4 p-4 bg-[#ECEEED]/50 rounded-lg border border-[#E8E8E6]">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-sm font-semibold text-[#28EBCF]">
+                  <h3 className="text-sm font-semibold text-[#7C9885]">
                     Selecteer {filterLabels[currentFilter]}
                   </h3>
                   <button
@@ -4790,7 +4797,7 @@ useEffect(() => {
                       setFilterStep('filterSelect');
                       setCurrentFilter('');
                     }}
-                    className="text-xs text-gray-400 hover:text-white transition-colors"
+                    className="text-xs text-[#636E72] hover:text-[#2D3436] transition-colors"
                   >
                     ← Terug
                   </button>
@@ -4805,7 +4812,7 @@ useEffect(() => {
                         setFilterStep('filterSelect');
                         setCurrentFilter('');
                       }}
-                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white text-sm"
+                      className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-700 text-[#636E72] hover:bg-gray-600 hover:text-[#2D3436] text-sm"
                     >
                       {option}
                     </button>
@@ -4817,22 +4824,22 @@ useEffect(() => {
                     setFilterStep('filterSelect');
                     setCurrentFilter('');
                   }}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-[#2D3436] rounded-lg text-sm font-medium transition-colors"
                 >
                   Klaar
                 </button>
               </div>
             )}
 
-            <div className="text-sm text-gray-400">
-              Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-[#28EBCF]">(Sample data - upload Excel voor volledige database)</span>}
+            <div className="text-sm text-[#636E72]">
+              Aantal ETFs: {filteredEtfs.length} {etfs.length === SAMPLE_ETFS.length && <span className="text-[#7C9885]">(Sample data - upload Excel voor volledige database)</span>}
             </div>
           </div>
 
           {/* Mobile view - Cards */}
           <div className="block md:hidden space-y-3">
             {etfPricesLastUpdated && (
-              <div className="text-xs text-gray-500 mb-2">
+              <div className="text-xs text-[#636E72] mb-2">
                 Prijzen bijgewerkt: {new Date(etfPricesLastUpdated).toLocaleString('nl-NL', {
                   day: '2-digit',
                   month: '2-digit',
@@ -4846,43 +4853,43 @@ useEffect(() => {
               const priceData = etfPrices[etf.isin];
               const isAdded = portfolioIsinSet.has(etf.isin);
               return (
-              <div key={idx} className={`bg-[#1A1B1F] rounded-lg shadow p-3 border ${etf.isTradableViaLynx ? 'border-gray-800' : 'border-gray-800 opacity-75'}`}>
+              <div key={idx} className={`bg-[#FEFEFE] rounded-lg shadow p-3 border ${etf.isTradableViaLynx ? 'border-[#E8E8E6]' : 'border-[#E8E8E6] opacity-75'}`}>
                 <div className="flex items-start justify-between mb-2">
                   <button
                     onClick={() => setSelectedETF(etf)}
-                    className={`${etf.isTradableViaLynx ? 'text-[#28EBCF] hover:text-[#20D4BA]' : 'text-gray-400'} font-medium text-left hover:underline text-sm`}
+                    className={`${etf.isTradableViaLynx ? 'text-[#7C9885] hover:text-[#20D4BA]' : 'text-[#636E72]'} font-medium text-left hover:underline text-sm`}
                   >
                     {etf.naam}
                   </button>
                   {etf.isTradableViaLynx ? (
-                    <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full whitespace-nowrap ml-2">LYNX</span>
+                    <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded-full whitespace-nowrap ml-2">LYNX</span>
                   ) : !showOnlyTradable && (
-                    <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-400 rounded-full whitespace-nowrap ml-2">Niet handelbaar</span>
+                    <span className="text-xs px-2 py-0.5 bg-gray-700 text-[#636E72] rounded-full whitespace-nowrap ml-2">Niet handelbaar</span>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                  <div><span className="text-gray-500">ISIN:</span> <span className="font-medium text-gray-300">{etf.isin}</span></div>
-                  <div><span className="text-gray-500">Cat:</span> <span className="font-medium text-gray-300">{etf.categorie}</span></div>
+                  <div><span className="text-[#636E72]">ISIN:</span> <span className="font-medium text-[#636E72]">{etf.isin}</span></div>
+                  <div><span className="text-[#636E72]">Cat:</span> <span className="font-medium text-[#636E72]">{etf.categorie}</span></div>
                   {priceData && (
                     <>
-                      <div><span className="text-gray-500">Price:</span> <span className="font-medium text-white">{priceData.currency} {priceData.price.toFixed(2)}</span></div>
-                      <div><span className="text-gray-500">Change:</span> <span className={`font-medium ${priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>{priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%</span></div>
+                      <div><span className="text-[#636E72]">Price:</span> <span className="font-medium text-[#2D3436]">{priceData.currency} {priceData.price.toFixed(2)}</span></div>
+                      <div><span className="text-[#636E72]">Change:</span> <span className={`font-medium ${priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>{priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%</span></div>
                     </>
                   )}
-                  <div><span className="text-gray-500">TER:</span> <span className="font-medium text-gray-300">{etf['ter p.a.']}</span></div>
-                  <div><span className="text-gray-500">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</span></div>
+                  <div><span className="text-[#636E72]">TER:</span> <span className="font-medium text-[#636E72]">{etf['ter p.a.']}</span></div>
+                  <div><span className="text-[#636E72]">YTD:</span> <span className={`font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf.ytd}</span></div>
                 </div>
                 {isAdded ? (
                   <button
                     disabled
-                    className="w-full px-3 py-2 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default flex items-center justify-center gap-2"
+                    className="w-full px-3 py-2 bg-green-600 text-[#2D3436] text-sm rounded-lg font-medium cursor-default flex items-center justify-center gap-2"
                   >
                     <span>✓</span> Toegevoegd
                   </button>
                 ) : (
                   <button
                     onClick={() => addToPortfolio(etf)}
-                    className="w-full px-3 py-2 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                    className="w-full px-3 py-2 bg-[#7C9885] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                   >
                     + Toevoegen aan Portfolio
                   </button>
@@ -4893,10 +4900,10 @@ useEffect(() => {
           </div>
 
           {/* Desktop view - Table */}
-          <div className="hidden md:block bg-[#1A1B1F] rounded-2xl shadow-lg overflow-hidden border border-gray-800">
+          <div className="hidden md:block bg-[#FEFEFE] rounded-2xl shadow-lg overflow-hidden border border-[#E8E8E6]">
             {etfPricesLastUpdated && (
-              <div className="px-4 py-2 bg-gray-800/30 border-b border-gray-800">
-                <span className="text-xs text-gray-500">
+              <div className="px-4 py-2 bg-[#ECEEED]/30 border-b border-[#E8E8E6]">
+                <span className="text-xs text-[#636E72]">
                   Prijzen bijgewerkt: {new Date(etfPricesLastUpdated).toLocaleString('nl-NL', {
                     day: '2-digit',
                     month: '2-digit',
@@ -4909,17 +4916,17 @@ useEffect(() => {
             )}
             <div className="overflow-x-auto max-h-[600px]">
               <table className="w-full">
-                <thead className="bg-gray-800/50 sticky top-0">
+                <thead className="bg-[#ECEEED]/50 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Current Price</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Change %</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
-                    <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Naam</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">ISIN</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Categorie</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">Current Price</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">Change</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">Change %</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">TER</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">YTD</th>
+                    <th className="px-4 py-3 text-center text-sm font-semibold text-[#636E72]">Actie</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
@@ -4927,25 +4934,25 @@ useEffect(() => {
                     const priceData = etfPrices[etf.isin];
                     const isAdded = portfolioIsinSet.has(etf.isin);
                     return (
-                    <tr key={idx} className={`hover:bg-gray-800/30 transition-colors ${!etf.isTradableViaLynx ? 'opacity-75' : ''}`}>
+                    <tr key={idx} className={`hover:bg-[#ECEEED]/30 transition-colors ${!etf.isTradableViaLynx ? 'opacity-75' : ''}`}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedETF(etf)}
-                            className={`${etf.isTradableViaLynx ? 'text-[#28EBCF] hover:text-[#20D4BA]' : 'text-gray-400'} font-medium text-left hover:underline`}
+                            className={`${etf.isTradableViaLynx ? 'text-[#7C9885] hover:text-[#20D4BA]' : 'text-[#636E72]'} font-medium text-left hover:underline`}
                           >
                             {etf.naam}
                           </button>
                           {etf.isTradableViaLynx ? (
-                            <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full whitespace-nowrap">LYNX</span>
+                            <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded-full whitespace-nowrap">LYNX</span>
                           ) : !showOnlyTradable && (
-                            <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-400 rounded-full whitespace-nowrap">Niet handelbaar</span>
+                            <span className="text-xs px-2 py-0.5 bg-gray-700 text-[#636E72] rounded-full whitespace-nowrap">Niet handelbaar</span>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
-                      <td className="px-4 py-3 text-sm text-gray-300">{etf.categorie}</td>
-                      <td className="px-4 py-3 text-sm text-right text-white font-medium">
+                      <td className="px-4 py-3 text-sm text-[#636E72]">{etf.isin}</td>
+                      <td className="px-4 py-3 text-sm text-[#636E72]">{etf.categorie}</td>
+                      <td className="px-4 py-3 text-sm text-right text-[#2D3436] font-medium">
                         {priceData ? `${priceData.currency} ${priceData.price.toFixed(2)}` : '-'}
                       </td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
@@ -4954,7 +4961,7 @@ useEffect(() => {
                       <td className={`px-4 py-3 text-sm text-right font-medium ${priceData && priceData.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {priceData ? `${priceData.changePercent >= 0 ? '+' : ''}${priceData.changePercent.toFixed(2)}%` : '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                      <td className="px-4 py-3 text-sm text-right text-[#636E72]">{etf['ter p.a.']}</td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {etf.ytd}
                       </td>
@@ -4962,14 +4969,14 @@ useEffect(() => {
                         {isAdded ? (
                           <button
                             disabled
-                            className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
+                            className="px-4 py-1.5 bg-green-600 text-[#2D3436] text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
                           >
                             <span>✓</span> Added
                           </button>
                         ) : (
                           <button
                             onClick={() => addToPortfolio(etf)}
-                            className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                            className="px-4 py-1.5 bg-[#7C9885] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                           >
                             + Portfolio
                           </button>
@@ -5291,63 +5298,63 @@ useEffect(() => {
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-[#1A1B1F] rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-3 py-2 flex justify-between items-center z-10 gap-2">
-            <h2 className="text-base font-bold truncate text-white">{etf.naam}</h2>
-            <button onClick={onClose} className="text-4xl text-gray-400 hover:text-gray-200 flex-shrink-0 leading-none -mt-2">×</button>
+        <div className="bg-[#FEFEFE] rounded-lg max-w-2xl w-full max-h-[70vh] overflow-y-auto border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
+          <div className="sticky top-0 bg-[#FEFEFE] border-b border-[#E8E8E6] px-3 py-2 flex justify-between items-center z-10 gap-2">
+            <h2 className="text-base font-bold truncate text-[#2D3436]">{etf.naam}</h2>
+            <button onClick={onClose} className="text-4xl text-[#636E72] hover:text-[#2D3436] flex-shrink-0 leading-none -mt-2">×</button>
           </div>
 
           <div className="p-3 space-y-3">
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <div className="font-semibold mb-1 text-white">Basis Info</div>
+                <div className="font-semibold mb-1 text-[#2D3436]">Basis Info</div>
                 <div className="space-y-0.5">
-                  <div className="flex justify-between"><span className="text-gray-500">ISIN:</span><span className="text-gray-300">{etf.isin}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Categorie:</span><span className="text-gray-300">{etf.categorie}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">TER:</span><span className="text-[#28EBCF] font-medium">{etf['ter p.a.']}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">YTD:</span><span className={safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}>{etf.ytd}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">ISIN:</span><span className="text-[#636E72]">{etf.isin}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">Categorie:</span><span className="text-[#636E72]">{etf.categorie}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">TER:</span><span className="text-[#7C9885] font-medium">{etf['ter p.a.']}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">YTD:</span><span className={safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}>{etf.ytd}</span></div>
                 </div>
               </div>
 
               <div>
-                <div className="font-semibold mb-1 text-white">Details</div>
+                <div className="font-semibold mb-1 text-[#2D3436]">Details</div>
                 <div className="space-y-0.5">
-                  <div className="flex justify-between"><span className="text-gray-500">Fund Size:</span><span className="text-gray-300">€{etf['fund size (in m €)']}M</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Vol 1Y:</span><span className="text-gray-300">{etf['volatility 1y']}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Holdings:</span><span className="text-gray-300">{holdingsCount.toLocaleString('nl-NL')}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Uitkering:</span><span className="text-gray-300">{etf.distribution}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">Fund Size:</span><span className="text-[#636E72]">€{etf['fund size (in m €)']}M</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">Vol 1Y:</span><span className="text-[#636E72]">{etf['volatility 1y']}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">Holdings:</span><span className="text-[#636E72]">{holdingsCount.toLocaleString('nl-NL')}</span></div>
+                  <div className="flex justify-between"><span className="text-[#636E72]">Uitkering:</span><span className="text-[#636E72]">{etf.distribution}</span></div>
                 </div>
               </div>
             </div>
 
             <div>
-              <div className="font-semibold mb-1 text-xs text-white">Historisch Rendement</div>
+              <div className="font-semibold mb-1 text-xs text-[#2D3436]">Historisch Rendement</div>
               <ResponsiveContainer width="100%" height={140}>
                 <BarChart data={historicalData}>
                   <XAxis dataKey="year" tick={{fontSize: 10, fill: '#9CA3AF'}} />
                   <YAxis tick={{fontSize: 10, fill: '#9CA3AF'}} />
                   <Tooltip contentStyle={{backgroundColor: '#1A1B1F', border: '1px solid #374151', color: '#fff'}} />
-                  <Bar dataKey="return" fill="#28EBCF" />
+                  <Bar dataKey="return" fill="#7C9885" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
             {topHoldings.length > 0 && (
               <div>
-                <div className="font-semibold mb-1 text-xs text-white">Top 10 Holdings</div>
-                <div className="text-xs space-y-0.5 max-h-32 overflow-y-auto border border-gray-800 rounded p-2 bg-gray-900/30">
+                <div className="font-semibold mb-1 text-xs text-[#2D3436]">Top 10 Holdings</div>
+                <div className="text-xs space-y-0.5 max-h-32 overflow-y-auto border border-[#E8E8E6] rounded p-2 bg-[#FEFEFE]/30">
                   {topHoldings.map((holding, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-800 last:border-0">
+                    <div key={idx} className="flex justify-between items-center py-1 border-b border-[#E8E8E6] last:border-0">
                       <div className="flex items-start gap-2 flex-1 min-w-0">
-                        <span className="text-gray-500 flex-shrink-0">{idx + 1}.</span>
+                        <span className="text-[#636E72] flex-shrink-0">{idx + 1}.</span>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate text-gray-300">{holding.name}</div>
-                          <div className="text-gray-500 text-[10px]">
+                          <div className="font-medium truncate text-[#636E72]">{holding.name}</div>
+                          <div className="text-[#636E72] text-[10px]">
                             {holding.sector || holding.rating || holding.type || '-'}
                           </div>
                         </div>
                       </div>
-                      <span className="font-medium ml-2 flex-shrink-0 text-gray-300">{holding.weight.toFixed(1)}%</span>
+                      <span className="font-medium ml-2 flex-shrink-0 text-[#636E72]">{holding.weight.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
@@ -5360,13 +5367,13 @@ useEffect(() => {
                   addToPortfolio(etf);
                   onClose();
                 }}
-                className="flex-1 py-2 bg-[#28EBCF] text-gray-900 rounded hover:bg-[#20D4BA] text-xs font-medium"
+                className="flex-1 py-2 bg-[#7C9885] text-gray-900 rounded hover:bg-[#20D4BA] text-xs font-medium"
               >
                 + Portfolio
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-2 border-2 border-gray-700 rounded hover:bg-gray-800 text-xs font-medium text-gray-300"
+                className="flex-1 py-2 border-2 border-[#E8E8E6] rounded hover:bg-[#ECEEED] text-xs font-medium text-[#636E72]"
               >
                 Sluiten
               </button>
@@ -5396,14 +5403,14 @@ useEffect(() => {
     const allCategoriesCompleted = requiredCategories.every(cat => categoriesCompleted[cat]);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                   {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -5433,15 +5440,15 @@ useEffect(() => {
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
-                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#28EBCF]">PIGG</div>
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#7C9885]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
-                {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-gray-300 hover:text-[#28EBCF] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
-                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#28EBCF]/20 rounded-full text-[#28EBCF] font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">Home</button>
+                {portfolio.length > 0 && <button onClick={() => setCurrentPage('dashboard')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">Portfolio ({portfolio.length})</button>}
+                <div className="hidden sm:block text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 bg-[#7C9885]/20 rounded-full text-[#7C9885] font-semibold truncate max-w-[100px]">{user?.name?.split(' ')[0]}</div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-gray-200 font-medium text-xs sm:text-sm md:text-base"
+                  className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -5451,8 +5458,8 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4 text-center text-white">Kies je beleggingsstrategie</h1>
-          <p className="text-center text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4 text-center text-[#2D3436]">Kies je beleggingsstrategie</h1>
+          <p className="text-center text-sm sm:text-base text-[#636E72] mb-6 sm:mb-8 md:mb-12 px-4">Stel zelf een portfolio samen of kies een vooraf samengestelde portfolio</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12">
             <button
@@ -5465,20 +5472,20 @@ useEffect(() => {
                 setCategoriesCompleted({});
                 setPortfolio([]);
               }}
-              className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
+              className={`bg-[#FEFEFE] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
                 portfolioType === 'custom'
-                  ? 'border-[#28EBCF] ring-2 ring-[#28EBCF]/30 cursor-default'
-                  : 'border-gray-800 hover:shadow-xl hover:border-gray-700'
+                  ? 'border-[#7C9885] ring-2 ring-[#7C9885]/30 cursor-default'
+                  : 'border-[#E8E8E6] hover:shadow-xl hover:border-[#E8E8E6]'
               }`}
             >
               <div className="flex justify-between items-start">
                 <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🎯</div>
                 {portfolioType === 'custom' && (
-                  <span className="px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] text-xs font-medium rounded-full">Actief</span>
+                  <span className="px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] text-xs font-medium rounded-full">Actief</span>
                 )}
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Zelf Samenstellen</h3>
-              <p className="text-sm sm:text-base text-gray-400">Kies een profiel en selecteer je eigen ETF's per categorie</p>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-[#2D3436]">Zelf Samenstellen</h3>
+              <p className="text-sm sm:text-base text-[#636E72]">Kies een profiel en selecteer je eigen ETF's per categorie</p>
             </button>
 
             <button
@@ -5486,26 +5493,26 @@ useEffect(() => {
                 if (portfolioType === 'premade') return;
                 setPortfolioType('premade');
               }}
-              className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
+              className={`bg-[#FEFEFE] rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 transition-all border text-left ${
                 portfolioType === 'premade'
-                  ? 'border-[#28EBCF] ring-2 ring-[#28EBCF]/30 cursor-default'
-                  : 'border-gray-800 hover:shadow-xl hover:border-gray-700'
+                  ? 'border-[#7C9885] ring-2 ring-[#7C9885]/30 cursor-default'
+                  : 'border-[#E8E8E6] hover:shadow-xl hover:border-[#E8E8E6]'
               }`}
             >
               <div className="flex justify-between items-start">
                 <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📊</div>
                 {portfolioType === 'premade' && (
-                  <span className="px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] text-xs font-medium rounded-full">Actief</span>
+                  <span className="px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] text-xs font-medium rounded-full">Actief</span>
                 )}
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-white">Vooraf Samengesteld</h3>
-              <p className="text-sm sm:text-base text-gray-400">Kies een portfolio op basis van risicoprofiel</p>
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-[#2D3436]">Vooraf Samengesteld</h3>
+              <p className="text-sm sm:text-base text-[#636E72]">Kies een portfolio op basis van risicoprofiel</p>
             </button>
           </div>
           
           {portfolioType === 'custom' && customBuildStep === 'profile' && (
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">Stap 1: Kies je risicoprofiel</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-[#2D3436]">Stap 1: Kies je risicoprofiel</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => {
                   const tradableCategories = getTradableCategories(etfs);
@@ -5520,31 +5527,31 @@ useEffect(() => {
                         setSelectedProfile(key);
                         setCustomBuildStep('categories');
                       }}
-                      className={`bg-[#1A1B1F] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border ${fullyTradable ? 'border-gray-800 hover:border-[#28EBCF]' : 'border-gray-800 hover:border-yellow-500/50'}`}
+                      className={`bg-[#FEFEFE] rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all text-left border ${fullyTradable ? 'border-[#E8E8E6] hover:border-[#7C9885]' : 'border-[#E8E8E6] hover:border-yellow-500/50'}`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-base sm:text-lg text-white">{config.name}</h4>
+                        <h4 className="font-bold text-base sm:text-lg text-[#2D3436]">{config.name}</h4>
                         {fullyTradable ? (
-                          <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">LYNX</span>
+                          <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded-full">LYNX</span>
                         ) : totalCats > 0 && (
                           <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full" title="Niet alle categorieën zijn handelbaar via LYNX">
                             {tradableCats.length}/{totalCats}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-400 mb-3">
+                      <div className="text-xs sm:text-sm text-[#636E72] mb-3">
                         {Object.entries(config.allocation).map(([cat, pct]) => {
                           const isCatTradable = tradableCategories.includes(cat);
                           return (
-                            <div key={cat} className={isCatTradable ? 'text-gray-400' : 'text-gray-500'}>
+                            <div key={cat} className={isCatTradable ? 'text-[#636E72]' : 'text-[#636E72]'}>
                               {cat}: {pct}%
                               {!isCatTradable && <span className="text-yellow-500/70 ml-1">*</span>}
                             </div>
                           );
                         })}
                       </div>
-                      <div className="text-xs sm:text-sm text-[#28EBCF] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
-                      <div className="text-xs sm:text-sm text-gray-400">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
+                      <div className="text-xs sm:text-sm text-[#7C9885] font-medium">Verwacht rendement: {(config.expectedReturn * 100).toFixed(1)}%</div>
+                      <div className="text-xs sm:text-sm text-[#636E72]">Risico (std dev): {(config.stdDev * 100).toFixed(1)}%</div>
                       {!fullyTradable && totalCats > 0 && (
                         <div className="text-xs text-yellow-500/70 mt-2">* Geen handelbare ETF's beschikbaar</div>
                       )}
@@ -5559,8 +5566,8 @@ useEffect(() => {
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Stap 2: Vul categorieën</h2>
-                  <p className="text-gray-400">Geselecteerd profiel: {premadePortfolios[selectedProfile].name}</p>
+                  <h2 className="text-2xl font-bold text-[#2D3436]">Stap 2: Vul categorieën</h2>
+                  <p className="text-[#636E72]">Geselecteerd profiel: {premadePortfolios[selectedProfile].name}</p>
                 </div>
                 <button
                   onClick={() => {
@@ -5569,7 +5576,7 @@ useEffect(() => {
                     setCategoriesCompleted({});
                     setPortfolio([]);
                   }}
-                  className="px-4 py-2 text-gray-400 hover:text-gray-200"
+                  className="px-4 py-2 text-[#636E72] hover:text-[#2D3436]"
                 >
                   ← Profiel wijzigen
                 </button>
@@ -5590,16 +5597,16 @@ useEffect(() => {
                       }}
                       className={`p-6 rounded-2xl shadow-lg transition-all border-2 text-left ${
                         isCompleted
-                          ? 'bg-[#28EBCF]/10 border-[#28EBCF]'
-                          : 'bg-[#1A1B1F] border-gray-800 hover:border-[#28EBCF]'
+                          ? 'bg-[#7C9885]/10 border-[#7C9885]'
+                          : 'bg-[#FEFEFE] border-[#E8E8E6] hover:border-[#7C9885]'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-bold text-lg text-white">{category}</h3>
+                        <h3 className="font-bold text-lg text-[#2D3436]">{category}</h3>
                         {isCompleted && <span className="text-2xl">✓</span>}
                       </div>
-                      <p className="text-sm text-gray-400">Allocatie: {allocation}%</p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-sm text-[#636E72]">Allocatie: {allocation}%</p>
+                      <p className="text-xs text-[#636E72] mt-2">
                         {isCompleted ? 'Voltooid - Klik om aan te passen' : 'Klik om ETF\'s te selecteren'}
                       </p>
                     </button>
@@ -5611,7 +5618,7 @@ useEffect(() => {
                 <div className="text-center">
                   <button
                     onClick={() => setCurrentPage('portfolioOverview')}
-                    className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold text-lg"
+                    className="px-8 py-4 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold text-lg"
                   >
                     Bekijk Portfolio Voorstel →
                   </button>
@@ -5624,8 +5631,8 @@ useEffect(() => {
             <div>
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
-                  <p className="text-gray-400">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
+                  <h2 className="text-2xl font-bold text-[#2D3436]">Stap 3: Selecteer ETF's voor {selectedCategory}</h2>
+                  <p className="text-[#636E72]">Vereiste allocatie: {premadePortfolios[selectedProfile].allocation[selectedCategory]}%</p>
                 </div>
                 <button
                   onClick={() => {
@@ -5633,26 +5640,26 @@ useEffect(() => {
                     setSelectedCategory(null);
                     setCategoryFilters({ subcategorie: '', currency: '', distribution: '' });
                   }}
-                  className="px-4 py-2 text-gray-400 hover:text-gray-200"
+                  className="px-4 py-2 text-[#636E72] hover:text-[#2D3436]"
                 >
                   ← Terug naar categorieën
                 </button>
               </div>
 
-              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 mb-6 border border-gray-800">
-                <h3 className="font-semibold mb-4 text-white">Huidige selectie voor {selectedCategory}</h3>
+              <div className="bg-[#FEFEFE] rounded-2xl shadow-lg p-6 mb-6 border border-[#E8E8E6]">
+                <h3 className="font-semibold mb-4 text-[#2D3436]">Huidige selectie voor {selectedCategory}</h3>
                 {portfolio.filter(etf => etf.categorie === selectedCategory).length === 0 ? (
-                  <p className="text-gray-500 text-sm">Nog geen ETF's geselecteerd</p>
+                  <p className="text-[#636E72] text-sm">Nog geen ETF's geselecteerd</p>
                 ) : (
                   <div className="space-y-2">
                     {portfolio.filter(etf => etf.categorie === selectedCategory).map((etf, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-300">{etf.naam}</span>
+                      <div key={idx} className="flex justify-between items-center p-3 bg-[#ECEEED]/50 rounded-lg">
+                        <span className="text-sm font-medium text-[#636E72]">{etf.naam}</span>
                         <button
                           onClick={() => {
                             setPortfolio(prev => prev.filter(p => p.isin !== etf.isin));
                           }}
-                          className="text-red-500 hover:text-red-400 text-sm"
+                          className="text-red-500 hover:text-[#C0736D] text-sm"
                         >
                           Verwijder
                         </button>
@@ -5667,7 +5674,7 @@ useEffect(() => {
                     setCustomBuildStep('categories');
                     setSelectedCategory(null);
                   }}
-                  className="mt-4 w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-semibold"
+                  className="mt-4 w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-semibold"
                 >
                   Klaar met {selectedCategory} →
                 </button>
@@ -5681,20 +5688,20 @@ useEffect(() => {
                 const distributions = [...new Set(allCategoryETFs.map(e => e.distribution))].filter(Boolean).sort();
 
                 return (
-                  <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-6 mb-6 border border-gray-800">
-                    <h3 className="font-bold mb-4 text-white">Filters</h3>
+                  <div className="bg-[#FEFEFE] rounded-2xl shadow-lg p-6 mb-6 border border-[#E8E8E6]">
+                    <h3 className="font-bold mb-4 text-[#2D3436]">Filters</h3>
 
                     {/* Subcategorie Filter */}
                     {subcategories.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Subcategorie</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-[#636E72]">Subcategorie</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, subcategorie: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.subcategorie
-                                ? 'bg-[#28EBCF] text-gray-900'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                ? 'bg-[#7C9885] text-gray-900'
+                                : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -5705,8 +5712,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, subcategorie: sub})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.subcategorie === sub
-                                  ? 'bg-[#28EBCF] text-gray-900'
-                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                  ? 'bg-[#7C9885] text-gray-900'
+                                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                               }`}
                             >
                               {sub}
@@ -5719,14 +5726,14 @@ useEffect(() => {
                     {/* Currency Filter */}
                     {currencies.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Valuta</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-[#636E72]">Valuta</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, currency: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.currency
-                                ? 'bg-[#28EBCF] text-gray-900'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                ? 'bg-[#7C9885] text-gray-900'
+                                : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -5737,8 +5744,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, currency: curr})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.currency === curr
-                                  ? 'bg-[#28EBCF] text-gray-900'
-                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                  ? 'bg-[#7C9885] text-gray-900'
+                                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                               }`}
                             >
                               {curr}
@@ -5751,14 +5758,14 @@ useEffect(() => {
                     {/* Distribution Filter */}
                     {distributions.length > 0 && (
                       <div>
-                        <h4 className="font-semibold text-sm mb-2 text-gray-300">Distributie</h4>
+                        <h4 className="font-semibold text-sm mb-2 text-[#636E72]">Distributie</h4>
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => setCategoryFilters({...categoryFilters, distribution: ''})}
                             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                               !categoryFilters.distribution
-                                ? 'bg-[#28EBCF] text-gray-900'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                ? 'bg-[#7C9885] text-gray-900'
+                                : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                             }`}
                           >
                             Alle
@@ -5769,8 +5776,8 @@ useEffect(() => {
                               onClick={() => setCategoryFilters({...categoryFilters, distribution: dist})}
                               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                                 categoryFilters.distribution === dist
-                                  ? 'bg-[#28EBCF] text-gray-900'
-                                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                  ? 'bg-[#7C9885] text-gray-900'
+                                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                               }`}
                             >
                               {dist}
@@ -5783,19 +5790,19 @@ useEffect(() => {
                 );
               })()}
 
-              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg overflow-hidden border border-gray-800">
-                <div className="p-4 bg-gray-800/50">
-                  <h3 className="font-bold text-white">Beschikbare {selectedCategory} ETF's</h3>
+              <div className="bg-[#FEFEFE] rounded-2xl shadow-lg overflow-hidden border border-[#E8E8E6]">
+                <div className="p-4 bg-[#ECEEED]/50">
+                  <h3 className="font-bold text-[#2D3436]">Beschikbare {selectedCategory} ETF's</h3>
                 </div>
                 <div className="overflow-x-auto max-h-[500px]">
                   <table className="w-full">
-                    <thead className="bg-gray-800/30 sticky top-0">
+                    <thead className="bg-[#ECEEED]/30 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Naam</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ISIN</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
-                        <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">YTD</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Actie</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Naam</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">ISIN</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">TER</th>
+                        <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">YTD</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-[#636E72]">Actie</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
@@ -5808,17 +5815,17 @@ useEffect(() => {
                       }).map((etf, idx) => {
                         const isAdded = portfolioIsinSet.has(etf.isin);
                         return (
-                          <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
+                          <tr key={idx} className="hover:bg-[#ECEEED]/30 transition-colors">
                             <td className="px-4 py-3">
                               <button
                                 onClick={() => setSelectedETF(etf)}
-                                className="text-[#28EBCF] hover:text-[#20D4BA] font-medium text-left hover:underline"
+                                className="text-[#7C9885] hover:text-[#20D4BA] font-medium text-left hover:underline"
                               >
                                 {etf.naam}
                               </button>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-400">{etf.isin}</td>
-                            <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                            <td className="px-4 py-3 text-sm text-[#636E72]">{etf.isin}</td>
+                            <td className="px-4 py-3 text-sm text-right text-[#636E72]">{etf['ter p.a.']}</td>
                             <td className={`px-4 py-3 text-sm text-right font-medium ${safeParseFloat(etf.ytd) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {etf.ytd}
                             </td>
@@ -5826,14 +5833,14 @@ useEffect(() => {
                               {isAdded ? (
                                 <button
                                   disabled
-                                  className="px-4 py-1.5 bg-green-600 text-white text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
+                                  className="px-4 py-1.5 bg-green-600 text-[#2D3436] text-sm rounded-lg font-medium cursor-default inline-flex items-center gap-1.5"
                                 >
                                   <span>✓</span> Toegevoegd
                                 </button>
                               ) : (
                                 <button
                                   onClick={() => addToPortfolio(etf, 10)}
-                                  className="px-4 py-1.5 bg-[#28EBCF] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
+                                  className="px-4 py-1.5 bg-[#7C9885] text-gray-900 text-sm rounded-lg hover:bg-[#20D4BA] transition-all font-medium"
                                 >
                                   + Toevoegen
                                 </button>
@@ -5851,8 +5858,8 @@ useEffect(() => {
           
           {portfolioType === 'premade' && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-white">Kies je Risicoprofiel</h2>
-              <p className="text-gray-400 mb-6">Selecteer een vooraf samengestelde portfolio die past bij jouw beleggingsdoelen</p>
+              <h2 className="text-2xl font-bold mb-2 text-[#2D3436]">Kies je Risicoprofiel</h2>
+              <p className="text-[#636E72] mb-6">Selecteer een vooraf samengestelde portfolio die past bij jouw beleggingsdoelen</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(premadePortfolios).map(([key, config]) => {
                   const tradableCategories = getTradableCategories(etfs);
@@ -5884,13 +5891,13 @@ useEffect(() => {
       .sort((a, b) => b.value - a.value); // Sort by value descending (highest first)
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -5920,15 +5927,15 @@ useEffect(() => {
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
-              <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#7C9885]">PIGG</div>
             </button>
             <div className="flex items-center gap-6">
-              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-gray-300 hover:text-[#28EBCF]">Portfolio Samenstellen</button>
-              <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#28EBCF] font-medium">Portfolio Overzicht</button>
-              <div className="text-sm text-gray-400">{user?.name}</div>
+              <button onClick={() => setCurrentPage('portfolioBuilder')} className="text-[#636E72] hover:text-[#7C9885]">Portfolio Samenstellen</button>
+              <button onClick={() => setCurrentPage('portfolioOverview')} className="text-[#7C9885] font-medium">Portfolio Overzicht</button>
+              <div className="text-sm text-[#636E72]">{user?.name}</div>
               <button
                 onClick={handleLogout}
-                className="text-gray-400 hover:text-gray-200 font-medium"
+                className="text-[#636E72] hover:text-[#2D3436] font-medium"
               >
                 {t.common.logout}
               </button>
@@ -5938,9 +5945,9 @@ useEffect(() => {
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">Portfolio Overzicht</h1>
+            <h1 className="text-3xl font-bold text-[#2D3436]">Portfolio Overzicht</h1>
             <div className="flex gap-3">
-              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-[#28EBCF] text-[#28EBCF] rounded-lg hover:bg-[#28EBCF]/10 font-medium">Portfolio Aanpassen</button>
+              <button onClick={() => setShowEditPortfolio(true)} className="px-6 py-3 border-2 border-[#7C9885] text-[#7C9885] rounded-lg hover:bg-[#7C9885]/10 font-medium">Portfolio Aanpassen</button>
               <button
                 onClick={async () => {
                   // Set demo investment details for fictive portfolio
@@ -5959,23 +5966,23 @@ useEffect(() => {
 
                   setCurrentPage('dashboard');
                 }}
-                className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
+                className="px-6 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium"
               >
                 Fictieve Portfolio Behouden
               </button>
-              <button onClick={() => setCurrentPage('trading')} className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
+              <button onClick={() => setCurrentPage('trading')} className="px-6 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium">Portfolio Aankopen →</button>
             </div>
           </div>
 
           <div className="grid grid-cols-4 gap-6 mb-8">
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Totale TER</div><div className="text-2xl font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-2xl font-bold text-white">{portfolio.length}</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Backtested Return 2024</div><div className={`text-2xl font-bold ${metrics.backtestReturn >= 0 ? 'text-green-500' : 'text-red-500'}`}>{metrics.backtestReturn.toFixed(2)}%</div></div>
-            <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800"><div className="text-sm text-gray-400 mb-1">Risico Profiel</div><div className="text-2xl font-bold text-white">Neutraal</div></div>
+            <div className="bg-[#FEFEFE] rounded-lg shadow p-6 border border-[#E8E8E6]"><div className="text-sm text-[#636E72] mb-1">Totale TER</div><div className="text-2xl font-bold text-[#7C9885]">{metrics.avgTER.toFixed(2)}%</div></div>
+            <div className="bg-[#FEFEFE] rounded-lg shadow p-6 border border-[#E8E8E6]"><div className="text-sm text-[#636E72] mb-1">Aantal ETF's</div><div className="text-2xl font-bold text-[#2D3436]">{portfolio.length}</div></div>
+            <div className="bg-[#FEFEFE] rounded-lg shadow p-6 border border-[#E8E8E6]"><div className="text-sm text-[#636E72] mb-1">Backtested Return 2024</div><div className={`text-2xl font-bold ${metrics.backtestReturn >= 0 ? 'text-green-500' : 'text-red-500'}`}>{metrics.backtestReturn.toFixed(2)}%</div></div>
+            <div className="bg-[#FEFEFE] rounded-lg shadow p-6 border border-[#E8E8E6]"><div className="text-sm text-[#636E72] mb-1">Risico Profiel</div><div className="text-2xl font-bold text-[#2D3436]">Neutraal</div></div>
           </div>
 
-          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 mb-8 border border-gray-800">
-            <h3 className="font-bold text-lg mb-4 text-white">Asset Allocatie</h3>
+          <div className="bg-[#FEFEFE] rounded-lg shadow p-6 mb-8 border border-[#E8E8E6]">
+            <h3 className="font-bold text-lg mb-4 text-[#2D3436]">Asset Allocatie</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
@@ -5987,8 +5994,8 @@ useEffect(() => {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-[#1A1B1F] rounded-lg shadow p-6 border border-gray-800">
-            <h3 className="font-bold text-lg mb-4 text-white">Alle Holdings</h3>
+          <div className="bg-[#FEFEFE] rounded-lg shadow p-6 border border-[#E8E8E6]">
+            <h3 className="font-bold text-lg mb-4 text-[#2D3436]">Alle Holdings</h3>
             <div className="space-y-6">
               {Object.entries(
                 portfolio.reduce((acc, etf) => {
@@ -6006,31 +6013,31 @@ useEffect(() => {
               .filter(item => item.weight > 0) // Filter out 0% categories
               .sort((a, b) => b.weight - a.weight) // Sort by weight descending
               .map(({ category, etfs }) => (
-                <div key={category} className="border border-gray-800 rounded-lg overflow-hidden">
-                  <div className="bg-gray-800/50 px-4 py-3 border-b border-gray-800">
+                <div key={category} className="border border-[#E8E8E6] rounded-lg overflow-hidden">
+                  <div className="bg-[#ECEEED]/50 px-4 py-3 border-b border-[#E8E8E6]">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-bold text-lg text-white">{category}</h4>
-                      <span className="text-sm font-medium text-gray-400">
+                      <h4 className="font-bold text-lg text-[#2D3436]">{category}</h4>
+                      <span className="text-sm font-medium text-[#636E72]">
                         {etfs.reduce((sum, e) => sum + (e.weight || 0), 0).toFixed(1)}% van portfolio
                       </span>
                     </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-800/30">
+                      <thead className="bg-[#ECEEED]/30">
                         <tr>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">ETF</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Weging</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">TER</th>
-                          <th className="px-4 py-2 text-right text-sm font-medium text-gray-300">Return 2024</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-[#636E72]">ETF</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-[#636E72]">Weging</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-[#636E72]">TER</th>
+                          <th className="px-4 py-2 text-right text-sm font-medium text-[#636E72]">Return 2024</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-800">
                         {etfs.map((etf, idx) => (
-                          <tr key={idx} className="hover:bg-gray-800/30">
-                            <td className="px-4 py-3 text-sm text-gray-300">{etf.naam}</td>
-                            <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{(etf.weight || 0).toFixed(1)}%</td>
-                            <td className="px-4 py-3 text-sm text-right text-gray-300">{etf['ter p.a.']}</td>
+                          <tr key={idx} className="hover:bg-[#ECEEED]/30">
+                            <td className="px-4 py-3 text-sm text-[#636E72]">{etf.naam}</td>
+                            <td className="px-4 py-3 text-sm text-right font-medium text-[#636E72]">{(etf.weight || 0).toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-sm text-right text-[#636E72]">{etf['ter p.a.']}</td>
                             <td className={`px-4 py-3 text-sm text-right ${safeParseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{etf['2024']}</td>
                           </tr>
                         ))}
@@ -6068,19 +6075,19 @@ useEffect(() => {
       ];
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <div className="min-h-screen bg-[#F5F6F4]">
+          <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-gray-300 hover:text-[#28EBCF]">
+              <div className="text-2xl font-bold text-[#7C9885]">PIGG</div>
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#636E72] hover:text-[#7C9885]">
                 ← Terug naar Dashboard
               </button>
             </div>
           </nav>
 
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4 text-white">Kies je Risicoprofiel</h1>
-            <p className="text-center text-gray-400 mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
+            <h1 className="text-4xl font-bold text-center mb-4 text-[#2D3436]">Kies je Risicoprofiel</h1>
+            <p className="text-center text-[#636E72] mb-12">Selecteer het profiel dat het beste bij jouw beleggingsdoelen past</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {profiles.map(profile => {
@@ -6099,20 +6106,20 @@ useEffect(() => {
                       setPortfolio([]);
                       setCustomBuildStep('categories');
                     }}
-                    className={`bg-[#1A1B1F] rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 text-left ${fullyTradable ? 'border-gray-800 hover:border-[#28EBCF]' : 'border-gray-800 hover:border-yellow-500/50'}`}
+                    className={`bg-[#FEFEFE] rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all transform hover:scale-105 border-2 text-left ${fullyTradable ? 'border-[#E8E8E6] hover:border-[#7C9885]' : 'border-[#E8E8E6] hover:border-yellow-500/50'}`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="text-5xl">{profile.icon}</div>
                       {fullyTradable ? (
-                        <span className="text-xs px-2 py-1 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full font-medium">LYNX</span>
+                        <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full font-medium">LYNX</span>
                       ) : totalCats > 0 && (
                         <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full font-medium" title="Niet alle categorieën zijn handelbaar via LYNX">
                           {tradableCats.length}/{totalCats} handelbaar
                         </span>
                       )}
                     </div>
-                    <h3 className="text-2xl font-bold mb-2 text-white">{profile.name}</h3>
-                    <p className="text-gray-400 text-sm">{profile.desc}</p>
+                    <h3 className="text-2xl font-bold mb-2 text-[#2D3436]">{profile.name}</h3>
+                    <p className="text-[#636E72] text-sm">{profile.desc}</p>
                     {!fullyTradable && totalCats > 0 && (
                       <p className="text-xs text-yellow-500/70 mt-3">Sommige categorieën zijn niet handelbaar via LYNX</p>
                     )}
@@ -6162,20 +6169,20 @@ useEffect(() => {
         : availableCategories.every(cat => categoriesCompleted[cat]);
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <div className="min-h-screen bg-[#F5F6F4]">
+          <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCustomBuildStep('profile')} className="text-gray-300 hover:text-[#28EBCF]">
+              <div className="text-2xl font-bold text-[#7C9885]">PIGG</div>
+              <button onClick={() => setCustomBuildStep('profile')} className="text-[#636E72] hover:text-[#7C9885]">
                 ← Terug naar Profiel Selectie
               </button>
             </div>
           </nav>
 
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4 text-white">Selecteer Beleggingscategorieën</h1>
-            <p className="text-center text-gray-400 mb-4">Profiel: <span className="font-bold text-[#28EBCF]">{profileConfig.name}</span></p>
-            <p className="text-center text-gray-400 mb-12">
+            <h1 className="text-4xl font-bold text-center mb-4 text-[#2D3436]">Selecteer Beleggingscategorieën</h1>
+            <p className="text-center text-[#636E72] mb-4">Profiel: <span className="font-bold text-[#7C9885]">{profileConfig.name}</span></p>
+            <p className="text-center text-[#636E72] mb-12">
               {selectedProfile === 'free'
                 ? 'Klik op categorieën om ETF\'s te selecteren (kies minimaal 1 categorie)'
                 : 'Klik op een categorie om ETF\'s te selecteren (minimaal 1 per categorie)'}
@@ -6196,18 +6203,18 @@ useEffect(() => {
                     }}
                     className={`rounded-2xl shadow-lg p-8 transition-all transform hover:scale-105 border-2 text-left ${
                       isCompleted
-                        ? 'bg-[#28EBCF]/10 border-[#28EBCF]'
-                        : 'bg-[#1A1B1F] border-gray-800 hover:border-[#28EBCF]'
+                        ? 'bg-[#7C9885]/10 border-[#7C9885]'
+                        : 'bg-[#FEFEFE] border-[#E8E8E6] hover:border-[#7C9885]'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="text-5xl">{categoryIcons[category] || '📦'}</div>
                       {isCompleted && <div className="text-3xl">✅</div>}
                     </div>
-                    <h3 className="text-2xl font-bold mb-2 text-white">{category}</h3>
-                    {allocation > 0 && <p className="text-gray-400">Weging: {allocation}%</p>}
+                    <h3 className="text-2xl font-bold mb-2 text-[#2D3436]">{category}</h3>
+                    {allocation > 0 && <p className="text-[#636E72]">Weging: {allocation}%</p>}
                     {isCompleted && (
-                      <p className="text-[#28EBCF] text-sm mt-2">
+                      <p className="text-[#7C9885] text-sm mt-2">
                         {portfolio.filter(p => p.categorie === category).length} ETF(s) geselecteerd
                       </p>
                     )}
@@ -6232,7 +6239,7 @@ useEffect(() => {
                       setCustomBuildStep('accountType');
                     }
                   }}
-                  className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
+                  className="px-8 py-4 bg-[#7C9885] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Volgende Stap →
                 </button>
@@ -6292,13 +6299,13 @@ useEffect(() => {
       };
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <div className="min-h-screen bg-[#F5F6F4]">
+          <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
                   <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
-                    <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                    <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                     <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                     <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                     <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
@@ -6306,20 +6313,20 @@ useEffect(() => {
                     <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                     <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                   </svg>
-                  <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-[#7C9885]">PIGG</div>
                 </button>
                 <button onClick={() => {
                   setSelectedCategory(null);
                   setCustomBuildStep('categories');
                   setCustomBuilderFilters({ subcategorie: '', currency: '', distribution: '' });
-                }} className="text-gray-300 hover:text-[#28EBCF]">
+                }} className="text-[#636E72] hover:text-[#7C9885]">
                   ← Terug naar Categorieën
                 </button>
               </div>
               {selectedInCategory.length > 0 && (
                 <button
                   onClick={handleContinue}
-                  className="px-6 py-2 bg-[#28EBCF] text-gray-900 rounded-lg text-sm font-bold hover:bg-[#20D4BA] transition-all"
+                  className="px-6 py-2 bg-[#7C9885] text-gray-900 rounded-lg text-sm font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Bevestig Selectie ({selectedInCategory.length}) →
                 </button>
@@ -6328,27 +6335,27 @@ useEffect(() => {
           </nav>
 
           <div className="max-w-7xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4 text-white">Selecteer ETF's voor {selectedCategory}</h1>
-            <p className="text-center text-gray-400 mb-2">
+            <h1 className="text-4xl font-bold text-center mb-4 text-[#2D3436]">Selecteer ETF's voor {selectedCategory}</h1>
+            <p className="text-center text-[#636E72] mb-2">
               {selectedInCategory.length} ETF(s) geselecteerd (minimaal 1 vereist) • {categoryETFs.length} ETF(s) gevonden
             </p>
-            <p className="text-center text-sm text-[#28EBCF]/70 mb-8">
+            <p className="text-center text-sm text-[#7C9885]/70 mb-8">
               Alleen ETF's die handelbaar zijn via LYNX worden getoond
             </p>
 
             {/* Filter Buttons */}
-            <div className="bg-[#1A1B1F] rounded-xl shadow-lg p-6 mb-8 border border-gray-800">
+            <div className="bg-[#FEFEFE] rounded-xl shadow-lg p-6 mb-8 border border-[#E8E8E6]">
               {/* Subcategorie Filter */}
               {subcategories.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3 text-white">Subcategorie</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-[#2D3436]">Subcategorie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setCustomBuilderFilters({...customBuilderFilters, subcategorie: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !customBuilderFilters.subcategorie
-                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                          ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                          : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -6359,8 +6366,8 @@ useEffect(() => {
                         onClick={() => setCustomBuilderFilters({...customBuilderFilters, subcategorie: sub})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           customBuilderFilters.subcategorie === sub
-                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                            : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                         }`}
                       >
                         {sub}
@@ -6373,14 +6380,14 @@ useEffect(() => {
               {/* Currency Filter */}
               {currencies.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="font-semibold text-lg mb-3 text-white">Valuta</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-[#2D3436]">Valuta</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setCustomBuilderFilters({...customBuilderFilters, currency: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !customBuilderFilters.currency
-                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                          ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                          : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -6391,8 +6398,8 @@ useEffect(() => {
                         onClick={() => setCustomBuilderFilters({...customBuilderFilters, currency: curr})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           customBuilderFilters.currency === curr
-                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                            : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                         }`}
                       >
                         {curr}
@@ -6405,14 +6412,14 @@ useEffect(() => {
               {/* Distribution Filter */}
               {distributions.length > 0 && (
                 <div>
-                  <h3 className="font-semibold text-lg mb-3 text-white">Distributie</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-[#2D3436]">Distributie</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setCustomBuilderFilters({...customBuilderFilters, distribution: ''})}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
                         !customBuilderFilters.distribution
-                          ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                          ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                          : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                       }`}
                     >
                       Alle
@@ -6423,8 +6430,8 @@ useEffect(() => {
                         onClick={() => setCustomBuilderFilters({...customBuilderFilters, distribution: dist})}
                         className={`px-4 py-2 rounded-lg font-medium transition-all ${
                           customBuilderFilters.distribution === dist
-                            ? 'bg-[#28EBCF] text-gray-900 shadow-md'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            ? 'bg-[#7C9885] text-gray-900 shadow-md'
+                            : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
                         }`}
                       >
                         {dist}
@@ -6436,10 +6443,10 @@ useEffect(() => {
             </div>
 
             {categoryETFs.length === 0 ? (
-              <div className="bg-[#1A1B1F] rounded-xl shadow-lg p-12 text-center border border-gray-800 mb-8">
+              <div className="bg-[#FEFEFE] rounded-xl shadow-lg p-12 text-center border border-[#E8E8E6] mb-8">
                 <div className="text-5xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold text-white mb-2">Geen handelbare ETF's gevonden</h3>
-                <p className="text-gray-400 mb-4">
+                <h3 className="text-xl font-bold text-[#2D3436] mb-2">Geen handelbare ETF's gevonden</h3>
+                <p className="text-[#636E72] mb-4">
                   Er zijn momenteel geen ETF's in deze categorie die handelbaar zijn via LYNX.
                 </p>
                 <button
@@ -6447,7 +6454,7 @@ useEffect(() => {
                     setSelectedCategory(null);
                     setCustomBuildStep('categories');
                   }}
-                  className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all"
+                  className="px-6 py-2 bg-gray-700 text-[#2D3436] rounded-lg hover:bg-gray-600 transition-all"
                 >
                   ← Terug naar categorieën
                 </button>
@@ -6461,33 +6468,33 @@ useEffect(() => {
                     <button
                       key={etf.isin}
                       onClick={(e) => handleETFToggle(etf, e)}
-                      className={`bg-[#1A1B1F] rounded-xl shadow p-6 transition-all text-left border-2 ${
+                      className={`bg-[#FEFEFE] rounded-xl shadow p-6 transition-all text-left border-2 ${
                         isSelected
-                          ? 'border-[#28EBCF] bg-[#28EBCF]/10'
-                          : 'border-gray-800 hover:border-gray-700'
+                          ? 'border-[#7C9885] bg-[#7C9885]/10'
+                          : 'border-[#E8E8E6] hover:border-[#E8E8E6]'
                       }`}
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-bold text-lg text-white">{etf.naam}</h3>
-                            <span className="text-xs px-2 py-0.5 bg-[#28EBCF]/20 text-[#28EBCF] rounded-full">LYNX</span>
+                            <h3 className="font-bold text-lg text-[#2D3436]">{etf.naam}</h3>
+                            <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded-full">LYNX</span>
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-400">ISIN:</span>
-                              <div className="font-medium text-gray-300">{etf.isin}</div>
+                              <span className="text-[#636E72]">ISIN:</span>
+                              <div className="font-medium text-[#636E72]">{etf.isin}</div>
                             </div>
                             <div>
-                              <span className="text-gray-400">TER:</span>
-                              <div className="font-medium text-gray-300">{etf['ter p.a.']}</div>
+                              <span className="text-[#636E72]">TER:</span>
+                              <div className="font-medium text-[#636E72]">{etf['ter p.a.']}</div>
                             </div>
                             <div>
-                              <span className="text-gray-400">Grootte:</span>
-                              <div className="font-medium text-gray-300">€{formatNumber(etf['fund size (in m €)'])}M</div>
+                              <span className="text-[#636E72]">Grootte:</span>
+                              <div className="font-medium text-[#636E72]">€{formatNumber(etf['fund size (in m €)'])}M</div>
                             </div>
                             <div>
-                              <span className="text-gray-400">2024:</span>
+                              <span className="text-[#636E72]">2024:</span>
                               <div className={`font-medium ${parseFloat(etf['2024']) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                 {etf['2024']}
                               </div>
@@ -6508,7 +6515,7 @@ useEffect(() => {
               <div className="text-center">
                 <button
                   onClick={handleContinue}
-                  className="px-8 py-4 bg-[#28EBCF] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
+                  className="px-8 py-4 bg-[#7C9885] text-gray-900 rounded-xl text-lg font-bold hover:bg-[#20D4BA] transition-all"
                 >
                   Bevestig Selectie →
                 </button>
@@ -6521,41 +6528,41 @@ useEffect(() => {
 
     const renderAccountTypeSelection = () => {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-          <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <div className="min-h-screen bg-[#F5F6F4]">
+          <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="text-2xl font-bold text-[#28EBCF]">PIGG</div>
-              <button onClick={() => setCustomBuildStep('categories')} className="text-gray-300 hover:text-[#28EBCF]">
+              <div className="text-2xl font-bold text-[#7C9885]">PIGG</div>
+              <button onClick={() => setCustomBuildStep('categories')} className="text-[#636E72] hover:text-[#7C9885]">
                 ← Terug naar Categorieën
               </button>
             </div>
           </nav>
 
           <div className="max-w-4xl mx-auto px-4 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4 text-white">Kies je Account Type</h1>
-            <p className="text-center text-gray-400 mb-12">Je hebt {portfolio.length} ETF(s) geselecteerd voor je portfolio</p>
+            <h1 className="text-4xl font-bold text-center mb-4 text-[#2D3436]">Kies je Account Type</h1>
+            <p className="text-center text-[#636E72] mb-12">Je hebt {portfolio.length} ETF(s) geselecteerd voor je portfolio</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Fictieve Portfolio */}
-              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 border-2 border-gray-800 hover:border-[#28EBCF] transition-all">
+              <div className="bg-[#FEFEFE] rounded-2xl shadow-lg p-8 border-2 border-[#E8E8E6] hover:border-[#7C9885] transition-all">
                 <div className="text-5xl mb-4 text-center">📊</div>
-                <h3 className="text-2xl font-bold mb-4 text-white text-center">Fictieve Portfolio</h3>
+                <h3 className="text-2xl font-bold mb-4 text-[#2D3436] text-center">Fictieve Portfolio</h3>
                 <div className="space-y-3 mb-6">
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Gratis demo portfolio</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Gratis demo portfolio</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Test de applicatie zonder risico</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Test de applicatie zonder risico</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Simuleer investeringen</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Simuleer investeringen</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Geen echte transacties</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Geen echte transacties</span>
                   </div>
                 </div>
                 <button
@@ -6578,37 +6585,37 @@ useEffect(() => {
 
                     setCurrentPage('dashboard');
                   }}
-                  className="w-full py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all font-bold"
+                  className="w-full py-3 bg-gray-700 text-[#2D3436] rounded-xl hover:bg-gray-600 transition-all font-bold"
                 >
                   Start met Fictieve Portfolio
                 </button>
               </div>
 
               {/* Echte Portfolio */}
-              <div className="bg-[#1A1B1F] rounded-2xl shadow-lg p-8 border-2 border-[#28EBCF] transition-all">
+              <div className="bg-[#FEFEFE] rounded-2xl shadow-lg p-8 border-2 border-[#7C9885] transition-all">
                 <div className="text-5xl mb-4 text-center">💎</div>
-                <h3 className="text-2xl font-bold mb-4 text-white text-center">Echte Portfolio</h3>
+                <h3 className="text-2xl font-bold mb-4 text-[#2D3436] text-center">Echte Portfolio</h3>
                 <div className="space-y-3 mb-6">
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Professioneel beheerde portfolio</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Professioneel beheerde portfolio</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Echte investeringen</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Echte investeringen</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Volledige ondersteuning</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Volledige ondersteuning</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#28EBCF]">✓</span>
-                    <span className="text-gray-300">Start vanaf €100</span>
+                    <span className="text-[#7C9885]">✓</span>
+                    <span className="text-[#636E72]">Start vanaf €100</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setCurrentPage('trading')}
-                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold"
+                  className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] transition-all font-bold"
                 >
                   Portfolio Aankopen via LYNX
                 </button>
@@ -6646,13 +6653,13 @@ useEffect(() => {
     const canProceed = investmentDetails.goal && investmentDetails.horizon && investmentDetails.amount && investmentDetails.monthlyContribution && investmentDetails.riskProfile;
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-3">
               <svg viewBox="0 0 48 48" fill="none" className="w-10 h-10 sm:w-12 sm:h-12">
                 {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                 {/* Coin slot on top */}
                 <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -6682,85 +6689,85 @@ useEffect(() => {
                 <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                 <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
               </svg>
-              <div className="text-2xl sm:text-3xl font-bold text-[#28EBCF]">PIGG</div>
+              <div className="text-2xl sm:text-3xl font-bold text-[#7C9885]">PIGG</div>
             </button>
             <button
               onClick={handleLogout}
-              className="text-gray-400 hover:text-gray-200 font-medium"
+              className="text-[#636E72] hover:text-[#2D3436] font-medium"
             >
               Uitloggen
             </button>
           </div>
         </nav>
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <h1 className="text-3xl font-bold mb-8 text-center text-white">Upgrade naar Betaald Account</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center text-[#2D3436]">Upgrade naar Betaald Account</h1>
           {step === 1 && (
-            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-8 border border-gray-800">
+            <div className="bg-[#FEFEFE] rounded-lg shadow-lg p-8 space-y-8 border border-[#E8E8E6]">
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Doelstelling</label>
+                <label className="block text-lg font-bold mb-4 text-[#2D3436]">Doelstelling</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Vermogensopbouw</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Pensioen</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Inkomsten</button>
-                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Vermogensopbouw'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Vermogensopbouw' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Vermogensopbouw</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Pensioen'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Pensioen' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Pensioen</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, goal: 'Inkomsten'}); setShowGoalCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.goal === 'Inkomsten' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Inkomsten</button>
+                  <button onClick={() => { setShowGoalCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showGoalCustom ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Anders</button>
                 </div>
-                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
+                {showGoalCustom && <input type="text" value={investmentDetails.goalCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, goal: e.target.value, goalCustom: e.target.value})} placeholder="Vul je eigen doelstelling in" className="mt-3 w-full px-4 py-3 border-2 border-[#E8E8E6] rounded focus:outline-none focus:border-[#7C9885] bg-[#FEFEFE] text-[#2D3436] placeholder-[#B2BEC3]" />}
               </div>
               
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Beleggingshorizon</label>
+                <label className="block text-lg font-bold mb-4 text-[#2D3436]">Beleggingshorizon</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>5 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>10 jaar</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>20 jaar</button>
-                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '5'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '5' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>5 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '10'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '10' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>10 jaar</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, horizon: '20'}); setShowHorizonCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.horizon === '20' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>20 jaar</button>
+                  <button onClick={() => { setShowHorizonCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showHorizonCustom ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Anders</button>
                 </div>
-                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] bg-gray-900 text-white placeholder-gray-500" />}
+                {showHorizonCustom && <input type="number" value={investmentDetails.horizonCustom} onChange={(e) => setInvestmentDetails({...investmentDetails, horizon: e.target.value, horizonCustom: e.target.value})} placeholder="Aantal jaren" className="mt-3 w-full px-4 py-3 border-2 border-[#E8E8E6] rounded focus:outline-none focus:border-[#7C9885] bg-[#FEFEFE] text-[#2D3436] placeholder-[#B2BEC3]" />}
               </div>
               
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Te Beleggen Vermogen</label>
+                <label className="block text-lg font-bold mb-4 text-[#2D3436]">Te Beleggen Vermogen</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 10.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 25.000</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 50.000</button>
-                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '10000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '10000' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 10.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '25000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '25000' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 25.000</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, amount: '50000'}); setShowAmountCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.amount === '50000' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 50.000</button>
+                  <button onClick={() => { setShowAmountCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showAmountCustom ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Anders</button>
                 </div>
-                {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
+                {showAmountCustom && <input type="text" value={investmentDetails.amountCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, amount: val, amountCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-[#E8E8E6] rounded focus:outline-none focus:border-[#7C9885] text-lg bg-[#FEFEFE] text-[#2D3436] placeholder-[#B2BEC3]" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Maandelijkse Storting</label>
+                <label className="block text-lg font-bold mb-4 text-[#2D3436]">Maandelijkse Storting</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 100</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 250</button>
-                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>€ 500</button>
-                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>Anders</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '100'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '100' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 100</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '250'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '250' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 250</button>
+                  <button onClick={() => { setInvestmentDetails({...investmentDetails, monthlyContribution: '500'}); setShowMonthlyCustom(false); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.monthlyContribution === '500' ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>€ 500</button>
+                  <button onClick={() => { setShowMonthlyCustom(true); }} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${showMonthlyCustom ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>Anders</button>
                 </div>
-                {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-gray-700 rounded focus:outline-none focus:border-[#28EBCF] text-lg bg-gray-900 text-white placeholder-gray-500" />}
+                {showMonthlyCustom && <input type="text" value={investmentDetails.monthlyContributionCustom} onChange={(e) => { const val = e.target.value.replace(/[^\d]/g, ''); setInvestmentDetails({...investmentDetails, monthlyContribution: val, monthlyContributionCustom: val}); }} placeholder="€ 0" className="mt-3 w-full px-4 py-3 border-2 border-[#E8E8E6] rounded focus:outline-none focus:border-[#7C9885] text-lg bg-[#FEFEFE] text-[#2D3436] placeholder-[#B2BEC3]" />}
               </div>
 
               <div>
-                <label className="block text-lg font-bold mb-4 text-white">Risicoprofiel</label>
+                <label className="block text-lg font-bold mb-4 text-[#2D3436]">Risicoprofiel</label>
                 <div className="grid grid-cols-2 gap-3">
                   {Object.entries(premadePortfolios).map(([key, config]) => (
-                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-[#28EBCF] bg-[#28EBCF]/20 text-[#28EBCF]' : 'border-gray-700 text-gray-300 hover:border-[#28EBCF]'}`}>
+                    <button key={key} onClick={() => setInvestmentDetails({...investmentDetails, riskProfile: config.name})} className={`px-6 py-4 border-2 rounded-lg font-medium transition ${investmentDetails.riskProfile === config.name ? 'border-[#7C9885] bg-[#7C9885]/20 text-[#7C9885]' : 'border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]'}`}>
                       <div>{config.name}</div>
-                      <div className="text-xs text-gray-400 mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
+                      <div className="text-xs text-[#636E72] mt-1">{(config.expectedReturn * 100).toFixed(1)}% verwacht rendement</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500">Volgende Stap →</button>
+              <button onClick={() => setStep(2)} disabled={!canProceed} className="w-full py-4 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-[#636E72]">Volgende Stap →</button>
             </div>
           )}
           {step === 2 && (
-            <div className="bg-[#1A1B1F] rounded-lg shadow-lg p-8 space-y-6 text-center border border-gray-800">
+            <div className="bg-[#FEFEFE] rounded-lg shadow-lg p-8 space-y-6 text-center border border-[#E8E8E6]">
               <div className="text-6xl mb-4">💳</div>
-              <h2 className="text-2xl font-bold text-white">Stort je beginbedrag</h2>
-              <p className="text-gray-400">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
-              <div className="bg-[#28EBCF]/20 p-6 rounded-lg border border-[#28EBCF]/30"><div className="text-4xl font-bold text-[#28EBCF] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-gray-400">Te storten bedrag</div></div>
+              <h2 className="text-2xl font-bold text-[#2D3436]">Stort je beginbedrag</h2>
+              <p className="text-[#636E72]">Stort {formatEuro(parseInt(investmentDetails.amount))} via iDEAL om je portfolio te activeren</p>
+              <div className="bg-[#7C9885]/20 p-6 rounded-lg border border-[#7C9885]/30"><div className="text-4xl font-bold text-[#7C9885] mb-2">{formatEuro(parseInt(investmentDetails.amount))}</div><div className="text-sm text-[#636E72]">Te storten bedrag</div></div>
               <button onClick={async () => {
                 console.log('💰 PAYMENT BUTTON CLICKED');
                 setPortfolioValue(parseFloat(investmentDetails.amount) || 10000);
@@ -6769,8 +6776,8 @@ useEffect(() => {
                 await savePortfolioToDatabase('betaald');
 
                 setCurrentPage('dashboard');
-              }} className="w-full py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
-              <button onClick={() => setStep(1)} className="text-gray-400 hover:text-gray-200">← Terug</button>
+              }} className="w-full py-4 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium text-lg">Betalen met iDEAL →</button>
+              <button onClick={() => setStep(1)} className="text-[#636E72] hover:text-[#2D3436]">← Terug</button>
             </div>
           )}
         </div>
@@ -7066,15 +7073,15 @@ useEffect(() => {
     // Check if portfolio is empty - show quick start options instead of blocking
     if (!portfolio || portfolio.length === 0) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 sm:p-8">
+        <div className="min-h-screen bg-[#F5F6F4] p-4 sm:p-8">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-8">
               <div className="text-6xl mb-4">🚀</div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-3">
                 Begin met beleggen
               </h1>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="text-[#636E72] text-lg max-w-2xl mx-auto">
                 Kies een kant-en-klaar portfolio dat past bij jouw risicoprofiel en begin direct met investeren.
               </p>
             </div>
@@ -7109,17 +7116,17 @@ useEffect(() => {
 
             {/* Alternative options */}
             <div className="text-center">
-              <p className="text-gray-500 mb-4">Of bouw je eigen portfolio</p>
+              <p className="text-[#636E72] mb-4">Of bouw je eigen portfolio</p>
               <div className="flex flex-wrap justify-center gap-4">
                 <button
                   onClick={() => setCurrentPage('portfolioBuilder')}
-                  className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-medium border border-gray-700"
+                  className="px-6 py-3 bg-[#ECEEED] text-[#2D3436] rounded-lg hover:bg-gray-700 font-medium border border-[#E8E8E6]"
                 >
                   Custom Portfolio Bouwen
                 </button>
                 <button
                   onClick={() => setCurrentPage('trading')}
-                  className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-medium border border-gray-700"
+                  className="px-6 py-3 bg-[#ECEEED] text-[#2D3436] rounded-lg hover:bg-gray-700 font-medium border border-[#E8E8E6]"
                 >
                   Direct naar Trading
                 </button>
@@ -7132,10 +7139,10 @@ useEffect(() => {
 
     if (!staticPerformanceData) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center">
           <div className="text-center">
-            <div className="text-2xl font-bold mb-4 text-white">Dashboard laden...</div>
-            <div className="text-gray-400">Monte Carlo simulatie wordt berekend...</div>
+            <div className="text-2xl font-bold mb-4 text-[#2D3436]">Dashboard laden...</div>
+            <div className="text-[#636E72]">Monte Carlo simulatie wordt berekend...</div>
           </div>
         </div>
       );
@@ -7166,17 +7173,17 @@ useEffect(() => {
       .sort((a, b) => b.value - a.value); // Sort by value descending (highest first)
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="min-h-screen bg-[#F5F6F4]">
         {/* Market Indices Ticker - Beurskoersen balk */}
         <MarketIndicesTicker />
 
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                   {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -7206,15 +7213,15 @@ useEffect(() => {
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
-                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="text-[#7C9885] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
+                  className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -7226,9 +7233,9 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Mijn Dashboard</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#2D3436]">Mijn Dashboard</h1>
               {investmentDetails.pricesLastUpdated && (
-                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                <p className="text-xs sm:text-sm text-[#636E72] mt-1">
                   Prijzen bijgewerkt: {new Date(investmentDetails.pricesLastUpdated).toLocaleString('nl-NL', {
                     day: '2-digit',
                     month: '2-digit',
@@ -7250,43 +7257,43 @@ useEffect(() => {
                     alert('Fout bij het genereren van het rapport: ' + err.message);
                   }
                 }}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 📄 <span className="hidden sm:inline">Download Rapport</span><span className="sm:hidden">Rapport</span>
               </button>
-              <button onClick={() => setShowDeposit(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Storten</button>
-              <button onClick={() => setShowWithdrawal(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-semibold text-sm sm:text-base">Opnemen</button>
-              <button onClick={() => setShowEditChoice(true)} className="hidden md:block px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-white rounded-lg hover:border-[#28EBCF] font-medium text-sm sm:text-base">Aanpassen</button>
-              <button onClick={() => setShowRebalance(true)} className="hidden lg:block px-3 sm:px-6 py-2 sm:py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 font-medium text-sm sm:text-base">Balanceren</button>
+              <button onClick={() => setShowDeposit(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-[#2D3436] rounded-lg hover:border-[#7C9885] font-semibold text-sm sm:text-base">Storten</button>
+              <button onClick={() => setShowWithdrawal(true)} className="flex-1 sm:flex-none px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-[#2D3436] rounded-lg hover:border-[#7C9885] font-semibold text-sm sm:text-base">Opnemen</button>
+              <button onClick={() => setShowEditChoice(true)} className="hidden md:block px-3 sm:px-6 py-2 sm:py-3 border-2 border-slate-700 text-[#2D3436] rounded-lg hover:border-[#7C9885] font-medium text-sm sm:text-base">Aanpassen</button>
+              <button onClick={() => setShowRebalance(true)} className="hidden lg:block px-3 sm:px-6 py-2 sm:py-3 bg-slate-700 text-[#2D3436] rounded-lg hover:bg-slate-600 font-medium text-sm sm:text-base">Balanceren</button>
             </div>
           </div>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO OVERZICHT</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">PORTFOLIO OVERZICHT</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-white">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
-            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-gray-400 mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-white">{portfolio.length}</div></div>
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-[#636E72] mb-1">Totale Waarde</div><div className="text-xl md:text-3xl font-bold text-[#2D3436]">{formatEuro(animatedPortfolioValue)}</div><div className={`text-xs md:text-sm mt-2 ${parseFloat(totalReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>{parseFloat(totalReturn) >= 0 ? '↑' : '↓'} {totalReturn}%</div></div>
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-[#636E72] mb-1">Totaal Ingelegd</div><div className="text-xl md:text-3xl font-bold text-[#2D3436]">{formatEuro(totalInvestedAtCurrentMonth)}</div></div>
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-[#636E72] mb-1">Winst/Verlies</div><div className={`text-xl md:text-3xl font-bold ${animatedPortfolioValue >= totalInvestedAtCurrentMonth ? 'text-green-500' : 'text-red-500'}`}>{formatEuro(animatedPortfolioValue - totalInvestedAtCurrentMonth)}</div></div>
+            <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all"><div className="text-xs md:text-sm text-[#636E72] mb-1">Aantal ETF's</div><div className="text-xl md:text-3xl font-bold text-[#2D3436]">{portfolio.length}</div></div>
           </div>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6 mt-10">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">WAARDEONTWIKKELING</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">WAARDEONTWIKKELING</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
           <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 mb-10 border-2 border-slate-800">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-bold text-lg mb-2 text-white">Waardeontwikkeling ({horizon} jaar horizon)</h3>
-                <div className="text-sm text-gray-400">
+                <h3 className="font-bold text-lg mb-2 text-[#2D3436]">Waardeontwikkeling ({horizon} jaar horizon)</h3>
+                <div className="text-sm text-[#636E72]">
                   Monte Carlo simulatie met {(avgReturn * 100).toFixed(1)}% verwacht rendement en {(stdDev * 100).toFixed(1)}% risico
                 </div>
               </div>
@@ -7295,21 +7302,21 @@ useEffect(() => {
                   onClick={toggleAnimation}
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     isAnimating
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
+                      ? 'bg-red-600 hover:bg-red-700 text-[#2D3436]'
+                      : 'bg-green-600 hover:bg-green-700 text-[#2D3436]'
                   }`}
                 >
                   {isAnimating ? '⏸ Pauzeer' : currentMonth >= months ? '🔄 Herstarten' : '▶ Start'}
                 </button>
                 <button
                   onClick={resetSimulation}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition"
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-[#2D3436] rounded-lg font-medium transition"
                 >
                   ↺ Reset
                 </button>
               </div>
             </div>
-            <div className="text-xs text-gray-500 mb-4">
+            <div className="text-xs text-[#636E72] mb-4">
               Voortgang: Maand {currentMonth} van {months} ({((currentMonth / months) * 100).toFixed(0)}%)
             </div>
             <ResponsiveContainer width="100%" height={250}>
@@ -7333,7 +7340,7 @@ useEffect(() => {
                 <Line type="monotone" dataKey="good" stroke="#10B981" strokeDasharray="5 5" name="Goed Scenario (P90)" dot={false} />
               </LineChart>
             </ResponsiveContainer>
-            <div className="mt-4 text-sm text-gray-400 text-center">
+            <div className="mt-4 text-sm text-[#636E72] text-center">
               Inclusief maandelijkse storting van {formatEuro(monthlyContribution)}. Gebaseerd op {portfolioConfig.name} risicoprofiel.
             </div>
           </div>
@@ -7341,24 +7348,24 @@ useEffect(() => {
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO ANALYSE</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">PORTFOLIO ANALYSE</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-10">
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-4 md:p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
-              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-white">Asset Allocatie</h3>
+              <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4 text-[#2D3436]">Asset Allocatie</h3>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart><Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}</Pie><Tooltip contentStyle={{backgroundColor: '#0f172a', border: '2px solid #334155', color: '#fff'}} /><Legend wrapperStyle={{color: '#9CA3AF'}} /></PieChart>
               </ResponsiveContainer>
             </div>
             <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800 hover:border-slate-700 transition-all">
-              <h3 className="font-bold text-lg mb-4 text-white">Portfolio Metrices</h3>
+              <h3 className="font-bold text-lg mb-4 text-[#2D3436]">Portfolio Metrices</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span className="text-gray-400">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Gemiddelde TER:</span><span className="font-bold text-[#28EBCF]">{metrics.avgTER.toFixed(2)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
-                <div className="flex justify-between items-center"><span className="text-gray-400">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-[#636E72]">Aantal Holdings:</span><span className="font-bold text-purple-400">{portfolio.reduce((total, etf) => total + (parseInt(etf.holdings) || getHoldingsCount(etf)), 0).toLocaleString('nl-NL')}</span></div>
+                <div className="flex justify-between items-center"><span className="text-[#636E72]">Gemiddelde TER:</span><span className="font-bold text-[#7C9885]">{metrics.avgTER.toFixed(2)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-[#636E72]">Verwacht Rendement:</span><span className="font-bold text-green-500">{(avgReturn * 100).toFixed(1)}%</span></div>
+                <div className="flex justify-between items-center"><span className="text-[#636E72]">Risico (Std Dev):</span><span className="font-bold text-orange-400">{(stdDev * 100).toFixed(1)}%</span></div>
               </div>
             </div>
           </div>
@@ -7366,12 +7373,12 @@ useEffect(() => {
           {/* Divider */}
           <div className="flex items-center gap-4 mb-6">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">PORTFOLIO HOLDINGS</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">PORTFOLIO HOLDINGS</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
           </div>
 
           <div className="bg-gradient-to-br from-slate-950 to-slate-900 rounded-lg shadow-lg p-6 border-2 border-slate-800">
-            <h3 className="font-bold text-lg mb-4 text-white">Portfolio Holdings</h3>
+            <h3 className="font-bold text-lg mb-4 text-[#2D3436]">Portfolio Holdings</h3>
             <div className="space-y-4">
               {(() => {
                 console.log('📊 Portfolio Holdings Render:', {
@@ -7399,7 +7406,7 @@ useEffect(() => {
                   return (
                   <div key={category} className="border-2 border-slate-800 rounded-lg overflow-hidden">
                     <div className="bg-slate-800/70 px-4 py-3">
-                      <h4 className="font-bold text-white">{category}</h4>
+                      <h4 className="font-bold text-[#2D3436]">{category}</h4>
                     </div>
                     <div className="bg-slate-900/50">
                       <table className="w-full">
@@ -7409,19 +7416,19 @@ useEffect(() => {
                             return (
                               <tr key={idx} className="border-t border-slate-800 hover:bg-slate-800/40">
                                 <td className="px-4 py-3">
-                                  <button onClick={() => setSelectedETF(etf)} className="text-[#28EBCF] hover:underline text-left text-sm">
+                                  <button onClick={() => setSelectedETF(etf)} className="text-[#7C9885] hover:underline text-left text-sm">
                                     {etf.naam}
                                   </button>
                                 </td>
-                                <td className="px-4 py-3 text-right text-gray-300 text-sm w-24">{(etf.weight || 0).toFixed(1)}%</td>
-                                <td className="px-4 py-3 text-right text-white font-medium text-sm w-32">{formatEuro(etfValue)}</td>
+                                <td className="px-4 py-3 text-right text-[#636E72] text-sm w-24">{(etf.weight || 0).toFixed(1)}%</td>
+                                <td className="px-4 py-3 text-right text-[#2D3436] font-medium text-sm w-32">{formatEuro(etfValue)}</td>
                               </tr>
                             );
                           })}
                           <tr className="border-t-2 border-slate-700 bg-slate-800/50">
-                            <td className="px-4 py-3 text-sm font-bold text-white">Totaal {category}</td>
-                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-24">{categoryWeight.toFixed(1)}%</td>
-                            <td className="px-4 py-3 text-right text-sm font-bold text-[#28EBCF] w-32">{formatEuro(categoryValue)}</td>
+                            <td className="px-4 py-3 text-sm font-bold text-[#2D3436]">Totaal {category}</td>
+                            <td className="px-4 py-3 text-right text-sm font-bold text-[#7C9885] w-24">{categoryWeight.toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-right text-sm font-bold text-[#7C9885] w-32">{formatEuro(categoryValue)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -7436,23 +7443,23 @@ useEffect(() => {
         
         {showHoldings && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-            <div className="bg-[#1A1B1F] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-gray-800" onClick={(e) => e.stopPropagation()}>
-              <div className="sticky top-0 bg-[#1A1B1F] border-b border-gray-800 px-6 py-4 flex justify-between items-center z-10">
-                <h2 className="text-2xl font-bold text-white">Portfolio Holdings</h2>
-                <button onClick={() => setShowHoldings(false)} className="text-3xl text-gray-400 hover:text-gray-200 leading-none">×</button>
+            <div className="bg-[#FEFEFE] rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-[#FEFEFE] border-b border-[#E8E8E6] px-6 py-4 flex justify-between items-center z-10">
+                <h2 className="text-2xl font-bold text-[#2D3436]">Portfolio Holdings</h2>
+                <button onClick={() => setShowHoldings(false)} className="text-3xl text-[#636E72] hover:text-[#2D3436] leading-none">×</button>
               </div>
 
               <div className="p-6">
                 <div className="flex gap-4 mb-6">
                   <button
                     onClick={() => setHoldingsView('top10')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top10' ? 'bg-[#7C9885] text-gray-900' : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'}`}
                   >
                     Top 10
                   </button>
                   <button
                     onClick={() => setHoldingsView('top100')}
-                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-[#28EBCF] text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                    className={`px-6 py-2 rounded-lg font-medium transition ${holdingsView === 'top100' ? 'bg-[#7C9885] text-gray-900' : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'}`}
                   >
                     Top 100
                   </button>
@@ -7466,24 +7473,24 @@ useEffect(() => {
                     <div className="space-y-8">
                       {holdings.stocks.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold mb-4 text-white">Aandelen</h3>
+                          <h3 className="text-xl font-bold mb-4 text-[#2D3436]">Aandelen</h3>
                           <div className="overflow-x-auto">
                             <table className="w-full">
-                              <thead className="bg-gray-900/50">
+                              <thead className="bg-[#FEFEFE]/50">
                                 <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Regio</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium text-[#636E72]">Weging</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-800">
                                 {holdings.stocks.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-900/30">
-                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
+                                  <tr key={idx} className="hover:bg-[#FEFEFE]/30">
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-[#636E72]">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium text-[#636E72]">{holding.weight.toFixed(2)}%</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -7494,28 +7501,28 @@ useEffect(() => {
                       
                       {holdings.bonds.length > 0 && (
                         <div>
-                          <h3 className="text-xl font-bold mb-4 text-white">Obligaties</h3>
+                          <h3 className="text-xl font-bold mb-4 text-[#2D3436]">Obligaties</h3>
                           <div className="overflow-x-auto">
                             <table className="w-full">
-                              <thead className="bg-gray-900/50">
+                              <thead className="bg-[#FEFEFE]/50">
                                 <tr>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Holding</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Regio</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Looptijd</th>
-                                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Coupon</th>
-                                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">Weging</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">#</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Holding</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Regio</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Looptijd</th>
+                                  <th className="px-4 py-3 text-left text-sm font-medium text-[#636E72]">Coupon</th>
+                                  <th className="px-4 py-3 text-right text-sm font-medium text-[#636E72]">Weging</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-800">
                                 {holdings.bonds.slice(0, limit).map((holding, idx) => (
-                                  <tr key={idx} className="hover:bg-gray-900/30">
-                                    <td className="px-4 py-3 text-sm text-gray-400">{idx + 1}</td>
-                                    <td className="px-4 py-3 text-sm font-medium text-gray-300">{holding.name}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.region}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.maturity}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{holding.coupon}</td>
-                                    <td className="px-4 py-3 text-sm text-right font-medium text-gray-300">{holding.weight.toFixed(2)}%</td>
+                                  <tr key={idx} className="hover:bg-[#FEFEFE]/30">
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{idx + 1}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-[#636E72]">{holding.name}</td>
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{holding.region}</td>
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{holding.maturity}</td>
+                                    <td className="px-4 py-3 text-sm text-[#636E72]">{holding.coupon}</td>
+                                    <td className="px-4 py-3 text-sm text-right font-medium text-[#636E72]">{holding.weight.toFixed(2)}%</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -7542,7 +7549,7 @@ useEffect(() => {
         
         {showRebalance && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
-            <div className="bg-white rounded-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-[#FEFEFE] rounded-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Profiel Beheer</h2>
 
               {/* Profile Change Section */}
@@ -7613,8 +7620,8 @@ useEffect(() => {
                           }}
                           className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
                             selectedProfile === key
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white text-blue-900 border-blue-300 hover:border-blue-500'
+                              ? 'bg-blue-600 text-[#2D3436] border-blue-600'
+                              : 'bg-[#FEFEFE] text-blue-900 border-blue-300 hover:border-blue-500'
                           }`}
                         >
                           {config.name}
@@ -7674,7 +7681,7 @@ useEffect(() => {
                         alert('Portfolio succesvol gebalanceerd naar ' + premadePortfolios[selectedProfile].name + ' profiel!'); 
                         setShowRebalance(false); 
                       }} 
-                      className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg font-semibold transition-all"
+                      className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-[#2D3436] rounded-xl hover:shadow-lg font-semibold transition-all"
                     >
                       Balanceren naar {premadePortfolios[selectedProfile].name}
                     </button>
@@ -7708,9 +7715,9 @@ useEffect(() => {
         {/* Portfolio Edit Choice Modal */}
         {showEditChoice && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowEditChoice(false)}>
-            <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-3xl font-bold mb-6 text-white">Portfolio Aanpassen</h2>
-              <p className="text-gray-400 mb-8">Kies hoe je je portfolio wilt aanpassen</p>
+            <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 p-8 border border-[#E8E8E6] max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-3xl font-bold mb-6 text-[#2D3436]">Portfolio Aanpassen</h2>
+              <p className="text-[#636E72] mb-8">Kies hoe je je portfolio wilt aanpassen</p>
 
               {/* Account Upgrade Section */}
               {(!user?.account_type || user.account_type === 'fictief') && (
@@ -7718,7 +7725,7 @@ useEffect(() => {
                   <div className="flex items-start gap-4">
                     <div className="text-4xl">⭐</div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-2">Upgrade naar Betaald Account</h3>
+                      <h3 className="text-xl font-bold text-[#2D3436] mb-2">Upgrade naar Betaald Account</h3>
                       <p className="text-purple-200 text-sm mb-4">
                         Ontgrendel premium functies en krijg toegang tot uitgebreide portfolio analyses, realtime marktdata en persoonlijk advies.
                       </p>
@@ -7747,7 +7754,7 @@ useEffect(() => {
                               alert('🎉 Gefeliciteerd! Je account is geüpgraded naar Premium!');
                             }
                           }}
-                          className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                          className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-[#2D3436] rounded-lg hover:shadow-lg font-semibold transition-all"
                         >
                           Upgrade Nu - €4.99/maand
                         </button>
@@ -7772,11 +7779,11 @@ useEffect(() => {
                     setPortfolioType('premade');
                     setCurrentPage('portfolioBuilder');
                   }}
-                  className="bg-[#1A1B1F] border-2 border-gray-700 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all"
+                  className="bg-[#FEFEFE] border-2 border-[#E8E8E6] hover:border-[#7C9885] rounded-xl p-6 text-left transition-all"
                 >
                   <div className="text-4xl mb-4">🎯</div>
-                  <h3 className="text-xl font-bold mb-2 text-white">Ander Profiel Kiezen</h3>
-                  <p className="text-gray-400 text-sm">Kies een nieuw risicoprofiel en start opnieuw</p>
+                  <h3 className="text-xl font-bold mb-2 text-[#2D3436]">Ander Profiel Kiezen</h3>
+                  <p className="text-[#636E72] text-sm">Kies een nieuw risicoprofiel en start opnieuw</p>
                 </button>
 
                 <button
@@ -7784,17 +7791,17 @@ useEffect(() => {
                     setShowEditChoice(false);
                     setShowEditPortfolio(true);
                   }}
-                  className="bg-[#1A1B1F] border-2 border-gray-700 hover:border-[#28EBCF] rounded-xl p-6 text-left transition-all"
+                  className="bg-[#FEFEFE] border-2 border-[#E8E8E6] hover:border-[#7C9885] rounded-xl p-6 text-left transition-all"
                 >
                   <div className="text-4xl mb-4">⚙️</div>
-                  <h3 className="text-xl font-bold mb-2 text-white">ETF's Aanpassen</h3>
-                  <p className="text-gray-400 text-sm">Wijzig de wegingen van je huidige ETF's</p>
+                  <h3 className="text-xl font-bold mb-2 text-[#2D3436]">ETF's Aanpassen</h3>
+                  <p className="text-[#636E72] text-sm">Wijzig de wegingen van je huidige ETF's</p>
                 </button>
               </div>
 
               <button
                 onClick={() => setShowEditChoice(false)}
-                className="mt-6 w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+                className="mt-6 w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
               >
                 Annuleren
               </button>
@@ -7805,18 +7812,18 @@ useEffect(() => {
         {/* Deposit Modal */}
         {showDeposit && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowDeposit(false)}>
-            <div className="bg-[#1A1B1F] rounded-xl max-w-md w-full mx-4 p-8 border border-gray-800" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-3xl font-bold mb-4 text-white">Geld Storten & Beleggen</h2>
-              <p className="text-gray-400 mb-6">Voer het bedrag in en kies hoe je wilt beleggen</p>
+            <div className="bg-[#FEFEFE] rounded-xl max-w-md w-full mx-4 p-8 border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-3xl font-bold mb-4 text-[#2D3436]">Geld Storten & Beleggen</h2>
+              <p className="text-[#636E72] mb-6">Voer het bedrag in en kies hoe je wilt beleggen</p>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-2 text-gray-300">Bedrag (€)</label>
+                <label className="block text-sm font-medium mb-2 text-[#636E72]">Bedrag (€)</label>
                 <input
                   type="number"
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white text-lg focus:outline-none focus:border-[#28EBCF]"
+                  className="w-full px-4 py-3 bg-[#ECEEED] border-2 border-[#E8E8E6] rounded-lg text-[#2D3436] text-lg focus:outline-none focus:border-[#7C9885]"
                 />
               </div>
 
@@ -7830,25 +7837,25 @@ useEffect(() => {
                   : null;
                 const currentInvestedAmount = (amountVal && !isNaN(amountVal)) ? amountVal : initialValue;
                 return (
-                  <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                  <div className="bg-[#ECEEED] rounded-lg p-4 mb-6">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-400">Huidige portfolio:</span>
-                      <span className="text-white font-medium">{formatEuro(currentValue)}</span>
+                      <span className="text-[#636E72]">Huidige portfolio:</span>
+                      <span className="text-[#2D3436] font-medium">{formatEuro(currentValue)}</span>
                     </div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-400">Huidige inleg:</span>
-                      <span className="text-white font-medium">{formatEuro(currentInvestedAmount)}</span>
+                      <span className="text-[#636E72]">Huidige inleg:</span>
+                      <span className="text-[#2D3436] font-medium">{formatEuro(currentInvestedAmount)}</span>
                     </div>
                     {depositAmount && parseFloat(depositAmount) > 0 && (
                       <>
-                        <div className="border-t border-gray-700 my-2"></div>
+                        <div className="border-t border-[#E8E8E6] my-2"></div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-400">Nieuwe portfolio:</span>
-                          <span className="text-[#28EBCF] font-bold">{formatEuro(currentValue + parseFloat(depositAmount))}</span>
+                          <span className="text-[#636E72]">Nieuwe portfolio:</span>
+                          <span className="text-[#7C9885] font-bold">{formatEuro(currentValue + parseFloat(depositAmount))}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Nieuwe inleg:</span>
-                          <span className="text-[#28EBCF] font-bold">{formatEuro(currentInvestedAmount + parseFloat(depositAmount))}</span>
+                          <span className="text-[#636E72]">Nieuwe inleg:</span>
+                          <span className="text-[#7C9885] font-bold">{formatEuro(currentInvestedAmount + parseFloat(depositAmount))}</span>
                         </div>
                       </>
                     )}
@@ -7859,7 +7866,7 @@ useEffect(() => {
               {selectedProfile && (
                 <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-3 mb-4">
                   <div className="text-xs text-blue-300 mb-1">Huidig profiel:</div>
-                  <div className="text-sm font-bold text-white">{premadePortfolios[selectedProfile].name}</div>
+                  <div className="text-sm font-bold text-[#2D3436]">{premadePortfolios[selectedProfile].name}</div>
                 </div>
               )}
 
@@ -8048,7 +8055,7 @@ useEffect(() => {
                     }
                   }}
                   disabled={!depositAmount || parseFloat(depositAmount) <= 0}
-                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:shadow-lg font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all"
+                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-[#2D3436] rounded-xl hover:shadow-lg font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed transition-all"
                 >
                   💼 Beleg volgens huidig profiel
                 </button>
@@ -8059,7 +8066,7 @@ useEffect(() => {
                     setShowRebalance(true);
                   }}
                   disabled={!depositAmount || parseFloat(depositAmount) <= 0}
-                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all"
+                  className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed transition-all"
                 >
                   🎯 Profiel aanpassen en beleggen
                 </button>
@@ -8070,7 +8077,7 @@ useEffect(() => {
                   setShowDeposit(false);
                   setDepositAmount('');
                 }}
-                className="w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+                className="w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
               >
                 Annuleren
               </button>
@@ -8095,53 +8102,53 @@ useEffect(() => {
 
           return (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowWithdrawal(false)}>
-              <div className="bg-[#1A1B1F] rounded-xl max-w-2xl w-full mx-4 p-8 border border-gray-800 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <h2 className="text-3xl font-bold mb-4 text-white">Geld Opnemen</h2>
-                <p className="text-gray-400 mb-6">Voer het bedrag in dat je wilt opnemen</p>
+              <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 p-8 border border-[#E8E8E6] max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-3xl font-bold mb-4 text-[#2D3436]">Geld Opnemen</h2>
+                <p className="text-[#636E72] mb-6">Voer het bedrag in dat je wilt opnemen</p>
 
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2 text-gray-300">Bedrag (€)</label>
+                  <label className="block text-sm font-medium mb-2 text-[#636E72]">Bedrag (€)</label>
                   <input
                     type="number"
                     value={withdrawalAmount}
                     onChange={(e) => setWithdrawalAmount(e.target.value)}
                     placeholder="0"
                     max={animatedPortfolioValue}
-                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg text-white text-lg focus:outline-none focus:border-[#28EBCF]"
+                    className="w-full px-4 py-3 bg-[#ECEEED] border-2 border-[#E8E8E6] rounded-lg text-[#2D3436] text-lg focus:outline-none focus:border-[#7C9885]"
                   />
                   {amount > animatedPortfolioValue && (
                     <p className="text-red-500 text-sm mt-2">Bedrag kan niet hoger zijn dan je portfolio waarde</p>
                   )}
                 </div>
 
-                <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                <div className="bg-[#ECEEED] rounded-lg p-4 mb-6">
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-400">Huidige waarde:</span>
-                    <span className="text-white font-medium">{formatEuro(animatedPortfolioValue)}</span>
+                    <span className="text-[#636E72]">Huidige waarde:</span>
+                    <span className="text-[#2D3436] font-medium">{formatEuro(animatedPortfolioValue)}</span>
                   </div>
                   {amount > 0 && amount <= animatedPortfolioValue && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Na opname:</span>
-                      <span className="text-[#28EBCF] font-bold">{formatEuro(animatedPortfolioValue - amount)}</span>
+                      <span className="text-[#636E72]">Na opname:</span>
+                      <span className="text-[#7C9885] font-bold">{formatEuro(animatedPortfolioValue - amount)}</span>
                     </div>
                   )}
                 </div>
 
                 {amount > 0 && amount <= animatedPortfolioValue && (
                   <div className="mb-6">
-                    <h3 className="font-bold mb-3 text-white">Te verkopen (kaasschaaf methode):</h3>
-                    <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                    <h3 className="font-bold mb-3 text-[#2D3436]">Te verkopen (kaasschaaf methode):</h3>
+                    <div className="bg-[#ECEEED] rounded-lg p-4 space-y-3">
                       {salesPreview.map((etf, idx) => (
-                        <div key={idx} className="border-b border-gray-700 last:border-0 pb-3 last:pb-0">
-                          <div className="font-medium text-sm mb-1 text-white">{etf.naam}</div>
+                        <div key={idx} className="border-b border-[#E8E8E6] last:border-0 pb-3 last:pb-0">
+                          <div className="font-medium text-sm mb-1 text-[#2D3436]">{etf.naam}</div>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-gray-400">Verkoop: </span>
-                              <span className="text-red-400">{formatEuro(etf.saleAmount)}</span>
+                              <span className="text-[#636E72]">Verkoop: </span>
+                              <span className="text-[#C0736D]">{formatEuro(etf.saleAmount)}</span>
                             </div>
                             <div>
-                              <span className="text-gray-400">Resteert: </span>
-                              <span className="text-gray-300">{formatEuro(etf.remainingValue)}</span>
+                              <span className="text-[#636E72]">Resteert: </span>
+                              <span className="text-[#636E72]">{formatEuro(etf.remainingValue)}</span>
                             </div>
                           </div>
                         </div>
@@ -8205,7 +8212,7 @@ useEffect(() => {
                     }
                   }}
                   disabled={!amount || amount <= 0 || amount > animatedPortfolioValue}
-                  className="w-full py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all mb-3"
+                  className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed transition-all mb-3"
                 >
                   Bevestig Opname
                 </button>
@@ -8215,7 +8222,7 @@ useEffect(() => {
                     setShowWithdrawal(false);
                     setWithdrawalAmount('');
                   }}
-                  className="w-full py-3 border-2 border-gray-700 text-white rounded-xl hover:bg-gray-800 transition-all"
+                  className="w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
                 >
                   Annuleren
                 </button>
@@ -8286,19 +8293,19 @@ useEffect(() => {
     }, []);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="min-h-screen bg-[#F5F6F4]">
         {/* Spacer to prevent content from going under fixed navbar */}
         <div style={{ height: '72px' }}></div>
 
         <nav
-          className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg fixed top-0 left-0 right-0 z-50"
+          className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg fixed top-0 left-0 right-0 z-50"
         >
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                   {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8328,15 +8335,15 @@ useEffect(() => {
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
-                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-[#28EBCF] font-medium text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={() => setCurrentPage('welcome')} className="text-[#7C9885] font-medium text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Dashboard</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base"
+                  className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base"
                 >
                   Uitloggen
                 </button>
@@ -8347,14 +8354,14 @@ useEffect(() => {
 
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
           <div className="mb-6 sm:mb-8 md:mb-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
-            <p className="text-sm sm:text-base text-gray-400">Bekijk de laatste marktgegevens en beheer je portfolio</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436] mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
+            <p className="text-sm sm:text-base text-[#636E72]">Bekijk de laatste marktgegevens en beheer je portfolio</p>
           </div>
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-8">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">SNELLE ACTIES</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">SNELLE ACTIES</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
           </div>
 
@@ -8362,7 +8369,7 @@ useEffect(() => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="bg-gradient-to-br from-[#28EBCF] to-[#20D4BA] hover:shadow-xl hover:shadow-[#28EBCF]/30 rounded-lg p-3 text-left transition-all group border border-[#28EBCF]/50"
+              className="bg-gradient-to-br from-[#7C9885] to-[#20D4BA] hover:shadow-xl hover:shadow-[#7C9885]/30 rounded-lg p-3 text-left transition-all group border border-[#7C9885]/50"
             >
               <div className="text-2xl mb-1.5">📊</div>
               <h3 className="text-base font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
@@ -8374,12 +8381,12 @@ useEffect(() => {
 
             <button
               onClick={() => setCurrentPage('financialNews')}
-              className="bg-[#1A1B1F] border border-gray-800 hover:border-[#28EBCF] hover:shadow-lg hover:shadow-[#28EBCF]/20 rounded-lg p-3 text-left transition-all group"
+              className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-lg hover:shadow-[#7C9885]/20 rounded-lg p-3 text-left transition-all group"
             >
               <div className="text-2xl mb-1.5">📰</div>
-              <h3 className="text-base font-bold text-white mb-1">Financieel Nieuws</h3>
-              <p className="text-xs text-gray-400">Blijf op de hoogte van marktontwikkelingen</p>
-              <div className="mt-2 text-xs text-[#28EBCF] font-medium group-hover:translate-x-2 transition-transform inline-block">
+              <h3 className="text-base font-bold text-[#2D3436] mb-1">Financieel Nieuws</h3>
+              <p className="text-xs text-[#636E72]">Blijf op de hoogte van marktontwikkelingen</p>
+              <div className="mt-2 text-xs text-[#7C9885] font-medium group-hover:translate-x-2 transition-transform inline-block">
                 Bekijk nieuws →
               </div>
             </button>
@@ -8388,20 +8395,20 @@ useEffect(() => {
           {/* Divider */}
           <div className="flex items-center gap-4 mb-8">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <div className="text-[#28EBCF] font-semibold text-sm tracking-wider">MARKTGEGEVENS</div>
+            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">MARKTGEGEVENS</div>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
           </div>
 
           {/* Market Indices */}
           <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">📈 Beursindices</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">📈 Beursindices</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
               {marketData.indices.map((index, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
-                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide truncate">{index.name}</div>
-                  <div className="text-sm sm:text-base font-bold text-white mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className="h-px bg-gray-800 mb-1"></div>
-                  <div className={`text-xs font-bold ${index.positive ? 'text-green-400' : 'text-red-400'}`}>
+                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
+                  <div className="text-xs text-[#636E72] mb-0.5 uppercase tracking-wide truncate">{index.name}</div>
+                  <div className="text-sm sm:text-base font-bold text-[#2D3436] mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className="h-px bg-[#ECEEED] mb-1"></div>
+                  <div className={`text-xs font-bold ${index.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {index.positive ? '▲' : '▼'} {index.positive ? '+' : ''}{index.change.toFixed(2)}%
                   </div>
                 </div>
@@ -8411,14 +8418,14 @@ useEffect(() => {
 
           {/* Currencies */}
           <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">💱 Valuta</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">💱 Valuta</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {marketData.currencies.map((currency, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
-                  <div className="text-xs text-gray-500 mb-0.5 uppercase tracking-wide">{currency.name}</div>
-                  <div className="text-sm sm:text-base font-bold text-white mb-1">{currency.value.toFixed(4)}</div>
-                  <div className="h-px bg-gray-800 mb-1"></div>
-                  <div className={`text-xs font-bold ${currency.positive ? 'text-green-400' : 'text-red-400'}`}>
+                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
+                  <div className="text-xs text-[#636E72] mb-0.5 uppercase tracking-wide">{currency.name}</div>
+                  <div className="text-sm sm:text-base font-bold text-[#2D3436] mb-1">{currency.value.toFixed(4)}</div>
+                  <div className="h-px bg-[#ECEEED] mb-1"></div>
+                  <div className={`text-xs font-bold ${currency.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {currency.positive ? '▲' : '▼'} {currency.positive ? '+' : ''}{currency.change.toFixed(2)}%
                   </div>
                 </div>
@@ -8428,14 +8435,14 @@ useEffect(() => {
 
           {/* Commodities */}
           <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">🪙 Grondstoffen & Crypto</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">🪙 Grondstoffen & Crypto</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
               {marketData.commodities.map((commodity, i) => (
-                <div key={i} className="bg-[#1A1B1F] border border-gray-800 hover:border-gray-700 rounded-lg p-2.5 sm:p-3 transition-all hover:shadow-lg">
+                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2.5 sm:p-3 transition-all hover:shadow-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <div className="text-sm font-semibold text-white">{commodity.name}</div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider">{commodity.symbol}</div>
+                      <div className="text-sm font-semibold text-[#2D3436]">{commodity.name}</div>
+                      <div className="text-xs text-[#636E72] uppercase tracking-wider">{commodity.symbol}</div>
                     </div>
                     <div className="text-xl sm:text-2xl">
                       {commodity.name === 'Gold' && '🥇'}
@@ -8443,9 +8450,9 @@ useEffect(() => {
                       {commodity.name === 'Ethereum' && 'Ξ'}
                     </div>
                   </div>
-                  <div className="h-px bg-gray-800 mb-2"></div>
-                  <div className="text-base sm:text-lg font-bold text-white mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-xs sm:text-sm font-bold ${commodity.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className="h-px bg-[#ECEEED] mb-2"></div>
+                  <div className="text-base sm:text-lg font-bold text-[#2D3436] mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className={`text-xs sm:text-sm font-bold ${commodity.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                     {commodity.positive ? '▲' : '▼'} {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
                   </div>
                 </div>
@@ -8454,12 +8461,12 @@ useEffect(() => {
           </div>
 
           {/* Call to Action */}
-          <div className="bg-gradient-to-r from-[#28EBCF]/20 to-blue-600/20 border-2 border-[#28EBCF]/50 rounded-xl p-4 sm:p-6 md:p-8 text-center shadow-lg shadow-[#28EBCF]/10">
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">Klaar om te beleggen?</h3>
-            <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
+          <div className="bg-gradient-to-r from-[#7C9885]/20 to-blue-600/20 border-2 border-[#7C9885]/50 rounded-xl p-4 sm:p-6 md:p-8 text-center shadow-lg shadow-[#7C9885]/10">
+            <h3 className="text-xl sm:text-2xl font-bold text-[#2D3436] mb-2 sm:mb-4">Klaar om te beleggen?</h3>
+            <p className="text-sm sm:text-base text-[#636E72] mb-4 sm:mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
             <button
               onClick={() => setCurrentPage('dashboard')}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-base sm:text-lg transition-all inline-flex items-center gap-2"
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-base sm:text-lg transition-all inline-flex items-center gap-2"
             >
               Naar Mijn Dashboard
               <span>→</span>
@@ -8473,13 +8480,13 @@ useEffect(() => {
   // First-time user welcome page (no portfolio yet)
   const FirstTimeWelcome = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
         <div className="max-w-3xl w-full">
           {/* Logo at the top */}
           <div className="flex justify-center mb-12">
             <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
               {/* Piggy bank body */}
-              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
               {/* Coin slot on top */}
               <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8513,14 +8520,14 @@ useEffect(() => {
 
           {/* Welcome content */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#2D3436] mb-6 leading-tight">
               Invest your money
               <br />
-              <span className="bg-gradient-to-r from-[#28EBCF] to-blue-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#7C9885] to-blue-500 bg-clip-text text-transparent">
                 in the world!
               </span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-[#636E72] max-w-2xl mx-auto">
               Start building your investment portfolio today and watch your wealth grow with smart ETF investments.
             </p>
           </div>
@@ -8529,9 +8536,9 @@ useEffect(() => {
           <div className="flex justify-center">
             <button
               onClick={() => setCurrentPage('mainDashboard')}
-              className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#28EBCF]/50"
+              className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#7C9885]/50"
               style={{
-                background: 'linear-gradient(135deg, #28EBCF 0%, #20D4BA 50%, #28EBCF 100%)',
+                background: 'linear-gradient(135deg, #7C9885 0%, #20D4BA 50%, #7C9885 100%)',
                 backgroundSize: '200% 100%',
                 animation: 'shimmer 3s ease-in-out infinite'
               }}
@@ -8554,7 +8561,7 @@ useEffect(() => {
               {/* Glow effect */}
               <div className="absolute inset-0 rounded-2xl opacity-75 blur-xl"
                 style={{
-                  background: 'linear-gradient(135deg, #28EBCF, #20D4BA)',
+                  background: 'linear-gradient(135deg, #7C9885, #20D4BA)',
                   zIndex: -1
                 }}
               />
@@ -8565,15 +8572,15 @@ useEffect(() => {
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div className="p-4">
               <div className="text-3xl mb-2">🌍</div>
-              <div className="text-sm text-gray-400">Global ETF Access</div>
+              <div className="text-sm text-[#636E72]">Global ETF Access</div>
             </div>
             <div className="p-4">
               <div className="text-3xl mb-2">📊</div>
-              <div className="text-sm text-gray-400">Smart Portfolio Building</div>
+              <div className="text-sm text-[#636E72]">Smart Portfolio Building</div>
             </div>
             <div className="p-4">
               <div className="text-3xl mb-2">🔒</div>
-              <div className="text-sm text-gray-400">Secure & Reliable</div>
+              <div className="text-sm text-[#636E72]">Secure & Reliable</div>
             </div>
           </div>
         </div>
@@ -8620,13 +8627,13 @@ useEffect(() => {
       : financialNews.filter(news => categoryMap[news.category] === selectedCategory);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
               <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
@@ -8642,13 +8649,13 @@ useEffect(() => {
                   <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
-                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-white">PIGG</div>
+                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-gray-400 hover:text-white text-xs sm:text-sm md:text-base">Dashboard</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-gray-400 truncate max-w-[100px]">{user?.name}</div>
-                <button onClick={handleLogout} className="text-gray-400 hover:text-white font-medium text-xs sm:text-sm md:text-base">
+                <button onClick={() => setCurrentPage('welcome')} className="text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Dashboard</button>
+                <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
+                <button onClick={handleLogout} className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base">
                   Uitloggen
                 </button>
               </div>
@@ -8659,8 +8666,8 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
           {/* Header */}
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">📰 Financieel Nieuws</h1>
-            <p className="text-sm sm:text-base text-gray-400">Blijf op de hoogte van de laatste ontwikkelingen op de financiële markten</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-2">📰 Financieel Nieuws</h1>
+            <p className="text-sm sm:text-base text-[#636E72]">Blijf op de hoogte van de laatste ontwikkelingen op de financiële markten</p>
           </div>
 
           {/* Category Filter */}
@@ -8672,8 +8679,8 @@ useEffect(() => {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
                     selectedCategory === cat.id
-                      ? 'bg-[#28EBCF] text-gray-900'
-                      : 'bg-[#1A1B1F] text-gray-300 border border-gray-800 hover:border-[#28EBCF]'
+                      ? 'bg-[#7C9885] text-gray-900'
+                      : 'bg-[#FEFEFE] text-[#636E72] border border-[#E8E8E6] hover:border-[#7C9885]'
                   }`}
                 >
                   {cat.icon} {cat.name}
@@ -8687,26 +8694,26 @@ useEffect(() => {
             {filteredNews.map((news) => (
               <div
                 key={news.id}
-                className="bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-slate-800 rounded-xl p-4 sm:p-5 hover:border-[#28EBCF]/50 transition-all cursor-pointer group shadow-lg hover:shadow-[#28EBCF]/10"
+                className="bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-slate-800 rounded-xl p-4 sm:p-5 hover:border-[#7C9885]/50 transition-all cursor-pointer group shadow-lg hover:shadow-[#7C9885]/10"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <span className="text-xs font-semibold text-[#28EBCF] bg-[#28EBCF]/10 px-2 py-1 rounded">
+                  <span className="text-xs font-semibold text-[#7C9885] bg-[#7C9885]/10 px-2 py-1 rounded">
                     {news.category}
                   </span>
-                  <span className="text-xs text-gray-500">{news.time}</span>
+                  <span className="text-xs text-[#636E72]">{news.time}</span>
                 </div>
 
-                <h3 className="text-white font-bold text-base sm:text-lg mb-3 group-hover:text-[#28EBCF] transition-colors">
+                <h3 className="text-[#2D3436] font-bold text-base sm:text-lg mb-3 group-hover:text-[#7C9885] transition-colors">
                   {news.title}
                 </h3>
 
-                <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                <p className="text-[#636E72] text-sm mb-4 leading-relaxed">
                   {news.summary}
                 </p>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-800">
-                  <span className="text-xs font-medium text-gray-500">{news.source}</span>
-                  <span className="text-[#28EBCF] text-sm font-medium group-hover:translate-x-1 transition-transform">Lees meer →</span>
+                <div className="flex items-center justify-between pt-3 border-t border-[#E8E8E6]">
+                  <span className="text-xs font-medium text-[#636E72]">{news.source}</span>
+                  <span className="text-[#7C9885] text-sm font-medium group-hover:translate-x-1 transition-transform">Lees meer →</span>
                 </div>
               </div>
             ))}
@@ -8715,7 +8722,7 @@ useEffect(() => {
           {filteredNews.length === 0 && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📰</div>
-              <p className="text-gray-400 text-lg">Geen nieuws beschikbaar in deze categorie</p>
+              <p className="text-[#636E72] text-lg">Geen nieuws beschikbaar in deze categorie</p>
             </div>
           )}
         </div>
@@ -8886,14 +8893,14 @@ useEffect(() => {
     });
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <svg viewBox="0 0 48 48" fill="none" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
                   {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
 
                   {/* Coin slot on top */}
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8924,8 +8931,8 @@ useEffect(() => {
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
                 <div>
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                  <div className="text-sm sm:text-base text-gray-400">Account Manager Portal</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                  <div className="text-sm sm:text-base text-[#636E72]">Account Manager Portal</div>
                 </div>
               </div>
               <button
@@ -8934,7 +8941,7 @@ useEffect(() => {
                   e.stopPropagation();
                   handleLogout();
                 }}
-                className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium cursor-pointer"
+                className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium cursor-pointer"
               >
                 {t.common.logout}
               </button>
@@ -8945,16 +8952,16 @@ useEffect(() => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           {/* Notification Alerts */}
           {chatInquiries.filter(i => i.status === 'new').length > 0 && (
-            <div className="mb-6 bg-[#28EBCF]/10 border border-[#28EBCF] rounded-xl p-4 flex items-center justify-between">
+            <div className="mb-6 bg-[#7C9885]/10 border border-[#7C9885] rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-[#28EBCF] rounded-full animate-pulse"></div>
-                <span className="text-[#28EBCF] font-semibold">
+                <div className="w-3 h-3 bg-[#7C9885] rounded-full animate-pulse"></div>
+                <span className="text-[#7C9885] font-semibold">
                   {chatInquiries.filter(i => i.status === 'new').length} nieuwe chat {chatInquiries.filter(i => i.status === 'new').length === 1 ? 'vraag' : 'vragen'}
                 </span>
               </div>
               <button
                 onClick={() => setCustomerPortalTab('inquiries')}
-                className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
+                className="px-4 py-2 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
               >
                 Bekijk
               </button>
@@ -8964,13 +8971,13 @@ useEffect(() => {
             <div className="mb-6 bg-red-500/10 border border-red-500 rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-red-400 font-semibold">
+                <span className="text-[#C0736D] font-semibold">
                   {chatInquiries.filter(i => i.has_unread_response).length} {chatInquiries.filter(i => i.has_unread_response).length === 1 ? 'klant heeft' : 'klanten hebben'} gereageerd
                 </span>
               </div>
               <button
                 onClick={() => setCustomerPortalTab('inquiries')}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all"
+                className="px-4 py-2 bg-red-500 text-[#2D3436] rounded-lg hover:bg-red-600 font-medium transition-all"
               >
                 Bekijk
               </button>
@@ -8978,27 +8985,27 @@ useEffect(() => {
           )}
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">Account Manager Portal</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436]">Account Manager Portal</h1>
             <button
               onClick={() => {
                 fetchCustomers(true);
                 fetchChatInquiries(true);
               }}
               disabled={refreshing}
-              className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50"
+              className="px-6 py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50"
             >
               {refreshing ? 'Laden...' : 'Ververs Data'}
             </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-4 mb-8 border-b border-gray-700">
+          <div className="flex gap-4 mb-8 border-b border-[#E8E8E6]">
             <button
               onClick={() => setCustomerPortalTab('customers')}
               className={`px-6 py-3 font-medium transition-colors ${
                 customerPortalTab === 'customers'
-                  ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
               }`}
             >
               Klanten ({customers.length})
@@ -9007,8 +9014,8 @@ useEffect(() => {
               onClick={() => setCustomerPortalTab('inquiries')}
               className={`px-6 py-3 font-medium transition-colors ${
                 customerPortalTab === 'inquiries'
-                  ? 'text-[#28EBCF] border-b-2 border-[#28EBCF]'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
               }`}
             >
               Chat Vragen ({chatInquiries.length})
@@ -9023,62 +9030,62 @@ useEffect(() => {
                   placeholder="Zoek op naam, email, telefoon of woonplaats..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#1A1B1F] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:ring-2 focus:ring-[#7C9885] focus:border-transparent"
                 />
               </div>
 
-              <p className="text-gray-400 mb-6">
+              <p className="text-[#636E72] mb-6">
                 {searchTerm ? `${filteredCustomers.length} van ${customers.length} klanten` : `Totaal aantal klanten: ${customers.length}`}
               </p>
             </>
           )}
 
           {customerPortalTab === 'customers' && (
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-900/50 border-b border-gray-800">
+                <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Naam</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Woonplaats</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Account Type</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Trading Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Portfolio</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Geregistreerd</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Actie</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Naam</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Telefoon</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Woonplaats</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Account Type</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Trading Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Portfolio</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Geregistreerd</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-[#636E72]">Actie</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
                   {filteredCustomers.length === 0 ? (
                     <tr>
-                      <td colSpan="9" className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan="9" className="px-6 py-12 text-center text-[#636E72]">
                         {searchTerm ? 'Geen klanten gevonden' : 'Nog geen geregistreerde klanten'}
                       </td>
                     </tr>
                   ) : (
                     filteredCustomers.map(customer => (
-                      <tr key={customer.id} className="hover:bg-gray-900/30 transition-colors">
-                        <td className="px-6 py-4 text-sm font-medium text-white">{customer.name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-400">{customer.email}</td>
-                        <td className="px-6 py-4 text-sm text-gray-400">{customer.phone}</td>
-                        <td className="px-6 py-4 text-sm text-gray-400">{customer.city}</td>
+                      <tr key={customer.id} className="hover:bg-[#FEFEFE]/30 transition-colors">
+                        <td className="px-6 py-4 text-sm font-medium text-[#2D3436]">{customer.name}</td>
+                        <td className="px-6 py-4 text-sm text-[#636E72]">{customer.email}</td>
+                        <td className="px-6 py-4 text-sm text-[#636E72]">{customer.phone}</td>
+                        <td className="px-6 py-4 text-sm text-[#636E72]">{customer.city}</td>
                         <td className="px-6 py-4 text-sm">
                           {customer.account_type === 'betaald' ? (
-                            <span className="px-2 py-1 bg-green-600/20 text-green-400 rounded-full text-xs font-semibold">Betaald</span>
+                            <span className="px-2 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-xs font-semibold">Betaald</span>
                           ) : customer.account_type === 'fictief' ? (
                             <span className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded-full text-xs font-semibold">Fictief</span>
                           ) : (
-                            <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs font-semibold">Gratis</span>
+                            <span className="px-2 py-1 bg-gray-700 text-[#636E72] rounded-full text-xs font-semibold">Gratis</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-sm">
                           <div className="flex flex-col gap-2">
                             {customer.trading_status === 'approved' ? (
-                              <span className="px-2 py-1 bg-green-600/20 text-green-400 rounded-full text-xs font-semibold inline-block w-fit">Trading Actief</span>
+                              <span className="px-2 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-xs font-semibold inline-block w-fit">Trading Actief</span>
                             ) : customer.trading_status === 'rejected' ? (
-                              <span className="px-2 py-1 bg-red-600/20 text-red-400 rounded-full text-xs font-semibold inline-block w-fit">Afgewezen</span>
+                              <span className="px-2 py-1 bg-red-600/20 text-[#C0736D] rounded-full text-xs font-semibold inline-block w-fit">Afgewezen</span>
                             ) : (
                               <span className="px-2 py-1 bg-yellow-600/20 text-yellow-400 rounded-full text-xs font-semibold inline-block w-fit">Pending</span>
                             )}
@@ -9105,7 +9112,7 @@ useEffect(() => {
                                     alert('Error updating trading status');
                                   }
                                 }}
-                                className="px-2 py-1 bg-[#28EBCF] text-gray-900 rounded text-xs font-medium hover:bg-[#20D4BA] transition-all w-fit"
+                                className="px-2 py-1 bg-[#7C9885] text-gray-900 rounded text-xs font-medium hover:bg-[#20D4BA] transition-all w-fit"
                               >
                                 Goedkeuren
                               </button>
@@ -9133,21 +9140,21 @@ useEffect(() => {
                                     alert('Error updating trading status');
                                   }
                                 }}
-                                className="px-2 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-all w-fit"
+                                className="px-2 py-1 bg-red-600 text-[#2D3436] rounded text-xs font-medium hover:bg-red-700 transition-all w-fit"
                               >
                                 Intrekken
                               </button>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-400">
+                        <td className="px-6 py-4 text-sm text-[#636E72]">
                           {customer.portfolio && customer.portfolio.length > 0 ? (
-                            <span className="text-[#28EBCF] font-medium">{customer.portfolio.length} ETFs</span>
+                            <span className="text-[#7C9885] font-medium">{customer.portfolio.length} ETFs</span>
                           ) : (
-                            <span className="text-gray-500">Geen</span>
+                            <span className="text-[#636E72]">Geen</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-400">
+                        <td className="px-6 py-4 text-sm text-[#636E72]">
                           {new Date(customer.registeredAt).toLocaleDateString('nl-NL')}
                         </td>
                         <td className="px-6 py-4 text-sm text-right">
@@ -9157,7 +9164,7 @@ useEffect(() => {
                                 setSelectedCustomer(customer);
                                 setCurrentPage('customerDetail');
                               }}
-                              className="px-4 py-2 bg-[#28EBCF] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
+                              className="px-4 py-2 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-medium transition-all"
                             >
                               Bekijk Details
                             </button>
@@ -9179,7 +9186,7 @@ useEffect(() => {
                                   }
                                 }
                               }}
-                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-all"
+                              className="px-4 py-2 bg-red-600 text-[#2D3436] rounded-lg hover:bg-red-700 font-medium transition-all"
                             >
                               Verwijder
                             </button>
@@ -9196,31 +9203,31 @@ useEffect(() => {
 
           {/* Chat Inquiries Tab */}
           {customerPortalTab === 'inquiries' && (
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-800">
+                  <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
                     <tr>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Datum</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Naam</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Telefoon</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Berichten</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Datum</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Naam</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Email</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Telefoon</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Berichten</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
                     {chatInquiries.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                        <td colSpan="6" className="px-6 py-12 text-center text-[#636E72]">
                           Nog geen chat vragen ontvangen
                         </td>
                       </tr>
                     ) : (
                       chatInquiries.map((inquiry) => (
-                        <tr key={inquiry.id} className="hover:bg-gray-800/30">
+                        <tr key={inquiry.id} className="hover:bg-[#ECEEED]/30">
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-300">
+                            <div className="text-sm text-[#636E72]">
                               {new Date(inquiry.created_at).toLocaleDateString('nl-NL', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -9233,7 +9240,7 @@ useEffect(() => {
                           <td className="px-6 py-4">
                             <button
                               onClick={() => openConversation(inquiry)}
-                              className="text-sm font-medium text-[#28EBCF] hover:text-[#20D4BA] underline cursor-pointer transition-colors flex items-center gap-2"
+                              className="text-sm font-medium text-[#7C9885] hover:text-[#20D4BA] underline cursor-pointer transition-colors flex items-center gap-2"
                             >
                               {inquiry.name}
                               {inquiry.has_unread_response && (
@@ -9242,23 +9249,23 @@ useEffect(() => {
                             </button>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-300">{inquiry.email}</div>
+                            <div className="text-sm text-[#636E72]">{inquiry.email}</div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-300">{inquiry.phone || '-'}</div>
+                            <div className="text-sm text-[#636E72]">{inquiry.phone || '-'}</div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-300">
+                            <div className="text-sm text-[#636E72]">
                               {inquiry.response_count || 0} {inquiry.response_count === 1 ? 'bericht' : 'berichten'}
                             </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                               inquiry.status === 'new'
-                                ? 'bg-[#28EBCF]/20 text-[#28EBCF]'
+                                ? 'bg-[#7C9885]/20 text-[#7C9885]'
                                 : inquiry.status === 'responded'
                                 ? 'bg-blue-500/20 text-blue-400'
-                                : 'bg-gray-700 text-gray-300'
+                                : 'bg-gray-700 text-[#636E72]'
                             }`}>
                               {inquiry.status === 'new' ? 'Nieuw' : inquiry.status === 'responded' ? 'Beantwoord' : inquiry.status}
                             </span>
@@ -9275,19 +9282,19 @@ useEffect(() => {
           {/* Conversation Modal */}
           {selectedInquiry && (
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col">
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col">
                 {/* Modal Header */}
-                <div className="flex justify-between items-start p-6 border-b border-gray-800">
+                <div className="flex justify-between items-start p-6 border-b border-[#E8E8E6]">
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Conversatie met {selectedInquiry.name}</h2>
-                    <div className="flex gap-4 text-sm text-gray-400">
+                    <h2 className="text-2xl font-bold text-[#2D3436] mb-2">Conversatie met {selectedInquiry.name}</h2>
+                    <div className="flex gap-4 text-sm text-[#636E72]">
                       <span>{selectedInquiry.email}</span>
                       {selectedInquiry.phone && <span>{selectedInquiry.phone}</span>}
                     </div>
                   </div>
                   <button
                     onClick={closeConversation}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-[#636E72] hover:text-[#2D3436] transition-colors"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -9305,15 +9312,15 @@ useEffect(() => {
                       <div
                         className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                           msg.sender === 'manager'
-                            ? 'bg-[#28EBCF] text-gray-900'
-                            : 'bg-gray-800 text-white'
+                            ? 'bg-[#7C9885] text-gray-900'
+                            : 'bg-[#ECEEED] text-[#2D3436]'
                         }`}
                       >
                         <div className="text-sm mb-1">
                           <strong>{msg.sender === 'manager' ? 'Account Manager' : selectedInquiry.name}</strong>
                         </div>
                         <div className="text-sm whitespace-pre-wrap">{msg.message}</div>
-                        <div className={`text-xs mt-2 ${msg.sender === 'manager' ? 'text-gray-700' : 'text-gray-400'}`}>
+                        <div className={`text-xs mt-2 ${msg.sender === 'manager' ? 'text-gray-700' : 'text-[#636E72]'}`}>
                           {new Date(msg.created_at).toLocaleDateString('nl-NL', {
                             day: '2-digit',
                             month: '2-digit',
@@ -9328,19 +9335,19 @@ useEffect(() => {
                 </div>
 
                 {/* Response Input Area */}
-                <div className="p-6 border-t border-gray-800">
+                <div className="p-6 border-t border-[#E8E8E6]">
                   <form onSubmit={sendResponseMessage} className="flex gap-3">
                     <textarea
                       value={responseMessage}
                       onChange={(e) => setResponseMessage(e.target.value)}
                       placeholder="Typ je antwoord..."
-                      className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-[#28EBCF] focus:border-transparent resize-none"
+                      className="flex-1 px-4 py-3 bg-[#ECEEED] border border-[#E8E8E6] rounded-xl text-[#2D3436] placeholder-[#B2BEC3] focus:ring-2 focus:ring-[#7C9885] focus:border-transparent resize-none"
                       rows="3"
                     />
                     <button
                       type="submit"
                       disabled={sendingMessage || !responseMessage.trim()}
-                      className="px-6 py-3 bg-[#28EBCF] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
+                      className="px-6 py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed self-end"
                     >
                       {sendingMessage ? 'Verzenden...' : 'Verzenden'}
                     </button>
@@ -9361,13 +9368,13 @@ useEffect(() => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+      <div className="min-h-screen bg-[#F5F6F4]">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <svg viewBox="0 0 48 48" fill="none" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#28EBCF"/>
+                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                   <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                   <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
@@ -9376,15 +9383,15 @@ useEffect(() => {
                   <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
                 </svg>
                 <div>
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">PIGG</div>
-                  <div className="text-sm sm:text-base text-gray-400">Account Manager Portal</div>
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">PIGG</div>
+                  <div className="text-sm sm:text-base text-[#636E72]">Account Manager Portal</div>
                 </div>
               </div>
               <div className="flex gap-4">
-                <button onClick={() => setCurrentPage('customerDatabase')} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                <button onClick={() => setCurrentPage('customerDatabase')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                   ← Terug naar Database
                 </button>
-                <button onClick={handleLogout} className="text-gray-300 hover:text-[#28EBCF] transition-colors font-medium">
+                <button onClick={handleLogout} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
                   Uitloggen
                 </button>
               </div>
@@ -9393,47 +9400,47 @@ useEffect(() => {
         </nav>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-white">Klant Gegevens</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-[#2D3436]">Klant Gegevens</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Persoonlijke Informatie</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Persoonlijke Informatie</h2>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-500">Voornaam:</span>
-                  <div className="font-medium text-white">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
+                  <span className="text-sm text-[#636E72]">Voornaam:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.firstName || selectedCustomer.name?.split(' ')[0] || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Achternaam:</span>
-                  <div className="font-medium text-white">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
+                  <span className="text-sm text-[#636E72]">Achternaam:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.lastName || selectedCustomer.name?.split(' ').slice(1).join(' ') || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Geboortedatum:</span>
-                  <div className="font-medium text-white">{selectedCustomer.birthDate || 'N/A'}</div>
+                  <span className="text-sm text-[#636E72]">Geboortedatum:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.birthDate || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Email:</span>
-                  <div className="font-medium text-white">{selectedCustomer.email}</div>
+                  <span className="text-sm text-[#636E72]">Email:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.email}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Telefoon:</span>
-                  <div className="font-medium text-white">{selectedCustomer.phone}</div>
+                  <span className="text-sm text-[#636E72]">Telefoon:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.phone}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Straat + Huisnummer:</span>
-                  <div className="font-medium text-white">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
+                  <span className="text-sm text-[#636E72]">Straat + Huisnummer:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.street && selectedCustomer.houseNumber ? `${selectedCustomer.street} ${selectedCustomer.houseNumber}` : selectedCustomer.address}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Postcode:</span>
-                  <div className="font-medium text-white">{selectedCustomer.postalCode || 'N/A'}</div>
+                  <span className="text-sm text-[#636E72]">Postcode:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.postalCode || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Woonplaats:</span>
-                  <div className="font-medium text-white">{selectedCustomer.city}</div>
+                  <span className="text-sm text-[#636E72]">Woonplaats:</span>
+                  <div className="font-medium text-[#2D3436]">{selectedCustomer.city}</div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Geregistreerd op:</span>
-                  <div className="font-medium text-white">
+                  <span className="text-sm text-[#636E72]">Geregistreerd op:</span>
+                  <div className="font-medium text-[#2D3436]">
                     {new Date(selectedCustomer.registeredAt).toLocaleDateString('nl-NL', {
                       year: 'numeric',
                       month: 'long',
@@ -9444,14 +9451,14 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Beleggingsinformatie</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Beleggingsinformatie</h2>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-500">Account Type:</span>
+                  <span className="text-sm text-[#636E72]">Account Type:</span>
                   <div className="font-medium">
                     {selectedCustomer.account_type === 'betaald' ? (
-                      <span className="px-3 py-1 bg-green-600/20 text-green-400 rounded-full text-sm font-semibold">
+                      <span className="px-3 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-sm font-semibold">
                         Betaald Account
                       </span>
                     ) : selectedCustomer.account_type === 'fictief' ? (
@@ -9459,7 +9466,7 @@ useEffect(() => {
                         Fictief Account
                       </span>
                     ) : (
-                      <span className="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm font-semibold">
+                      <span className="px-3 py-1 bg-gray-700 text-[#636E72] rounded-full text-sm font-semibold">
                         Gratis Account
                       </span>
                     )}
@@ -9468,38 +9475,38 @@ useEffect(() => {
                 {selectedCustomer.investmentDetails?.goal ? (
                   <>
                     <div>
-                      <span className="text-sm text-gray-500">Doelstelling:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.goal}</div>
+                      <span className="text-sm text-[#636E72]">Doelstelling:</span>
+                      <div className="font-medium text-[#2D3436]">{selectedCustomer.investmentDetails.goal}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Horizon:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.horizon} jaar</div>
+                      <span className="text-sm text-[#636E72]">Horizon:</span>
+                      <div className="font-medium text-[#2D3436]">{selectedCustomer.investmentDetails.horizon} jaar</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Beleggingsbedrag:</span>
-                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
+                      <span className="text-sm text-[#636E72]">Beleggingsbedrag:</span>
+                      <div className="font-medium text-[#2D3436]">€ {parseInt(selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Maandelijkse storting:</span>
-                      <div className="font-medium text-white">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
+                      <span className="text-sm text-[#636E72]">Maandelijkse storting:</span>
+                      <div className="font-medium text-[#2D3436]">€ {parseInt(selectedCustomer.investmentDetails.monthlyContribution || 0).toLocaleString('nl-NL')}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Risicoprofiel:</span>
-                      <div className="font-medium text-white">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
+                      <span className="text-sm text-[#636E72]">Risicoprofiel:</span>
+                      <div className="font-medium text-[#2D3436]">{selectedCustomer.investmentDetails.riskProfile || 'Niet ingesteld'}</div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Actuele Waarde:</span>
-                      <div className="font-medium text-lg text-green-400">
+                      <span className="text-sm text-[#636E72]">Actuele Waarde:</span>
+                      <div className="font-medium text-lg text-[#7C9885]">
                         € {parseInt(selectedCustomer.investmentDetails.current_portfolio_value || selectedCustomer.investmentDetails.amount || 0).toLocaleString('nl-NL')}
                       </div>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">Totaal Rendement:</span>
+                      <span className="text-sm text-[#636E72]">Totaal Rendement:</span>
                       <div className={`font-medium text-lg ${(() => {
                         const initialValue = parseFloat(selectedCustomer.investmentDetails.amount || 0);
                         const currentValue = selectedCustomer.investmentDetails.current_portfolio_value || initialValue;
                         const returnPercentage = selectedCustomer.investmentDetails.total_return || (initialValue > 0 ? ((currentValue - initialValue) / initialValue * 100) : 0);
-                        return returnPercentage >= 0 ? 'text-green-400' : 'text-red-400';
+                        return returnPercentage >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]';
                       })()}`}>
                         {(() => {
                           const returnPercentage = selectedCustomer.investmentDetails.total_return !== null && selectedCustomer.investmentDetails.total_return !== undefined
@@ -9511,7 +9518,7 @@ useEffect(() => {
                     </div>
                   </>
                 ) : (
-                  <p className="text-gray-500">Nog geen beleggingsinformatie beschikbaar</p>
+                  <p className="text-[#636E72]">Nog geen beleggingsinformatie beschikbaar</p>
                 )}
               </div>
             </div>
@@ -9520,50 +9527,50 @@ useEffect(() => {
           {/* Portfolio Performance */}
           {selectedCustomer.portfolioValue && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio Waarde</h2>
-                <div className="text-3xl font-bold text-white">
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Portfolio Waarde</h2>
+                <div className="text-3xl font-bold text-[#2D3436]">
                   € {selectedCustomer.portfolioValue.toLocaleString('nl-NL')}
                 </div>
               </div>
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-                <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Totaal Rendement</h2>
-                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6">
+                <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Totaal Rendement</h2>
+                <div className={`text-3xl font-bold ${selectedCustomer.totalReturn >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                   {selectedCustomer.totalReturn >= 0 ? '+' : ''}{selectedCustomer.totalReturn}%
                 </div>
               </div>
             </div>
           )}
 
-          <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6 mb-8">
-            <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Portfolio</h2>
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Portfolio</h2>
             {selectedCustomer.portfolio && selectedCustomer.portfolio.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-800">
+                  <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ETF</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Categorie</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Weging</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">TER</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">ETF</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Categorie</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">Weging</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">TER</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
                     {selectedCustomer.portfolio.map((etf, idx) => {
                       const fullETF = etfs.find(e => e.isin === etf.isin) || etf;
                       return (
-                        <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
+                        <tr key={idx} className="hover:bg-[#FEFEFE]/30 transition-colors">
                           <td className="px-4 py-3 text-sm">
                             <button
                               onClick={() => setSelectedETF(fullETF)}
-                              className="text-[#28EBCF] hover:text-[#20D4BA] hover:underline text-left"
+                              className="text-[#7C9885] hover:text-[#20D4BA] hover:underline text-left"
                             >
                               {etf.naam}
                             </button>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-400">{etf.categorie}</td>
-                          <td className="px-4 py-3 text-sm text-right font-medium text-white">{(etf.weight || 0).toFixed(1)}%</td>
-                          <td className="px-4 py-3 text-sm text-right text-gray-400">{etf['ter p.a.']}</td>
+                          <td className="px-4 py-3 text-sm text-[#636E72]">{etf.categorie}</td>
+                          <td className="px-4 py-3 text-sm text-right font-medium text-[#2D3436]">{(etf.weight || 0).toFixed(1)}%</td>
+                          <td className="px-4 py-3 text-sm text-right text-[#636E72]">{etf['ter p.a.']}</td>
                         </tr>
                       );
                     })}
@@ -9571,39 +9578,39 @@ useEffect(() => {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-500">Klant heeft nog geen portfolio samengesteld</p>
+              <p className="text-[#636E72]">Klant heeft nog geen portfolio samengesteld</p>
             )}
           </div>
 
           {/* Transaction History */}
           {selectedCustomer.transactions && selectedCustomer.transactions.length > 0 && (
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-bold mb-4 text-[#28EBCF]">Transactie Geschiedenis</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Transactie Geschiedenis</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-900/50 border-b border-gray-800">
+                  <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Datum</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Type</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Beschrijving</th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Bedrag</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Datum</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Type</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Beschrijving</th>
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-[#636E72]">Bedrag</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
                     {selectedCustomer.transactions.map((transaction, idx) => (
-                      <tr key={idx} className="hover:bg-gray-900/30 transition-colors">
-                        <td className="px-4 py-3 text-sm text-gray-400">
+                      <tr key={idx} className="hover:bg-[#FEFEFE]/30 transition-colors">
+                        <td className="px-4 py-3 text-sm text-[#636E72]">
                           {new Date(transaction.date).toLocaleDateString('nl-NL')}
                         </td>
                         <td className="px-4 py-3 text-sm">
                           <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                            transaction.type === 'Storting' ? 'bg-green-600/20 text-green-400' : 'bg-blue-600/20 text-blue-400'
+                            transaction.type === 'Storting' ? 'bg-green-600/20 text-[#7C9885]' : 'bg-blue-600/20 text-blue-400'
                           }`}>
                             {transaction.type}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-400">{transaction.description}</td>
-                        <td className="px-4 py-3 text-sm text-right font-medium text-green-400">
+                        <td className="px-4 py-3 text-sm text-[#636E72]">{transaction.description}</td>
+                        <td className="px-4 py-3 text-sm text-right font-medium text-[#7C9885]">
                           + € {transaction.amount.toLocaleString('nl-NL')}
                         </td>
                       </tr>
@@ -9979,28 +9986,28 @@ useEffect(() => {
 
     if (loading) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#28EBCF] mx-auto mb-4"></div>
-            <div className="text-white text-xl">Connecting to LYNX Trading...</div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7C9885] mx-auto mb-4"></div>
+            <div className="text-[#2D3436] text-xl">Connecting to LYNX Trading...</div>
           </div>
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="min-h-screen bg-[#F5F6F4]">
         {/* Navigation */}
-        <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 shadow-lg">
+        <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#28EBCF] font-medium hover:text-[#20D4BA]">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#7C9885] font-medium hover:text-[#20D4BA]">
                 ← Back to Dashboard
               </button>
-              <h1 className="text-xl font-bold text-white">LYNX Trading</h1>
+              <h1 className="text-xl font-bold text-[#2D3436]">LYNX Trading</h1>
               <div className="text-sm">
                 {connectionStatus.connected ? (
-                  <span className="text-green-400 flex items-center gap-2">
+                  <span className="text-[#7C9885] flex items-center gap-2">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                     {connectionStatus.account || 'Connected'}
                   </span>
@@ -10017,10 +10024,10 @@ useEffect(() => {
           {!connectionStatus.connected && (
             <div className="bg-orange-900/30 border border-orange-600 rounded-xl p-6 mb-8">
               <h2 className="text-xl font-bold text-orange-400 mb-2">IB Gateway Not Connected</h2>
-              <p className="text-gray-300 mb-4">
+              <p className="text-[#636E72] mb-4">
                 Cannot connect to IB Gateway. Please ensure:
               </p>
-              <ul className="text-gray-400 text-sm list-disc list-inside space-y-1">
+              <ul className="text-[#636E72] text-sm list-disc list-inside space-y-1">
                 <li>IB Gateway is running on localhost:4001</li>
                 <li>You are logged into LYNX Paper Trading</li>
                 <li>The Trading API is running on localhost:8002</li>
@@ -10032,7 +10039,7 @@ useEffect(() => {
                   await Promise.all([fetchETFs(), fetchOrders(), fetchPositions()]);
                   setLoading(false);
                 }}
-                className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                className="mt-4 px-4 py-2 bg-orange-600 text-[#2D3436] rounded-lg hover:bg-orange-700"
               >
                 Retry Connection
               </button>
@@ -10042,34 +10049,34 @@ useEffect(() => {
           {/* Messages */}
           {orderError && (
             <div className="bg-red-900/30 border border-red-600 rounded-xl p-4 mb-6">
-              <p className="text-red-400">{orderError}</p>
+              <p className="text-[#C0736D]">{orderError}</p>
               <button onClick={() => setOrderError('')} className="text-red-300 text-sm mt-2 hover:underline">Dismiss</button>
             </div>
           )}
           {orderSuccess && (
             <div className="bg-green-900/30 border border-green-600 rounded-xl p-4 mb-6">
-              <p className="text-green-400">{orderSuccess}</p>
+              <p className="text-[#7C9885]">{orderSuccess}</p>
               <button onClick={() => setOrderSuccess('')} className="text-green-300 text-sm mt-2 hover:underline">Dismiss</button>
             </div>
           )}
 
           {/* Execution Summary */}
           {executionSummary && (
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-bold text-white mb-4">Execution Summary</h3>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-[#2D3436] mb-4">Execution Summary</h3>
               <div className="flex gap-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-400">{executionSummary.success}</div>
-                  <div className="text-gray-400 text-sm">Orders Submitted</div>
+                  <div className="text-3xl font-bold text-[#7C9885]">{executionSummary.success}</div>
+                  <div className="text-[#636E72] text-sm">Orders Submitted</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-red-400">{executionSummary.failed}</div>
-                  <div className="text-gray-400 text-sm">Failed</div>
+                  <div className="text-3xl font-bold text-[#C0736D]">{executionSummary.failed}</div>
+                  <div className="text-[#636E72] text-sm">Failed</div>
                 </div>
               </div>
               <button
                 onClick={() => { setExecutionSummary(null); setExecutionStatus([]); }}
-                className="mt-4 text-gray-400 text-sm hover:text-white"
+                className="mt-4 text-[#636E72] text-sm hover:text-[#2D3436]"
               >
                 Dismiss
               </button>
@@ -10078,23 +10085,23 @@ useEffect(() => {
 
           {/* Execution Progress */}
           {executionStatus.length > 0 && !executionSummary && (
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-bold text-white mb-4">
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-bold text-[#2D3436] mb-4">
                 {isExecuting ? 'Executing Orders...' : 'Execution Complete'}
               </h3>
               <div className="space-y-2">
                 {executionStatus.map((status, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-gray-800/50 rounded-lg p-3">
-                    <span className="text-white font-medium">{status.symbol}</span>
+                  <div key={idx} className="flex items-center justify-between bg-[#ECEEED]/50 rounded-lg p-3">
+                    <span className="text-[#2D3436] font-medium">{status.symbol}</span>
                     <div className="flex items-center gap-2">
                       {status.status === 'pending' && (
-                        <div className="animate-spin h-4 w-4 border-2 border-[#28EBCF] border-t-transparent rounded-full"></div>
+                        <div className="animate-spin h-4 w-4 border-2 border-[#7C9885] border-t-transparent rounded-full"></div>
                       )}
                       {status.status === 'success' && (
-                        <span className="text-green-400">Submitted</span>
+                        <span className="text-[#7C9885]">Submitted</span>
                       )}
                       {status.status === 'error' && (
-                        <span className="text-red-400">{status.message}</span>
+                        <span className="text-[#C0736D]">{status.message}</span>
                       )}
                     </div>
                   </div>
@@ -10109,8 +10116,8 @@ useEffect(() => {
               onClick={() => setActiveTab('trade')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === 'trade'
-                  ? 'bg-[#28EBCF] text-gray-900'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-[#7C9885] text-gray-900'
+                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
               }`}
             >
               Single Trade
@@ -10119,8 +10126,8 @@ useEffect(() => {
               onClick={() => setActiveTab('modelPortfolio')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === 'modelPortfolio'
-                  ? 'bg-[#28EBCF] text-gray-900'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-[#7C9885] text-gray-900'
+                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
               }`}
             >
               Model Portfolios
@@ -10129,8 +10136,8 @@ useEffect(() => {
               onClick={() => setActiveTab('customPortfolio')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === 'customPortfolio'
-                  ? 'bg-[#28EBCF] text-gray-900'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  ? 'bg-[#7C9885] text-gray-900'
+                  : 'bg-[#ECEEED] text-[#636E72] hover:bg-gray-700'
               }`}
             >
               Custom Portfolio
@@ -10141,19 +10148,19 @@ useEffect(() => {
           {activeTab === 'trade' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Order Form */}
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-6">Place Order</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+              <h2 className="text-xl font-bold text-[#2D3436] mb-6">Place Order</h2>
               <form onSubmit={placeOrder} className="space-y-5">
                 {/* ETF Selector */}
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">Select ETF</label>
+                  <label className="block text-[#636E72] text-sm mb-2">Select ETF</label>
                   <select
                     value={orderForm.conid}
                     onChange={(e) => {
                       const etf = etfs.find(et => et.conid === parseInt(e.target.value));
                       setOrderForm(prev => ({ ...prev, conid: parseInt(e.target.value), symbol: etf?.symbol || '' }));
                     }}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#ECEEED] border border-[#E8E8E6] rounded-lg text-[#2D3436] focus:border-[#7C9885] focus:outline-none"
                   >
                     {etfs.map(etf => (
                       <option key={etf.conid} value={etf.conid}>
@@ -10165,15 +10172,15 @@ useEffect(() => {
 
                 {/* BUY/SELL Toggle */}
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">Order Side</label>
+                  <label className="block text-[#636E72] text-sm mb-2">Order Side</label>
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
                       onClick={() => setOrderForm(prev => ({ ...prev, side: 'BUY' }))}
                       className={`py-3 rounded-lg font-bold transition-all ${
                         orderForm.side === 'BUY'
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-800 text-gray-400 border border-gray-700 hover:border-green-600'
+                          ? 'bg-green-600 text-[#2D3436]'
+                          : 'bg-[#ECEEED] text-[#636E72] border border-[#E8E8E6] hover:border-green-600'
                       }`}
                     >
                       BUY
@@ -10183,8 +10190,8 @@ useEffect(() => {
                       onClick={() => setOrderForm(prev => ({ ...prev, side: 'SELL' }))}
                       className={`py-3 rounded-lg font-bold transition-all ${
                         orderForm.side === 'SELL'
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-800 text-gray-400 border border-gray-700 hover:border-red-600'
+                          ? 'bg-red-600 text-[#2D3436]'
+                          : 'bg-[#ECEEED] text-[#636E72] border border-[#E8E8E6] hover:border-red-600'
                       }`}
                     >
                       SELL
@@ -10194,20 +10201,20 @@ useEffect(() => {
 
                 {/* Quantity */}
                 <div>
-                  <label className="block text-gray-400 text-sm mb-2">Quantity</label>
+                  <label className="block text-[#636E72] text-sm mb-2">Quantity</label>
                   <input
                     type="number"
                     min="1"
                     value={orderForm.quantity}
                     onChange={(e) => setOrderForm(prev => ({ ...prev, quantity: e.target.value }))}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white text-center text-xl font-mono focus:border-[#28EBCF] focus:outline-none"
+                    className="w-full px-4 py-3 bg-[#ECEEED] border border-[#E8E8E6] rounded-lg text-[#2D3436] text-center text-xl font-mono focus:border-[#7C9885] focus:outline-none"
                   />
                 </div>
 
                 {/* Order Type Info */}
-                <div className="bg-gray-800/50 rounded-lg p-3 text-center">
-                  <span className="text-gray-400 text-sm">Order Type: </span>
-                  <span className="text-white font-semibold">MARKET</span>
+                <div className="bg-[#ECEEED]/50 rounded-lg p-3 text-center">
+                  <span className="text-[#636E72] text-sm">Order Type: </span>
+                  <span className="text-[#2D3436] font-semibold">MARKET</span>
                 </div>
 
                 {/* Submit Button */}
@@ -10216,8 +10223,8 @@ useEffect(() => {
                   disabled={orderLoading || !connectionStatus.connected || etfs.length === 0}
                   className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
                     orderForm.side === 'BUY'
-                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                      : 'bg-red-600 hover:bg-red-700 text-white'
+                      ? 'bg-green-600 hover:bg-green-700 text-[#2D3436]'
+                      : 'bg-red-600 hover:bg-red-700 text-[#2D3436]'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {orderLoading
@@ -10232,86 +10239,86 @@ useEffect(() => {
             </div>
 
             {/* ETF List */}
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">Available ETFs</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+              <h2 className="text-xl font-bold text-[#2D3436] mb-4">Available ETFs</h2>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {etfs.map(etf => (
                   <div
                     key={etf.conid}
                     onClick={() => setOrderForm(prev => ({ ...prev, conid: etf.conid, symbol: etf.symbol }))}
-                    className={`bg-gray-800/50 rounded-lg p-4 cursor-pointer transition-all hover:bg-gray-700/50 ${
-                      orderForm.conid === etf.conid ? 'ring-2 ring-[#28EBCF]' : ''
+                    className={`bg-[#ECEEED]/50 rounded-lg p-4 cursor-pointer transition-all hover:bg-gray-700/50 ${
+                      orderForm.conid === etf.conid ? 'ring-2 ring-[#7C9885]' : ''
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-white font-semibold">{etf.symbol}</h3>
-                        <p className="text-gray-400 text-sm">{etf.name}</p>
+                        <h3 className="text-[#2D3436] font-semibold">{etf.symbol}</h3>
+                        <p className="text-[#636E72] text-sm">{etf.name}</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs text-gray-500">{etf.exchange}</span>
-                        <p className="text-[#28EBCF] font-mono">{etf.currency}</p>
+                        <span className="text-xs text-[#636E72]">{etf.exchange}</span>
+                        <p className="text-[#7C9885] font-mono">{etf.currency}</p>
                       </div>
                     </div>
                   </div>
                 ))}
                 {etfs.length === 0 && (
-                  <p className="text-gray-500 text-center py-4">No ETFs available</p>
+                  <p className="text-[#636E72] text-center py-4">No ETFs available</p>
                 )}
               </div>
             </div>
 
             {/* Positions */}
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">Positions</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+              <h2 className="text-xl font-bold text-[#2D3436] mb-4">Positions</h2>
               {positions.length > 0 ? (
                 <div className="space-y-3">
                   {positions.map((pos, idx) => (
-                    <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                    <div key={idx} className="bg-[#ECEEED]/50 rounded-lg p-4">
                       <div className="flex justify-between">
-                        <span className="text-white font-semibold">{pos.symbol}</span>
-                        <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className="text-[#2D3436] font-semibold">{pos.symbol}</span>
+                        <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                           {pos.unrealized_pnl ? `€${parseFloat(pos.unrealized_pnl).toFixed(2)}` : '-'}
                         </span>
                       </div>
-                      <div className="text-gray-400 text-sm mt-1">
+                      <div className="text-[#636E72] text-sm mt-1">
                         {pos.quantity} shares @ €{parseFloat(pos.avg_cost || 0).toFixed(2)}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">No positions</p>
+                <p className="text-[#636E72] text-center py-4">No positions</p>
               )}
             </div>
 
             {/* Recent Orders */}
-            <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">Recent Orders</h2>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+              <h2 className="text-xl font-bold text-[#2D3436] mb-4">Recent Orders</h2>
               {orders.length > 0 ? (
                 <div className="space-y-3">
                   {orders.map((order, idx) => (
-                    <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                    <div key={idx} className="bg-[#ECEEED]/50 rounded-lg p-4">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <span className={`px-2 py-1 rounded text-xs font-bold ${
                             order.side === 'BUY' || order.side === 'BOT'
-                              ? 'bg-green-600/30 text-green-400'
-                              : 'bg-red-600/30 text-red-400'
+                              ? 'bg-green-600/30 text-[#7C9885]'
+                              : 'bg-red-600/30 text-[#C0736D]'
                           }`}>
                             {order.side === 'BOT' ? 'BUY' : order.side}
                           </span>
-                          <span className="text-white">{order.quantity} {order.symbol}</span>
+                          <span className="text-[#2D3436]">{order.quantity} {order.symbol}</span>
                         </div>
                         <span className={`text-sm font-medium ${
-                          order.status === 'Filled' ? 'text-green-400' :
-                          order.status === 'Cancelled' ? 'text-red-400' : 'text-yellow-400'
+                          order.status === 'Filled' ? 'text-[#7C9885]' :
+                          order.status === 'Cancelled' ? 'text-[#C0736D]' : 'text-yellow-400'
                         }`}>
                           {order.status}
                         </span>
                       </div>
                       {order.avg_fill_price && (
-                        <div className="text-gray-400 text-sm mt-1">
+                        <div className="text-[#636E72] text-sm mt-1">
                           Filled @ €{parseFloat(order.avg_fill_price).toFixed(2)}
                         </div>
                       )}
@@ -10319,7 +10326,7 @@ useEffect(() => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-4">No recent orders</p>
+                <p className="text-[#636E72] text-center py-4">No recent orders</p>
               )}
             </div>
           </div>
@@ -10330,21 +10337,21 @@ useEffect(() => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {MODEL_PORTFOLIOS.map(portfolio => (
-                  <div key={portfolio.id} className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{portfolio.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4">{portfolio.description}</p>
+                  <div key={portfolio.id} className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-[#2D3436] mb-2">{portfolio.name}</h3>
+                    <p className="text-[#636E72] text-sm mb-4">{portfolio.description}</p>
 
                     {/* Allocations */}
                     <div className="space-y-2 mb-6">
                       {portfolio.allocations.map((alloc, idx) => {
                         const etf = etfs.find(e => e.symbol === alloc.symbol);
                         return (
-                          <div key={idx} className="flex justify-between items-center bg-gray-800/50 rounded-lg p-3">
+                          <div key={idx} className="flex justify-between items-center bg-[#ECEEED]/50 rounded-lg p-3">
                             <div>
-                              <span className="text-white font-medium">{alloc.symbol}</span>
-                              {etf && <span className="text-gray-500 text-xs ml-2">{etf.name}</span>}
+                              <span className="text-[#2D3436] font-medium">{alloc.symbol}</span>
+                              {etf && <span className="text-[#636E72] text-xs ml-2">{etf.name}</span>}
                             </div>
-                            <span className="text-[#28EBCF] font-bold">{alloc.weight}%</span>
+                            <span className="text-[#7C9885] font-bold">{alloc.weight}%</span>
                           </div>
                         );
                       })}
@@ -10357,7 +10364,7 @@ useEffect(() => {
                         setShowConfirmModal(true);
                       }}
                       disabled={isExecuting || !connectionStatus.connected}
-                      className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-3 bg-green-600 hover:bg-green-700 text-[#2D3436] font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Buy Portfolio
                     </button>
@@ -10366,9 +10373,9 @@ useEffect(() => {
               </div>
 
               {/* Positions with Sell All */}
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-white">Current Positions</h2>
+                  <h2 className="text-xl font-bold text-[#2D3436]">Current Positions</h2>
                   {positions.length > 0 && (
                     <button
                       onClick={() => {
@@ -10376,7 +10383,7 @@ useEffect(() => {
                         setShowConfirmModal(true);
                       }}
                       disabled={isExecuting || !connectionStatus.connected}
-                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-[#2D3436] font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Sell All Positions
                     </button>
@@ -10385,21 +10392,21 @@ useEffect(() => {
                 {positions.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {positions.map((pos, idx) => (
-                      <div key={idx} className="bg-gray-800/50 rounded-lg p-4">
+                      <div key={idx} className="bg-[#ECEEED]/50 rounded-lg p-4">
                         <div className="flex justify-between">
-                          <span className="text-white font-semibold">{pos.symbol}</span>
-                          <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className="text-[#2D3436] font-semibold">{pos.symbol}</span>
+                          <span className={`font-mono ${parseFloat(pos.unrealized_pnl || 0) >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                             {pos.unrealized_pnl ? `€${parseFloat(pos.unrealized_pnl).toFixed(2)}` : '-'}
                           </span>
                         </div>
-                        <div className="text-gray-400 text-sm mt-1">
+                        <div className="text-[#636E72] text-sm mt-1">
                           {pos.quantity} shares @ €{parseFloat(pos.avg_cost || 0).toFixed(2)}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No positions</p>
+                  <p className="text-[#636E72] text-center py-4">No positions</p>
                 )}
               </div>
             </div>
@@ -10409,8 +10416,8 @@ useEffect(() => {
           {activeTab === 'customPortfolio' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* ETF Selector */}
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Select ETFs</h2>
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+                <h2 className="text-xl font-bold text-[#2D3436] mb-4">Select ETFs</h2>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {etfs.map(etf => {
                     const isInPortfolio = customPortfolio.some(p => p.conid === etf.conid);
@@ -10418,21 +10425,21 @@ useEffect(() => {
                       <div
                         key={etf.conid}
                         onClick={() => !isInPortfolio && addToCustomPortfolio(etf)}
-                        className={`bg-gray-800/50 rounded-lg p-4 transition-all ${
+                        className={`bg-[#ECEEED]/50 rounded-lg p-4 transition-all ${
                           isInPortfolio
-                            ? 'opacity-50 cursor-not-allowed ring-2 ring-[#28EBCF]'
+                            ? 'opacity-50 cursor-not-allowed ring-2 ring-[#7C9885]'
                             : 'cursor-pointer hover:bg-gray-700/50'
                         }`}
                       >
                         <div className="flex justify-between items-center">
                           <div>
-                            <h3 className="text-white font-semibold">{etf.symbol}</h3>
-                            <p className="text-gray-400 text-sm">{etf.name}</p>
+                            <h3 className="text-[#2D3436] font-semibold">{etf.symbol}</h3>
+                            <p className="text-[#636E72] text-sm">{etf.name}</p>
                           </div>
                           {isInPortfolio ? (
-                            <span className="text-[#28EBCF] text-sm">Added</span>
+                            <span className="text-[#7C9885] text-sm">Added</span>
                           ) : (
-                            <button className="text-gray-400 hover:text-white text-sm">+ Add</button>
+                            <button className="text-[#636E72] hover:text-[#2D3436] text-sm">+ Add</button>
                           )}
                         </div>
                       </div>
@@ -10442,21 +10449,21 @@ useEffect(() => {
               </div>
 
               {/* Custom Portfolio Builder */}
-              <div className="bg-[#1A1B1F] border border-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Your Custom Portfolio</h2>
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6">
+                <h2 className="text-xl font-bold text-[#2D3436] mb-4">Your Custom Portfolio</h2>
 
                 {customPortfolio.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Select ETFs from the list to build your portfolio</p>
+                  <p className="text-[#636E72] text-center py-8">Select ETFs from the list to build your portfolio</p>
                 ) : (
                   <>
                     <div className="space-y-3 mb-6">
                       {customPortfolio.map(item => (
-                        <div key={item.conid} className="bg-gray-800/50 rounded-lg p-4">
+                        <div key={item.conid} className="bg-[#ECEEED]/50 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-white font-semibold">{item.symbol}</span>
+                            <span className="text-[#2D3436] font-semibold">{item.symbol}</span>
                             <button
                               onClick={() => removeFromCustomPortfolio(item.conid)}
-                              className="text-red-400 hover:text-red-300 text-sm"
+                              className="text-[#C0736D] hover:text-red-300 text-sm"
                             >
                               Remove
                             </button>
@@ -10468,12 +10475,12 @@ useEffect(() => {
                               max="100"
                               value={item.weight}
                               onChange={(e) => updateCustomWeight(item.conid, e.target.value)}
-                              className="w-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-center focus:border-[#28EBCF] focus:outline-none"
+                              className="w-20 px-3 py-2 bg-gray-700 border border-[#D5D5D3] rounded-lg text-[#2D3436] text-center focus:border-[#7C9885] focus:outline-none"
                             />
-                            <span className="text-gray-400">%</span>
+                            <span className="text-[#636E72]">%</span>
                             <div className="flex-1 bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-[#28EBCF] h-2 rounded-full transition-all"
+                                className="bg-[#7C9885] h-2 rounded-full transition-all"
                                 style={{ width: `${item.weight}%` }}
                               ></div>
                             </div>
@@ -10486,8 +10493,8 @@ useEffect(() => {
                     <div className={`flex justify-between items-center p-4 rounded-lg mb-6 ${
                       totalWeight === 100 ? 'bg-green-900/30 border border-green-600' : 'bg-orange-900/30 border border-orange-600'
                     }`}>
-                      <span className="text-white font-medium">Total Weight</span>
-                      <span className={`text-xl font-bold ${totalWeight === 100 ? 'text-green-400' : 'text-orange-400'}`}>
+                      <span className="text-[#2D3436] font-medium">Total Weight</span>
+                      <span className={`text-xl font-bold ${totalWeight === 100 ? 'text-[#7C9885]' : 'text-orange-400'}`}>
                         {totalWeight}%
                       </span>
                     </div>
@@ -10503,7 +10510,7 @@ useEffect(() => {
                         setShowConfirmModal(true);
                       }}
                       disabled={isExecuting || !connectionStatus.connected || totalWeight !== 100}
-                      className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-4 bg-green-600 hover:bg-green-700 text-[#2D3436] font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Buy Custom Portfolio
                     </button>
@@ -10517,19 +10524,19 @@ useEffect(() => {
         {/* Confirmation Modal */}
         {showConfirmModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-            <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6 max-w-md w-full">
-              <h3 className="text-xl font-bold text-white mb-4">Confirm Action</h3>
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold text-[#2D3436] mb-4">Confirm Action</h3>
 
               {pendingAction?.type === 'buyPortfolio' && (
                 <>
-                  <p className="text-gray-300 mb-4">
-                    This will place <span className="text-[#28EBCF] font-bold">{pendingAction.allocations.length}</span> MARKET orders:
+                  <p className="text-[#636E72] mb-4">
+                    This will place <span className="text-[#7C9885] font-bold">{pendingAction.allocations.length}</span> MARKET orders:
                   </p>
                   <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
                     {pendingAction.allocations.map((alloc, idx) => (
-                      <div key={idx} className="flex justify-between bg-gray-800/50 rounded-lg p-3">
-                        <span className="text-white">{alloc.symbol}</span>
-                        <span className="text-green-400">BUY {alloc.weight}%</span>
+                      <div key={idx} className="flex justify-between bg-[#ECEEED]/50 rounded-lg p-3">
+                        <span className="text-[#2D3436]">{alloc.symbol}</span>
+                        <span className="text-[#7C9885]">BUY {alloc.weight}%</span>
                       </div>
                     ))}
                   </div>
@@ -10538,14 +10545,14 @@ useEffect(() => {
 
               {pendingAction?.type === 'sellAll' && (
                 <>
-                  <p className="text-gray-300 mb-4">
-                    This will sell <span className="text-red-400 font-bold">ALL</span> your positions ({positions.length} ETFs):
+                  <p className="text-[#636E72] mb-4">
+                    This will sell <span className="text-[#C0736D] font-bold">ALL</span> your positions ({positions.length} ETFs):
                   </p>
                   <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
                     {positions.map((pos, idx) => (
-                      <div key={idx} className="flex justify-between bg-gray-800/50 rounded-lg p-3">
-                        <span className="text-white">{pos.symbol}</span>
-                        <span className="text-red-400">SELL {pos.quantity}</span>
+                      <div key={idx} className="flex justify-between bg-[#ECEEED]/50 rounded-lg p-3">
+                        <span className="text-[#2D3436]">{pos.symbol}</span>
+                        <span className="text-[#C0736D]">SELL {pos.quantity}</span>
                       </div>
                     ))}
                   </div>
@@ -10561,7 +10568,7 @@ useEffect(() => {
               <div className="flex gap-4">
                 <button
                   onClick={() => { setShowConfirmModal(false); setPendingAction(null); }}
-                  className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-all"
+                  className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-[#2D3436] font-medium rounded-lg transition-all"
                 >
                   Cancel
                 </button>
@@ -10569,8 +10576,8 @@ useEffect(() => {
                   onClick={handleConfirm}
                   className={`flex-1 py-3 font-bold rounded-lg transition-all ${
                     pendingAction?.type === 'sellAll'
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
+                      ? 'bg-red-600 hover:bg-red-700 text-[#2D3436]'
+                      : 'bg-green-600 hover:bg-green-700 text-[#2D3436]'
                   }`}
                 >
                   {pendingAction?.type === 'sellAll' ? 'Sell All' : 'Buy Portfolio'}
@@ -10619,6 +10626,7 @@ useEffect(() => {
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
+      {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Bulk Buy Modal */}
@@ -10640,7 +10648,7 @@ useEffect(() => {
       {!isChatOpen && (
         <button
           onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-4 right-4 z-40 bg-gradient-to-r from-[#28EBCF] to-[#20D4BA] text-white rounded-full p-4 shadow-2xl hover:shadow-[#28EBCF]/50 transition-all duration-300 hover:scale-110"
+          className="fixed bottom-4 right-4 z-40 bg-gradient-to-r from-[#7C9885] to-[#20D4BA] text-[#2D3436] rounded-full p-4 shadow-2xl hover:shadow-[#7C9885]/50 transition-all duration-300 hover:scale-110"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 /**
- * QuickActions Component
+ * QuickActions Component - Premium Banking Style
  *
  * Quick access buttons for common actions
  * Can be displayed as cards, buttons, or a compact row
@@ -26,7 +26,7 @@ const DEFAULT_ACTIONS = [
     description: 'Koop of verkoop ETFs',
     icon: TrendingUp,
     path: '/trading',
-    color: '#28EBCF',
+    color: '#7C9885',
   },
   {
     id: 'browse',
@@ -34,7 +34,7 @@ const DEFAULT_ACTIONS = [
     description: 'Ontdek nieuwe ETFs',
     icon: Search,
     path: '/trading',
-    color: '#60A5FA',
+    color: '#6B7B8A',
   },
   {
     id: 'portfolio',
@@ -42,7 +42,7 @@ const DEFAULT_ACTIONS = [
     description: 'Bekijk je posities',
     icon: PieChart,
     path: '/portfolio',
-    color: '#A78BFA',
+    color: '#8B7B9A',
   },
   {
     id: 'rebalance',
@@ -50,7 +50,7 @@ const DEFAULT_ACTIONS = [
     description: 'Optimaliseer allocatie',
     icon: ArrowRightLeft,
     path: '/portfolio/rebalance',
-    color: '#F472B6',
+    color: '#C9A962',
   },
 ];
 
@@ -78,7 +78,7 @@ export function QuickActions({
             <Component
               key={action.id}
               {...props}
-              className="w-full flex items-center gap-3 p-3 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl transition-colors group"
+              className="w-full flex items-center gap-3 p-3 bg-[#F5F6F4] hover:bg-[#ECEEED] rounded-xl transition-colors group"
             >
               <div
                 className="p-2 rounded-lg"
@@ -87,14 +87,14 @@ export function QuickActions({
                 <Icon className="w-4 h-4" style={{ color: action.color }} />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-white group-hover:text-gray-100">
+                <p className="text-sm font-medium text-[#2D3436] group-hover:text-[#2D3436]">
                   {action.label}
                 </p>
                 {action.description && (
-                  <p className="text-xs text-gray-500">{action.description}</p>
+                  <p className="text-xs text-[#636E72]">{action.description}</p>
                 )}
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
+              <ExternalLink className="w-4 h-4 text-[#B2BEC3] group-hover:text-[#636E72] transition-colors" />
             </Component>
           );
         })}
@@ -114,7 +114,7 @@ export function QuickActions({
             <Component
               key={action.id}
               {...props}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-800/50 hover:bg-gray-800/70 border border-gray-700/50 hover:border-gray-600 rounded-xl transition-all text-sm font-medium text-white"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#FEFEFE] hover:bg-[#F5F6F4] border border-[#E8E8E6] hover:border-[#D5D5D3] rounded-xl transition-all text-sm font-medium text-[#2D3436] shadow-[0_1px_2px_rgba(45,52,54,0.04)]"
             >
               <Icon className="w-4 h-4" style={{ color: action.color }} />
               {action.label}
@@ -137,7 +137,7 @@ export function QuickActions({
             <Component
               key={action.id}
               {...props}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+              className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
               title={action.label}
             >
               <Icon className="w-4 h-4" />
@@ -160,7 +160,7 @@ export function QuickActions({
           <Component
             key={action.id}
             {...props}
-            className="group p-4 bg-[#1A1B1F] border border-gray-800/50 rounded-xl hover:border-gray-700 hover:bg-gray-800/30 transition-all"
+            className="group p-4 bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl hover:border-[#D5D5D3] hover:shadow-[0_4px_12px_rgba(45,52,54,0.06)] transition-all shadow-[0_1px_3px_rgba(45,52,54,0.04)]"
           >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
@@ -168,9 +168,9 @@ export function QuickActions({
             >
               <Icon className="w-5 h-5" style={{ color: action.color }} />
             </div>
-            <p className="text-sm font-medium text-white mb-0.5">{action.label}</p>
+            <p className="text-sm font-medium text-[#2D3436] mb-0.5">{action.label}</p>
             {action.description && (
-              <p className="text-xs text-gray-500">{action.description}</p>
+              <p className="text-xs text-[#636E72]">{action.description}</p>
             )}
           </Component>
         );
@@ -187,7 +187,7 @@ export function QuickActionButton({
   icon: Icon,
   onClick,
   href,
-  color = '#28EBCF',
+  color = '#7C9885',
   variant = 'default', // 'default' | 'primary' | 'ghost'
   size = 'md',
   loading = false,
@@ -198,9 +198,9 @@ export function QuickActionButton({
   const props = href ? { to: href } : { onClick, disabled: disabled || loading };
 
   const variants = {
-    default: 'bg-gray-800/50 hover:bg-gray-800/70 border border-gray-700/50 hover:border-gray-600 text-white',
-    primary: `bg-gradient-to-r hover:shadow-lg transition-shadow text-gray-900`,
-    ghost: 'hover:bg-gray-800/50 text-gray-400 hover:text-white',
+    default: 'bg-[#FEFEFE] hover:bg-[#F5F6F4] border border-[#E8E8E6] hover:border-[#D5D5D3] text-[#2D3436] shadow-[0_1px_2px_rgba(45,52,54,0.04)]',
+    primary: `bg-[#7C9885] hover:bg-[#6B8574] text-white shadow-[0_2px_8px_rgba(124,152,133,0.25)]`,
+    ghost: 'hover:bg-[#F5F6F4] text-[#636E72] hover:text-[#2D3436]',
   };
 
   const sizes = {
@@ -219,10 +219,6 @@ export function QuickActionButton({
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${className}
       `}
-      style={variant === 'primary' ? {
-        backgroundImage: `linear-gradient(to right, ${color}, ${color}dd)`,
-        boxShadow: `0 4px 14px ${color}30`,
-      } : undefined}
     >
       {loading ? (
         <RefreshCw className="w-4 h-4 animate-spin" />
@@ -249,7 +245,7 @@ export function AddToBasketButton({
       label="Trade"
       icon={ShoppingCart}
       onClick={onClick}
-      color="#28EBCF"
+      color="#7C9885"
       variant="default"
       size={size}
       loading={loading}

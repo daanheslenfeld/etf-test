@@ -167,20 +167,20 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl max-w-2xl w-full shadow-2xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-[#2D3436]/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-2xl w-full shadow-[0_8px_32px_rgba(45,52,54,0.12)] max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between bg-purple-900/20">
+        <div className="p-4 border-b border-[#E8E8E6] flex items-center justify-between bg-[#6B7B8A]/10">
           <div className="flex items-center gap-3">
-            <Scale className="w-6 h-6 text-purple-400" />
+            <Scale className="w-6 h-6 text-[#6B7B8A]" />
             <div>
-              <h2 className="text-lg font-bold text-white">Rebalance Portfolio</h2>
-              <p className="text-sm text-gray-400">Set target weights for each position</p>
+              <h2 className="text-lg font-bold text-[#2D3436]">Rebalance Portfolio</h2>
+              <p className="text-sm text-[#636E72]">Set target weights for each position</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -190,17 +190,17 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
         <div className="p-4 overflow-y-auto flex-1">
           {/* Portfolio Summary */}
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400">Portfolio Value</div>
-              <div className="text-white font-bold">{formatCurrency(portfolioValue)}</div>
+            <div className="bg-[#F5F6F4] rounded-lg p-3">
+              <div className="text-xs text-[#636E72]">Portfolio Value</div>
+              <div className="text-[#2D3436] font-bold">{formatCurrency(portfolioValue)}</div>
             </div>
-            <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400">Available Cash</div>
-              <div className="text-green-400 font-bold">{formatCurrency(availableCash)}</div>
+            <div className="bg-[#7C9885]/10 rounded-lg p-3">
+              <div className="text-xs text-[#636E72]">Available Cash</div>
+              <div className="text-[#7C9885] font-bold">{formatCurrency(availableCash)}</div>
             </div>
-            <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400">Total Value</div>
-              <div className="text-white font-bold">{formatCurrency(portfolioValue + availableCash)}</div>
+            <div className="bg-[#F5F6F4] rounded-lg p-3">
+              <div className="text-xs text-[#636E72]">Total Value</div>
+              <div className="text-[#2D3436] font-bold">{formatCurrency(portfolioValue + availableCash)}</div>
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
           <div className="flex gap-2 mb-4">
             <button
               onClick={setEqualWeights}
-              className="px-3 py-1.5 bg-purple-600/20 text-purple-400 border border-purple-600/40 rounded-lg text-sm hover:bg-purple-600/30"
+              className="px-3 py-1.5 bg-[#6B7B8A]/10 text-[#6B7B8A] border border-[#6B7B8A]/30 rounded-lg text-sm hover:bg-[#6B7B8A]/20"
             >
               Equal Weights
             </button>
@@ -216,7 +216,7 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
 
           {/* Weight Inputs */}
           <div className="space-y-2 mb-4">
-            <div className="grid grid-cols-12 gap-2 text-xs text-gray-400 px-2">
+            <div className="grid grid-cols-12 gap-2 text-xs text-[#636E72] px-2">
               <div className="col-span-3">Symbol</div>
               <div className="col-span-2 text-right">Current %</div>
               <div className="col-span-3 text-center">Target %</div>
@@ -233,12 +233,12 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
               const diff = targetValue - currentValue;
 
               return (
-                <div key={pos.symbol} className="grid grid-cols-12 gap-2 items-center bg-gray-800/30 rounded-lg p-2">
+                <div key={pos.symbol} className="grid grid-cols-12 gap-2 items-center bg-[#F5F6F4] rounded-lg p-2">
                   <div className="col-span-3">
-                    <div className="text-white font-medium">{pos.symbol}</div>
-                    <div className="text-xs text-gray-500">{pos.quantity} shares</div>
+                    <div className="text-[#2D3436] font-medium">{pos.symbol}</div>
+                    <div className="text-xs text-[#B2BEC3]">{pos.quantity} shares</div>
                   </div>
-                  <div className="col-span-2 text-right text-gray-300">
+                  <div className="col-span-2 text-right text-[#636E72]">
                     {currentWeight.toFixed(1)}%
                   </div>
                   <div className="col-span-3">
@@ -250,19 +250,19 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
                         step="0.1"
                         value={targetWeight}
                         onChange={(e) => handleWeightChange(pos.symbol, e.target.value)}
-                        className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-center text-sm focus:border-purple-500 focus:outline-none"
+                        className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded px-2 py-1 text-[#2D3436] text-center text-sm focus:border-[#7C9885] focus:outline-none"
                       />
-                      <span className="text-gray-400 text-sm">%</span>
+                      <span className="text-[#636E72] text-sm">%</span>
                     </div>
                   </div>
-                  <div className="col-span-2 text-right text-gray-300 text-sm">
+                  <div className="col-span-2 text-right text-[#636E72] text-sm">
                     {formatCurrency(currentValue)}
                   </div>
                   <div className="col-span-2 text-right">
-                    <div className={`text-sm ${diff >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    <div className={`text-sm ${diff >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                       {formatCurrency(targetValue)}
                     </div>
-                    <div className={`text-xs ${diff >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    <div className={`text-xs ${diff >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                       {diff >= 0 ? '+' : ''}{formatCurrency(diff)}
                     </div>
                   </div>
@@ -272,22 +272,22 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
           </div>
 
           {/* Total Weight Indicator */}
-          <div className={`rounded-lg p-3 mb-4 ${isValidWeights ? 'bg-green-900/20 border border-green-600/40' : 'bg-red-900/20 border border-red-600/40'}`}>
+          <div className={`rounded-lg p-3 mb-4 ${isValidWeights ? 'bg-[#7C9885]/10 border border-[#7C9885]/30' : 'bg-[#C0736D]/10 border border-[#C0736D]/30'}`}>
             <div className="flex items-center justify-between">
-              <span className="text-gray-400">Total Target Weight</span>
+              <span className="text-[#636E72]">Total Target Weight</span>
               <div className="flex items-center gap-2">
-                <span className={`font-bold ${isValidWeights ? 'text-green-400' : 'text-red-400'}`}>
+                <span className={`font-bold ${isValidWeights ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                   {totalWeight.toFixed(1)}%
                 </span>
                 {isValidWeights ? (
-                  <Check className="w-4 h-4 text-green-400" />
+                  <Check className="w-4 h-4 text-[#7C9885]" />
                 ) : (
-                  <AlertTriangle className="w-4 h-4 text-red-400" />
+                  <AlertTriangle className="w-4 h-4 text-[#C0736D]" />
                 )}
               </div>
             </div>
             {!isValidWeights && (
-              <p className="text-red-400 text-xs mt-1">
+              <p className="text-[#C0736D] text-xs mt-1">
                 Weights must total 100% (currently {totalWeight > 100 ? 'over' : 'under'} by {Math.abs(100 - totalWeight).toFixed(1)}%)
               </p>
             )}
@@ -296,24 +296,24 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
           {/* Required Trades Preview */}
           {isValidWeights && trades.length > 0 && (
             <div className="mb-4">
-              <h4 className="text-white font-medium mb-2 flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4 text-purple-400" />
+              <h4 className="text-[#2D3436] font-medium mb-2 flex items-center gap-2">
+                <ShoppingCart className="w-4 h-4 text-[#6B7B8A]" />
                 Required Trades ({trades.length})
               </h4>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {trades.map((trade, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-gray-800/50 rounded p-2 text-sm">
+                  <div key={idx} className="flex items-center justify-between bg-[#F5F6F4] rounded p-2 text-sm">
                     <div className="flex items-center gap-2">
                       <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${
-                        trade.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                        trade.side === 'BUY' ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
                       }`}>
                         {trade.side}
                       </span>
-                      <span className="text-white">{trade.symbol}</span>
+                      <span className="text-[#2D3436]">{trade.symbol}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-gray-300">{trade.quantity} shares</div>
-                      <div className="text-gray-500 text-xs">{formatCurrency(trade.estimatedValue)}</div>
+                      <div className="text-[#636E72]">{trade.quantity} shares</div>
+                      <div className="text-[#B2BEC3] text-xs">{formatCurrency(trade.estimatedValue)}</div>
                     </div>
                   </div>
                 ))}
@@ -321,36 +321,36 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
 
               {/* Cash Flow Summary */}
               <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-                <div className="bg-red-900/20 rounded p-2 text-center">
-                  <div className="text-red-400 font-medium">{formatCurrency(totalSellValue)}</div>
-                  <div className="text-xs text-gray-500">Sells</div>
+                <div className="bg-[#C0736D]/10 rounded p-2 text-center">
+                  <div className="text-[#C0736D] font-medium">{formatCurrency(totalSellValue)}</div>
+                  <div className="text-xs text-[#B2BEC3]">Sells</div>
                 </div>
-                <div className="bg-green-900/20 rounded p-2 text-center">
-                  <div className="text-green-400 font-medium">{formatCurrency(totalBuyValue)}</div>
-                  <div className="text-xs text-gray-500">Buys</div>
+                <div className="bg-[#7C9885]/10 rounded p-2 text-center">
+                  <div className="text-[#7C9885] font-medium">{formatCurrency(totalBuyValue)}</div>
+                  <div className="text-xs text-[#B2BEC3]">Buys</div>
                 </div>
-                <div className={`rounded p-2 text-center ${netCashFlow >= 0 ? 'bg-green-900/20' : 'bg-red-900/20'}`}>
-                  <div className={netCashFlow >= 0 ? 'text-green-400' : 'text-red-400'} >
+                <div className={`rounded p-2 text-center ${netCashFlow >= 0 ? 'bg-[#7C9885]/10' : 'bg-[#C0736D]/10'}`}>
+                  <div className={netCashFlow >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'} >
                     {netCashFlow >= 0 ? '+' : ''}{formatCurrency(netCashFlow)}
                   </div>
-                  <div className="text-xs text-gray-500">Net Cash</div>
+                  <div className="text-xs text-[#B2BEC3]">Net Cash</div>
                 </div>
               </div>
             </div>
           )}
 
           {isValidWeights && trades.length === 0 && (
-            <div className="bg-gray-800/50 rounded-lg p-4 text-center text-gray-400">
+            <div className="bg-[#F5F6F4] rounded-lg p-4 text-center text-[#636E72]">
               Portfolio is already balanced according to target weights
             </div>
           )}
 
           {/* Warnings */}
           {insufficientCash && (
-            <div className="bg-red-900/30 border border-red-600 rounded-lg p-3 mb-4">
+            <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-3 mb-4">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5" />
-                <div className="text-sm text-red-400">
+                <AlertTriangle className="w-4 h-4 text-[#C0736D] mt-0.5" />
+                <div className="text-sm text-[#C0736D]">
                   <strong>Insufficient funds:</strong> Buys require {formatCurrency(totalBuyValue)},
                   but only {formatCurrency(cashAfterSells)} will be available after sells.
                 </div>
@@ -359,10 +359,10 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
           )}
 
           {oversellError && (
-            <div className="bg-red-900/30 border border-red-600 rounded-lg p-3 mb-4">
+            <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-3 mb-4">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5" />
-                <div className="text-sm text-red-400">
+                <AlertTriangle className="w-4 h-4 text-[#C0736D] mt-0.5" />
+                <div className="text-sm text-[#C0736D]">
                   <strong>Cannot oversell:</strong> Trying to sell {oversellError.quantity} shares of {oversellError.symbol},
                   but only {oversellError.currentQty} owned.
                 </div>
@@ -371,24 +371,24 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
           )}
 
           {error && (
-            <div className="bg-red-900/30 border border-red-600 rounded-lg p-3 mb-4">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-3 mb-4">
+              <p className="text-[#C0736D] text-sm">{error}</p>
             </div>
           )}
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-700 flex gap-3">
+        <div className="p-4 border-t border-[#E8E8E6] flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex-1 py-3 bg-[#ECEEED] text-[#636E72] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleAddToBasket}
             disabled={!isValidWeights || trades.length === 0 || insufficientCash || !!oversellError}
-            className="flex-1 py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 py-3 bg-[#7C9885] text-white font-bold rounded-lg hover:bg-[#6B8A74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <ShoppingCart className="w-5 h-5" />
             Add {trades.length} Orders to Basket

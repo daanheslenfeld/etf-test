@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * DataCard Component
+ * DataCard Component - Premium Banking Style
  *
  * Card-based alternative to table rows for mobile views
  */
@@ -12,9 +12,9 @@ export function DataCard({
   className = '',
 }) {
   const variants = {
-    default: 'bg-gray-800/30 border-gray-700/50',
-    interactive: 'bg-gray-800/30 border-gray-700/50 cursor-pointer active:bg-gray-800/60',
-    highlighted: 'bg-[#28EBCF]/5 border-[#28EBCF]/20',
+    default: 'bg-[#FEFEFE] border-[#E8E8E6] shadow-[0_1px_3px_rgba(45,52,54,0.04)]',
+    interactive: 'bg-[#FEFEFE] border-[#E8E8E6] shadow-[0_1px_3px_rgba(45,52,54,0.04)] cursor-pointer active:bg-[#F5F6F4]',
+    highlighted: 'bg-[#7C9885]/5 border-[#7C9885]/20',
   };
 
   const Component = onClick ? 'button' : 'div';
@@ -38,7 +38,7 @@ export function DataCard({
  */
 export function DataCardHeader({ children, className = '' }) {
   return (
-    <div className={`pb-3 mb-3 border-b border-gray-700/50 ${className}`}>
+    <div className={`pb-3 mb-3 border-b border-[#E8E8E6] ${className}`}>
       {children}
     </div>
   );
@@ -55,19 +55,19 @@ export function DataCardTitle({
   className = '',
 }) {
   const badgeVariants = {
-    default: 'bg-gray-700 text-gray-300',
-    success: 'bg-emerald-500/20 text-emerald-400',
-    danger: 'bg-red-500/20 text-red-400',
-    warning: 'bg-amber-500/20 text-amber-400',
-    info: 'bg-blue-500/20 text-blue-400',
+    default: 'bg-[#ECEEED] text-[#636E72]',
+    success: 'bg-[#7C9885]/10 text-[#7C9885]',
+    danger: 'bg-[#C0736D]/10 text-[#C0736D]',
+    warning: 'bg-[#C9A962]/10 text-[#C9A962]',
+    info: 'bg-[#6B7B8A]/10 text-[#6B7B8A]',
   };
 
   return (
     <div className={`flex items-start justify-between gap-2 ${className}`}>
       <div className="min-w-0 flex-1">
-        <h3 className="text-white font-semibold text-lg truncate">{title}</h3>
+        <h3 className="text-[#2D3436] font-semibold text-lg truncate">{title}</h3>
         {subtitle && (
-          <p className="text-gray-500 text-sm truncate">{subtitle}</p>
+          <p className="text-[#636E72] text-sm truncate">{subtitle}</p>
         )}
       </div>
       {badge && (
@@ -95,16 +95,16 @@ export function DataCardRow({
   className = '',
 }) {
   const colorClasses = {
-    default: 'text-white',
-    success: 'text-emerald-400',
-    danger: 'text-red-400',
-    warning: 'text-amber-400',
-    muted: 'text-gray-400',
+    default: 'text-[#2D3436]',
+    success: 'text-[#7C9885]',
+    danger: 'text-[#C0736D]',
+    warning: 'text-[#C9A962]',
+    muted: 'text-[#B2BEC3]',
   };
 
   return (
     <div className={`flex justify-between items-center py-1.5 ${className}`}>
-      <span className="text-gray-500 text-sm">{label}</span>
+      <span className="text-[#636E72] text-sm">{label}</span>
       <span
         className={`
           font-medium text-sm
@@ -146,16 +146,16 @@ export function DataCardValue({
   className = '',
 }) {
   const colorClasses = {
-    default: 'text-white',
-    success: 'text-emerald-400',
-    danger: 'text-red-400',
-    warning: 'text-amber-400',
-    muted: 'text-gray-400',
+    default: 'text-[#2D3436]',
+    success: 'text-[#7C9885]',
+    danger: 'text-[#C0736D]',
+    warning: 'text-[#C9A962]',
+    muted: 'text-[#B2BEC3]',
   };
 
   return (
     <div className={className}>
-      <p className="text-gray-500 text-xs mb-0.5">{label}</p>
+      <p className="text-[#636E72] text-xs mb-0.5">{label}</p>
       <p
         className={`
           font-medium
@@ -174,7 +174,7 @@ export function DataCardValue({
  */
 export function DataCardActions({ children, className = '' }) {
   return (
-    <div className={`flex gap-2 mt-3 pt-3 border-t border-gray-700/50 ${className}`}>
+    <div className={`flex gap-2 mt-3 pt-3 border-t border-[#E8E8E6] ${className}`}>
       {children}
     </div>
   );
@@ -203,13 +203,13 @@ export function DataCardEmpty({
   return (
     <div className={`text-center py-8 ${className}`}>
       {Icon && (
-        <div className="w-12 h-12 mx-auto mb-3 bg-gray-800/50 rounded-xl flex items-center justify-center">
-          <Icon className="w-6 h-6 text-gray-500" />
+        <div className="w-12 h-12 mx-auto mb-3 bg-[#ECEEED] rounded-xl flex items-center justify-center">
+          <Icon className="w-6 h-6 text-[#636E72]" />
         </div>
       )}
-      <h4 className="text-gray-400 font-medium mb-1">{title}</h4>
+      <h4 className="text-[#636E72] font-medium mb-1">{title}</h4>
       {description && (
-        <p className="text-gray-500 text-sm">{description}</p>
+        <p className="text-[#B2BEC3] text-sm">{description}</p>
       )}
     </div>
   );

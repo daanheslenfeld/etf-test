@@ -1,25 +1,24 @@
 import React from 'react';
 
 /**
- * Badge Component
+ * Badge Component - Pastel Design System
  *
- * Variants: default, primary, success, warning, error, info
- * Sizes: sm, md, lg
+ * Soft, calm badges with pastel colors
  */
 const VARIANTS = {
-  default: 'bg-gray-800/50 text-gray-300 border-gray-700/30',
-  primary: 'bg-[#28EBCF]/10 text-[#28EBCF] border-[#28EBCF]/20',
-  success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  warning: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  error: 'bg-red-500/10 text-red-400 border-red-500/20',
-  info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  purple: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+  default: 'bg-[#ECEEED] text-[#636E72] border-transparent',
+  primary: 'bg-[#7C9885]/10 text-[#7C9885] border-[#7C9885]/20',
+  success: 'bg-[#7C9885]/10 text-[#7C9885] border-[#7C9885]/20',
+  warning: 'bg-[#C9A962]/10 text-[#C9A962] border-[#C9A962]/20',
+  error: 'bg-[#C0736D]/10 text-[#C0736D] border-[#C0736D]/20',
+  info: 'bg-[#6B7B8A]/10 text-[#6B7B8A] border-[#6B7B8A]/20',
+  purple: 'bg-[#8B7BA8]/10 text-[#8B7BA8] border-[#8B7BA8]/20',
 };
 
 const SIZES = {
-  sm: 'px-1.5 py-0.5 text-[10px]',
-  md: 'px-2 py-0.5 text-xs',
-  lg: 'px-2.5 py-1 text-sm',
+  sm: 'px-2 py-0.5 text-[10px]',
+  md: 'px-2.5 py-1 text-xs',
+  lg: 'px-3 py-1.5 text-sm',
 };
 
 export function Badge({
@@ -103,7 +102,7 @@ export function CountBadge({
 }
 
 /**
- * TrendBadge - Badge showing percentage change with trend arrow
+ * TrendBadge - Badge showing percentage change with trend arrow (muted colors)
  */
 export function TrendBadge({
   value,
@@ -113,7 +112,6 @@ export function TrendBadge({
 }) {
   const isPositive = value > 0;
   const isNegative = value < 0;
-  const isNeutral = value === 0;
 
   const variant = isPositive ? 'success' : isNegative ? 'error' : 'default';
   const arrow = isPositive ? '↑' : isNegative ? '↓' : '→';

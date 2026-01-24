@@ -99,21 +99,21 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
   const [showDetails, setShowDetails] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center p-4">
       <div className="max-w-lg w-full">
         {/* Error Icon */}
         <div className="flex justify-center mb-6">
-          <div className="p-4 bg-red-500/10 rounded-full">
-            <AlertTriangle className="w-12 h-12 text-red-400" />
+          <div className="p-4 bg-[#C0736D]/10 rounded-full">
+            <AlertTriangle className="w-12 h-12 text-[#C0736D]" />
           </div>
         </div>
 
         {/* Error Message */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">
+          <h1 className="text-2xl font-bold text-[#2D3436] mb-2">
             Er ging iets mis
           </h1>
-          <p className="text-gray-400">
+          <p className="text-[#636E72]">
             Er is een onverwachte fout opgetreden. Probeer de pagina te vernieuwen
             of ga terug naar de startpagina.
           </p>
@@ -123,21 +123,21 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
           <button
             onClick={onRetry}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#28EBCF] text-gray-900 font-medium rounded-lg hover:bg-[#20D4BA] transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#7C9885] text-white font-medium rounded-lg hover:bg-[#6B8A74] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Opnieuw proberen
           </button>
           <button
             onClick={onReload}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#ECEEED] text-[#2D3436] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Pagina herladen
           </button>
           <button
             onClick={onGoHome}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FEFEFE] border border-[#E8E8E6] text-[#636E72] font-medium rounded-lg hover:bg-[#F5F6F4] transition-colors"
           >
             <Home className="w-4 h-4" />
             Naar start
@@ -146,16 +146,16 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
 
         {/* Error Details (collapsible) */}
         {process.env.NODE_ENV === 'development' && error && (
-          <div className="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden">
+          <div className="bg-[#FEFEFE] rounded-xl border border-[#E8E8E6] overflow-hidden">
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800/50 transition-colors"
+              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[#F5F6F4] transition-colors"
             >
-              <span className="flex items-center gap-2 text-sm text-gray-400">
+              <span className="flex items-center gap-2 text-sm text-[#636E72]">
                 <Bug className="w-4 h-4" />
                 Technische details
               </span>
-              <span className="text-gray-500 text-xs">
+              <span className="text-[#B2BEC3] text-xs">
                 {showDetails ? 'Verbergen' : 'Tonen'}
               </span>
             </button>
@@ -164,10 +164,10 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
               <div className="px-4 pb-4 space-y-3">
                 {/* Error message */}
                 <div>
-                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                  <span className="text-xs text-[#B2BEC3] uppercase tracking-wider block mb-1">
                     Error
                   </span>
-                  <code className="text-sm text-red-400 font-mono block bg-gray-900/50 rounded p-2 overflow-x-auto">
+                  <code className="text-sm text-[#C0736D] font-mono block bg-[#F5F6F4] rounded p-2 overflow-x-auto">
                     {error.toString()}
                   </code>
                 </div>
@@ -175,10 +175,10 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
                 {/* Stack trace */}
                 {errorInfo?.componentStack && (
                   <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    <span className="text-xs text-[#B2BEC3] uppercase tracking-wider block mb-1">
                       Component Stack
                     </span>
-                    <pre className="text-xs text-gray-400 font-mono bg-gray-900/50 rounded p-2 overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap">
+                    <pre className="text-xs text-[#636E72] font-mono bg-[#F5F6F4] rounded p-2 overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap">
                       {errorInfo.componentStack}
                     </pre>
                   </div>
@@ -197,20 +197,20 @@ function PageErrorFallback({ error, errorInfo, onRetry, onReload, onGoHome }) {
  */
 function ComponentErrorFallback({ error, onRetry }) {
   return (
-    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+    <div className="bg-[#C0736D]/10 border border-[#C0736D]/20 rounded-xl p-4">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="w-5 h-5 text-[#C0736D] flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium text-red-400 mb-1">
+          <h4 className="text-sm font-medium text-[#C0736D] mb-1">
             Component fout
           </h4>
-          <p className="text-sm text-gray-400 mb-3">
+          <p className="text-sm text-[#636E72] mb-3">
             Dit onderdeel kon niet worden geladen.
           </p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="text-sm text-[#28EBCF] hover:text-[#20D4BA] flex items-center gap-1.5"
+              className="text-sm text-[#7C9885] hover:text-[#6B8A74] flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Opnieuw proberen

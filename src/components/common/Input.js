@@ -2,9 +2,9 @@ import React, { forwardRef } from 'react';
 import { Search, X } from 'lucide-react';
 
 /**
- * Input Component
+ * Input Component - Pastel Design System
  *
- * Base input with consistent styling
+ * Calm, subtle inputs with soft pastel colors
  */
 export const Input = forwardRef(function Input(
   { className = '', error, ...props },
@@ -12,15 +12,16 @@ export const Input = forwardRef(function Input(
 ) {
   const baseClasses = `
     w-full px-4 py-3
-    bg-gray-800/40 border rounded-xl
-    text-white placeholder-gray-500
-    focus:outline-none focus:ring-2 focus:ring-[#28EBCF]/10
-    transition-all
+    bg-[#FEFEFE] border rounded-2xl
+    text-[#2D3436] placeholder-[#B2BEC3]
+    focus:outline-none focus:ring-2 focus:ring-[#7C9885]/20 focus:border-[#7C9885]
+    transition-all duration-200
+    shadow-[0_1px_3px_rgba(45,52,54,0.04)]
   `;
 
   const borderClasses = error
-    ? 'border-red-500/50 focus:border-red-500/50'
-    : 'border-gray-700/50 focus:border-[#28EBCF]/40';
+    ? 'border-[#C0736D]/50 focus:border-[#C0736D]'
+    : 'border-[#E8E8E6]';
 
   return (
     <input
@@ -46,21 +47,21 @@ export function SearchInput({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1 bg-gray-700/30 rounded">
-        <Search className="w-4 h-4 text-gray-500" />
+      <div className="absolute left-4 top-1/2 -translate-y-1/2">
+        <Search className="w-4 h-4 text-[#B2BEC3]" />
       </div>
       <input
         type="text"
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full pl-12 pr-10 py-3 bg-gray-800/40 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#28EBCF]/40 focus:ring-2 focus:ring-[#28EBCF]/10 transition-all"
+        className="w-full pl-11 pr-10 py-3 bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] focus:ring-2 focus:ring-[#7C9885]/20 transition-all shadow-[0_1px_3px_rgba(45,52,54,0.04)]"
         {...props}
       />
       {hasValue && onClear && (
         <button
           onClick={onClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-white hover:bg-gray-700/50 rounded transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#B2BEC3] hover:text-[#636E72] hover:bg-[#F5F6F4] rounded-xl transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -83,17 +84,17 @@ export function InputGroup({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-[11px] text-gray-500 mb-1.5 font-medium uppercase tracking-wider">
+        <label className="block text-sm text-[#636E72] mb-2 font-medium">
           {label}
-          {required && <span className="text-red-400 ml-1">*</span>}
+          {required && <span className="text-[#C0736D] ml-1">*</span>}
         </label>
       )}
       {children}
       {hint && !error && (
-        <p className="mt-1.5 text-xs text-gray-500">{hint}</p>
+        <p className="mt-2 text-xs text-[#B2BEC3]">{hint}</p>
       )}
       {error && (
-        <p className="mt-1.5 text-xs text-red-400">{error}</p>
+        <p className="mt-2 text-xs text-[#C0736D]">{error}</p>
       )}
     </div>
   );
@@ -116,7 +117,7 @@ export function NumberInput({
   return (
     <div className={`relative ${className}`}>
       {prefix && (
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#636E72] text-sm">
           {prefix}
         </span>
       )}
@@ -128,17 +129,17 @@ export function NumberInput({
         max={max}
         step={step}
         className={`
-          w-full py-3 bg-gray-800/40 border border-gray-700/50 rounded-xl
-          text-white font-mono tabular-nums text-right
-          focus:outline-none focus:border-[#28EBCF]/40 focus:ring-2 focus:ring-[#28EBCF]/10
-          transition-all
+          w-full py-3 bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl
+          text-[#2D3436] font-mono tabular-nums text-right
+          focus:outline-none focus:border-[#7C9885] focus:ring-2 focus:ring-[#7C9885]/20
+          transition-all shadow-[0_1px_3px_rgba(45,52,54,0.04)]
           ${prefix ? 'pl-10' : 'pl-4'}
           ${suffix ? 'pr-10' : 'pr-4'}
         `}
         {...props}
       />
       {suffix && (
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#636E72] text-sm">
           {suffix}
         </span>
       )}

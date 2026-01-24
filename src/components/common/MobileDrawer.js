@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 /**
- * MobileDrawer Component
+ * MobileDrawer Component - Premium Banking Style
  *
  * Reusable slide-in drawer for mobile interfaces
- * Based on Sidebar.js pattern with enhanced flexibility
  */
 export function MobileDrawer({
   isOpen,
@@ -65,7 +64,7 @@ export function MobileDrawer({
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-[#2D3436]/40 z-40 lg:hidden backdrop-blur-sm"
           onClick={closeOnBackdrop ? onClose : undefined}
           aria-hidden="true"
         />
@@ -75,7 +74,7 @@ export function MobileDrawer({
       <aside
         className={`
           fixed top-0 ${pos.position} h-full w-80 max-w-[85vw]
-          bg-[#1A1B1F] ${pos.border} border-gray-800/50 z-50
+          bg-[#FEFEFE] ${pos.border} border-[#E8E8E6] z-50 shadow-[4px_0_12px_rgba(45,52,54,0.06)]
           transform transition-transform duration-300 ease-out
           lg:hidden
           ${pos.translate}
@@ -87,9 +86,9 @@ export function MobileDrawer({
       >
         <div className="h-full flex flex-col">
           {/* Header */}
-          <div className="h-14 flex items-center justify-between px-4 border-b border-gray-800/50 flex-shrink-0">
+          <div className="h-14 flex items-center justify-between px-4 border-b border-[#E8E8E6] flex-shrink-0">
             {title && (
-              <h2 className="text-white font-semibold text-lg">{title}</h2>
+              <h2 className="text-[#2D3436] font-semibold text-lg">{title}</h2>
             )}
             {showCloseButton && (
               <button
@@ -97,9 +96,9 @@ export function MobileDrawer({
                 className={`
                   p-2.5 min-w-[44px] min-h-[44px]
                   flex items-center justify-center
-                  text-gray-400 hover:text-white hover:bg-gray-800/50
+                  text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4]
                   rounded-lg transition-colors
-                  active:bg-gray-700
+                  active:bg-[#ECEEED]
                   ${!title ? 'ml-auto' : ''}
                 `}
                 aria-label="Sluiten"
@@ -116,7 +115,7 @@ export function MobileDrawer({
 
           {/* Footer */}
           {footer && (
-            <div className="p-4 border-t border-gray-800/50 flex-shrink-0 bg-[#1A1B1F]">
+            <div className="p-4 border-t border-[#E8E8E6] flex-shrink-0 bg-[#FEFEFE]">
               {footer}
             </div>
           )}
@@ -131,7 +130,7 @@ export function MobileDrawer({
  */
 export function DrawerHeader({ children, className = '' }) {
   return (
-    <div className={`px-4 py-3 border-b border-gray-800/50 ${className}`}>
+    <div className={`px-4 py-3 border-b border-[#E8E8E6] ${className}`}>
       {children}
     </div>
   );
@@ -155,7 +154,7 @@ export function DrawerSection({ title, children, className = '' }) {
   return (
     <div className={`mb-4 ${className}`}>
       {title && (
-        <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-2 px-1">
+        <h3 className="text-xs text-[#636E72] uppercase tracking-wider mb-2 px-1">
           {title}
         </h3>
       )}

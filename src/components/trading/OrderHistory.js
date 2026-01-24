@@ -12,13 +12,13 @@ import {
 } from '../common/DataCard';
 
 const STATUS_COLORS = {
-  'Submitted': 'text-blue-400 bg-blue-900/20',
-  'Filled': 'text-green-400 bg-green-900/20',
-  'PartiallyFilled': 'text-orange-400 bg-orange-900/20',
-  'Cancelled': 'text-gray-400 bg-gray-900/20',
-  'Rejected': 'text-red-400 bg-red-900/20',
-  'PendingSubmit': 'text-yellow-400 bg-yellow-900/20',
-  'PreSubmitted': 'text-yellow-400 bg-yellow-900/20',
+  'Submitted': 'text-[#6B7B8A] bg-[#6B7B8A]/10',
+  'Filled': 'text-[#7C9885] bg-[#7C9885]/10',
+  'PartiallyFilled': 'text-[#C9A962] bg-[#C9A962]/10',
+  'Cancelled': 'text-[#636E72] bg-[#ECEEED]',
+  'Rejected': 'text-[#C0736D] bg-[#C0736D]/10',
+  'PendingSubmit': 'text-[#C9A962] bg-[#C9A962]/10',
+  'PreSubmitted': 'text-[#C9A962] bg-[#C9A962]/10',
 };
 
 export default function OrderHistory() {
@@ -31,21 +31,21 @@ export default function OrderHistory() {
   };
 
   const getStatusColor = (status) => {
-    return STATUS_COLORS[status] || 'text-gray-400 bg-gray-900/20';
+    return STATUS_COLORS[status] || 'text-[#636E72] bg-[#ECEEED]';
   };
 
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
+    <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <History className="w-5 h-5 text-[#28EBCF]" />
+      <div className="p-4 border-b border-[#E8E8E6] flex justify-between items-center">
+        <h3 className="text-lg font-bold text-[#2D3436] flex items-center gap-2">
+          <History className="w-5 h-5 text-[#7C9885]" />
           Order History
         </h3>
         <button
           onClick={fetchOrders}
           disabled={loading}
-          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -83,7 +83,7 @@ export default function OrderHistory() {
                       label="Side"
                       value={
                         <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                          isBuy ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                          isBuy ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
                         }`}>
                           {order.side}
                         </span>
@@ -115,47 +115,47 @@ export default function OrderHistory() {
         /* Desktop Table View */
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-800/50">
+            <thead className="bg-[#F5F6F4]">
               <tr>
-                <th className="text-left text-gray-400 text-sm font-medium px-4 py-3">Order ID</th>
-                <th className="text-left text-gray-400 text-sm font-medium px-4 py-3">Symbol</th>
-                <th className="text-left text-gray-400 text-sm font-medium px-4 py-3">Side</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Qty</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Filled</th>
-                <th className="text-right text-gray-400 text-sm font-medium px-4 py-3">Avg Price</th>
-                <th className="text-center text-gray-400 text-sm font-medium px-4 py-3">Status</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Order ID</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Symbol</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Side</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Qty</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Filled</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Avg Price</th>
+                <th className="text-center text-[#636E72] text-sm font-medium px-4 py-3">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800">
+            <tbody className="divide-y divide-[#E8E8E6]">
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center text-gray-500 py-8">
+                  <td colSpan={7} className="text-center text-[#B2BEC3] py-8">
                     No orders found
                   </td>
                 </tr>
               ) : (
                 orders.map((order, idx) => (
-                  <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
-                    <td className="px-4 py-3 text-gray-400 text-sm font-mono">
+                  <tr key={idx} className="hover:bg-[#F5F6F4] transition-colors">
+                    <td className="px-4 py-3 text-[#636E72] text-sm font-mono">
                       {order.order_id?.substring(0, 8) || '-'}
                     </td>
-                    <td className="px-4 py-3 text-white font-medium">
+                    <td className="px-4 py-3 text-[#2D3436] font-medium">
                       {order.symbol}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                        order.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                        order.side === 'BUY' ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
                       }`}>
                         {order.side}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-300">
+                    <td className="px-4 py-3 text-right text-[#636E72]">
                       {order.quantity}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-300">
+                    <td className="px-4 py-3 text-right text-[#636E72]">
                       {order.filled_quantity || 0}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-300">
+                    <td className="px-4 py-3 text-right text-[#636E72]">
                       {formatPrice(order.avg_fill_price)}
                     </td>
                     <td className="px-4 py-3 text-center">

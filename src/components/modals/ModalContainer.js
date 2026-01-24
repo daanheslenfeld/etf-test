@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 
 /**
- * ModalContainer Component
+ * ModalContainer Component - Premium Banking Style
  *
  * Base modal wrapper with backdrop, animations, and accessibility
  */
@@ -64,13 +64,13 @@ export function ModalContainer({
       onClick={handleBackdropClick}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[#2D3436]/50 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
         className={`
           relative w-full ${sizes[size] || sizes.md}
-          bg-[#1A1B1F] border border-gray-700/50 rounded-2xl shadow-2xl
+          bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)]
           transform transition-all duration-200
           animate-modal-enter
           ${className}
@@ -81,7 +81,7 @@ export function ModalContainer({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors z-10"
+            className="absolute top-4 right-4 p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors z-10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -116,25 +116,25 @@ export function ModalHeader({
   title,
   subtitle,
   icon: Icon,
-  iconColor = '#28EBCF',
+  iconColor = '#7C9885',
   variant = 'default', // 'default' | 'warning' | 'danger' | 'success'
   children,
   className = '',
 }) {
   const variants = {
-    default: 'border-gray-700/50',
-    warning: 'border-amber-500/30 bg-amber-500/5',
-    danger: 'border-red-500/30 bg-red-500/5',
-    success: 'border-emerald-500/30 bg-emerald-500/5',
-    info: 'border-blue-500/30 bg-blue-500/5',
+    default: 'border-[#E8E8E6]',
+    warning: 'border-[#C9A962]/30 bg-[#C9A962]/5',
+    danger: 'border-[#C0736D]/30 bg-[#C0736D]/5',
+    success: 'border-[#7C9885]/30 bg-[#7C9885]/5',
+    info: 'border-[#6B7B8A]/30 bg-[#6B7B8A]/5',
   };
 
   const iconColors = {
     default: iconColor,
-    warning: '#F59E0B',
-    danger: '#EF4444',
-    success: '#10B981',
-    info: '#3B82F6',
+    warning: '#C9A962',
+    danger: '#C0736D',
+    success: '#7C9885',
+    info: '#6B7B8A',
   };
 
   return (
@@ -150,10 +150,10 @@ export function ModalHeader({
         )}
         <div className="flex-1 min-w-0">
           {title && (
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
+            <h2 className="text-lg font-semibold text-[#2D3436]">{title}</h2>
           )}
           {subtitle && (
-            <p className="text-sm text-gray-400 mt-0.5">{subtitle}</p>
+            <p className="text-sm text-[#636E72] mt-0.5">{subtitle}</p>
           )}
           {children}
         </div>
@@ -178,7 +178,7 @@ export function ModalBody({ children, className = '' }) {
  */
 export function ModalFooter({ children, className = '' }) {
   return (
-    <div className={`p-5 border-t border-gray-700/50 flex items-center justify-end gap-3 ${className}`}>
+    <div className={`p-5 border-t border-[#E8E8E6] flex items-center justify-end gap-3 ${className}`}>
       {children}
     </div>
   );

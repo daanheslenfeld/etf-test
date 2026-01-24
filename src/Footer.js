@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#0F1014] border-t border-gray-800 text-gray-400 text-sm">
+    <footer className="bg-[#FEFEFE] border-t border-[#E8E8E6] text-[#636E72] text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Disclaimer Section */}
         <div className="mb-8 space-y-4 text-xs leading-relaxed">
@@ -27,35 +27,35 @@ const Footer = () => {
         {/* Links Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold text-white mb-3">PIGG Capital</h3>
+            <h3 className="font-semibold text-[#2D3436] mb-3">PIGG Capital</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Status</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Carrières</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Newsroom</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Veiligheid</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Status</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Carrières</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Newsroom</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Veiligheid</a></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-3">Informatie</h3>
+            <h3 className="font-semibold text-[#2D3436] mb-3">Informatie</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Documenten</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Privacybeleid</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Sustainability-related disclosures</a></li>
-              <li><a href="#" className="hover:text-[#28EBCF] transition-colors">Privacy-instellingen</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Documenten</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Privacybeleid</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Sustainability-related disclosures</a></li>
+              <li><a href="#" className="hover:text-[#7C9885] transition-colors">Privacy-instellingen</a></li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-gray-800 text-xs text-gray-500">
+        <div className="pt-8 border-t border-[#E8E8E6] text-xs text-[#B2BEC3]">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2">
-              <a href="#" className="hover:text-[#28EBCF] transition-colors">Over ons</a>
+              <a href="#" className="hover:text-[#7C9885] transition-colors">Over ons</a>
               <span className="hidden md:inline">|</span>
-              <a href="#" className="hover:text-[#28EBCF] transition-colors">Contact</a>
+              <a href="#" className="hover:text-[#7C9885] transition-colors">Contact</a>
               <span className="hidden md:inline">|</span>
-              <a href="#" className="hover:text-[#28EBCF] transition-colors">Juridische kennisgeving</a>
+              <a href="#" className="hover:text-[#7C9885] transition-colors">Juridische kennisgeving</a>
             </div>
             <div className="text-center md:text-right">
               Copyright © PIGG Capital Bank GmbH | Alle rechten voorbehouden.

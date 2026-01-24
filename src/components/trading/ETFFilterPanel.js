@@ -1,11 +1,11 @@
-// ETF Filter Panel - Premium Fintech Style with Collapsible Sections
+// ETF Filter Panel - Pastel Design System with Collapsible Sections
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, X, Search, Building2, Filter, Sliders } from 'lucide-react';
 import { CATEGORY_FILTERS, getFilterOptions } from '../../data/filterDefinitions';
 import { CollapsibleFilterSection } from '../common/CollapsibleSection';
 
 /**
- * Premium single-select dropdown filter with fixed positioning
+ * Pastel single-select dropdown filter with fixed positioning
  */
 function FilterDropdown({ label, options, value, onChange, placeholder = "Alle", icon: Icon, compact = false }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,24 +74,24 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
   return (
     <div className="relative">
       {!compact && (
-        <label className="block text-[11px] text-gray-500 mb-1.5 font-medium uppercase tracking-wider">
+        <label className="block text-[11px] text-[#5F7066] mb-1.5 font-medium uppercase tracking-wider">
           {label}
         </label>
       )}
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-sm min-h-[44px] rounded-lg border transition-all duration-200 ${
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm min-h-[44px] rounded-2xl border transition-all duration-200 ${
           hasValue
-            ? 'bg-gradient-to-r from-[#28EBCF]/10 to-[#28EBCF]/5 border-[#28EBCF]/30 text-white shadow-sm shadow-[#28EBCF]/5'
-            : 'bg-gray-900/40 border-gray-700/30 text-gray-300 hover:border-gray-600 hover:bg-gray-800/60'
+            ? 'bg-[#E6F0EB] border-[#8AB4A0]/30 text-[#2D3E36] shadow-[0_1px_3px_rgba(45,62,54,0.05)]'
+            : 'bg-white border-[#E4E8E5] text-[#5F7066] hover:border-[#C8D0CA] hover:bg-[#FAFBF9]'
         }`}
       >
-        <span className={`flex items-center gap-2 ${hasValue ? 'text-white' : 'text-gray-400'}`}>
+        <span className={`flex items-center gap-2 ${hasValue ? 'text-[#2D3E36]' : 'text-[#5F7066]'}`}>
           {Icon && <Icon className="w-3.5 h-3.5 opacity-60" />}
           <span className="truncate">{compact ? label : displayValue}</span>
           {compact && hasValue && (
-            <span className="text-[#28EBCF]">: {displayValue}</span>
+            <span className="text-[#5F8A74]">: {displayValue}</span>
           )}
         </span>
         <div className="flex items-center gap-1.5">
@@ -101,12 +101,12 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
                 e.stopPropagation();
                 onChange('all');
               }}
-              className="p-1 hover:bg-white/10 rounded transition-colors"
+              className="p-1 hover:bg-[#F0F2EE] rounded-lg transition-colors"
             >
-              <X className="w-4 h-4 text-gray-400 hover:text-white" />
+              <X className="w-4 h-4 text-[#95A39A] hover:text-[#5F7066]" />
             </span>
           )}
-          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-[#95A39A] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
@@ -114,9 +114,9 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
         <div
           ref={dropdownRef}
           style={dropdownStyle}
-          className="z-[9999] bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl"
+          className="z-[9999] bg-white border border-[#E4E8E5] rounded-2xl shadow-[0_8px_32px_rgba(45,62,54,0.12)] overflow-hidden"
         >
-          <div className="max-h-48 overflow-y-auto py-1">
+          <div className="max-h-48 overflow-y-auto py-1.5">
             {options.map((option) => (
               <button
                 key={option.value}
@@ -126,13 +126,13 @@ function FilterDropdown({ label, options, value, onChange, placeholder = "Alle",
                 }}
                 className={`w-full flex items-center justify-between px-4 py-2.5 text-sm text-left transition-all ${
                   value === option.value
-                    ? 'bg-[#28EBCF]/10 text-[#28EBCF]'
-                    : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                    ? 'bg-[#E6F0EB] text-[#5F8A74]'
+                    : 'text-[#5F7066] hover:bg-[#FAFBF9] hover:text-[#2D3E36]'
                 }`}
               >
                 <span>{option.label}</span>
                 {value === option.value && (
-                  <Check className="w-4 h-4 text-[#28EBCF]" />
+                  <Check className="w-4 h-4 text-[#8AB4A0]" />
                 )}
               </button>
             ))}
@@ -220,19 +220,19 @@ function ProviderDropdown({ label = "Aanbieder", providers = [], selectedProvide
 
   return (
     <div className="relative">
-      <label className="block text-[11px] text-gray-500 mb-1.5 font-medium uppercase tracking-wider">
+      <label className="block text-[11px] text-[#5F7066] mb-1.5 font-medium uppercase tracking-wider">
         {label}
       </label>
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-sm min-h-[44px] rounded-lg border transition-all duration-200 ${
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm min-h-[44px] rounded-2xl border transition-all duration-200 ${
           hasValue
-            ? 'bg-gradient-to-r from-[#28EBCF]/10 to-[#28EBCF]/5 border-[#28EBCF]/30 text-white shadow-sm shadow-[#28EBCF]/5'
-            : 'bg-gray-900/40 border-gray-700/30 text-gray-300 hover:border-gray-600 hover:bg-gray-800/60'
+            ? 'bg-[#E6F0EB] border-[#8AB4A0]/30 text-[#2D3E36] shadow-[0_1px_3px_rgba(45,62,54,0.05)]'
+            : 'bg-white border-[#E4E8E5] text-[#5F7066] hover:border-[#C8D0CA] hover:bg-[#FAFBF9]'
         }`}
       >
-        <span className={`flex items-center gap-2 ${hasValue ? 'text-white' : 'text-gray-400'}`}>
+        <span className={`flex items-center gap-2 ${hasValue ? 'text-[#2D3E36]' : 'text-[#5F7066]'}`}>
           <Building2 className="w-3.5 h-3.5 opacity-60" />
           <span className="truncate">{displayValue}</span>
         </span>
@@ -243,12 +243,12 @@ function ProviderDropdown({ label = "Aanbieder", providers = [], selectedProvide
                 e.stopPropagation();
                 handleClearAll();
               }}
-              className="p-1 hover:bg-white/10 rounded transition-colors"
+              className="p-1 hover:bg-[#F0F2EE] rounded-lg transition-colors"
             >
-              <X className="w-4 h-4 text-gray-400 hover:text-white" />
+              <X className="w-4 h-4 text-[#95A39A] hover:text-[#5F7066]" />
             </span>
           )}
-          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-[#95A39A] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
@@ -256,25 +256,25 @@ function ProviderDropdown({ label = "Aanbieder", providers = [], selectedProvide
         <div
           ref={dropdownRef}
           style={dropdownStyle}
-          className="z-[9999] bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl"
+          className="z-[9999] bg-white border border-[#E4E8E5] rounded-2xl shadow-[0_8px_32px_rgba(45,62,54,0.12)] overflow-hidden"
         >
           {/* Search */}
-          <div className="p-2 border-b border-gray-800">
+          <div className="p-2.5 border-b border-[#E4E8E5]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#95A39A]" />
               <input
                 type="text"
                 placeholder="Zoek aanbieder..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-sm bg-gray-800/60 border border-gray-700/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#28EBCF]/30"
+                className="w-full pl-9 pr-3 py-2 text-sm bg-[#FAFBF9] border border-[#E4E8E5] rounded-xl text-[#2D3E36] placeholder-[#95A39A] focus:outline-none focus:border-[#8AB4A0]/40 focus:ring-2 focus:ring-[#8AB4A0]/10"
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>
 
           {/* Options */}
-          <div className="max-h-48 overflow-y-auto py-1">
+          <div className="max-h-48 overflow-y-auto py-1.5">
             {filteredProviders.map((provider) => {
               const isSelected = selectedProviders.includes(provider.value);
               return (
@@ -283,28 +283,28 @@ function ProviderDropdown({ label = "Aanbieder", providers = [], selectedProvide
                   onClick={() => onToggleProvider(provider.value)}
                   className={`w-full flex items-center justify-between px-4 py-2.5 text-sm text-left transition-all ${
                     isSelected
-                      ? 'bg-[#28EBCF]/10 text-[#28EBCF]'
-                      : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                      ? 'bg-[#E6F0EB] text-[#5F8A74]'
+                      : 'text-[#5F7066] hover:bg-[#FAFBF9] hover:text-[#2D3E36]'
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                    <span className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
                       isSelected
-                        ? 'bg-[#28EBCF] border-[#28EBCF]'
-                        : 'border-gray-600'
+                        ? 'bg-[#8AB4A0] border-[#8AB4A0]'
+                        : 'border-[#C8D0CA]'
                     }`}>
-                      {isSelected && <Check className="w-3 h-3 text-gray-900" />}
+                      {isSelected && <Check className="w-3 h-3 text-white" />}
                     </span>
                     <span>{provider.label}</span>
                   </span>
                   {provider.count !== undefined && provider.count > 0 && (
-                    <span className="text-xs text-gray-500">{provider.count}</span>
+                    <span className="text-xs text-[#95A39A]">{provider.count}</span>
                   )}
                 </button>
               );
             })}
             {filteredProviders.length === 0 && (
-              <div className="px-4 py-3 text-gray-500 text-sm">Geen aanbieders gevonden</div>
+              <div className="px-4 py-3 text-[#95A39A] text-sm">Geen aanbieders gevonden</div>
             )}
           </div>
         </div>
@@ -314,7 +314,7 @@ function ProviderDropdown({ label = "Aanbieder", providers = [], selectedProvide
 }
 
 /**
- * ETFFilterPanel - Premium Fintech Style with Sections
+ * ETFFilterPanel - Pastel Design System with Sections
  */
 export default function ETFFilterPanel({
   category,
@@ -328,7 +328,7 @@ export default function ETFFilterPanel({
   const categoryConfig = CATEGORY_FILTERS[category];
 
   if (!categoryConfig) {
-    return <div className="text-red-500 p-4">No config for category: {category}</div>;
+    return <div className="text-[#B8847A] p-4 bg-[#F8EFED] rounded-xl">No config for category: {category}</div>;
   }
 
   // Count active filters per section

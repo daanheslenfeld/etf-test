@@ -22,55 +22,55 @@ import { MobileDrawer, DrawerSection } from '../common/MobileDrawer';
 import { Button } from '../common';
 import ETFFilterPanel from './ETFFilterPanel';
 
-// Category configuration with colors and gradients
+// Category configuration with premium banking colors
 const CATEGORY_CONFIG = {
   equity: {
     icon: TrendingUp,
     label: 'Aandelen',
-    color: '#28EBCF',
-    gradient: 'from-emerald-500/20 to-teal-500/10',
+    color: '#7C9885',
+    gradient: 'from-[#7C9885]/20 to-[#7C9885]/5',
     description: 'Aandelen ETFs',
   },
   bonds: {
     icon: Building,
     label: 'Obligaties',
-    color: '#60A5FA',
-    gradient: 'from-blue-500/20 to-indigo-500/10',
+    color: '#6B7B8A',
+    gradient: 'from-[#6B7B8A]/20 to-[#6B7B8A]/5',
     description: 'Obligatie ETFs',
   },
   commodities: {
     icon: Gem,
     label: 'Commodities',
-    color: '#FBBF24',
-    gradient: 'from-amber-500/20 to-yellow-500/10',
+    color: '#C9A962',
+    gradient: 'from-[#C9A962]/20 to-[#C9A962]/5',
     description: 'Grondstof ETFs',
   },
   realEstate: {
     icon: Home,
     label: 'Vastgoed',
-    color: '#F472B6',
-    gradient: 'from-pink-500/20 to-rose-500/10',
+    color: '#8B7B9A',
+    gradient: 'from-[#8B7B9A]/20 to-[#8B7B9A]/5',
     description: 'Vastgoed ETFs',
   },
   moneyMarket: {
     icon: Wallet,
     label: 'Money Market',
-    color: '#A78BFA',
-    gradient: 'from-violet-500/20 to-purple-500/10',
+    color: '#6B7B8A',
+    gradient: 'from-[#6B7B8A]/20 to-[#6B7B8A]/5',
     description: 'Geldmarkt ETFs',
   },
   crypto: {
     icon: Bitcoin,
     label: 'Crypto',
-    color: '#FB923C',
-    gradient: 'from-orange-500/20 to-amber-500/10',
+    color: '#C9A962',
+    gradient: 'from-[#C9A962]/20 to-[#C9A962]/5',
     description: 'Crypto ETPs',
   },
   mixed: {
     icon: Layers,
     label: 'Mixed',
-    color: '#94A3B8',
-    gradient: 'from-slate-500/20 to-gray-500/10',
+    color: '#636E72',
+    gradient: 'from-[#636E72]/20 to-[#636E72]/5',
     description: 'Multi-Asset ETFs',
   },
 };
@@ -120,27 +120,24 @@ export default function ETFBrowser({ onAddToOrder }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border border-gray-800/50 rounded-2xl overflow-hidden shadow-2xl">
+    <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
       {/* Premium Header */}
       <div className="relative">
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#28EBCF]/5 via-transparent to-transparent pointer-events-none" />
-
-        <div className="relative p-6 border-b border-gray-800/50">
+        <div className="relative p-6 border-b border-[#E8E8E6]">
           {/* Title row */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-[#28EBCF]/20 to-[#28EBCF]/5 rounded-xl border border-[#28EBCF]/20">
-                <TrendingUp className="w-5 h-5 text-[#28EBCF]" />
+              <div className="p-2.5 bg-[#7C9885]/10 rounded-xl border border-[#7C9885]/20">
+                <TrendingUp className="w-5 h-5 text-[#7C9885]" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white tracking-tight">ETF Browser</h2>
-                <p className="text-sm text-gray-500">Ontdek & Trade</p>
+                <h2 className="text-xl font-semibold text-[#2D3436] tracking-tight">ETF Browser</h2>
+                <p className="text-sm text-[#B2BEC3]">Ontdek & Trade</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#28EBCF]/60" />
-              <span className="px-3 py-1.5 bg-[#28EBCF]/10 text-[#28EBCF] text-sm rounded-full font-medium border border-[#28EBCF]/20">
+              <Sparkles className="w-4 h-4 text-[#7C9885]/60" />
+              <span className="px-3 py-1.5 bg-[#7C9885]/10 text-[#7C9885] text-sm rounded-full font-medium border border-[#7C9885]/20">
                 {getTradableCount()} ETFs
               </span>
             </div>
@@ -160,8 +157,8 @@ export default function ETFBrowser({ onAddToOrder }) {
                   onClick={() => changeCategory(cat.value)}
                   className={`group relative flex flex-col items-center p-3 rounded-xl transition-all duration-200 overflow-hidden ${
                     isActive
-                      ? `bg-gradient-to-br ${config?.gradient || 'from-gray-500/20 to-gray-600/10'} border border-gray-700/30`
-                      : 'bg-gray-800/20 border border-gray-700/30 hover:bg-gray-800/40 hover:border-gray-600/50'
+                      ? `bg-gradient-to-br ${config?.gradient || 'from-[#ECEEED] to-[#F5F6F4]'} border-2 border-[${config?.color}]/30`
+                      : 'bg-[#F5F6F4] border border-[#E8E8E6] hover:bg-[#ECEEED] hover:border-[#D5D5D3]'
                   }`}
                   style={{
                     boxShadow: isActive ? `0 4px 20px ${config?.color}10` : undefined,
@@ -178,7 +175,7 @@ export default function ETFBrowser({ onAddToOrder }) {
                   {/* Icon container */}
                   <div
                     className={`p-2.5 rounded-xl mb-2 transition-all duration-200 ${
-                      isActive ? '' : 'bg-gray-700/20 group-hover:bg-gray-700/40'
+                      isActive ? '' : 'bg-[#FEFEFE] group-hover:bg-[#F5F6F4]'
                     }`}
                     style={{
                       backgroundColor: isActive ? `${config?.color}15` : undefined,
@@ -186,13 +183,13 @@ export default function ETFBrowser({ onAddToOrder }) {
                   >
                     <Icon
                       className="w-4 h-4 transition-colors"
-                      style={{ color: isActive ? config?.color : '#6B7280' }}
+                      style={{ color: isActive ? config?.color : '#636E72' }}
                     />
                   </div>
 
                   {/* Label */}
                   <span className={`text-xs font-medium transition-colors ${
-                    isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'
+                    isActive ? 'text-[#2D3436]' : 'text-[#636E72] group-hover:text-[#2D3436]'
                   }`}>
                     {config?.label || cat.label}
                   </span>
@@ -201,8 +198,8 @@ export default function ETFBrowser({ onAddToOrder }) {
                   <span
                     className={`text-[10px] mt-1 px-1.5 py-0.5 rounded transition-colors ${
                       isActive
-                        ? 'bg-white/10 text-gray-200 font-medium'
-                        : 'text-gray-600 group-hover:text-gray-500'
+                        ? 'bg-white/60 text-[#636E72] font-medium'
+                        : 'text-[#B2BEC3] group-hover:text-[#636E72]'
                     }`}
                   >
                     {count}
@@ -216,15 +213,15 @@ export default function ETFBrowser({ onAddToOrder }) {
           <div className="flex gap-3">
             {/* Search - Premium Style */}
             <div className="relative flex-1">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1 bg-gray-700/30 rounded">
-                <Search className="w-4 h-4 text-gray-500" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1 bg-[#ECEEED] rounded">
+                <Search className="w-4 h-4 text-[#636E72]" />
               </div>
               <input
                 type="text"
                 placeholder="Zoek op naam, symbol of ISIN..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-800/40 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#28EBCF]/40 focus:bg-gray-800/60 focus:ring-2 focus:ring-[#28EBCF]/10 transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885]/40 focus:ring-2 focus:ring-[#7C9885]/10 transition-all"
               />
             </div>
 
@@ -233,15 +230,15 @@ export default function ETFBrowser({ onAddToOrder }) {
               onClick={() => isMobile ? setFilterDrawerOpen(true) : setShowFilters(!showFilters)}
               className={`flex items-center gap-2.5 px-5 py-3 min-h-[48px] rounded-xl text-sm font-medium transition-all duration-300 ${
                 showFilters || filterDrawerOpen || activeFilterCount > 0
-                  ? 'bg-gradient-to-r from-[#28EBCF] to-[#20D4B8] text-gray-900 shadow-lg shadow-[#28EBCF]/20'
-                  : 'bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 border border-gray-700/50 hover:border-gray-600'
+                  ? 'bg-[#7C9885] text-white shadow-[0_2px_8px_rgba(124,152,133,0.25)]'
+                  : 'bg-[#FEFEFE] text-[#636E72] hover:bg-[#F5F6F4] border border-[#E8E8E6] hover:border-[#D5D5D3]'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {activeFilterCount > 0 && (
                 <span className={`px-2 py-0.5 text-xs rounded-full font-semibold ${
-                  showFilters || filterDrawerOpen ? 'bg-gray-900/30 text-gray-900' : 'bg-[#28EBCF] text-gray-900'
+                  showFilters || filterDrawerOpen ? 'bg-white/20 text-white' : 'bg-[#7C9885] text-white'
                 }`}>
                   {activeFilterCount}
                 </span>
@@ -255,7 +252,7 @@ export default function ETFBrowser({ onAddToOrder }) {
             <div className={`overflow-hidden transition-all duration-400 ease-out ${
               showFilters ? 'max-h-[500px] opacity-100 mt-5' : 'max-h-0 opacity-0'
             }`}>
-              <div className="p-5 bg-gray-800/20 rounded-xl border border-gray-700/30">
+              <div className="p-5 bg-[#F5F6F4] rounded-xl border border-[#E8E8E6]">
                 <ETFFilterPanel
                   category={category}
                   filters={filters}
@@ -273,14 +270,14 @@ export default function ETFBrowser({ onAddToOrder }) {
             <div className="flex items-center gap-2">
               <span
                 className="w-2 h-2 rounded-full animate-pulse"
-                style={{ backgroundColor: currentConfig?.color || '#28EBCF' }}
+                style={{ backgroundColor: currentConfig?.color || '#7C9885' }}
               />
-              <span className="text-gray-400 text-sm">
-                <span className="text-white font-semibold">{filteredCount}</span> ETFs gevonden
+              <span className="text-[#636E72] text-sm">
+                <span className="text-[#2D3436] font-semibold">{filteredCount}</span> ETFs gevonden
               </span>
             </div>
             {hasFilters && (
-              <span className="text-gray-500 text-xs bg-gray-800/30 px-2 py-1 rounded">
+              <span className="text-[#B2BEC3] text-xs bg-[#F5F6F4] px-2 py-1 rounded">
                 van {categoryCounts[category]} in {currentConfig?.label || 'deze categorie'}
               </span>
             )}
@@ -290,22 +287,22 @@ export default function ETFBrowser({ onAddToOrder }) {
 
       {/* Sticky Active Filters Bar */}
       {activeFilterCount > 0 && (
-        <div className="sticky top-0 z-20 px-5 py-3 bg-gray-900/80 backdrop-blur-md border-b border-gray-700/30">
+        <div className="sticky top-0 z-20 px-5 py-3 bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider mr-1 hidden sm:inline">
+              <span className="text-xs font-medium text-[#B2BEC3] uppercase tracking-wider mr-1 hidden sm:inline">
                 Actief:
               </span>
               {chips.map((chip) => (
                 <span
                   key={`${chip.filterId}-${chip.value}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#28EBCF]/10 text-[#28EBCF] border border-[#28EBCF]/20 hover:bg-[#28EBCF]/20 transition-all"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[#7C9885]/10 text-[#7C9885] border border-[#7C9885]/20 hover:bg-[#7C9885]/20 transition-all"
                 >
-                  <span className="text-[#28EBCF]/70">{chip.filterLabel}:</span>
+                  <span className="text-[#7C9885]/70">{chip.filterLabel}:</span>
                   <span>{chip.label || chip.valueLabel}</span>
                   <button
                     onClick={() => removeFilter(chip.filterId, chip.value)}
-                    className="ml-0.5 p-0.5 hover:bg-[#28EBCF]/20 rounded-full transition-colors"
+                    className="ml-0.5 p-0.5 hover:bg-[#7C9885]/20 rounded-full transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -314,7 +311,7 @@ export default function ETFBrowser({ onAddToOrder }) {
             </div>
             <button
               onClick={resetFilters}
-              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white px-2.5 py-1.5 hover:bg-gray-700/50 rounded-lg transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 text-xs text-[#636E72] hover:text-[#2D3436] px-2.5 py-1.5 hover:bg-[#F5F6F4] rounded-lg transition-colors whitespace-nowrap"
             >
               <RotateCcw className="w-3 h-3" />
               <span className="hidden sm:inline">Wis alles</span>
@@ -324,94 +321,94 @@ export default function ETFBrowser({ onAddToOrder }) {
       )}
 
       {/* Table - Premium Style */}
-      <div className="overflow-x-auto max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+      <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
         <table className="w-full">
-          <thead className="bg-gray-800/50 sticky top-0 z-10 backdrop-blur-sm">
+          <thead className="bg-[#F5F6F4] sticky top-0 z-10">
             <tr>
               <th
-                className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
+                className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider cursor-pointer hover:text-[#2D3436] transition-colors group"
                 onClick={() => handleSort('symbol')}
               >
                 <span className="flex items-center gap-2">
                   Symbol
                   {sortBy === 'symbol' && (
-                    <span className="text-[#28EBCF] bg-[#28EBCF]/10 px-1.5 py-0.5 rounded text-[10px]">
+                    <span className="text-[#7C9885] bg-[#7C9885]/10 px-1.5 py-0.5 rounded text-[10px]">
                       {sortDir === 'asc' ? '↑' : '↓'}
                     </span>
                   )}
                 </span>
               </th>
               <th
-                className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
+                className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider cursor-pointer hover:text-[#2D3436] transition-colors"
                 onClick={() => handleSort('name')}
               >
                 <span className="flex items-center gap-2">
                   Naam
                   {sortBy === 'name' && (
-                    <span className="text-[#28EBCF] bg-[#28EBCF]/10 px-1.5 py-0.5 rounded text-[10px]">
+                    <span className="text-[#7C9885] bg-[#7C9885]/10 px-1.5 py-0.5 rounded text-[10px]">
                       {sortDir === 'asc' ? '↑' : '↓'}
                     </span>
                   )}
                 </span>
               </th>
               <th
-                className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors hidden md:table-cell"
+                className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider cursor-pointer hover:text-[#2D3436] transition-colors hidden md:table-cell"
                 onClick={() => handleSort('exchange')}
               >
                 <span className="flex items-center gap-2">
                   Exchange
                   {sortBy === 'exchange' && (
-                    <span className="text-[#28EBCF] bg-[#28EBCF]/10 px-1.5 py-0.5 rounded text-[10px]">
+                    <span className="text-[#7C9885] bg-[#7C9885]/10 px-1.5 py-0.5 rounded text-[10px]">
                       {sortDir === 'asc' ? '↑' : '↓'}
                     </span>
                   )}
                 </span>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider hidden sm:table-cell">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider hidden sm:table-cell">
                 Valuta
               </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-[#636E72] uppercase tracking-wider">
                 Actie
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800/30">
+          <tbody className="divide-y divide-[#E8E8E6]">
             {filteredETFs.slice(0, 100).map((etf, index) => (
               <tr
                 key={etf.isin}
-                className="hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-transparent transition-all duration-200 group"
+                className="hover:bg-[#F5F6F4] transition-all duration-200 group"
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <div
                       className="w-1 h-8 rounded-full opacity-60"
-                      style={{ backgroundColor: currentConfig?.color || '#28EBCF' }}
+                      style={{ backgroundColor: currentConfig?.color || '#7C9885' }}
                     />
-                    <span className="font-mono text-[#28EBCF] font-semibold text-sm">
+                    <span className="font-mono text-[#7C9885] font-semibold text-sm">
                       {etf.symbol}
                     </span>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-white text-sm group-hover:text-gray-100">
+                  <div className="text-[#2D3436] text-sm group-hover:text-[#2D3436]">
                     {etf.name.length > 50 ? `${etf.name.slice(0, 50)}...` : etf.name}
                   </div>
-                  <div className="text-gray-500 text-xs font-mono mt-0.5">{etf.isin}</div>
+                  <div className="text-[#B2BEC3] text-xs font-mono mt-0.5">{etf.isin}</div>
                 </td>
                 <td className="px-6 py-4 hidden md:table-cell">
-                  <span className="text-gray-400 text-sm px-2 py-1 bg-gray-800/30 rounded">
+                  <span className="text-[#636E72] text-sm px-2 py-1 bg-[#F5F6F4] rounded">
                     {etf.exchange}
                   </span>
                 </td>
                 <td className="px-6 py-4 hidden sm:table-cell">
-                  <span className="px-2.5 py-1 bg-gray-800/50 rounded-lg text-xs font-medium text-gray-300 border border-gray-700/30">
+                  <span className="px-2.5 py-1 bg-[#ECEEED] rounded-lg text-xs font-medium text-[#636E72] border border-[#E8E8E6]">
                     {etf.currency}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <button
                     onClick={() => handleAddToOrder(etf)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#28EBCF]/10 to-[#28EBCF]/5 text-[#28EBCF] rounded-lg hover:from-[#28EBCF]/20 hover:to-[#28EBCF]/10 transition-all text-sm font-medium border border-[#28EBCF]/20 hover:border-[#28EBCF]/30 opacity-70 group-hover:opacity-100"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#7C9885]/10 text-[#7C9885] rounded-lg hover:bg-[#7C9885]/20 transition-all text-sm font-medium border border-[#7C9885]/20 hover:border-[#7C9885]/30 opacity-70 group-hover:opacity-100"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" />
                     Trade
@@ -424,29 +421,29 @@ export default function ETFBrowser({ onAddToOrder }) {
 
         {/* More results message */}
         {filteredETFs.length > 100 && (
-          <div className="p-5 text-center bg-gradient-to-t from-gray-900/50 to-transparent border-t border-gray-800/30">
-            <span className="text-gray-400 text-sm">
-              Toont eerste <span className="text-white font-medium">100</span> van{' '}
-              <span className="text-white font-medium">{filteredETFs.length}</span> resultaten
+          <div className="p-5 text-center bg-gradient-to-t from-[#F5F6F4]/50 to-transparent border-t border-[#E8E8E6]">
+            <span className="text-[#636E72] text-sm">
+              Toont eerste <span className="text-[#2D3436] font-medium">100</span> van{' '}
+              <span className="text-[#2D3436] font-medium">{filteredETFs.length}</span> resultaten
             </span>
-            <p className="text-gray-500 text-xs mt-1">Gebruik filters om te verfijnen</p>
+            <p className="text-[#B2BEC3] text-xs mt-1">Gebruik filters om te verfijnen</p>
           </div>
         )}
 
         {/* No results */}
         {filteredETFs.length === 0 && (
           <div className="p-16 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-800/50 rounded-2xl mb-4">
-              <Search className="w-8 h-8 text-gray-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#F5F6F4] rounded-2xl mb-4">
+              <Search className="w-8 h-8 text-[#B2BEC3]" />
             </div>
-            <div className="text-gray-400 text-lg font-medium mb-2">Geen ETFs gevonden</div>
-            <div className="text-gray-600 text-sm mb-4">
+            <div className="text-[#636E72] text-lg font-medium mb-2">Geen ETFs gevonden</div>
+            <div className="text-[#B2BEC3] text-sm mb-4">
               Probeer andere filters of zoektermen
             </div>
             {hasFilters && (
               <button
                 onClick={resetFilters}
-                className="px-5 py-2.5 text-sm font-medium text-[#28EBCF] bg-[#28EBCF]/10 hover:bg-[#28EBCF]/20 rounded-xl transition-colors border border-[#28EBCF]/20"
+                className="px-5 py-2.5 text-sm font-medium text-[#7C9885] bg-[#7C9885]/10 hover:bg-[#7C9885]/20 rounded-xl transition-colors border border-[#7C9885]/20"
               >
                 Wis alle filters
               </button>
@@ -498,8 +495,8 @@ export default function ETFBrowser({ onAddToOrder }) {
                   onClick={() => changeCategory(cat.value)}
                   className={`flex items-center gap-2 p-3 min-h-[48px] rounded-xl transition-all ${
                     isActive
-                      ? `bg-gradient-to-br ${config?.gradient || 'from-gray-500/20 to-gray-600/10'} border-2`
-                      : 'bg-gray-800/30 border border-gray-700/50 active:bg-gray-800/60'
+                      ? `bg-gradient-to-br ${config?.gradient || 'from-[#ECEEED] to-[#F5F6F4]'} border-2`
+                      : 'bg-[#F5F6F4] border border-[#E8E8E6] active:bg-[#ECEEED]'
                   }`}
                   style={{
                     borderColor: isActive ? `${config?.color}40` : undefined,
@@ -507,13 +504,13 @@ export default function ETFBrowser({ onAddToOrder }) {
                 >
                   <Icon
                     className="w-4 h-4 flex-shrink-0"
-                    style={{ color: isActive ? config?.color : '#9CA3AF' }}
+                    style={{ color: isActive ? config?.color : '#636E72' }}
                   />
                   <div className="flex-1 text-left min-w-0">
-                    <span className={`text-sm font-medium block truncate ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                    <span className={`text-sm font-medium block truncate ${isActive ? 'text-[#2D3436]' : 'text-[#636E72]'}`}>
                       {config?.label || cat.label}
                     </span>
-                    <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <span className={`text-xs ${isActive ? 'text-[#636E72]' : 'text-[#B2BEC3]'}`}>
                       {count}
                     </span>
                   </div>
@@ -543,13 +540,13 @@ export default function ETFBrowser({ onAddToOrder }) {
               {chips.map((chip) => (
                 <span
                   key={`${chip.filterId}-${chip.value}`}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-gray-800/80 text-gray-300 border border-gray-700/50"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-[#FEFEFE] text-[#636E72] border border-[#E8E8E6]"
                 >
-                  <span className="text-gray-500">{chip.filterLabel}:</span>
+                  <span className="text-[#B2BEC3]">{chip.filterLabel}:</span>
                   <span>{chip.label || chip.valueLabel}</span>
                   <button
                     onClick={() => removeFilter(chip.filterId, chip.value)}
-                    className="p-1 hover:bg-white/10 rounded transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center"
+                    className="p-1 hover:bg-[#F5F6F4] rounded transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center"
                   >
                     <X className="w-3 h-3" />
                   </button>

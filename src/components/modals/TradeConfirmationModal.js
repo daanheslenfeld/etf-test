@@ -113,14 +113,14 @@ export function TradeConfirmationModal({
       <ModalBody>
         {/* Live Trading Warning */}
         {isLive && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-5">
+          <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-xl p-4 mb-5">
             <div className="flex items-start gap-3">
-              <ShieldAlert className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <ShieldAlert className="w-5 h-5 text-[#C0736D] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-red-400 font-medium">
+                <p className="text-[#C0736D] font-medium">
                   Je staat op het punt om echte orders uit te voeren.
                 </p>
-                <p className="text-red-300/80 text-sm mt-1">
+                <p className="text-[#C0736D]/80 text-sm mt-1">
                   Deze transacties kunnen niet ongedaan worden gemaakt na uitvoering.
                 </p>
               </div>
@@ -130,12 +130,12 @@ export function TradeConfirmationModal({
 
         {/* Safety Warnings */}
         {allWarnings.length > 0 && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-5">
-            <h4 className="text-amber-400 font-medium flex items-center gap-2 mb-2">
+          <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-xl p-4 mb-5">
+            <h4 className="text-[#C9A962] font-medium flex items-center gap-2 mb-2">
               <AlertTriangle className="w-4 h-4" />
               Waarschuwingen
             </h4>
-            <ul className="text-amber-300/80 text-sm space-y-1">
+            <ul className="text-[#C9A962]/80 text-sm space-y-1">
               {allWarnings.map((warning, idx) => (
                 <li key={idx}>• {warning}</li>
               ))}
@@ -145,32 +145,32 @@ export function TradeConfirmationModal({
 
         {/* Order Summary */}
         <div className="mb-5">
-          <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-medium text-[#636E72] uppercase tracking-wider mb-3">
             Order Samenvatting
           </h3>
 
           {/* Buy/Sell counts */}
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
+            <div className="bg-[#7C9885]/10 border border-[#7C9885]/20 rounded-xl p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
-                <span className="text-2xl font-bold text-emerald-400">{buyOrders.length}</span>
+                <TrendingUp className="w-5 h-5 text-[#7C9885]" />
+                <span className="text-2xl font-bold text-[#7C9885]">{buyOrders.length}</span>
               </div>
-              <div className="text-sm text-gray-400">Koop Orders</div>
+              <div className="text-sm text-[#636E72]">Koop Orders</div>
               {totalBuyValue > 0 && (
-                <div className="text-xs text-emerald-400/70 mt-1">
+                <div className="text-xs text-[#7C9885]/70 mt-1">
                   ~{formatPrice(totalBuyValue)}
                 </div>
               )}
             </div>
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+            <div className="bg-[#C0736D]/10 border border-[#C0736D]/20 rounded-xl p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <TrendingDown className="w-5 h-5 text-red-400" />
-                <span className="text-2xl font-bold text-red-400">{sellOrders.length}</span>
+                <TrendingDown className="w-5 h-5 text-[#C0736D]" />
+                <span className="text-2xl font-bold text-[#C0736D]">{sellOrders.length}</span>
               </div>
-              <div className="text-sm text-gray-400">Verkoop Orders</div>
+              <div className="text-sm text-[#636E72]">Verkoop Orders</div>
               {totalSellValue > 0 && (
-                <div className="text-xs text-red-400/70 mt-1">
+                <div className="text-xs text-[#C0736D]/70 mt-1">
                   ~{formatPrice(totalSellValue)}
                 </div>
               )}
@@ -179,9 +179,9 @@ export function TradeConfirmationModal({
 
           {/* Net cash impact */}
           {(totalBuyValue > 0 || totalSellValue > 0) && (
-            <div className="bg-gray-800/50 rounded-xl p-3 text-center">
-              <span className="text-sm text-gray-400">Geschat Cash Effect: </span>
-              <span className={`font-semibold font-mono ${netCashImpact >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className="bg-[#F5F6F4] rounded-xl p-3 text-center">
+              <span className="text-sm text-[#636E72]">Geschat Cash Effect: </span>
+              <span className={`font-semibold font-mono ${netCashImpact >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                 {netCashImpact >= 0 ? '+' : ''}{formatPrice(netCashImpact)}
               </span>
             </div>
@@ -233,33 +233,33 @@ function OrderSummaryRow({ order, marketData }) {
   };
 
   return (
-    <div className="bg-gray-800/30 rounded-lg p-3 flex items-center justify-between">
+    <div className="bg-[#F5F6F4] rounded-lg p-3 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <span className={`
           text-xs font-bold px-2 py-1 rounded
           ${order.side === 'BUY'
-            ? 'bg-emerald-500/20 text-emerald-400'
-            : 'bg-red-500/20 text-red-400'
+            ? 'bg-[#7C9885]/20 text-[#7C9885]'
+            : 'bg-[#C0736D]/20 text-[#C0736D]'
           }
         `}>
           {order.side === 'BUY' ? 'KOOP' : 'VERKOOP'}
         </span>
         <div>
-          <span className="text-white font-medium">{order.symbol}</span>
-          <span className="text-gray-400 ml-2">×{order.quantity}</span>
+          <span className="text-[#2D3436] font-medium">{order.symbol}</span>
+          <span className="text-[#636E72] ml-2">×{order.quantity}</span>
         </div>
       </div>
       <div className="text-right text-sm">
-        <div className="text-gray-300">
+        <div className="text-[#636E72]">
           {ORDER_TYPE_LABELS[order.orderType] || order.orderType}
         </div>
         {order.limitPrice && (
-          <div className="text-gray-500 text-xs">
+          <div className="text-[#B2BEC3] text-xs">
             Limiet: {formatPrice(order.limitPrice)}
           </div>
         )}
         {order.orderType === 'MKT' && md && (
-          <div className="text-gray-500 text-xs">
+          <div className="text-[#B2BEC3] text-xs">
             {order.side === 'BUY' ? `Ask: ${formatPrice(md.ask)}` : `Bid: ${formatPrice(md.bid)}`}
           </div>
         )}

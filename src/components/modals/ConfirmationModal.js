@@ -4,7 +4,7 @@ import { ModalContainer, ModalHeader, ModalBody, ModalFooter } from './ModalCont
 import { Button } from '../common';
 
 /**
- * ConfirmationModal Component
+ * ConfirmationModal Component - Premium Banking Style
  *
  * Generic confirmation dialog for actions that need user approval
  */
@@ -70,7 +70,7 @@ export function ConfirmationModal({
 
       <ModalBody>
         {message && (
-          <p className="text-gray-300">{message}</p>
+          <p className="text-[#2D3436]">{message}</p>
         )}
         {children}
       </ModalBody>

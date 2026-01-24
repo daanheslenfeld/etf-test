@@ -13,42 +13,52 @@ import {
 import { LoadingPulse } from '../common';
 
 /**
- * SummaryCard Component
+ * SummaryCard Component - Pastel Design System
  *
  * Financial summary card with value, change indicator, and trend
- * Used for portfolio value, cash balance, returns, etc.
+ * Uses soft shadows, rounded corners, and pastel accents
  */
 
 const VARIANTS = {
   default: {
-    bg: 'bg-[#1A1B1F]',
-    border: 'border-gray-800/50',
-    iconBg: 'bg-gray-800/50',
-    iconColor: 'text-gray-400',
+    bg: 'bg-white',
+    border: 'border-[#E4E8E5]',
+    shadow: 'shadow-[0_2px_8px_rgba(45,62,54,0.05)]',
+    hoverShadow: 'hover:shadow-[0_4px_16px_rgba(45,62,54,0.08)]',
+    iconBg: 'bg-[#F0F2EE]',
+    iconColor: 'text-[#5F7066]',
   },
   primary: {
-    bg: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B]',
-    border: 'border-[#28EBCF]/20',
-    iconBg: 'bg-[#28EBCF]/10',
-    iconColor: 'text-[#28EBCF]',
+    bg: 'bg-white',
+    border: 'border-l-4 border-l-[#8AB4A0] border-[#E4E8E5]',
+    shadow: 'shadow-[0_2px_8px_rgba(45,62,54,0.05)]',
+    hoverShadow: 'hover:shadow-[0_4px_16px_rgba(138,180,160,0.15)]',
+    iconBg: 'bg-[#E6F0EB]',
+    iconColor: 'text-[#8AB4A0]',
   },
   success: {
-    bg: 'bg-[#1A1B1F]',
-    border: 'border-emerald-500/20',
-    iconBg: 'bg-emerald-500/10',
-    iconColor: 'text-emerald-400',
+    bg: 'bg-white',
+    border: 'border-[#8AB4A0]/30',
+    shadow: 'shadow-[0_2px_8px_rgba(45,62,54,0.05)]',
+    hoverShadow: 'hover:shadow-[0_4px_16px_rgba(138,180,160,0.15)]',
+    iconBg: 'bg-[#E6F0EB]',
+    iconColor: 'text-[#8AB4A0]',
   },
   warning: {
-    bg: 'bg-[#1A1B1F]',
-    border: 'border-amber-500/20',
-    iconBg: 'bg-amber-500/10',
-    iconColor: 'text-amber-400',
+    bg: 'bg-white',
+    border: 'border-[#D4C39A]/30',
+    shadow: 'shadow-[0_2px_8px_rgba(45,62,54,0.05)]',
+    hoverShadow: 'hover:shadow-[0_4px_16px_rgba(212,195,154,0.15)]',
+    iconBg: 'bg-[#F8F5ED]',
+    iconColor: 'text-[#D4C39A]',
   },
   danger: {
-    bg: 'bg-[#1A1B1F]',
-    border: 'border-red-500/20',
-    iconBg: 'bg-red-500/10',
-    iconColor: 'text-red-400',
+    bg: 'bg-white',
+    border: 'border-[#D4A59A]/30',
+    shadow: 'shadow-[0_2px_8px_rgba(45,62,54,0.05)]',
+    hoverShadow: 'hover:shadow-[0_4px_16px_rgba(212,165,154,0.15)]',
+    iconBg: 'bg-[#F8EFED]',
+    iconColor: 'text-[#D4A59A]',
   },
 };
 
@@ -73,16 +83,22 @@ export function SummaryCard({
   // Determine trend from change value if not provided
   const effectiveTrend = trend || (change > 0 ? 'up' : change < 0 ? 'down' : 'neutral');
 
-  // Trend colors
+  // Trend colors - soft pastels
   const trendColors = {
-    up: 'text-emerald-400',
-    down: 'text-red-400',
-    neutral: 'text-gray-400',
+    up: 'text-[#5F8A74]',
+    down: 'text-[#B8847A]',
+    neutral: 'text-[#5F7066]',
+  };
+
+  // Trend background colors
+  const trendBgColors = {
+    up: 'bg-[#E6F0EB] text-[#5F8A74]',
+    down: 'bg-[#F8EFED] text-[#B8847A]',
+    neutral: 'bg-[#F0F2EE] text-[#5F7066]',
   };
 
   // Trend icons
   const TrendIcon = effectiveTrend === 'up' ? TrendingUp : effectiveTrend === 'down' ? TrendingDown : Minus;
-  const ArrowIcon = effectiveTrend === 'up' ? ArrowUpRight : effectiveTrend === 'down' ? ArrowDownRight : null;
 
   // Format value
   const formatValue = (val) => {
@@ -115,27 +131,27 @@ export function SummaryCard({
     return (
       <div
         className={`
-          ${style.bg} border ${style.border} rounded-xl p-4
-          ${onClick ? 'cursor-pointer hover:border-gray-700 transition-colors' : ''}
+          ${style.bg} border ${style.border} ${style.shadow} ${style.hoverShadow} rounded-2xl p-5
+          ${onClick ? 'cursor-pointer' : ''} transition-all duration-200
           ${className}
         `}
         onClick={onClick}
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
+            <p className="text-xs text-[#5F7066] font-medium uppercase tracking-wider mb-2">
               {title}
             </p>
             {loading ? (
               <LoadingPulse width="w-24" height="h-6" />
             ) : (
-              <p className="text-lg font-semibold text-white font-mono tabular-nums">
+              <p className="text-lg font-semibold text-[#2D3E36] tabular-nums">
                 {prefix}{formatValue(value)}{suffix}
               </p>
             )}
           </div>
           {Icon && (
-            <div className={`p-2 rounded-lg ${style.iconBg}`}>
+            <div className={`p-2.5 rounded-xl ${style.iconBg}`}>
               <Icon className={`w-4 h-4 ${style.iconColor}`} />
             </div>
           )}
@@ -147,24 +163,24 @@ export function SummaryCard({
   return (
     <div
       className={`
-        ${style.bg} border ${style.border} rounded-xl p-5
-        ${onClick ? 'cursor-pointer hover:border-gray-700 transition-all hover:shadow-lg' : ''}
+        ${style.bg} border ${style.border} ${style.shadow} ${style.hoverShadow} rounded-2xl p-6
+        ${onClick ? 'cursor-pointer' : ''} transition-all duration-200
         ${className}
       `}
       onClick={onClick}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+          <p className="text-xs text-[#5F7066] font-medium uppercase tracking-wider">
             {title}
           </p>
           {subtitle && (
-            <p className="text-[10px] text-gray-600 mt-0.5">{subtitle}</p>
+            <p className="text-[11px] text-[#95A39A] mt-1">{subtitle}</p>
           )}
         </div>
         {Icon && (
-          <div className={`p-2.5 rounded-xl ${style.iconBg}`}>
+          <div className={`p-3 rounded-xl ${style.iconBg}`}>
             <Icon className={`w-5 h-5 ${style.iconColor}`} />
           </div>
         )}
@@ -172,35 +188,29 @@ export function SummaryCard({
 
       {/* Value */}
       {loading ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <LoadingPulse width="w-32" height="h-8" />
           <LoadingPulse width="w-20" height="h-4" />
         </div>
       ) : (
         <>
-          <p className="text-2xl font-bold text-white font-mono tabular-nums mb-2">
+          <p className="text-2xl font-bold text-[#2D3E36] tabular-nums mb-3">
             {prefix}{formatValue(value)}{suffix}
           </p>
 
           {/* Change indicator */}
           {(change !== undefined || changePercent !== undefined) && (
             <div className="flex items-center gap-2">
-              <div className={`flex items-center gap-1 ${trendColors[effectiveTrend]}`}>
+              <div className={`flex items-center gap-1.5 ${trendColors[effectiveTrend]}`}>
                 <TrendIcon className="w-4 h-4" />
                 {change !== undefined && (
-                  <span className="text-sm font-medium font-mono tabular-nums">
+                  <span className="text-sm font-medium tabular-nums">
                     {formatChange(change)}
                   </span>
                 )}
               </div>
               {changePercent !== undefined && (
-                <span className={`text-xs px-1.5 py-0.5 rounded ${
-                  effectiveTrend === 'up'
-                    ? 'bg-emerald-500/10 text-emerald-400'
-                    : effectiveTrend === 'down'
-                      ? 'bg-red-500/10 text-red-400'
-                      : 'bg-gray-500/10 text-gray-400'
-                }`}>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium tabular-nums ${trendBgColors[effectiveTrend]}`}>
                   {formatPercent(changePercent)}
                 </span>
               )}

@@ -99,19 +99,19 @@ const ETF_METADATA = {
   }
 };
 
-// Sector colors
+// Sector colors - Premium banking palette
 const SECTOR_COLORS = {
-  'Technology': 'bg-blue-500',
-  'Consumer Discretionary': 'bg-purple-500',
-  'Communication Services': 'bg-pink-500',
-  'Financials': 'bg-green-500',
-  'Healthcare': 'bg-red-500',
-  'Energy': 'bg-yellow-500',
-  'Industrials': 'bg-orange-500',
-  'Materials': 'bg-teal-500',
-  'Utilities': 'bg-cyan-500',
-  'Real Estate': 'bg-indigo-500',
-  'Consumer Staples': 'bg-lime-500',
+  'Technology': 'bg-[#6B7B8A]',
+  'Consumer Discretionary': 'bg-[#8B7B9A]',
+  'Communication Services': 'bg-[#9A7B8B]',
+  'Financials': 'bg-[#7C9885]',
+  'Healthcare': 'bg-[#C0736D]',
+  'Energy': 'bg-[#C9A962]',
+  'Industrials': 'bg-[#B8956B]',
+  'Materials': 'bg-[#7B9A8B]',
+  'Utilities': 'bg-[#7B8A9A]',
+  'Real Estate': 'bg-[#8A7B9A]',
+  'Consumer Staples': 'bg-[#8B9A7B]',
 };
 
 // Loading skeleton
@@ -119,13 +119,13 @@ function LoadingSkeleton() {
   return (
     <div className="animate-pulse space-y-3">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="flex items-center gap-4 p-2 bg-gray-800/30 rounded">
-          <div className="w-6 h-6 bg-gray-700 rounded" />
+        <div key={i} className="flex items-center gap-4 p-2 bg-[#F5F6F4] rounded">
+          <div className="w-6 h-6 bg-[#E8E8E6] rounded" />
           <div className="flex-1">
-            <div className="h-4 bg-gray-700 rounded w-3/4 mb-1" />
-            <div className="h-3 bg-gray-700 rounded w-1/2" />
+            <div className="h-4 bg-[#E8E8E6] rounded w-3/4 mb-1" />
+            <div className="h-3 bg-[#E8E8E6] rounded w-1/2" />
           </div>
-          <div className="w-16 h-4 bg-gray-700 rounded" />
+          <div className="w-16 h-4 bg-[#E8E8E6] rounded" />
         </div>
       ))}
     </div>
@@ -196,32 +196,32 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
     ? (liveMarketData.ask - liveMarketData.bid).toFixed(3)
     : null;
 
-  const getSectorColor = (sector) => SECTOR_COLORS[sector] || 'bg-gray-500';
+  const getSectorColor = (sector) => SECTOR_COLORS[sector] || 'bg-[#B2BEC3]';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop - click to close */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#2D3436]/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-[#1A1B1F] border border-gray-700 rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl">
+      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-[#E8E8E6]">
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-[#2D3436] flex items-center gap-2">
               {symbol}
-              <span className="text-base font-normal text-gray-400">- ETF Details</span>
+              <span className="text-base font-normal text-[#636E72]">- ETF Details</span>
             </h2>
             {metadata && (
-              <p className="text-sm text-gray-400 mt-0.5">{metadata.name}</p>
+              <p className="text-sm text-[#636E72] mt-0.5">{metadata.name}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -233,134 +233,134 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
             {/* Left Column */}
             <div className="space-y-4">
               {/* General Info */}
-              <div className="bg-gray-800/30 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+              <div className="bg-[#F5F6F4] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                   <Info className="w-4 h-4" />
                   General Information
                 </h3>
                 {metadata ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Symbol</span>
-                      <span className="text-white font-mono">{symbol}</span>
+                      <span className="text-[#636E72]">Symbol</span>
+                      <span className="text-[#2D3436] font-mono">{symbol}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">ISIN</span>
-                      <span className="text-white font-mono">{metadata.isin}</span>
+                      <span className="text-[#636E72]">ISIN</span>
+                      <span className="text-[#2D3436] font-mono">{metadata.isin}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Provider</span>
-                      <span className="text-white">{metadata.provider}</span>
+                      <span className="text-[#636E72]">Provider</span>
+                      <span className="text-[#2D3436]">{metadata.provider}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Index</span>
-                      <span className="text-white">{metadata.index}</span>
+                      <span className="text-[#636E72]">Index</span>
+                      <span className="text-[#2D3436]">{metadata.index}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">TER</span>
-                      <span className="text-[#28EBCF] font-medium">{metadata.ter.toFixed(2)}%</span>
+                      <span className="text-[#636E72]">TER</span>
+                      <span className="text-[#7C9885] font-medium">{metadata.ter.toFixed(2)}%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Currency</span>
-                      <span className="text-white">{metadata.currency}</span>
+                      <span className="text-[#636E72]">Currency</span>
+                      <span className="text-[#2D3436]">{metadata.currency}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Domicile</span>
-                      <span className="text-white">{metadata.domicile}</span>
+                      <span className="text-[#636E72]">Domicile</span>
+                      <span className="text-[#2D3436]">{metadata.domicile}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Replication</span>
-                      <span className="text-white">{metadata.replication}</span>
+                      <span className="text-[#636E72]">Replication</span>
+                      <span className="text-[#2D3436]">{metadata.replication}</span>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">Metadata not available</p>
+                  <p className="text-[#B2BEC3] text-sm">Metadata not available</p>
                 )}
               </div>
 
               {/* Market Info */}
-              <div className="bg-gray-800/30 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+              <div className="bg-[#F5F6F4] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   Market Data
                 </h3>
                 {liveMarketData ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Last Price</span>
-                      <span className="text-white font-medium">
+                      <span className="text-[#636E72]">Last Price</span>
+                      <span className="text-[#2D3436] font-medium">
                         {formatCurrency(liveMarketData.last, metadata?.currency)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Bid</span>
-                      <span className="text-green-400">
+                      <span className="text-[#636E72]">Bid</span>
+                      <span className="text-[#7C9885]">
                         {formatCurrency(liveMarketData.bid, metadata?.currency)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Ask</span>
-                      <span className="text-red-400">
+                      <span className="text-[#636E72]">Ask</span>
+                      <span className="text-[#C0736D]">
                         {formatCurrency(liveMarketData.ask, metadata?.currency)}
                       </span>
                     </div>
                     {spread && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Spread</span>
-                        <span className="text-yellow-400">{spread}</span>
+                        <span className="text-[#636E72]">Spread</span>
+                        <span className="text-[#C9A962]">{spread}</span>
                       </div>
                     )}
                     {liveMarketData.volume && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Volume</span>
-                        <span className="text-white">{liveMarketData.volume.toLocaleString()}</span>
+                        <span className="text-[#636E72]">Volume</span>
+                        <span className="text-[#2D3436]">{liveMarketData.volume.toLocaleString()}</span>
                       </div>
                     )}
                     {liveMarketData.delayed && (
-                      <div className="text-xs text-yellow-400 mt-2">* Delayed data</div>
+                      <div className="text-xs text-[#C9A962] mt-2">* Delayed data</div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">Market data unavailable</p>
+                  <p className="text-[#B2BEC3] text-sm">Market data unavailable</p>
                 )}
               </div>
 
               {/* Asset Allocation */}
               {metadata && (
-                <div className="bg-gray-800/30 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                <div className="bg-[#F5F6F4] rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                     <PieChart className="w-4 h-4" />
                     Asset Class
                   </h3>
                   <div className="flex items-center gap-2">
-                    <div className="h-2 flex-1 bg-blue-500 rounded-full" />
-                    <span className="text-white text-sm">{metadata.assetClass} 100%</span>
+                    <div className="h-2 flex-1 bg-[#7C9885] rounded-full" />
+                    <span className="text-[#2D3436] text-sm">{metadata.assetClass} 100%</span>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Right Column - Holdings */}
-            <div className="bg-gray-800/30 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+            <div className="bg-[#F5F6F4] rounded-lg p-4">
+              <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                 <Percent className="w-4 h-4" />
                 Top 10 Holdings
                 {holdings && (
-                  <span className="ml-auto text-[#28EBCF]">{holdings.top_10_weight}% of fund</span>
+                  <span className="ml-auto text-[#7C9885]">{holdings.top_10_weight}% of fund</span>
                 )}
               </h3>
 
               {loadingHoldings && <LoadingSkeleton />}
 
               {error && (
-                <div className="flex flex-col items-center py-8 text-gray-500">
+                <div className="flex flex-col items-center py-8 text-[#B2BEC3]">
                   <AlertCircle className="w-8 h-8 mb-2" />
                   <p>{error}</p>
                 </div>
               )}
 
               {!loadingHoldings && !error && !holdings && (
-                <div className="flex flex-col items-center py-8 text-gray-500">
+                <div className="flex flex-col items-center py-8 text-[#B2BEC3]">
                   <AlertCircle className="w-8 h-8 mb-2" />
                   <p>Look-through data coming soon</p>
                 </div>
@@ -370,13 +370,13 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                 <div className="space-y-2">
                   {holdings.holdings.map((holding, idx) => (
                     <div key={idx} className="group">
-                      <div className="flex items-center gap-2 p-2 rounded hover:bg-gray-700/30 transition-colors">
-                        <span className="w-5 h-5 bg-gray-700 rounded flex items-center justify-center text-xs text-gray-400 font-mono">
+                      <div className="flex items-center gap-2 p-2 rounded hover:bg-[#ECEEED] transition-colors">
+                        <span className="w-5 h-5 bg-[#E8E8E6] rounded flex items-center justify-center text-xs text-[#636E72] font-mono">
                           {idx + 1}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-white text-sm truncate">{holding.name}</div>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <div className="text-[#2D3436] text-sm truncate">{holding.name}</div>
+                          <div className="flex items-center gap-2 text-xs text-[#B2BEC3]">
                             <span className="flex items-center gap-1">
                               <Building2 className="w-3 h-3" />
                               {holding.sector}
@@ -387,12 +387,12 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                             </span>
                           </div>
                         </div>
-                        <span className="text-white font-medium text-sm">
+                        <span className="text-[#2D3436] font-medium text-sm">
                           {holding.weight_percent.toFixed(2)}%
                         </span>
                       </div>
                       {/* Weight bar */}
-                      <div className="h-1 mx-2 bg-gray-700 rounded-full overflow-hidden">
+                      <div className="h-1 mx-2 bg-[#E8E8E6] rounded-full overflow-hidden">
                         <div
                           className={`h-full ${getSectorColor(holding.sector)} transition-all`}
                           style={{ width: `${Math.min(holding.weight_percent * 10, 100)}%` }}
@@ -404,7 +404,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
               )}
 
               {holdings && (
-                <div className="mt-3 pt-3 border-t border-gray-700 text-xs text-gray-500">
+                <div className="mt-3 pt-3 border-t border-[#E8E8E6] text-xs text-[#B2BEC3]">
                   Total holdings: {holdings.total_holdings?.toLocaleString()} | Updated: {holdings.last_updated}
                 </div>
               )}

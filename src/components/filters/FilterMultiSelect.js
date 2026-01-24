@@ -131,7 +131,7 @@ export function FilterMultiSelect({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       {label && (
-        <label className={`block ${sizeConfig.label} text-gray-500 font-medium uppercase tracking-wider`}>
+        <label className={`block ${sizeConfig.label} text-[#B2BEC3] font-medium uppercase tracking-wider`}>
           {label}
         </label>
       )}
@@ -142,14 +142,14 @@ export function FilterMultiSelect({
         className={`
           w-full flex items-center justify-between ${sizeConfig.button} rounded-lg border transition-all duration-200
           ${disabled
-            ? 'bg-gray-900/20 border-gray-800/30 text-gray-600 cursor-not-allowed'
+            ? 'bg-[#F5F6F4]/50 border-[#E8E8E6]/30 text-[#B2BEC3] cursor-not-allowed'
             : hasValue
-              ? 'bg-gradient-to-r from-[#28EBCF]/10 to-[#28EBCF]/5 border-[#28EBCF]/30 text-white shadow-sm shadow-[#28EBCF]/5'
-              : 'bg-gray-900/40 border-gray-700/50 text-gray-300 hover:border-gray-600 hover:bg-gray-800/60'
+              ? 'bg-[#7C9885]/10 border-[#7C9885]/30 text-[#2D3436] shadow-sm'
+              : 'bg-[#FEFEFE] border-[#E8E8E6] text-[#636E72] hover:border-[#7C9885]/50 hover:bg-[#F5F6F4]'
           }
         `}
       >
-        <span className={`flex items-center gap-2 truncate ${hasValue ? 'text-white' : 'text-gray-400'}`}>
+        <span className={`flex items-center gap-2 truncate ${hasValue ? 'text-[#2D3436]' : 'text-[#636E72]'}`}>
           {Icon && <Icon className="w-3.5 h-3.5 opacity-60 flex-shrink-0" />}
           <span className="truncate">{getDisplayValue()}</span>
         </span>
@@ -157,30 +157,30 @@ export function FilterMultiSelect({
           {hasValue && !disabled && (
             <span
               onClick={clearAll}
-              className="p-0.5 hover:bg-white/10 rounded transition-colors"
+              className="p-0.5 hover:bg-[#2D3436]/10 rounded transition-colors"
             >
-              <X className="w-3.5 h-3.5 text-gray-400 hover:text-white" />
+              <X className="w-3.5 h-3.5 text-[#636E72] hover:text-[#2D3436]" />
             </span>
           )}
-          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-[#B2BEC3] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-1.5 w-full bg-gray-900 border border-gray-700/50 rounded-xl shadow-2xl shadow-black/50 overflow-hidden backdrop-blur-xl">
+        <div className="absolute z-50 mt-1.5 w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-[0_4px_20px_rgba(45,52,54,0.15)] overflow-hidden">
           {/* Search */}
           {searchable && (
-            <div className="p-2.5 border-b border-gray-800/50">
+            <div className="p-2.5 border-b border-[#E8E8E6]">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#B2BEC3]" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full pl-9 pr-3 ${sizeConfig.search} bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#28EBCF]/30 focus:ring-1 focus:ring-[#28EBCF]/10`}
+                  className={`w-full pl-9 pr-3 ${sizeConfig.search} bg-[#F5F6F4] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885]/50 focus:ring-1 focus:ring-[#7C9885]/20`}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -189,23 +189,23 @@ export function FilterMultiSelect({
 
           {/* Quick actions */}
           {options.length > 3 && (
-            <div className="px-3 py-2 border-b border-gray-800/30 flex items-center justify-between">
-              <span className="text-xs text-gray-500">
+            <div className="px-3 py-2 border-b border-[#E8E8E6] flex items-center justify-between">
+              <span className="text-xs text-[#B2BEC3]">
                 {selected.length} van {options.length} geselecteerd
               </span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={selectAll}
-                  className="text-xs text-[#28EBCF] hover:text-[#28EBCF]/80 transition-colors"
+                  className="text-xs text-[#7C9885] hover:text-[#6B8A74] transition-colors"
                 >
                   Alles
                 </button>
-                <span className="text-gray-700">|</span>
+                <span className="text-[#E8E8E6]">|</span>
                 <button
                   type="button"
                   onClick={() => onChange([])}
-                  className="text-xs text-gray-400 hover:text-white transition-colors"
+                  className="text-xs text-[#636E72] hover:text-[#2D3436] transition-colors"
                 >
                   Geen
                 </button>
@@ -214,7 +214,7 @@ export function FilterMultiSelect({
           )}
 
           {/* Options */}
-          <div className="max-h-52 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-gray-700">
+          <div className="max-h-52 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-[#E8E8E6]">
             {filteredOptions.map((option) => {
               const isSelected = selected.includes(option.value);
               return (
@@ -227,25 +227,25 @@ export function FilterMultiSelect({
                   }}
                   className={`
                     w-full flex items-center justify-between ${sizeConfig.option} text-left transition-all
-                    ${isSelected ? 'bg-[#28EBCF]/10' : 'hover:bg-gray-800/50'}
+                    ${isSelected ? 'bg-[#7C9885]/10' : 'hover:bg-[#F5F6F4]'}
                   `}
                 >
                   <span className="flex items-center gap-3">
                     <span className={`
                       ${sizeConfig.checkbox} rounded border-2 flex items-center justify-center transition-all flex-shrink-0
-                      ${isSelected ? 'bg-[#28EBCF] border-[#28EBCF]' : 'border-gray-600 hover:border-gray-500'}
+                      ${isSelected ? 'bg-[#7C9885] border-[#7C9885]' : 'border-[#E8E8E6] hover:border-[#7C9885]/50'}
                     `}>
-                      {isSelected && <Check className={`${sizeConfig.checkIcon} text-gray-900`} />}
+                      {isSelected && <Check className={`${sizeConfig.checkIcon} text-white`} />}
                     </span>
                     <span className="flex items-center gap-2">
                       {option.icon && <option.icon className="w-4 h-4 opacity-60" />}
-                      <span className={isSelected ? 'text-[#28EBCF] font-medium' : 'text-gray-300'}>
+                      <span className={isSelected ? 'text-[#7C9885] font-medium' : 'text-[#636E72]'}>
                         {option.label}
                       </span>
                     </span>
                   </span>
                   {showCounts && option.count !== undefined && option.count > 0 && (
-                    <span className="text-gray-600 text-xs bg-gray-800/50 px-1.5 py-0.5 rounded">
+                    <span className="text-[#B2BEC3] text-xs bg-[#F5F6F4] px-1.5 py-0.5 rounded">
                       {option.count}
                     </span>
                   )}
@@ -253,7 +253,7 @@ export function FilterMultiSelect({
               );
             })}
             {filteredOptions.length === 0 && (
-              <div className="px-4 py-6 text-center text-gray-500 text-sm">
+              <div className="px-4 py-6 text-center text-[#B2BEC3] text-sm">
                 Geen resultaten gevonden
               </div>
             )}

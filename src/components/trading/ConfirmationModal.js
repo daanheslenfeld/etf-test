@@ -31,19 +31,19 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
   const hasWarnings = warnings.length > 0 || largeOrders.length > 0 || isBulkOrder;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl max-w-lg w-full shadow-2xl">
+    <div className="fixed inset-0 bg-[#2D3436]/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-lg w-full shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
         {/* Header */}
-        <div className={`p-4 border-b border-gray-700 flex items-center justify-between ${isLive ? 'bg-blue-900/30' : 'bg-yellow-900/20'}`}>
+        <div className={`p-4 border-b border-[#E8E8E6] flex items-center justify-between ${isLive ? 'bg-[#6B7B8A]/10' : 'bg-[#C9A962]/10'}`}>
           <div className="flex items-center gap-3">
             {isLive ? (
-              <ShieldAlert className="w-6 h-6 text-blue-400" />
+              <ShieldAlert className="w-6 h-6 text-[#6B7B8A]" />
             ) : (
-              <AlertTriangle className="w-6 h-6 text-yellow-400" />
+              <AlertTriangle className="w-6 h-6 text-[#C9A962]" />
             )}
             <div>
-              <h2 className="text-lg font-bold text-white">Confirm Order Execution</h2>
-              <div className={`text-sm ${isLive ? 'text-blue-400' : 'text-yellow-400'}`}>
+              <h2 className="text-lg font-bold text-[#2D3436]">Confirm Order Execution</h2>
+              <div className={`text-sm ${isLive ? 'text-[#6B7B8A]' : 'text-[#C9A962]'}`}>
                 {isLive ? 'LIVE TRADING - REAL MONEY' : 'Paper Trading Mode'}
               </div>
             </div>
@@ -51,7 +51,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -61,8 +61,8 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
         <div className="p-6">
           {/* Warning for Live Trading */}
           {isLive && (
-            <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-4 mb-6">
-              <p className="text-blue-400 font-medium">
+            <div className="bg-[#6B7B8A]/10 border border-[#6B7B8A]/30 rounded-lg p-4 mb-6">
+              <p className="text-[#6B7B8A] font-medium">
                 LIVE TRADING: You are about to execute orders with REAL MONEY.
                 These orders cannot be undone once submitted.
               </p>
@@ -71,12 +71,12 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
 
           {/* Safety Warnings */}
           {hasWarnings && (
-            <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-4 mb-6">
-              <h4 className="text-orange-400 font-medium mb-2 flex items-center gap-2">
+            <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg p-4 mb-6">
+              <h4 className="text-[#C9A962] font-medium mb-2 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
                 Safety Warnings
               </h4>
-              <ul className="text-orange-300 text-sm space-y-1">
+              <ul className="text-[#C9A962] text-sm space-y-1">
                 {warnings.map((warning, idx) => (
                   <li key={idx}>• {warning}</li>
                 ))}
@@ -92,33 +92,33 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
 
           {/* Order Summary */}
           <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">Order Summary</h3>
+            <h3 className="text-[#2D3436] font-medium mb-3">Order Summary</h3>
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-green-900/20 border border-green-800 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-green-400">{buyOrders.length}</div>
-                <div className="text-sm text-gray-400">Buy Orders</div>
+              <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-[#7C9885]">{buyOrders.length}</div>
+                <div className="text-sm text-[#636E72]">Buy Orders</div>
               </div>
-              <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-red-400">{sellOrders.length}</div>
-                <div className="text-sm text-gray-400">Sell Orders</div>
+              <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-[#C0736D]">{sellOrders.length}</div>
+                <div className="text-sm text-[#636E72]">Sell Orders</div>
               </div>
             </div>
 
             {/* Order Details */}
             <div className="max-h-48 overflow-y-auto space-y-2">
               {orders.map((order, idx) => (
-                <div key={idx} className="bg-gray-800/50 rounded-lg p-3 flex justify-between items-center">
+                <div key={idx} className="bg-[#F5F6F4] rounded-lg p-3 flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                      order.side === 'BUY' ? 'bg-green-600/30 text-green-400' : 'bg-red-600/30 text-red-400'
+                      order.side === 'BUY' ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
                     }`}>
                       {order.side}
                     </span>
-                    <span className="text-white font-medium">{order.symbol}</span>
+                    <span className="text-[#2D3436] font-medium">{order.symbol}</span>
                   </div>
                   <div className="text-right text-sm">
-                    <div className="text-gray-300">{order.quantity} shares</div>
-                    <div className="text-gray-500">{ORDER_TYPE_LABELS[order.orderType] || order.orderType}</div>
+                    <div className="text-[#636E72]">{order.quantity} shares</div>
+                    <div className="text-[#B2BEC3]">{ORDER_TYPE_LABELS[order.orderType] || order.orderType}</div>
                   </div>
                 </div>
               ))}
@@ -130,7 +130,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 py-3 bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+              className="flex-1 py-3 bg-[#ECEEED] text-[#636E72] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -139,8 +139,8 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
               disabled={isSubmitting}
               className={`flex-1 py-3 font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
                 isLive
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-[#28EBCF] hover:bg-[#20D4BA] text-gray-900'
+                  ? 'bg-[#6B7B8A] hover:bg-[#5A6A79] text-white'
+                  : 'bg-[#7C9885] hover:bg-[#6B8A74] text-white'
               }`}
             >
               {isSubmitting ? (

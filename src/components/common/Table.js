@@ -1,12 +1,11 @@
 import React from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import { LoadingSpinner } from './LoadingSpinner';
 
 /**
- * Table Component
+ * Table Component - Pastel Design System
  *
- * Consistent table styling with sorting support
+ * Clean tables with subtle styling, light headers, soft pastel colors
  */
 export function Table({
   children,
@@ -22,29 +21,29 @@ export function Table({
 }
 
 /**
- * TableHeader - Sticky header with background
+ * TableHeader - Subtle sticky header
  */
 export function TableHeader({ children, className = '' }) {
   return (
-    <thead className={`bg-gray-800/50 sticky top-0 z-10 backdrop-blur-sm ${className}`}>
+    <thead className={`bg-[#F5F6F4] sticky top-0 z-10 ${className}`}>
       {children}
     </thead>
   );
 }
 
 /**
- * TableBody - Body with dividers
+ * TableBody - Body with subtle zebra striping
  */
 export function TableBody({ children, className = '' }) {
   return (
-    <tbody className={`divide-y divide-gray-800/30 ${className}`}>
+    <tbody className={`divide-y divide-[#E8E8E6] ${className}`}>
       {children}
     </tbody>
   );
 }
 
 /**
- * TableRow - Single row with hover effect
+ * TableRow - Single row with subtle hover
  */
 export function TableRow({
   children,
@@ -56,11 +55,11 @@ export function TableRow({
     <tr
       onClick={onClick}
       className={`
-        transition-all duration-200 group
+        transition-colors duration-150 group
         ${onClick ? 'cursor-pointer' : ''}
         ${selected
-          ? 'bg-[#28EBCF]/5'
-          : 'hover:bg-gradient-to-r hover:from-gray-800/40 hover:to-transparent'
+          ? 'bg-[#7C9885]/10'
+          : 'hover:bg-[#F5F6F4]'
         }
         ${className}
       `}
@@ -92,16 +91,16 @@ export function TableHeaderCell({
     <th
       onClick={sortable ? onSort : undefined}
       className={`
-        px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider
+        px-6 py-4 text-xs font-medium text-[#636E72] uppercase tracking-wider
         ${alignClasses[align]}
-        ${sortable ? 'cursor-pointer hover:text-white transition-colors select-none' : ''}
+        ${sortable ? 'cursor-pointer hover:text-[#2D3436] transition-colors select-none' : ''}
         ${className}
       `}
     >
       <span className="flex items-center gap-2">
         {children}
         {sortable && sorted && (
-          <span className="text-[#28EBCF] bg-[#28EBCF]/10 px-1.5 py-0.5 rounded text-[10px]">
+          <span className="text-[#7C9885] bg-[#7C9885]/10 px-1.5 py-0.5 rounded-md text-[10px]">
             {sortDirection === 'asc' ? '↑' : '↓'}
           </span>
         )}
@@ -132,7 +131,7 @@ export function TableCell({
         px-6 py-4 text-sm
         ${alignClasses[align]}
         ${mono ? 'font-mono tabular-nums' : ''}
-        ${muted ? 'text-gray-500' : 'text-white'}
+        ${muted ? 'text-[#B2BEC3]' : 'text-[#2D3436]'}
         ${className}
       `}
     >
@@ -195,25 +194,25 @@ export function TablePagination({
   const end = Math.min(page * pageSize, total);
 
   return (
-    <div className={`flex items-center justify-between px-6 py-4 border-t border-gray-800/30 ${className}`}>
-      <span className="text-sm text-gray-500">
+    <div className={`flex items-center justify-between px-6 py-4 border-t border-[#E8E8E6] ${className}`}>
+      <span className="text-sm text-[#636E72]">
         {start}-{end} van {total} resultaten
       </span>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page === 1}
-          className="px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3.5 py-1.5 text-sm text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Vorige
         </button>
-        <span className="text-sm text-gray-400">
+        <span className="text-sm text-[#636E72]">
           Pagina {page} van {totalPages}
         </span>
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page === totalPages}
-          className="px-3 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3.5 py-1.5 text-sm text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Volgende
         </button>

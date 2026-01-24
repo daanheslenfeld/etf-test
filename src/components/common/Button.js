@@ -2,26 +2,25 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Button Component - Premium Fintech Style
+ * Button Component - Pastel Design System
  *
- * Variants: primary, secondary, ghost, danger, success
- * Sizes: sm, md, lg (md/lg are touch-friendly with min-h-[44px])
+ * Calm, trustworthy buttons with soft pastel colors and subtle interactions
  */
 const VARIANTS = {
-  primary: 'bg-gradient-to-r from-[#28EBCF] to-[#20D4B8] text-gray-900 font-semibold hover:shadow-lg hover:shadow-[#28EBCF]/25 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#28EBCF]/30 focus:ring-offset-2 focus:ring-offset-gray-900',
-  secondary: 'bg-transparent text-gray-300 font-medium border border-gray-600 hover:bg-gray-800/60 hover:border-gray-500 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-gray-500/30',
-  ghost: 'text-gray-400 font-medium hover:text-white hover:bg-gray-800/50 active:bg-gray-800/70 focus:outline-none focus:ring-2 focus:ring-gray-500/30',
-  danger: 'bg-red-500/10 text-red-400 font-medium border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-red-500/30',
-  success: 'bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-emerald-500/30',
+  primary: 'bg-[#7C9885] text-white font-medium hover:bg-[#6B8A74] active:bg-[#5A7A63] focus:outline-none focus:ring-2 focus:ring-[#7C9885]/30 focus:ring-offset-2 focus:ring-offset-[#F5F6F4]',
+  secondary: 'bg-[#FEFEFE] text-[#2D3436] font-medium border border-[#E8E8E6] hover:bg-[#F5F6F4] hover:border-[#D1D5D3] focus:outline-none focus:ring-2 focus:ring-[#7C9885]/20',
+  ghost: 'text-[#636E72] font-medium hover:text-[#2D3436] hover:bg-[#F5F6F4] focus:outline-none focus:ring-2 focus:ring-[#7C9885]/20',
+  danger: 'bg-[#C0736D]/10 text-[#C0736D] font-medium border border-[#C0736D]/30 hover:bg-[#C0736D]/20 focus:outline-none focus:ring-2 focus:ring-[#C0736D]/20',
+  success: 'bg-[#7C9885]/10 text-[#7C9885] font-medium border border-[#7C9885]/30 hover:bg-[#7C9885]/20 focus:outline-none focus:ring-2 focus:ring-[#7C9885]/20',
 };
 
 const SIZES = {
-  sm: 'px-3 py-1.5 text-xs min-h-[32px] rounded-lg',
-  md: 'px-4 py-2.5 text-sm min-h-[44px] rounded-xl',
-  lg: 'px-6 py-3 text-base min-h-[48px] rounded-xl',
+  sm: 'px-3.5 py-1.5 text-xs min-h-[32px] rounded-xl',
+  md: 'px-5 py-2.5 text-sm min-h-[44px] rounded-2xl',
+  lg: 'px-6 py-3 text-base min-h-[48px] rounded-2xl',
 };
 
-const DISABLED = 'bg-gray-800/30 text-gray-600 cursor-not-allowed border-gray-800/30 hover:shadow-none hover:bg-gray-800/30';
+const DISABLED = 'bg-[#ECEEED] text-[#B2BEC3] cursor-not-allowed border-transparent hover:bg-[#ECEEED]';
 
 export function Button({
   children,

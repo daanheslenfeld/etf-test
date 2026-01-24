@@ -34,10 +34,10 @@ export default function PortfolioPositionsCard() {
   // Show loading skeleton
   if (loading && positions.length === 0) {
     return (
-      <div className="mt-6 sm:mt-8 bg-[#1A1B1F] border border-gray-800 rounded-xl p-4 sm:p-5">
+      <div className="mt-8 bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-700 rounded w-48 mb-3"></div>
-          <div className="h-4 bg-gray-700 rounded w-32"></div>
+          <div className="h-6 bg-[#ECEEED] rounded-lg w-48 mb-3"></div>
+          <div className="h-4 bg-[#ECEEED] rounded-lg w-32"></div>
         </div>
       </div>
     );
@@ -49,60 +49,64 @@ export default function PortfolioPositionsCard() {
   }
 
   return (
-    <div className="mt-6 sm:mt-8 bg-[#1A1B1F] border border-gray-800 rounded-xl overflow-hidden">
+    <div className="mt-8 bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
       {/* Header - clickable to expand/collapse */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 sm:p-5 flex justify-between items-center hover:bg-gray-800/30 transition-colors"
+        className="w-full p-5 sm:p-6 flex justify-between items-center hover:bg-[#F5F6F4] transition-colors"
       >
-        <div className="flex items-center gap-3">
-          <Briefcase className="w-5 h-5 text-[#28EBCF]" />
+        <div className="flex items-center gap-4">
+          <div className="p-2.5 bg-[#7C9885]/10 rounded-xl">
+            <Briefcase className="w-5 h-5 text-[#7C9885]" />
+          </div>
           <div className="text-left">
-            <h2 className="text-lg sm:text-xl font-bold text-white">Je Huidige Portfolio</h2>
-            <p className="text-xs sm:text-sm text-gray-400">
+            <h2 className="text-lg sm:text-xl font-semibold text-[#2D3436]">Je Huidige Portfolio</h2>
+            <p className="text-sm text-[#636E72] mt-0.5">
               {positions.length} positie{positions.length !== 1 ? 's' : ''} • {formatCurrency(portfolioValue)}
               {unrealizedPnL !== 0 && (
-                <span className={`ml-2 ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <span className={`ml-2 font-medium ${unrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                   ({formatPercent(unrealizedPnLPercent)})
                 </span>
               )}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {!connected && (
-            <span className="text-xs text-yellow-400 px-2 py-1 bg-yellow-400/10 rounded">Offline</span>
+            <span className="text-xs text-[#C9A962] px-2.5 py-1 bg-[#C9A962]/10 rounded-full font-medium">Offline</span>
           )}
-          {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400" />
-          )}
+          <div className="p-2 rounded-lg hover:bg-[#ECEEED] transition-colors">
+            {isExpanded ? (
+              <ChevronUp className="w-5 h-5 text-[#636E72]" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-[#636E72]" />
+            )}
+          </div>
         </div>
       </button>
 
       {/* Expanded content - positions table */}
       {isExpanded && (
-        <div className="border-t border-gray-800">
+        <div className="border-t border-[#E8E8E6]">
           {/* Summary row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-gray-800/30">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-[#F5F6F4]">
             <div>
-              <div className="text-xs text-gray-400 mb-1">Totale Waarde</div>
-              <div className="text-sm font-bold text-white">{formatCurrency(totalValue)}</div>
+              <div className="text-xs text-[#B2BEC3] font-medium mb-1.5">Totale Waarde</div>
+              <div className="text-sm font-semibold text-[#2D3436] tabular-nums">{formatCurrency(totalValue)}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-400 mb-1">Belegd</div>
-              <div className="text-sm font-bold text-white">{formatCurrency(portfolioValue)}</div>
+              <div className="text-xs text-[#B2BEC3] font-medium mb-1.5">Belegd</div>
+              <div className="text-sm font-semibold text-[#2D3436] tabular-nums">{formatCurrency(portfolioValue)}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-400 mb-1">Cash</div>
-              <div className={`text-sm font-bold ${cashBalance > 0 ? 'text-green-400' : 'text-white'}`}>
+              <div className="text-xs text-[#B2BEC3] font-medium mb-1.5">Cash</div>
+              <div className={`text-sm font-semibold tabular-nums ${cashBalance > 0 ? 'text-[#7C9885]' : 'text-[#2D3436]'}`}>
                 {formatCurrency(cashBalance)}
               </div>
             </div>
             <div>
-              <div className="text-xs text-gray-400 mb-1">Rendement</div>
-              <div className={`text-sm font-bold ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="text-xs text-[#B2BEC3] font-medium mb-1.5">Rendement</div>
+              <div className={`text-sm font-semibold tabular-nums ${unrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                 {formatCurrency(unrealizedPnL)} ({formatPercent(unrealizedPnLPercent)})
               </div>
             </div>
@@ -111,17 +115,17 @@ export default function PortfolioPositionsCard() {
           {/* Positions table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-800/50">
+              <thead className="bg-[#F5F6F4]">
                 <tr>
-                  <th className="text-left text-gray-400 text-xs font-medium px-4 py-2">Symbool</th>
-                  <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Aantal</th>
-                  <th className="text-right text-gray-400 text-xs font-medium px-4 py-2 hidden sm:table-cell">Gem. Koers</th>
-                  <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Huidige Koers</th>
-                  <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Waarde</th>
-                  <th className="text-right text-gray-400 text-xs font-medium px-4 py-2 hidden md:table-cell">W/V</th>
+                  <th className="text-left text-[#636E72] text-xs font-medium px-5 py-3">Symbool</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Aantal</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden sm:table-cell">Gem. Koers</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Huidige Koers</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Waarde</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden md:table-cell">W/V</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
+              <tbody className="divide-y divide-[#E8E8E6]">
                 {positions.map((position, idx) => {
                   const qty = parseFloat(position.quantity) || 0;
                   const avgCost = parseFloat(position.avg_cost) || 0;
@@ -132,26 +136,26 @@ export default function PortfolioPositionsCard() {
                   const isPositive = pnl >= 0;
 
                   return (
-                    <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-white text-sm">{position.symbol}</div>
-                        <div className="text-xs text-gray-500">{position.currency}</div>
+                    <tr key={idx} className="hover:bg-[#F5F6F4] transition-colors">
+                      <td className="px-5 py-4">
+                        <div className="font-medium text-[#2D3436] text-sm">{position.symbol}</div>
+                        <div className="text-xs text-[#B2BEC3]">{position.currency}</div>
                       </td>
-                      <td className="px-4 py-3 text-right text-white text-sm">
+                      <td className="px-5 py-4 text-right text-[#2D3436] text-sm tabular-nums">
                         {qty.toFixed(0)}
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-300 text-sm hidden sm:table-cell">
+                      <td className="px-5 py-4 text-right text-[#636E72] text-sm hidden sm:table-cell tabular-nums">
                         {formatCurrency(avgCost)}
                       </td>
-                      <td className="px-4 py-3 text-right text-white text-sm">
+                      <td className="px-5 py-4 text-right text-[#2D3436] text-sm tabular-nums">
                         {formatCurrency(lastPrice)}
                       </td>
-                      <td className="px-4 py-3 text-right text-white font-medium text-sm">
+                      <td className="px-5 py-4 text-right text-[#2D3436] font-medium text-sm tabular-nums">
                         {formatCurrency(marketValue)}
                       </td>
-                      <td className={`px-4 py-3 text-right font-medium text-sm hidden md:table-cell ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                        <div className="flex items-center justify-end gap-1">
-                          {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                      <td className={`px-5 py-4 text-right font-medium text-sm hidden md:table-cell ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
+                        <div className="flex items-center justify-end gap-1.5 tabular-nums">
+                          {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                           {formatPercent(pnlPercent)}
                         </div>
                       </td>
@@ -163,7 +167,7 @@ export default function PortfolioPositionsCard() {
           </div>
 
           {positions.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-10 text-center text-[#B2BEC3]">
               Geen posities gevonden
             </div>
           )}

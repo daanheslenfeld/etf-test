@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 /**
- * FilterSection Component
+ * FilterSection Component - Premium Banking Style
  *
  * Collapsible group of related filters
  * Used to organize filters into logical sections
@@ -38,18 +38,18 @@ export function FilterSection({
         >
           <div className="flex items-center gap-2">
             {Icon && (
-              <Icon className="w-4 h-4 text-gray-500" />
+              <Icon className="w-4 h-4 text-[#636E72]" />
             )}
             <div>
-              <h4 className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+              <h4 className="text-sm font-medium text-[#2D3436] group-hover:text-[#2D3436] transition-colors">
                 {title}
               </h4>
               {subtitle && (
-                <p className="text-xs text-gray-600">{subtitle}</p>
+                <p className="text-xs text-[#B2BEC3]">{subtitle}</p>
               )}
             </div>
             {badge && (
-              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#28EBCF]/10 text-[#28EBCF] rounded">
+              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#7C9885]/10 text-[#7C9885] rounded">
                 {badge}
               </span>
             )}
@@ -57,8 +57,8 @@ export function FilterSection({
           {collapsible && (
             <ChevronDown
               className={`
-                w-4 h-4 text-gray-500 transition-transform duration-200
-                group-hover:text-gray-400
+                w-4 h-4 text-[#B2BEC3] transition-transform duration-200
+                group-hover:text-[#636E72]
                 ${isExpanded ? 'rotate-180' : ''}
               `}
             />
@@ -115,7 +115,7 @@ export function FilterGrid({
  */
 export function FilterDivider({ className = '' }) {
   return (
-    <div className={`border-t border-gray-800/30 my-4 ${className}`} />
+    <div className={`border-t border-[#E8E8E6] my-4 ${className}`} />
   );
 }
 

@@ -50,8 +50,8 @@ export function OfflineIndicator({
         className={`
           inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium
           ${isOnline
-            ? 'bg-amber-500/10 text-amber-400'
-            : 'bg-red-500/10 text-red-400'
+            ? 'bg-[#C9A962]/10 text-[#C9A962]'
+            : 'bg-[#C0736D]/10 text-[#C0736D]'
           }
           ${className}
         `}
@@ -77,7 +77,7 @@ export function OfflineIndicator({
       <div
         className={`
           flex items-center gap-2 text-sm
-          ${isOnline ? 'text-amber-400' : 'text-red-400'}
+          ${isOnline ? 'text-[#C9A962]' : 'text-[#C0736D]'}
           ${className}
         `}
       >
@@ -96,7 +96,7 @@ export function OfflineIndicator({
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="p-1 hover:bg-gray-800 rounded transition-colors"
+            className="p-1 hover:bg-[#F5F6F4] rounded transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -110,8 +110,8 @@ export function OfflineIndicator({
     <div
       className={`
         ${isOnline
-          ? 'bg-amber-500/10 border-amber-500/30'
-          : 'bg-red-500/10 border-red-500/30'
+          ? 'bg-[#C9A962]/10 border-[#C9A962]/30'
+          : 'bg-[#C0736D]/10 border-[#C0736D]/30'
         }
         border rounded-xl px-4 py-3
         ${className}
@@ -122,20 +122,20 @@ export function OfflineIndicator({
           <div
             className={`
               p-2 rounded-lg
-              ${isOnline ? 'bg-amber-500/20' : 'bg-red-500/20'}
+              ${isOnline ? 'bg-[#C9A962]/20' : 'bg-[#C0736D]/20'}
             `}
           >
             {isOnline ? (
-              <Clock className="w-5 h-5 text-amber-400" />
+              <Clock className="w-5 h-5 text-[#C9A962]" />
             ) : (
-              <WifiOff className="w-5 h-5 text-red-400" />
+              <WifiOff className="w-5 h-5 text-[#C0736D]" />
             )}
           </div>
           <div>
-            <p className={`font-medium ${isOnline ? 'text-amber-400' : 'text-red-400'}`}>
+            <p className={`font-medium ${isOnline ? 'text-[#C9A962]' : 'text-[#C0736D]'}`}>
               {isOnline ? 'Gecachte data' : 'Geen verbinding'}
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[#636E72]">
               {isOnline
                 ? showTimestamp && lastUpdated
                   ? `Laatst bijgewerkt: ${formatRelativeTime(lastUpdated)}`
@@ -152,7 +152,7 @@ export function OfflineIndicator({
             disabled={isRefreshing}
             className={`
               flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium
-              bg-amber-500/20 text-amber-400 hover:bg-amber-500/30
+              bg-[#C9A962]/20 text-[#C9A962] hover:bg-[#C9A962]/30
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-colors
             `}
@@ -203,10 +203,10 @@ export function ConnectionStatus({
           className={`
             w-2.5 h-2.5 rounded-full
             ${isConnected
-              ? 'bg-emerald-400'
+              ? 'bg-[#7C9885]'
               : isConnecting
-                ? 'bg-amber-400 animate-pulse'
-                : 'bg-red-400'
+                ? 'bg-[#C9A962] animate-pulse'
+                : 'bg-[#C0736D]'
             }
           `}
         />
@@ -219,12 +219,12 @@ export function ConnectionStatus({
     return (
       <div
         className={`
-          bg-gray-800/50 border rounded-xl p-4
+          bg-[#FEFEFE] border rounded-xl p-4
           ${isConnected
-            ? 'border-emerald-500/30'
+            ? 'border-[#7C9885]/30'
             : isConnecting
-              ? 'border-amber-500/30'
-              : 'border-red-500/30'
+              ? 'border-[#C9A962]/30'
+              : 'border-[#C0736D]/30'
           }
           ${className}
         `}
@@ -234,35 +234,35 @@ export function ConnectionStatus({
             className={`
               p-3 rounded-xl
               ${isConnected
-                ? 'bg-emerald-500/10'
+                ? 'bg-[#7C9885]/10'
                 : isConnecting
-                  ? 'bg-amber-500/10'
-                  : 'bg-red-500/10'
+                  ? 'bg-[#C9A962]/10'
+                  : 'bg-[#C0736D]/10'
               }
             `}
           >
             {isConnected ? (
-              <Wifi className="w-6 h-6 text-emerald-400" />
+              <Wifi className="w-6 h-6 text-[#7C9885]" />
             ) : isConnecting ? (
-              <RefreshCw className="w-6 h-6 text-amber-400 animate-spin" />
+              <RefreshCw className="w-6 h-6 text-[#C9A962] animate-spin" />
             ) : (
-              <WifiOff className="w-6 h-6 text-red-400" />
+              <WifiOff className="w-6 h-6 text-[#C0736D]" />
             )}
           </div>
 
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-medium text-white">
+              <h3 className="font-medium text-[#2D3436]">
                 IB Gateway
               </h3>
               <span
                 className={`
                   text-xs px-2 py-0.5 rounded-full
                   ${isConnected
-                    ? 'bg-emerald-500/20 text-emerald-400'
+                    ? 'bg-[#7C9885]/20 text-[#7C9885]'
                     : isConnecting
-                      ? 'bg-amber-500/20 text-amber-400'
-                      : 'bg-red-500/20 text-red-400'
+                      ? 'bg-[#C9A962]/20 text-[#C9A962]'
+                      : 'bg-[#C0736D]/20 text-[#C0736D]'
                   }
                 `}
               >
@@ -271,13 +271,13 @@ export function ConnectionStatus({
             </div>
 
             {error && (
-              <p className="text-sm text-red-400 mb-2">
+              <p className="text-sm text-[#C0736D] mb-2">
                 {error}
               </p>
             )}
 
             {!isConnected && !isConnecting && lastConnected && (
-              <p className="text-sm text-gray-400 mb-2">
+              <p className="text-sm text-[#636E72] mb-2">
                 Laatst verbonden: {new Date(lastConnected).toLocaleTimeString('nl-NL')}
               </p>
             )}
@@ -286,7 +286,7 @@ export function ConnectionStatus({
               <button
                 onClick={handleReconnect}
                 disabled={isReconnecting}
-                className="flex items-center gap-2 text-sm text-[#28EBCF] hover:text-[#20D4BA]"
+                className="flex items-center gap-2 text-sm text-[#7C9885] hover:text-[#6B8A74]"
               >
                 <RefreshCw className={`w-4 h-4 ${isReconnecting ? 'animate-spin' : ''}`} />
                 Opnieuw verbinden
@@ -305,10 +305,10 @@ export function ConnectionStatus({
         className={`
           flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
           ${isConnected
-            ? 'bg-emerald-500/10 text-emerald-400'
+            ? 'bg-[#7C9885]/10 text-[#7C9885]'
             : isConnecting
-              ? 'bg-amber-500/10 text-amber-400'
-              : 'bg-red-500/10 text-red-400'
+              ? 'bg-[#C9A962]/10 text-[#C9A962]'
+              : 'bg-[#C0736D]/10 text-[#C0736D]'
           }
         `}
       >
@@ -334,7 +334,7 @@ export function ConnectionStatus({
         <button
           onClick={handleReconnect}
           disabled={isReconnecting}
-          className="p-1 text-gray-400 hover:text-white transition-colors"
+          className="p-1 text-[#636E72] hover:text-[#2D3436] transition-colors"
           title="Opnieuw verbinden"
         >
           <RefreshCw className={`w-4 h-4 ${isReconnecting ? 'animate-spin' : ''}`} />
@@ -402,8 +402,8 @@ export function NetworkStatusBanner() {
         flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-lg
         transform transition-all duration-300
         ${isOnline
-          ? 'bg-emerald-500/90 text-white'
-          : 'bg-red-500/90 text-white'
+          ? 'bg-[#7C9885] text-white'
+          : 'bg-[#C0736D] text-white'
         }
       `}
     >

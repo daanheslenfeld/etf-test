@@ -3,9 +3,9 @@ import { Search, FileX, AlertCircle, Inbox } from 'lucide-react';
 import { Button } from './Button';
 
 /**
- * EmptyState Component
+ * EmptyState Component - Pastel Design System
  *
- * Consistent empty state display with icon, title, description, and optional action
+ * Calm, muted empty states with soft pastel colors
  */
 
 const PRESETS = {
@@ -76,14 +76,14 @@ export function EmptyState({
 
   return (
     <div className={`${sizeConfig.container} text-center ${className}`}>
-      <div className={`inline-flex items-center justify-center ${sizeConfig.iconWrapper} bg-gray-800/50 rounded-2xl mb-4`}>
-        <Icon className={`${sizeConfig.icon} text-gray-600`} />
+      <div className={`inline-flex items-center justify-center ${sizeConfig.iconWrapper} bg-[#ECEEED] rounded-2xl mb-4`}>
+        <Icon className={`${sizeConfig.icon} text-[#B2BEC3]`} />
       </div>
-      <h3 className={`${sizeConfig.title} font-medium text-gray-400 mb-2`}>
+      <h3 className={`${sizeConfig.title} font-medium text-[#636E72] mb-2`}>
         {displayTitle}
       </h3>
       {displayDescription && (
-        <p className={`${sizeConfig.description} text-gray-600 mb-4`}>
+        <p className={`${sizeConfig.description} text-[#B2BEC3] mb-4`}>
           {displayDescription}
         </p>
       )}

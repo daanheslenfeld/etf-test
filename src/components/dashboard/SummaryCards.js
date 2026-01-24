@@ -110,16 +110,16 @@ export function SummaryCards({
  */
 function DisconnectedCard() {
   return (
-    <div className="col-span-full bg-[#1A1B1F] border border-amber-500/20 rounded-xl p-5">
+    <div className="col-span-full bg-[#FEFEFE] border border-[#C9A962]/30 rounded-xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
       <div className="flex items-center gap-4">
-        <div className="p-3 bg-amber-500/10 rounded-xl">
-          <AlertCircle className="w-6 h-6 text-amber-400" />
+        <div className="p-3 bg-[#C9A962]/10 rounded-xl">
+          <AlertCircle className="w-6 h-6 text-[#C9A962]" />
         </div>
         <div className="flex-1">
-          <h3 className="text-white font-medium mb-1">
+          <h3 className="text-[#2D3436] font-medium mb-1">
             Broker niet verbonden
           </h3>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-[#636E72]">
             Verbind je LYNX account om je portfolio te bekijken
           </p>
         </div>
@@ -140,7 +140,7 @@ export function SummaryCardsCompact({
   className = '',
 }) {
   const trend = unrealizedPnL > 0 ? 'up' : unrealizedPnL < 0 ? 'down' : 'neutral';
-  const trendColor = trend === 'up' ? 'text-emerald-400' : trend === 'down' ? 'text-red-400' : 'text-gray-400';
+  const trendColor = trend === 'up' ? 'text-[#7C9885]' : trend === 'down' ? 'text-[#C0736D]' : 'text-[#636E72]';
 
   const formatValue = (val) => {
     if (typeof val !== 'number') return '—';
@@ -159,8 +159,8 @@ export function SummaryCardsCompact({
   if (loading) {
     return (
       <div className={`flex items-center gap-4 ${className}`}>
-        <div className="animate-pulse bg-gray-800/50 h-6 w-24 rounded" />
-        <div className="animate-pulse bg-gray-800/50 h-4 w-16 rounded" />
+        <div className="animate-pulse bg-[#ECEEED] h-6 w-24 rounded" />
+        <div className="animate-pulse bg-[#ECEEED] h-4 w-16 rounded" />
       </div>
     );
   }
@@ -168,8 +168,8 @@ export function SummaryCardsCompact({
   return (
     <div className={`flex items-center gap-4 ${className}`}>
       <div>
-        <p className="text-xs text-gray-500 uppercase tracking-wider">Portfolio</p>
-        <p className="text-lg font-semibold text-white font-mono tabular-nums">
+        <p className="text-xs text-[#B2BEC3] uppercase tracking-wider">Portfolio</p>
+        <p className="text-lg font-semibold text-[#2D3436] font-mono tabular-nums">
           {formatValue(totalValue)}
         </p>
       </div>
@@ -190,13 +190,13 @@ export function SummaryCardsSkeleton({ count = 4, className = '' }) {
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${count} gap-4 ${className}`}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-[#1A1B1F] border border-gray-800/50 rounded-xl p-5">
+        <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
           <div className="flex items-start justify-between mb-3">
-            <div className="animate-pulse bg-gray-800/50 h-4 w-20 rounded" />
-            <div className="animate-pulse bg-gray-800/50 h-10 w-10 rounded-xl" />
+            <div className="animate-pulse bg-[#ECEEED] h-4 w-20 rounded" />
+            <div className="animate-pulse bg-[#ECEEED] h-10 w-10 rounded-xl" />
           </div>
-          <div className="animate-pulse bg-gray-800/50 h-8 w-32 rounded mb-2" />
-          <div className="animate-pulse bg-gray-800/50 h-4 w-24 rounded" />
+          <div className="animate-pulse bg-[#ECEEED] h-8 w-32 rounded mb-2" />
+          <div className="animate-pulse bg-[#ECEEED] h-4 w-24 rounded" />
         </div>
       ))}
     </div>

@@ -1,26 +1,26 @@
 import React from 'react';
 
 /**
- * Card Component - Premium Fintech Style
+ * Card Component - Pastel Design System
  *
- * Variants: default, elevated, interactive, bordered, glass, hero, stat
+ * Floating cards with soft shadows, pastel colors, breathing room
  */
 const VARIANTS = {
-  default: 'bg-[#1A1B1F] border border-gray-700/30',
-  elevated: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border border-gray-700/30 shadow-2xl shadow-black/20',
-  interactive: 'bg-[#1A1B1F] border border-gray-700/30 hover:border-gray-600/50 hover:bg-[#1E1F24] cursor-pointer transition-all duration-200',
-  bordered: 'bg-transparent border border-gray-700/30',
-  glass: 'bg-gray-800/20 border border-gray-700/30 backdrop-blur-sm',
-  hero: 'bg-gradient-to-br from-[#1A1B1F] to-[#16171B] border-l-4 border-[#28EBCF] border-y border-r border-y-gray-700/30 border-r-gray-700/30 shadow-lg shadow-[#28EBCF]/5',
-  stat: 'bg-[#1A1B1F] border border-gray-700/30 hover:border-gray-600/40 transition-colors',
+  default: 'bg-[#FEFEFE] border border-[#E8E8E6] shadow-[0_2px_8px_rgba(45,52,54,0.06)]',
+  elevated: 'bg-[#FEFEFE] border border-[#E8E8E6] shadow-[0_4px_16px_rgba(45,52,54,0.08)]',
+  interactive: 'bg-[#FEFEFE] border border-[#E8E8E6] shadow-[0_2px_8px_rgba(45,52,54,0.06)] hover:shadow-[0_4px_16px_rgba(45,52,54,0.1)] hover:border-[#7C9885] cursor-pointer transition-all duration-300',
+  bordered: 'bg-transparent border border-[#E8E8E6]',
+  subtle: 'bg-[#F5F6F4]/50',
+  hero: 'bg-[#FEFEFE] border border-[#E8E8E6] shadow-[0_4px_16px_rgba(45,52,54,0.08)] border-l-4 border-l-[#7C9885]',
+  stat: 'bg-[#FEFEFE] border border-[#E8E8E6] shadow-[0_2px_8px_rgba(45,52,54,0.06)] hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-300',
 };
 
 const PADDING = {
   none: '',
-  sm: 'p-3 sm:p-4',
-  md: 'p-4 sm:p-5',
-  lg: 'p-5 sm:p-6',
-  xl: 'p-6 sm:p-7',
+  sm: 'p-4',
+  md: 'p-5',
+  lg: 'p-6',
+  xl: 'p-8',
 };
 
 const RADIUS = {
@@ -63,16 +63,16 @@ export function CardHeader({
   className = '',
 }) {
   return (
-    <div className={`flex items-center justify-between mb-4 ${className}`}>
+    <div className={`flex items-center justify-between mb-5 ${className}`}>
       <div className="flex items-center gap-3">
         {Icon && (
-          <div className="p-2.5 bg-gradient-to-br from-[#28EBCF]/20 to-[#28EBCF]/5 rounded-xl border border-[#28EBCF]/20">
-            <Icon className="w-5 h-5 text-[#28EBCF]" />
+          <div className="p-2.5 bg-[#7C9885]/10 rounded-xl">
+            <Icon className="w-5 h-5 text-[#7C9885]" />
           </div>
         )}
         <div>
-          {title && <h3 className="text-lg font-semibold text-white">{title}</h3>}
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          {title && <h3 className="text-lg font-medium text-[#2D3436]">{title}</h3>}
+          {subtitle && <p className="text-sm text-[#636E72]">{subtitle}</p>}
           {children}
         </div>
       </div>
@@ -93,7 +93,7 @@ export function CardBody({ children, className = '' }) {
  */
 export function CardFooter({ children, className = '' }) {
   return (
-    <div className={`mt-4 pt-4 border-t border-gray-800/50 ${className}`}>
+    <div className={`mt-5 pt-5 border-t border-[#E8E8E6] ${className}`}>
       {children}
     </div>
   );
@@ -103,7 +103,7 @@ export function CardFooter({ children, className = '' }) {
  * CardDivider - Horizontal divider for cards
  */
 export function CardDivider({ className = '' }) {
-  return <div className={`border-t border-gray-800/50 my-4 ${className}`} />;
+  return <div className={`border-t border-[#E8E8E6] my-5 ${className}`} />;
 }
 
 export default Card;

@@ -110,7 +110,6 @@ export default function LivePortfolioOverview({ user }) {
 
       if (summaryRes.ok) {
         const data = await summaryRes.json();
-        // Use backend values directly - backend is single source of truth
         setPortfolioValue(data.portfolio_value || 0);
         setAvailableFunds(data.available_funds || 0);
         setTotalValue(data.total_value || 0);
@@ -174,16 +173,10 @@ export default function LivePortfolioOverview({ user }) {
     setLoading(true);
     setError(null);
 
-    // Load cache first for instant display
     loadCachedData();
-
-    // Check connection
     const isConnected = await checkConnection();
-
-    // Fetch fresh data
     const fetchSuccess = await fetchData();
 
-    // If fetch failed but we have cache, mark as stale
     if (!fetchSuccess) {
       const hasCache = loadCachedData();
       if (!hasCache) {
@@ -191,7 +184,6 @@ export default function LivePortfolioOverview({ user }) {
       }
     }
 
-    // Mark stale if disconnected
     if (!isConnected) {
       setIsDataStale(true);
     }
@@ -204,24 +196,24 @@ export default function LivePortfolioOverview({ user }) {
     refreshData();
   }, [refreshData]);
 
-  // Polling - continue even when disconnected to detect reconnection
+  // Polling
   useEffect(() => {
     const interval = setInterval(async () => {
       const isConnected = await checkConnection();
       if (isConnected) {
         await fetchData();
       }
-    }, 10000); // Poll every 10 seconds
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [checkConnection, fetchData]);
 
   if (loading && positions.length === 0 && portfolioValue === 0) {
     return (
-      <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6">
+      <div className="bg-white border border-[#E4E8E5] rounded-2xl p-6 shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
         <div className="flex items-center justify-center gap-3">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#28EBCF]"></div>
-          <span className="text-gray-400">Loading portfolio...</span>
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#E4E8E5] border-t-[#8AB4A0]"></div>
+          <span className="text-[#5F7066]">Loading portfolio...</span>
         </div>
       </div>
     );
@@ -229,13 +221,13 @@ export default function LivePortfolioOverview({ user }) {
 
   if (error && positions.length === 0 && portfolioValue === 0) {
     return (
-      <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl p-6">
-        <div className="flex items-center gap-3 text-gray-400">
-          <AlertCircle className="w-5 h-5" />
+      <div className="bg-white border border-[#E4E8E5] rounded-2xl p-6 shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
+        <div className="flex items-center gap-3 text-[#5F7066]">
+          <AlertCircle className="w-5 h-5 text-[#D4A59A]" />
           <span>{error}</span>
           <button
             onClick={refreshData}
-            className="ml-auto px-3 py-1 bg-gray-800 rounded-lg hover:bg-gray-700 text-sm"
+            className="ml-auto px-4 py-2 bg-[#F0F2EE] rounded-lg hover:bg-[#E4E8E5] text-sm font-medium transition-colors"
           >
             Retry
           </button>
@@ -245,76 +237,76 @@ export default function LivePortfolioOverview({ user }) {
   }
 
   return (
-    <div className="bg-[#1A1B1F] border border-gray-700 rounded-xl overflow-hidden">
+    <div className="bg-white border border-[#E4E8E5] rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+      <div className="p-5 border-b border-[#E4E8E5] flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-white">Live Portfolio</h2>
+          <h2 className="text-lg font-semibold text-[#2D3E36]">Live Portfolio</h2>
           {connected ? (
-            <div className="flex items-center gap-1 text-green-400 text-xs">
-              <Wifi className="w-3 h-3" />
-              <span>Live</span>
-            </div>
+            <span className="flex items-center gap-1.5 text-[#8AB4A0] text-xs font-medium">
+              <Wifi className="w-3.5 h-3.5" />
+              Live
+            </span>
           ) : (
-            <div className="flex items-center gap-1 text-yellow-400 text-xs">
-              <WifiOff className="w-3 h-3" />
-              <span>Offline</span>
-            </div>
+            <span className="flex items-center gap-1.5 text-[#D4C39A] text-xs">
+              <WifiOff className="w-3.5 h-3.5" />
+              Offline
+            </span>
           )}
           {isDataStale && (
-            <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-600/20 border border-orange-600/40 rounded text-xs text-orange-400">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F5ED] border border-[#D4C39A]/30 rounded-full text-xs text-[#B8A57A]">
               <Clock className="w-3 h-3" />
-              <span>Cached {formatTimeAgo(lastUpdate)}</span>
-            </div>
+              Cached {formatTimeAgo(lastUpdate)}
+            </span>
           )}
         </div>
         <button
           onClick={refreshData}
           disabled={loading}
-          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 text-[#5F7066] hover:text-[#2D3E36] hover:bg-[#F0F2EE] rounded-lg transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Summary Cards - Using backend values directly (single source of truth) */}
-      <div className="grid grid-cols-4 gap-3 p-4 border-b border-gray-700 bg-gray-800/30">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-4 gap-4 p-5 border-b border-[#E4E8E5] bg-[#FAFBF9]">
         {/* Positions Value */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <BarChart3 className="w-3 h-3" />
+        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+            <BarChart3 className="w-3.5 h-3.5" />
             Positions Value
           </div>
-          <div className="text-lg font-bold text-white">{formatCurrency(portfolioValue)}</div>
+          <div className="text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(portfolioValue)}</div>
         </div>
 
         {/* Available Cash */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <Wallet className="w-3 h-3" />
+        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+            <Wallet className="w-3.5 h-3.5" />
             Available Cash
           </div>
-          <div className={`text-lg font-bold ${availableFunds > 0 ? 'text-green-400' : 'text-white'}`}>
+          <div className={`text-lg font-semibold tabular-nums ${availableFunds > 0 ? 'text-[#5F8A74]' : 'text-[#2D3E36]'}`}>
             {formatCurrency(availableFunds)}
           </div>
         </div>
 
-        {/* Total Value = Positions + Cash */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            <PiggyBank className="w-3 h-3" />
+        {/* Total Value */}
+        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+            <PiggyBank className="w-3.5 h-3.5" />
             Total Value
           </div>
-          <div className="text-lg font-bold text-white">{formatCurrency(totalValue)}</div>
+          <div className="text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(totalValue)}</div>
         </div>
 
         {/* Unrealized P&L */}
-        <div className="bg-gray-900/50 rounded-lg p-3">
-          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-            {unrealizedPnL >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+            {unrealizedPnL >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
             Unrealized P&L
           </div>
-          <div className={`text-lg font-bold flex items-center gap-2 ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div className={`text-lg font-semibold flex items-center gap-2 tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
             {formatCurrency(unrealizedPnL)}
             <span className="text-sm">({formatPercent(unrealizedPnLPercent)})</span>
           </div>
@@ -324,27 +316,26 @@ export default function LivePortfolioOverview({ user }) {
       {/* Positions Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-800/50">
+          <thead className="bg-[#FAFBF9]">
             <tr>
-              <th className="text-left text-gray-400 text-xs font-medium px-4 py-2">Symbol</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Qty</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Avg Cost</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Last Price</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">Market Value</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">P&L</th>
-              <th className="text-right text-gray-400 text-xs font-medium px-4 py-2">P&L %</th>
+              <th className="text-left text-[#5F7066] text-xs font-medium px-5 py-3">Symbol</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Qty</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Avg Cost</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Last Price</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Market Value</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">P&L</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">P&L %</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody className="divide-y divide-[#E4E8E5]">
             {positions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-gray-500 py-8">
+                <td colSpan={7} className="text-center text-[#95A39A] py-10">
                   No positions found
                 </td>
               </tr>
             ) : (
               positions.map((position, idx) => {
-                // Use backend-provided values directly (single source of truth)
                 const qty = parseFloat(position.quantity) || 0;
                 const avgCost = parseFloat(position.avg_cost) || 0;
                 const lastPrice = parseFloat(position.last_price) || avgCost;
@@ -355,28 +346,28 @@ export default function LivePortfolioOverview({ user }) {
                 const isStale = position.price_stale;
 
                 return (
-                  <tr key={idx} className="hover:bg-gray-800/30 transition-colors">
-                    <td className="px-4 py-2">
-                      <div className="font-medium text-white text-sm">{position.symbol}</div>
-                      <div className="text-xs text-gray-500">{position.currency}</div>
+                  <tr key={idx} className="hover:bg-[#FAFBF9] transition-colors">
+                    <td className="px-5 py-4">
+                      <div className="font-medium text-[#2D3E36] text-sm">{position.symbol}</div>
+                      <div className="text-xs text-[#95A39A]">{position.currency}</div>
                     </td>
-                    <td className="px-4 py-2 text-right text-white text-sm">
+                    <td className="px-5 py-4 text-right text-[#2D3E36] text-sm tabular-nums">
                       {qty.toFixed(0)}
                     </td>
-                    <td className="px-4 py-2 text-right text-gray-300 text-sm">
+                    <td className="px-5 py-4 text-right text-[#5F7066] text-sm tabular-nums">
                       {formatCurrency(avgCost)}
                     </td>
-                    <td className={`px-4 py-2 text-right text-sm ${isStale ? 'text-orange-400' : 'text-white'}`}>
+                    <td className={`px-5 py-4 text-right text-sm tabular-nums ${isStale ? 'text-[#D4C39A]' : 'text-[#2D3E36]'}`}>
                       {formatCurrency(lastPrice)}
-                      {isStale && <span className="text-xs text-gray-600 ml-1">(stale)</span>}
+                      {isStale && <span className="text-xs text-[#95A39A] ml-1">(stale)</span>}
                     </td>
-                    <td className="px-4 py-2 text-right text-white font-medium text-sm">
+                    <td className="px-5 py-4 text-right text-[#2D3E36] font-medium text-sm tabular-nums">
                       {formatCurrency(marketValue)}
                     </td>
-                    <td className={`px-4 py-2 text-right font-medium text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                    <td className={`px-5 py-4 text-right font-medium text-sm tabular-nums ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                       {formatCurrency(pnl)}
                     </td>
-                    <td className={`px-4 py-2 text-right font-medium text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                    <td className={`px-5 py-4 text-right font-medium text-sm tabular-nums ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                       {formatPercent(pnlPercent)}
                     </td>
                   </tr>
@@ -386,19 +377,19 @@ export default function LivePortfolioOverview({ user }) {
           </tbody>
           {/* Totals Footer */}
           {positions.length > 0 && (
-            <tfoot className="bg-gray-800/50 border-t border-gray-700">
+            <tfoot className="bg-[#FAFBF9] border-t border-[#E4E8E5]">
               <tr>
-                <td className="px-4 py-2 font-bold text-white text-sm">Positions Total</td>
-                <td className="px-4 py-2"></td>
-                <td className="px-4 py-2"></td>
-                <td className="px-4 py-2"></td>
-                <td className="px-4 py-2 text-right font-bold text-white text-sm">
+                <td className="px-5 py-4 font-semibold text-[#2D3E36] text-sm">Positions Total</td>
+                <td className="px-5 py-4"></td>
+                <td className="px-5 py-4"></td>
+                <td className="px-5 py-4"></td>
+                <td className="px-5 py-4 text-right font-semibold text-[#2D3E36] text-sm tabular-nums">
                   {formatCurrency(portfolioValue)}
                 </td>
-                <td className={`px-4 py-2 text-right font-bold text-sm ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <td className={`px-5 py-4 text-right font-semibold text-sm tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                   {formatCurrency(unrealizedPnL)}
                 </td>
-                <td className={`px-4 py-2 text-right font-bold text-sm ${unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <td className={`px-5 py-4 text-right font-semibold text-sm tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                   {formatPercent(unrealizedPnLPercent)}
                 </td>
               </tr>
@@ -409,7 +400,7 @@ export default function LivePortfolioOverview({ user }) {
 
       {/* Footer with last update */}
       {lastUpdate && (
-        <div className="px-4 py-2 border-t border-gray-800 text-xs text-gray-500 text-right">
+        <div className="px-5 py-3 border-t border-[#E4E8E5] text-xs text-[#95A39A] text-right">
           Last updated: {new Date(lastUpdate).toLocaleString('nl-NL')}
         </div>
       )}
