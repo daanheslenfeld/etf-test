@@ -2996,114 +2996,108 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="relative flex justify-center items-center" style={{ perspective: '1200px' }}>
+          <div className="relative flex justify-center items-center" style={{ perspective: '1000px' }}>
             {/* iPhone Mockup - 3D */}
             <div
-              className="relative w-[280px] sm:w-[320px] md:w-[360px]"
+              className="relative w-[220px] sm:w-[250px] md:w-[280px]"
               style={{
-                transform: 'rotateY(-12deg) rotateX(5deg)',
+                transform: 'rotateY(-18deg) rotateX(8deg)',
                 transformStyle: 'preserve-3d'
               }}
             >
-              {/* iPhone Frame with realistic 3D bezels */}
+              {/* iPhone Frame with glossy green border */}
               <div
-                className="relative rounded-[3.5rem] p-3 phone-float"
+                className="relative rounded-[2.5rem] p-[6px]"
                 style={{
-                  background: 'linear-gradient(145deg, #3d4447 0%, #2D3436 50%, #1a1a1a 100%)',
+                  background: 'linear-gradient(145deg, #9BB3A3 0%, #7C9885 30%, #5a7a64 70%, #4a6a54 100%)',
                   boxShadow: `
-                    inset 2px 2px 4px rgba(255,255,255,0.1),
-                    inset -2px -2px 4px rgba(0,0,0,0.3),
-                    0 0 0 2px #4a5568,
-                    0 0 0 4px #3d4447,
-                    0 0 0 6px #2D3436,
-                    -20px 20px 40px rgba(0,0,0,0.4),
-                    -10px 10px 20px rgba(0,0,0,0.3),
-                    0 30px 60px rgba(124, 152, 133, 0.15),
-                    0 0 80px rgba(124, 152, 133, 0.1)
+                    inset 2px 2px 6px rgba(255,255,255,0.4),
+                    inset -1px -1px 4px rgba(0,0,0,0.2),
+                    -15px 15px 30px rgba(0,0,0,0.25),
+                    0 0 40px rgba(124, 152, 133, 0.5),
+                    0 0 80px rgba(124, 152, 133, 0.4),
+                    0 0 120px rgba(124, 152, 133, 0.3),
+                    0 0 160px rgba(124, 152, 133, 0.2)
                   `,
                   transformStyle: 'preserve-3d'
                 }}
               >
-                {/* Side edge highlight for 3D effect */}
+                {/* Glossy shine overlay */}
                 <div
-                  className="absolute top-8 -right-1 bottom-8 w-1 rounded-full"
+                  className="absolute inset-0 rounded-[2.5rem] pointer-events-none"
                   style={{
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.05), rgba(255,255,255,0.1))'
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(0,0,0,0.1) 100%)'
                   }}
                 ></div>
-                {/* Volume buttons */}
-                <div
-                  className="absolute -left-1 top-28 w-1 h-8 rounded-l-sm"
-                  style={{ background: 'linear-gradient(to right, #1a1a1a, #2D3436)' }}
-                ></div>
-                <div
-                  className="absolute -left-1 top-40 w-1 h-12 rounded-l-sm"
-                  style={{ background: 'linear-gradient(to right, #1a1a1a, #2D3436)' }}
-                ></div>
-                {/* Power button */}
-                <div
-                  className="absolute -right-1 top-32 w-1 h-16 rounded-r-sm"
-                  style={{ background: 'linear-gradient(to left, #1a1a1a, #2D3436)' }}
-                ></div>
-                {/* Status bar indicators */}
-                <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-20">
-                  <div className="text-[#2D3436] text-[10px] font-semibold bg-[#F5F6F4] px-1 rounded">9:41</div>
-                  <div className="flex items-center gap-1 bg-[#F5F6F4] px-1.5 py-0.5 rounded">
-                    <svg className="w-3 h-3" fill="#2D3436" viewBox="0 0 24 24">
-                      <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
-                    </svg>
-                    <svg className="w-3 h-3" fill="#2D3436" viewBox="0 0 16 16">
-                      <rect x="1" y="4" width="3" height="8" rx="1"/>
-                      <rect x="5" y="2" width="3" height="10" rx="1"/>
-                      <rect x="9" y="1" width="3" height="11" rx="1"/>
-                      <rect x="13" y="3" width="3" height="9" rx="1" opacity="0.4"/>
-                    </svg>
-                    <svg className="w-5 h-5" fill="#2D3436" viewBox="0 0 24 24">
-                      <rect x="2" y="7" width="18" height="10" rx="2" stroke="#2D3436" strokeWidth="1.5" fill="none"/>
-                      <rect x="4" y="9" width="12" height="6" fill="#7C9885"/>
-                      <rect x="20" y="10" width="2" height="4" rx="0.5"/>
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Dynamic Island / Notch */}
-                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex items-center justify-center">
-                  <div className="w-12 h-3 bg-[#FEFEFE] rounded-full"></div>
-                </div>
-
                 {/* Screen Content */}
-                <div className="bg-[#F5F6F4] rounded-[3rem] overflow-hidden aspect-[9/19] relative">
+                <div className="bg-[#F5F6F4] rounded-[2.2rem] overflow-hidden aspect-[9/19] relative">
                   {/* Glass reflection overlay */}
                   <div
-                    className="absolute inset-0 pointer-events-none z-30 rounded-[3rem]"
+                    className="absolute inset-0 pointer-events-none z-30 rounded-[2.2rem]"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.05) 100%)'
                     }}
                   ></div>
-                  {/* Portfolio Dashboard Preview */}
-                  <div className="p-3 sm:p-4 pt-10">
-                    {/* Header with Logo */}
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-2">
-                        <svg viewBox="0 0 48 48" fill="none" className="w-7 h-7">
+
+                  {/* iOS Status Bar */}
+                  <div className="px-4 pt-2 pb-1">
+                    <div className="flex justify-between items-center">
+                      {/* Time - left */}
+                      <div className="text-[#2D3436] text-[9px] font-semibold w-12">9:41</div>
+
+                      {/* Dynamic Island - center */}
+                      <div
+                        className="w-14 h-4 rounded-full flex items-center justify-center bg-[#7C9885]"
+                        style={{
+                          boxShadow: 'inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        <div className="w-5 h-1 bg-white/20 rounded-full"></div>
+                      </div>
+
+                      {/* Status icons - right */}
+                      <div className="flex items-center gap-0.5 w-12 justify-end">
+                        <svg className="w-2.5 h-2.5" fill="#2D3436" viewBox="0 0 24 24">
+                          <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
+                        </svg>
+                        <svg className="w-2.5 h-2.5" fill="#2D3436" viewBox="0 0 16 16">
+                          <rect x="1" y="4" width="3" height="8" rx="1"/>
+                          <rect x="5" y="2" width="3" height="10" rx="1"/>
+                          <rect x="9" y="1" width="3" height="11" rx="1"/>
+                          <rect x="13" y="3" width="3" height="9" rx="1" opacity="0.4"/>
+                        </svg>
+                        <svg className="w-3.5 h-3.5" fill="#2D3436" viewBox="0 0 24 24">
+                          <rect x="2" y="7" width="18" height="10" rx="2" stroke="#2D3436" strokeWidth="1.5" fill="none"/>
+                          <rect x="4" y="9" width="12" height="6" fill="#7C9885"/>
+                          <rect x="20" y="10" width="2" height="4" rx="0.5"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* App Content */}
+                  <div className="px-3 pb-3">
+                    {/* App Header with Logo */}
+                    <div className="flex justify-between items-center mb-3 pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
                           <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                           <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
                           <circle cx="24" cy="6" r="4" fill="#FFD700"/>
                           <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-                          <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-                          <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                          <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+                          <circle cx="18" cy="34" r="2" fill="#7C9885"/>
+                          <circle cx="30" cy="34" r="2" fill="#7C9885"/>
                         </svg>
-                        <div className="text-[#2D3436] font-bold text-base">PIGG</div>
+                        <div className="text-[#2D3436] font-bold text-sm">PIGG</div>
                       </div>
-                      <div className="text-[#636E72] text-xs">Jan</div>
+                      <div className="text-[#636E72] text-[10px]">Hoi, Jan</div>
                     </div>
 
                     {/* Portfolio Value Card */}
-                    <div className="bg-gradient-to-br from-[#7C9885] to-[#20D4BA] rounded-xl p-3 mb-3">
-                      <div className="text-[#0A0B0D] text-xs font-medium mb-1">Totale Waarde</div>
-                      <div className="text-[#0A0B0D] text-2xl font-bold mb-1">€52,450</div>
-                      <div className="text-[#0A0B0D] text-xs">+€2,450 (+4.9%)</div>
+                    <div className="bg-[#7C9885] rounded-xl p-3 mb-3">
+                      <div className="text-[#2D3436] text-xs font-medium mb-1">Totale Waarde</div>
+                      <div className="text-[#2D3436] text-2xl font-bold mb-1">€52,450</div>
+                      <div className="text-[#2D3436]/80 text-xs">+€2,450 (+4.9%)</div>
                     </div>
 
                     {/* Performance Chart */}
@@ -3235,16 +3229,17 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Glow Effect */}
-              <div className="absolute inset-0 bg-[#7C9885] opacity-15 blur-3xl rounded-full -z-10"></div>
+              {/* Glow Effect - Enhanced */}
+              <div className="absolute inset-[-40px] bg-[#7C9885] opacity-30 blur-[60px] rounded-full -z-10"></div>
+              <div className="absolute inset-[-80px] bg-[#7C9885] opacity-20 blur-[100px] rounded-full -z-20"></div>
 
               {/* 3D Shadow/Reflection under phone */}
               <div
-                className="absolute -bottom-8 left-1/2 w-[80%] h-8 -z-10"
+                className="absolute -bottom-6 left-1/2 w-[90%] h-6 -z-10"
                 style={{
-                  transform: 'translateX(-50%) rotateX(80deg)',
-                  background: 'radial-gradient(ellipse at center, rgba(45,52,54,0.4) 0%, transparent 70%)',
-                  filter: 'blur(8px)'
+                  transform: 'translateX(-50%)',
+                  background: 'radial-gradient(ellipse at center, rgba(124,152,133,0.5) 0%, transparent 70%)',
+                  filter: 'blur(12px)'
                 }}
               ></div>
             </div>
