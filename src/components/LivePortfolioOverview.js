@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, RefreshCw, Clock, Wifi, WifiOff, AlertCircle, Wallet, PiggyBank, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, Clock, Wifi, WifiOff, AlertCircle, Wallet, PiggyBank, BarChart3, ChevronRight } from 'lucide-react';
+import ETFDetailsModal from './trading/ETFDetailsModal';
+
+// ETF name lookup
+const ETF_NAMES = {
+  IWDA: 'iShares Core MSCI World UCITS ETF',
+  VWCE: 'Vanguard FTSE All-World UCITS ETF',
+  EMIM: 'iShares Core MSCI EM IMI UCITS ETF',
+  VUAA: 'Vanguard S&P 500 UCITS ETF',
+  SXR8: 'iShares Core S&P 500 UCITS ETF',
+  EUNH: 'iShares Core Euro Government Bond',
+  IEAC: 'iShares Core EUR Corporate Bond',
+  VAGE: 'Vanguard Global Aggregate Bond',
+  SGLD: 'Invesco Physical Gold ETC',
+  IWDP: 'iShares Developed Markets Property Yield',
+  XEON: 'Xtrackers II EUR Overnight Rate Swap',
+};
 
 const TRADING_API_URL = 'http://localhost:8002';
 
@@ -53,6 +69,7 @@ export default function LivePortfolioOverview({ user }) {
   const [isDataStale, setIsDataStale] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedEtf, setSelectedEtf] = useState(null);
 
   const formatCurrency = (value) => {
     const num = parseFloat(value) || 0;
@@ -213,7 +230,7 @@ export default function LivePortfolioOverview({ user }) {
       <div className="bg-white border border-[#E4E8E5] rounded-2xl p-6 shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
         <div className="flex items-center justify-center gap-3">
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#E4E8E5] border-t-[#8AB4A0]"></div>
-          <span className="text-[#5F7066]">Loading portfolio...</span>
+          <span className="text-[#5F7066]">Portfolio laden...</span>
         </div>
       </div>
     );
@@ -224,12 +241,12 @@ export default function LivePortfolioOverview({ user }) {
       <div className="bg-white border border-[#E4E8E5] rounded-2xl p-6 shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
         <div className="flex items-center gap-3 text-[#5F7066]">
           <AlertCircle className="w-5 h-5 text-[#D4A59A]" />
-          <span>{error}</span>
+          <span>Kan portfolio data niet laden</span>
           <button
             onClick={refreshData}
             className="ml-auto px-4 py-2 bg-[#F0F2EE] rounded-lg hover:bg-[#E4E8E5] text-sm font-medium transition-colors"
           >
-            Retry
+            Opnieuw
           </button>
         </div>
       </div>
@@ -239,9 +256,9 @@ export default function LivePortfolioOverview({ user }) {
   return (
     <div className="bg-white border border-[#E4E8E5] rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(45,62,54,0.05)]">
       {/* Header */}
-      <div className="p-5 border-b border-[#E4E8E5] flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-[#2D3E36]">Live Portfolio</h2>
+      <div className="p-4 sm:p-5 border-b border-[#E4E8E5] flex justify-between items-center">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <h2 className="text-base sm:text-lg font-semibold text-[#2D3E36]">Live Portfolio</h2>
           {connected ? (
             <span className="flex items-center gap-1.5 text-[#8AB4A0] text-xs font-medium">
               <Wifi className="w-3.5 h-3.5" />
@@ -254,84 +271,127 @@ export default function LivePortfolioOverview({ user }) {
             </span>
           )}
           {isDataStale && (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F5ED] border border-[#D4C39A]/30 rounded-full text-xs text-[#B8A57A]">
+            <span className="flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#F8F5ED] border border-[#D4C39A]/30 rounded-full text-[10px] sm:text-xs text-[#B8A57A]">
               <Clock className="w-3 h-3" />
-              Cached {formatTimeAgo(lastUpdate)}
+              Cache {formatTimeAgo(lastUpdate)}
             </span>
           )}
         </div>
         <button
           onClick={refreshData}
           disabled={loading}
-          className="p-2 text-[#5F7066] hover:text-[#2D3E36] hover:bg-[#F0F2EE] rounded-lg transition-colors"
+          className="p-2 text-[#5F7066] hover:text-[#2D3E36] hover:bg-[#F0F2EE] rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4 p-5 border-b border-[#E4E8E5] bg-[#FAFBF9]">
+      {/* Summary Cards - 2 cols mobile, 4 cols desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-5 border-b border-[#E4E8E5] bg-[#FAFBF9]">
         {/* Positions Value */}
-        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
-          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-1 sm:mb-2">
             <BarChart3 className="w-3.5 h-3.5" />
-            Positions Value
+            <span className="truncate">Belegd</span>
           </div>
-          <div className="text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(portfolioValue)}</div>
+          <div className="text-base sm:text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(portfolioValue)}</div>
         </div>
 
         {/* Available Cash */}
-        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
-          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-1 sm:mb-2">
             <Wallet className="w-3.5 h-3.5" />
-            Available Cash
+            <span className="truncate">Beschikbaar</span>
           </div>
-          <div className={`text-lg font-semibold tabular-nums ${availableFunds > 0 ? 'text-[#5F8A74]' : 'text-[#2D3E36]'}`}>
+          <div className={`text-base sm:text-lg font-semibold tabular-nums ${availableFunds > 0 ? 'text-[#5F8A74]' : 'text-[#2D3E36]'}`}>
             {formatCurrency(availableFunds)}
           </div>
         </div>
 
         {/* Total Value */}
-        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
-          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-1 sm:mb-2">
             <PiggyBank className="w-3.5 h-3.5" />
-            Total Value
+            <span className="truncate">Totaal</span>
           </div>
-          <div className="text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(totalValue)}</div>
+          <div className="text-base sm:text-lg font-semibold text-[#2D3E36] tabular-nums">{formatCurrency(totalValue)}</div>
         </div>
 
         {/* Unrealized P&L */}
-        <div className="bg-white rounded-xl p-4 border border-[#E4E8E5]">
-          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-2">
+        <div className="bg-white rounded-xl p-3 sm:p-4 border border-[#E4E8E5]">
+          <div className="flex items-center gap-2 text-[#5F7066] text-xs font-medium mb-1 sm:mb-2">
             {unrealizedPnL >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-            Unrealized P&L
+            <span className="truncate">Rendement</span>
           </div>
-          <div className={`text-lg font-semibold flex items-center gap-2 tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
+          <div className={`text-base sm:text-lg font-semibold tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
             {formatCurrency(unrealizedPnL)}
-            <span className="text-sm">({formatPercent(unrealizedPnLPercent)})</span>
+            <span className="text-xs sm:text-sm ml-1">({formatPercent(unrealizedPnLPercent)})</span>
           </div>
         </div>
       </div>
 
-      {/* Positions Table */}
-      <div className="overflow-x-auto">
+      {/* Mobile Cards View */}
+      <div className="sm:hidden p-4 space-y-3">
+        {positions.length === 0 ? (
+          <div className="text-center text-[#95A39A] py-10">
+            Geen posities gevonden
+          </div>
+        ) : (
+          positions.map((position, idx) => {
+            const qty = parseFloat(position.quantity) || 0;
+            const marketValue = parseFloat(position.market_value) || 0;
+            const pnl = parseFloat(position.unrealized_pnl) || 0;
+            const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
+            const isPositive = pnl >= 0;
+            const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
+
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedEtf(position.symbol)}
+                className="w-full bg-[#F5F6F4] rounded-xl p-4 text-left active:bg-[#ECEEED] transition-colors"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex-1 min-w-0 pr-2">
+                    <div className="font-medium text-[#2D3E36] text-sm truncate">{etfName}</div>
+                    <div className="text-xs text-[#95A39A]">{position.symbol} • {qty} stuks</div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#95A39A] flex-shrink-0" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-lg font-semibold text-[#2D3E36] tabular-nums">
+                    {formatCurrency(marketValue)}
+                  </div>
+                  <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
+                    {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                    <span className="tabular-nums">{formatPercent(pnlPercent)}</span>
+                  </div>
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Positions Table */}
+      <div className="hidden sm:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-[#FAFBF9]">
             <tr>
-              <th className="text-left text-[#5F7066] text-xs font-medium px-5 py-3">Symbol</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Qty</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Avg Cost</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Last Price</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Market Value</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">P&L</th>
-              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">P&L %</th>
+              <th className="text-left text-[#5F7066] text-xs font-medium px-5 py-3">ETF</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Aantal</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3 hidden md:table-cell">Gem. Koers</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Huidige Koers</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">Waarde</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3 hidden lg:table-cell">W/V</th>
+              <th className="text-right text-[#5F7066] text-xs font-medium px-5 py-3">W/V %</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#E4E8E5]">
             {positions.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center text-[#95A39A] py-10">
-                  No positions found
+                  Geen posities gevonden
                 </td>
               </tr>
             ) : (
@@ -344,27 +404,32 @@ export default function LivePortfolioOverview({ user }) {
                 const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
                 const isPositive = pnl >= 0;
                 const isStale = position.price_stale;
+                const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
 
                 return (
-                  <tr key={idx} className="hover:bg-[#FAFBF9] transition-colors">
+                  <tr
+                    key={idx}
+                    onClick={() => setSelectedEtf(position.symbol)}
+                    className="hover:bg-[#FAFBF9] transition-colors cursor-pointer"
+                  >
                     <td className="px-5 py-4">
-                      <div className="font-medium text-[#2D3E36] text-sm">{position.symbol}</div>
-                      <div className="text-xs text-[#95A39A]">{position.currency}</div>
+                      <div className="font-medium text-[#2D3E36] text-sm truncate max-w-[200px]" title={etfName}>{etfName}</div>
+                      <div className="text-xs text-[#95A39A]">{position.symbol}</div>
                     </td>
                     <td className="px-5 py-4 text-right text-[#2D3E36] text-sm tabular-nums">
                       {qty.toFixed(0)}
                     </td>
-                    <td className="px-5 py-4 text-right text-[#5F7066] text-sm tabular-nums">
+                    <td className="px-5 py-4 text-right text-[#5F7066] text-sm hidden md:table-cell tabular-nums">
                       {formatCurrency(avgCost)}
                     </td>
                     <td className={`px-5 py-4 text-right text-sm tabular-nums ${isStale ? 'text-[#D4C39A]' : 'text-[#2D3E36]'}`}>
                       {formatCurrency(lastPrice)}
-                      {isStale && <span className="text-xs text-[#95A39A] ml-1">(stale)</span>}
+                      {isStale && <span className="text-xs text-[#95A39A] ml-1">(vertraagd)</span>}
                     </td>
                     <td className="px-5 py-4 text-right text-[#2D3E36] font-medium text-sm tabular-nums">
                       {formatCurrency(marketValue)}
                     </td>
-                    <td className={`px-5 py-4 text-right font-medium text-sm tabular-nums ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
+                    <td className={`px-5 py-4 text-right font-medium text-sm hidden lg:table-cell tabular-nums ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                       {formatCurrency(pnl)}
                     </td>
                     <td className={`px-5 py-4 text-right font-medium text-sm tabular-nums ${isPositive ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
@@ -379,14 +444,14 @@ export default function LivePortfolioOverview({ user }) {
           {positions.length > 0 && (
             <tfoot className="bg-[#FAFBF9] border-t border-[#E4E8E5]">
               <tr>
-                <td className="px-5 py-4 font-semibold text-[#2D3E36] text-sm">Positions Total</td>
+                <td className="px-5 py-4 font-semibold text-[#2D3E36] text-sm">Totaal Posities</td>
                 <td className="px-5 py-4"></td>
-                <td className="px-5 py-4"></td>
+                <td className="px-5 py-4 hidden md:table-cell"></td>
                 <td className="px-5 py-4"></td>
                 <td className="px-5 py-4 text-right font-semibold text-[#2D3E36] text-sm tabular-nums">
                   {formatCurrency(portfolioValue)}
                 </td>
-                <td className={`px-5 py-4 text-right font-semibold text-sm tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
+                <td className={`px-5 py-4 text-right font-semibold text-sm hidden lg:table-cell tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
                   {formatCurrency(unrealizedPnL)}
                 </td>
                 <td className={`px-5 py-4 text-right font-semibold text-sm tabular-nums ${unrealizedPnL >= 0 ? 'text-[#5F8A74]' : 'text-[#B8847A]'}`}>
@@ -401,9 +466,16 @@ export default function LivePortfolioOverview({ user }) {
       {/* Footer with last update */}
       {lastUpdate && (
         <div className="px-5 py-3 border-t border-[#E4E8E5] text-xs text-[#95A39A] text-right">
-          Last updated: {new Date(lastUpdate).toLocaleString('nl-NL')}
+          Laatst bijgewerkt: {new Date(lastUpdate).toLocaleString('nl-NL')}
         </div>
       )}
+
+      {/* ETF Details Modal */}
+      <ETFDetailsModal
+        symbol={selectedEtf}
+        isOpen={!!selectedEtf}
+        onClose={() => setSelectedEtf(null)}
+      />
     </div>
   );
 }

@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, Briefcase } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, Briefcase, ChevronRight } from 'lucide-react';
 import { useTrading } from '../context/TradingContext';
+import ETFDetailsModal from './trading/ETFDetailsModal';
+
+// ETF name lookup
+const ETF_NAMES = {
+  IWDA: 'iShares Core MSCI World UCITS ETF',
+  VWCE: 'Vanguard FTSE All-World UCITS ETF',
+  EMIM: 'iShares Core MSCI EM IMI UCITS ETF',
+  VUAA: 'Vanguard S&P 500 UCITS ETF',
+  SXR8: 'iShares Core S&P 500 UCITS ETF',
+  EUNH: 'iShares Core Euro Government Bond',
+  IEAC: 'iShares Core EUR Corporate Bond',
+  VAGE: 'Vanguard Global Aggregate Bond',
+  SGLD: 'Invesco Physical Gold ETC',
+  IWDP: 'iShares Developed Markets Property Yield',
+  XEON: 'Xtrackers II EUR Overnight Rate Swap',
+};
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -14,6 +30,7 @@ const formatPercent = (value) => {
 
 export default function PortfolioPositionsCard() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedEtf, setSelectedEtf] = useState(null);
   const {
     positions,
     portfolioValue,
@@ -112,17 +129,54 @@ export default function PortfolioPositionsCard() {
             </div>
           </div>
 
-          {/* Positions table */}
-          <div className="overflow-x-auto">
+          {/* Mobile Cards View */}
+          <div className="sm:hidden p-4 space-y-3">
+            {positions.map((position, idx) => {
+              const qty = parseFloat(position.quantity) || 0;
+              const marketValue = parseFloat(position.market_value) || 0;
+              const pnl = parseFloat(position.unrealized_pnl) || 0;
+              const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
+              const isPositive = pnl >= 0;
+              const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedEtf(position.symbol)}
+                  className="w-full bg-[#F5F6F4] rounded-xl p-4 text-left active:bg-[#ECEEED] transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="font-medium text-[#2D3436] text-sm truncate">{etfName}</div>
+                      <div className="text-xs text-[#B2BEC3]">{position.symbol} • {qty} stuks</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#B2BEC3] flex-shrink-0" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-lg font-semibold text-[#2D3436] tabular-nums">
+                      {formatCurrency(marketValue)}
+                    </div>
+                    <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
+                      {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                      <span className="tabular-nums">{formatPercent(pnlPercent)}</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Desktop Positions table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-[#F5F6F4]">
                 <tr>
-                  <th className="text-left text-[#636E72] text-xs font-medium px-5 py-3">Symbool</th>
+                  <th className="text-left text-[#636E72] text-xs font-medium px-5 py-3">ETF</th>
                   <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Aantal</th>
-                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden sm:table-cell">Gem. Koers</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden md:table-cell">Gem. Koers</th>
                   <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Huidige Koers</th>
                   <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3">Waarde</th>
-                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden md:table-cell">W/V</th>
+                  <th className="text-right text-[#636E72] text-xs font-medium px-5 py-3 hidden lg:table-cell">W/V</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8E8E6]">
@@ -134,17 +188,22 @@ export default function PortfolioPositionsCard() {
                   const pnl = parseFloat(position.unrealized_pnl) || 0;
                   const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
                   const isPositive = pnl >= 0;
+                  const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
 
                   return (
-                    <tr key={idx} className="hover:bg-[#F5F6F4] transition-colors">
+                    <tr
+                      key={idx}
+                      onClick={() => setSelectedEtf(position.symbol)}
+                      className="hover:bg-[#F5F6F4] transition-colors cursor-pointer"
+                    >
                       <td className="px-5 py-4">
-                        <div className="font-medium text-[#2D3436] text-sm">{position.symbol}</div>
-                        <div className="text-xs text-[#B2BEC3]">{position.currency}</div>
+                        <div className="font-medium text-[#2D3436] text-sm truncate max-w-[200px]" title={etfName}>{etfName}</div>
+                        <div className="text-xs text-[#B2BEC3]">{position.symbol}</div>
                       </td>
                       <td className="px-5 py-4 text-right text-[#2D3436] text-sm tabular-nums">
                         {qty.toFixed(0)}
                       </td>
-                      <td className="px-5 py-4 text-right text-[#636E72] text-sm hidden sm:table-cell tabular-nums">
+                      <td className="px-5 py-4 text-right text-[#636E72] text-sm hidden md:table-cell tabular-nums">
                         {formatCurrency(avgCost)}
                       </td>
                       <td className="px-5 py-4 text-right text-[#2D3436] text-sm tabular-nums">
@@ -153,7 +212,7 @@ export default function PortfolioPositionsCard() {
                       <td className="px-5 py-4 text-right text-[#2D3436] font-medium text-sm tabular-nums">
                         {formatCurrency(marketValue)}
                       </td>
-                      <td className={`px-5 py-4 text-right font-medium text-sm hidden md:table-cell ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
+                      <td className={`px-5 py-4 text-right font-medium text-sm hidden lg:table-cell ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                         <div className="flex items-center justify-end gap-1.5 tabular-nums">
                           {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                           {formatPercent(pnlPercent)}
@@ -173,6 +232,13 @@ export default function PortfolioPositionsCard() {
           )}
         </div>
       )}
+
+      {/* ETF Details Modal */}
+      <ETFDetailsModal
+        symbol={selectedEtf}
+        isOpen={!!selectedEtf}
+        onClose={() => setSelectedEtf(null)}
+      />
     </div>
   );
 }
