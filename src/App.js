@@ -2870,7 +2870,7 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-[#F5F6F4]">
       {/* Navigation with Menu */}
-      <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6]">
+      <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -3074,7 +3074,7 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="relative flex justify-center items-center" style={{ perspective: '1000px' }}>
+          <div className="relative flex justify-center items-center overflow-hidden sm:overflow-visible" style={{ perspective: '1000px' }}>
             {/* iPhone Mockup - 3D */}
             <div
               className="relative w-[220px] sm:w-[250px] md:w-[280px]"
@@ -3307,9 +3307,9 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Glow Effect - Enhanced */}
-              <div className="absolute inset-[-40px] bg-[#7C9885] opacity-30 blur-[60px] rounded-full -z-10"></div>
-              <div className="absolute inset-[-80px] bg-[#7C9885] opacity-20 blur-[100px] rounded-full -z-20"></div>
+              {/* Glow Effect - Enhanced (hidden on small mobile) */}
+              <div className="hidden sm:block absolute inset-[-40px] bg-[#7C9885] opacity-30 blur-[60px] rounded-full -z-10"></div>
+              <div className="hidden sm:block absolute inset-[-80px] bg-[#7C9885] opacity-20 blur-[100px] rounded-full -z-20"></div>
 
               {/* 3D Shadow/Reflection under phone */}
               <div
