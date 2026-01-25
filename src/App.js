@@ -3090,19 +3090,31 @@ useEffect(() => {
             <div
               className="relative w-[220px] sm:w-[250px] md:w-[280px]"
               style={{
-                transform: 'rotateY(-18deg) rotateX(8deg)',
+                transform: 'rotateY(-12deg) rotateX(5deg)',
                 transformStyle: 'preserve-3d'
               }}
             >
+              {/* 3D Side edge - left */}
+              <div
+                className="absolute left-0 top-4 bottom-4 w-[3px] rounded-l-lg"
+                style={{
+                  background: 'linear-gradient(180deg, #6B8774 0%, #5a7563 50%, #4a6553 100%)',
+                  transform: 'translateX(-3px) rotateY(-90deg)',
+                  transformOrigin: 'right center'
+                }}
+              ></div>
+
               {/* iPhone Frame with glossy green border */}
               <div
                 className="relative rounded-[2.5rem] p-[6px]"
                 style={{
-                  background: 'linear-gradient(160deg, #8FAF98 0%, #7C9885 50%, #6B8774 100%)',
+                  background: 'linear-gradient(135deg, #9AB8A3 0%, #7C9885 40%, #6B8774 100%)',
                   boxShadow: `
-                    inset 1px 1px 4px rgba(255,255,255,0.3),
-                    inset -1px -1px 3px rgba(0,0,0,0.15),
-                    -12px 12px 24px rgba(0,0,0,0.12)
+                    inset 2px 2px 6px rgba(255,255,255,0.4),
+                    inset -2px -2px 4px rgba(0,0,0,0.1),
+                    -20px 25px 40px rgba(0,0,0,0.2),
+                    -8px 10px 20px rgba(0,0,0,0.15),
+                    0 5px 15px rgba(0,0,0,0.1)
                   `,
                   transformStyle: 'preserve-3d'
                 }}
@@ -3111,7 +3123,7 @@ useEffect(() => {
                 <div
                   className="absolute inset-0 rounded-[2.5rem] pointer-events-none"
                   style={{
-                    background: 'linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, transparent 60%)'
+                    background: 'linear-gradient(125deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 20%, rgba(255,255,255,0.05) 40%, transparent 50%)'
                   }}
                 ></div>
                 {/* Screen Content */}
@@ -3314,17 +3326,14 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Glow Effect - Enhanced (hidden on small mobile) */}
-              <div className="hidden sm:block absolute inset-[-40px] bg-[#7C9885] opacity-30 blur-[60px] rounded-full -z-10"></div>
-              <div className="hidden sm:block absolute inset-[-80px] bg-[#7C9885] opacity-20 blur-[100px] rounded-full -z-20"></div>
-
-              {/* 3D Shadow/Reflection under phone */}
+              {/* 3D Shadow under phone - offset to match perspective */}
               <div
-                className="absolute -bottom-6 left-1/2 w-[90%] h-6 -z-10"
+                className="absolute -bottom-8 w-[85%] h-8"
                 style={{
-                  transform: 'translateX(-50%)',
-                  background: 'radial-gradient(ellipse at center, rgba(124,152,133,0.5) 0%, transparent 70%)',
-                  filter: 'blur(12px)'
+                  left: '15%',
+                  background: 'radial-gradient(ellipse 100% 100% at 50% 0%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, transparent 70%)',
+                  filter: 'blur(15px)',
+                  transform: 'rotateX(60deg)'
                 }}
               ></div>
             </div>
