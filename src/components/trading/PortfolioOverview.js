@@ -228,32 +228,49 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
                   return (
                     <DataCard key={idx} variant={isStale ? 'highlighted' : 'default'}>
-                      <DataCardHeader>
-                        <DataCardTitle
-                          title={position.name || position.symbol}
-                          subtitle={`${position.symbol} • ${position.currency}`}
-                          badge={formatPercent(pnlPercent)}
-                          badgeVariant={isPositive ? 'success' : 'danger'}
-                        />
-                      </DataCardHeader>
+                      {/* Clickable header area to open ETF details */}
+                      <button
+                        onClick={() => setSelectedEtf(position.symbol)}
+                        className="w-full text-left pb-3 mb-3 border-b border-[#E8E8E6] active:bg-[#F5F6F4] rounded-t-lg -mx-4 -mt-4 px-4 pt-4 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-[#2D3436] font-semibold text-base truncate">
+                              {position.name || position.symbol}
+                            </h3>
+                            <p className="text-[#636E72] text-sm">{position.symbol} • {position.currency}</p>
+                          </div>
+                          <span className={`text-xs font-medium px-2 py-1 rounded-lg flex-shrink-0 ${
+                            isPositive ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C0736D]/10 text-[#C0736D]'
+                          }`}>
+                            {formatPercent(pnlPercent)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-[#2D3436] font-bold text-lg">{formatCurrency(marketValue)}</span>
+                          <span className={`text-sm font-medium ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
+                            {formatCurrency(pnl)}
+                          </span>
+                        </div>
+                      </button>
 
-                      <DataCardRow label="Aantal" value={qty.toFixed(0)} mono />
-                      <DataCardRow label="Gem. kosten" value={formatCurrency(avgCost)} mono />
-                      <DataCardRow
-                        label="Laatste prijs"
-                        value={formatCurrency(lastPrice)}
-                        valueColor={isStale ? 'warning' : 'default'}
-                        mono
-                      />
-                      <DataCardRow label="Marktwaarde" value={formatCurrency(marketValue)} mono />
-                      <DataCardRow
-                        label="P&L"
-                        value={formatCurrency(pnl)}
-                        valueColor={isPositive ? 'success' : 'danger'}
-                        mono
-                      />
+                      {/* Compact stats grid */}
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-3">
+                        <div className="flex justify-between">
+                          <span className="text-[#636E72]">Aantal</span>
+                          <span className="text-[#2D3436] font-mono">{qty.toFixed(0)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[#636E72]">Gem. kosten</span>
+                          <span className="text-[#2D3436] font-mono">{formatCurrency(avgCost)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[#636E72]">Prijs</span>
+                          <span className={`font-mono ${isStale ? 'text-[#C9A962]' : 'text-[#2D3436]'}`}>{formatCurrency(lastPrice)}</span>
+                        </div>
+                      </div>
 
-                      <DataCardActions>
+                      <div className="flex gap-2 pt-3 border-t border-[#E8E8E6]">
                         <Button
                           variant="success"
                           size="sm"
@@ -274,7 +291,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                         >
                           Verkoop
                         </Button>
-                      </DataCardActions>
+                      </div>
                     </DataCard>
                   );
                 })}

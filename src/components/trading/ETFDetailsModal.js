@@ -305,14 +305,19 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
     fetchHoldings();
   }, [isOpen, symbol]);
 
-  // Close on escape key
+  // Close on escape key and prevent body scroll
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
     };
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      // Prevent body scroll on mobile
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = '';
+      };
     }
   }, [isOpen, onClose]);
 
@@ -330,37 +335,41 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
   const getSectorColor = (sector) => SECTOR_COLORS[sector] || 'bg-[#B2BEC3]';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
       {/* Backdrop - click to close */}
       <div
         className="absolute inset-0 bg-[#2D3436]/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
+      {/* Modal - Full screen on mobile, centered on desktop */}
+      <div className="relative bg-[#FEFEFE] border-t sm:border border-[#E8E8E6] rounded-t-2xl sm:rounded-xl w-full sm:max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-[0_-4px_32px_rgba(45,52,54,0.12)] sm:shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center pt-2 pb-1">
+          <div className="w-10 h-1 bg-[#E8E8E6] rounded-full" />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E8E8E6]">
-          <div>
-            <h2 className="text-xl font-bold text-[#2D3436] flex items-center gap-2">
+          <div className="min-w-0 flex-1 pr-2">
+            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436]">
               {symbol}
-              <span className="text-base font-normal text-[#636E72]">- ETF Details</span>
             </h2>
             {metadata && (
-              <p className="text-sm text-[#636E72] mt-0.5">{metadata.name}</p>
+              <p className="text-sm text-[#636E72] mt-0.5 truncate">{metadata.name}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors"
+            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-140px)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Left Column */}
             <div className="space-y-4">
               {/* General Info */}
@@ -471,13 +480,13 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
               )}
             </div>
 
-            {/* Right Column - Holdings */}
-            <div className="bg-[#F5F6F4] rounded-lg p-4">
+            {/* Holdings - Shows first on mobile (order-first), second on desktop */}
+            <div className="bg-[#F5F6F4] rounded-lg p-4 order-first sm:order-none">
               <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                 <Percent className="w-4 h-4" />
                 Top 10 Holdings
                 {holdings && (
-                  <span className="ml-auto text-[#7C9885]">{holdings.top_10_weight}% of fund</span>
+                  <span className="ml-auto text-[#7C9885] text-xs sm:text-sm">{holdings.top_10_weight}%</span>
                 )}
               </h3>
 
@@ -492,37 +501,28 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
 
 
               {!loadingHoldings && holdings && (
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   {holdings.holdings.map((holding, idx) => (
                     <div key={idx} className="group">
-                      <div className="flex items-center gap-2 p-2 rounded hover:bg-[#ECEEED] transition-colors">
-                        <span className="w-5 h-5 bg-[#E8E8E6] rounded flex items-center justify-center text-xs text-[#636E72] font-mono">
+                      <div className="flex items-center gap-2 p-2 rounded active:bg-[#ECEEED] sm:hover:bg-[#ECEEED] transition-colors">
+                        <span className="w-5 h-5 bg-[#E8E8E6] rounded flex items-center justify-center text-xs text-[#636E72] font-mono flex-shrink-0">
                           {idx + 1}
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="text-[#2D3436] text-sm truncate">
                             {holding.name}
-                            {holding.ticker && (
-                              <span className="ml-1.5 text-[#B2BEC3] font-mono text-xs">({holding.ticker})</span>
-                            )}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-[#B2BEC3]">
-                            <span className="flex items-center gap-1">
-                              <Building2 className="w-3 h-3" />
-                              {holding.sector}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Globe className="w-3 h-3" />
-                              {holding.country}
-                            </span>
+                            <span className="truncate">{holding.sector}</span>
+                            <span className="hidden sm:inline">• {holding.country}</span>
                           </div>
                         </div>
-                        <span className="text-[#2D3436] font-medium text-sm">
-                          {holding.weight_percent.toFixed(2)}%
+                        <span className="text-[#2D3436] font-medium text-sm flex-shrink-0">
+                          {holding.weight_percent.toFixed(1)}%
                         </span>
                       </div>
-                      {/* Weight bar */}
-                      <div className="h-1 mx-2 bg-[#E8E8E6] rounded-full overflow-hidden">
+                      {/* Weight bar - hidden on mobile for cleaner look */}
+                      <div className="hidden sm:block h-1 mx-2 bg-[#E8E8E6] rounded-full overflow-hidden">
                         <div
                           className={`h-full ${getSectorColor(holding.sector)} transition-all`}
                           style={{ width: `${Math.min(holding.weight_percent * 10, 100)}%` }}
