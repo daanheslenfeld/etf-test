@@ -36,9 +36,9 @@ export function StatsCard({
       iconContainer: 'w-12 h-12',
     },
     default: {
-      container: 'bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-5 shadow-[0_1px_3px_rgba(45,52,54,0.04)]',
+      container: 'bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 shadow-[0_1px_3px_rgba(45,52,54,0.04)]',
       label: 'text-xs uppercase tracking-wider text-[#636E72] font-medium mb-1.5',
-      value: 'text-2xl sm:text-3xl font-bold text-[#2D3436] tabular-nums',
+      value: 'text-lg sm:text-xl font-bold text-[#2D3436] tabular-nums truncate',
       change: 'text-sm font-medium',
       iconSize: 'w-5 h-5',
       iconContainer: 'w-10 h-10',

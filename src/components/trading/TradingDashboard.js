@@ -117,7 +117,7 @@ function TradingDashboardContent({ onBack }) {
         <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 48px)' }}>
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7C9885] mx-auto mb-4"></div>
-            <div className="text-[#2D3436] text-xl">Connecting to Trading API...</div>
+            <div className="text-[#2D3436] text-xl">Verbinden met Trading API...</div>
           </div>
         </div>
       </div>
@@ -137,9 +137,9 @@ function TradingDashboardContent({ onBack }) {
                 className="text-[#7C9885] font-medium hover:text-[#6B8A74] flex items-center gap-2"
               >
                 <ArrowLeft className="w-5 h-5" />
-                Back to Dashboard
+                Terug naar Dashboard
               </button>
-              <h1 className="text-xl font-bold text-[#2D3436]">Connect LYNX Account</h1>
+              <h1 className="text-xl font-bold text-[#2D3436]">LYNX Account Koppelen</h1>
               <div className="w-32"></div>
             </div>
           </div>
@@ -151,9 +151,9 @@ function TradingDashboardContent({ onBack }) {
               <div className="w-16 h-16 bg-[#7C9885]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Wifi className="w-8 h-8 text-[#7C9885]" />
               </div>
-              <h2 className="text-2xl font-bold text-[#2D3436] mb-2">Connect Your LYNX Account</h2>
+              <h2 className="text-2xl font-bold text-[#2D3436] mb-2">Koppel je LYNX Account</h2>
               <p className="text-[#636E72]">
-                Link your LYNX broker account to start trading ETFs directly from this portal.
+                Koppel je LYNX broker account om direct ETF's te verhandelen via dit portaal.
               </p>
             </div>
 
@@ -168,21 +168,21 @@ function TradingDashboardContent({ onBack }) {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-6 h-6 text-[#C9A962] flex-shrink-0" />
                   <div>
-                    <h3 className="text-[#C9A962] font-medium mb-2">IB Gateway Not Connected</h3>
+                    <h3 className="text-[#C9A962] font-medium mb-2">IB Gateway Niet Verbonden</h3>
                     <p className="text-[#636E72] text-sm mb-4">
-                      Please ensure IB Gateway is running and logged in before connecting your account.
+                      Zorg ervoor dat IB Gateway draait en ingelogd is voordat je je account koppelt.
                     </p>
                     <ul className="text-[#636E72] text-sm list-disc list-inside space-y-1 mb-4">
-                      <li>Start IB Gateway on localhost:4001</li>
-                      <li>Log in with your LYNX credentials</li>
-                      <li>Wait for connection to be established</li>
+                      <li>Start IB Gateway op localhost:4001</li>
+                      <li>Log in met je LYNX inloggegevens</li>
+                      <li>Wacht tot de verbinding tot stand is gebracht</li>
                     </ul>
                     <button
                       onClick={checkConnection}
                       className="px-4 py-2 bg-[#C9A962] text-white rounded-lg hover:bg-[#B89952] flex items-center gap-2"
                     >
                       <RefreshCw className="w-4 h-4" />
-                      Check Connection
+                      Verbinding Controleren
                     </button>
                   </div>
                 </div>
@@ -192,7 +192,7 @@ function TradingDashboardContent({ onBack }) {
                 <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-[#7C9885]">
                     <Wifi className="w-5 h-5" />
-                    <span>IB Gateway Connected</span>
+                    <span>IB Gateway Verbonden</span>
                   </div>
                 </div>
 
@@ -201,11 +201,11 @@ function TradingDashboardContent({ onBack }) {
                     onClick={loadAvailableAccounts}
                     className="w-full py-3 bg-[#7C9885] text-white font-bold rounded-lg hover:bg-[#6B8A74] transition-colors"
                   >
-                    Load Available Accounts
+                    Beschikbare Accounts Laden
                   </button>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-[#636E72] text-sm">Select the account to link:</p>
+                    <p className="text-[#636E72] text-sm">Selecteer het account om te koppelen:</p>
                     {availableAccounts.map((acct) => (
                       <button
                         key={acct}
@@ -217,13 +217,13 @@ function TradingDashboardContent({ onBack }) {
                           <div>
                             <div className="text-[#2D3436] font-medium">{acct}</div>
                             <div className="text-[#636E72] text-sm">
-                              {acct.startsWith('DU') || acct.startsWith('DF') ? 'Paper Trading' : 'Live Trading'}
+                              {acct.startsWith('DU') || acct.startsWith('DF') ? 'Papier Handelen' : 'Live Handelen'}
                             </div>
                           </div>
                           {linkingAccount ? (
                             <div className="animate-spin h-5 w-5 border-2 border-[#7C9885] border-t-transparent rounded-full" />
                           ) : (
-                            <span className="text-[#7C9885]">Connect</span>
+                            <span className="text-[#7C9885]">Koppelen</span>
                           )}
                         </div>
                       </button>
@@ -237,7 +237,7 @@ function TradingDashboardContent({ onBack }) {
                     disabled={linkingAccount}
                     className="w-full py-3 bg-[#ECEEED] text-[#2D3436] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors disabled:opacity-50 mt-4"
                   >
-                    {linkingAccount ? 'Connecting...' : 'Auto-Connect First Available Account'}
+                    {linkingAccount ? 'Verbinden...' : 'Automatisch Eerste Beschikbare Account Koppelen'}
                   </button>
                 )}
               </div>
@@ -262,10 +262,10 @@ function TradingDashboardContent({ onBack }) {
               className="text-[#7C9885] font-medium hover:text-[#6B8A74] flex items-center gap-2"
             >
               <ArrowLeft className="w-5 h-5" />
-              Back to Dashboard
+              Terug naar Dashboard
             </button>
 
-            <h1 className="text-xl font-bold text-[#2D3436]">Trading Dashboard</h1>
+            <h1 className="text-xl font-bold text-[#2D3436]">Handelsplatform</h1>
 
             <div className="flex items-center gap-4">
               {/* Trading Mode Badge */}
@@ -282,7 +282,7 @@ function TradingDashboardContent({ onBack }) {
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-full">
                   <Clock className="w-4 h-4 text-[#C9A962]" />
                   <span className="text-xs text-[#C9A962] hidden sm:inline">
-                    Cached {formatTimeAgo(lastMarketDataUpdate)}
+                    Gecached {formatTimeAgo(lastMarketDataUpdate)}
                   </span>
                 </div>
               )}
@@ -291,12 +291,12 @@ function TradingDashboardContent({ onBack }) {
               {connected ? (
                 <div className="flex items-center gap-2 text-[#7C9885]">
                   <Wifi className="w-5 h-5" />
-                  <span className="text-sm hidden sm:inline">{accountId || 'Connected'}</span>
+                  <span className="text-sm hidden sm:inline">{accountId || 'Verbonden'}</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-[#C9A962]">
                   <WifiOff className="w-5 h-5" />
-                  <span className="text-sm hidden sm:inline">Disconnected</span>
+                  <span className="text-sm hidden sm:inline">Niet Verbonden</span>
                 </div>
               )}
             </div>
@@ -310,7 +310,7 @@ function TradingDashboardContent({ onBack }) {
           <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-xl p-4 mb-6 flex justify-between items-center">
             <p className="text-[#C0736D]">{error}</p>
             <button onClick={clearError} className="text-[#C0736D] hover:text-[#B06359]">
-              Dismiss
+              Sluiten
             </button>
           </div>
         )}
@@ -322,10 +322,10 @@ function TradingDashboardContent({ onBack }) {
               <Clock className="w-5 h-5 text-[#C9A962] flex-shrink-0" />
               <div className="flex-1">
                 <p className="text-[#C9A962] font-medium">
-                  Showing cached data from {formatTimeAgo(lastMarketDataUpdate)}
+                  Gecachte data van {formatTimeAgo(lastMarketDataUpdate)} wordt getoond
                 </p>
                 <p className="text-[#636E72] text-sm">
-                  Live data unavailable. Prices and positions may be outdated.
+                  Live data niet beschikbaar. Prijzen en posities kunnen verouderd zijn.
                 </p>
               </div>
               <button
@@ -333,7 +333,7 @@ function TradingDashboardContent({ onBack }) {
                 className="px-3 py-1.5 bg-[#C9A962]/20 text-[#C9A962] rounded-lg hover:bg-[#C9A962]/30 text-sm flex items-center gap-1"
               >
                 <RefreshCw className="w-3 h-3" />
-                Refresh
+                Vernieuwen
               </button>
             </div>
           </div>
@@ -345,21 +345,21 @@ function TradingDashboardContent({ onBack }) {
             <div className="flex items-start gap-4">
               <AlertTriangle className="w-6 h-6 text-[#C9A962] flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-[#C9A962] mb-2">IB Gateway Not Connected</h2>
+                <h2 className="text-xl font-bold text-[#C9A962] mb-2">IB Gateway Niet Verbonden</h2>
                 <p className="text-[#636E72] mb-4">
-                  {isDataStale ? 'Displaying cached market data. ' : ''}Cannot connect to IB Gateway. Please ensure:
+                  {isDataStale ? 'Gecachte marktdata wordt getoond. ' : ''}Kan niet verbinden met IB Gateway. Zorg dat:
                 </p>
                 <ul className="text-[#636E72] text-sm list-disc list-inside space-y-1 mb-4">
-                  <li>IB Gateway is running on localhost:4001</li>
-                  <li>You are logged into LYNX Paper Trading</li>
-                  <li>The Trading API is running on localhost:8002</li>
+                  <li>IB Gateway draait op localhost:4001</li>
+                  <li>Je bent ingelogd bij LYNX Paper Trading</li>
+                  <li>De Trading API draait op localhost:8002</li>
                 </ul>
                 <button
                   onClick={handleRetryConnection}
                   className="px-4 py-2 bg-[#C9A962] text-white rounded-lg hover:bg-[#B89952] flex items-center gap-2"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  Retry Connection
+                  Opnieuw Verbinden
                 </button>
               </div>
             </div>
@@ -380,7 +380,7 @@ function TradingDashboardContent({ onBack }) {
             }`}
           >
             <List className="w-4 h-4" />
-            <span className="hidden sm:inline">ETF Browser</span>
+            <span className="hidden sm:inline">ETF Zoeken</span>
             <span className="sm:hidden">ETFs</span>
           </button>
           <button
@@ -392,7 +392,7 @@ function TradingDashboardContent({ onBack }) {
             }`}
           >
             <ShoppingCart className="w-4 h-4" />
-            <span className="hidden sm:inline">Orders & Portfolio</span>
+            <span className="hidden sm:inline">Orders & Portefeuille</span>
             <span className="sm:hidden">Orders</span>
             {orderBasket.length > 0 && (
               <span className="px-1.5 py-0.5 bg-[#C0736D] text-white text-xs rounded-full">
@@ -450,7 +450,7 @@ function TradingDashboardContent({ onBack }) {
         orders={orderBasket}
         tradingMode={tradingMode}
         safetyLimits={safetyLimits}
-        warnings={isLive ? ['LIVE TRADING: Real money will be used'] : []}
+        warnings={isLive ? ['LIVE HANDELEN: Echt geld wordt gebruikt'] : []}
       />
     </div>
   );

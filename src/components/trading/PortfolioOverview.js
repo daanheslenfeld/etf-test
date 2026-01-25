@@ -110,7 +110,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
       {/* Header */}
       <div className="p-4 border-b border-[#E8E8E6] flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-[#2D3436]">Portfolio Overview</h2>
+          <h2 className="text-lg font-bold text-[#2D3436]">Portefeuilleoverzicht</h2>
           <div className={`px-2 py-0.5 rounded text-xs font-bold ${
             isLive
               ? 'bg-[#6B7B8A]/10 text-[#6B7B8A] border border-[#6B7B8A]/30'
@@ -152,7 +152,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
           <div className="col-span-2">
             <StatsCard
               variant="hero"
-              label="Total Portfolio Value"
+              label="Totale Portefeuillewaarde"
               value={formatCurrency(displayTotalValue)}
               change={displayUnrealizedPnL}
               changePercent={displayPnLPercent}
@@ -163,7 +163,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
           {/* Positions Value */}
           <StatsCard
-            label="Invested"
+            label="Belegd"
             value={formatCurrency(displayPortfolioValue)}
             icon={BarChart3}
             iconColor="text-[#6B7B8A]"
@@ -172,7 +172,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
           {/* Available Cash */}
           <StatsCard
-            label="Available Cash"
+            label="Beschikbaar"
             value={formatCurrency(displayAvailableFunds)}
             icon={Wallet}
             iconColor={displayAvailableFunds > 0 ? 'text-[#7C9885]' : 'text-[#636E72]'}
@@ -185,16 +185,16 @@ export default function PortfolioOverview({ onPrefillOrder }) {
       {safetyLimits && (
         <div className="px-4 py-3 border-b border-[#E8E8E6]">
           <div className="bg-[#F5F6F4] rounded-lg p-3">
-            <div className="text-xs text-[#636E72] mb-2">Daily Trading Limits</div>
+            <div className="text-xs text-[#636E72] mb-2">Dagelijkse Handelslimieten</div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-[#B2BEC3] text-xs">Orders Remaining</div>
+                <div className="text-[#B2BEC3] text-xs">Resterende Orders</div>
                 <div className="text-[#2D3436] font-medium">
                   {safetyLimits.ordersRemaining ?? '-'} / {safetyLimits.maxDailyOrders ?? '-'}
                 </div>
               </div>
               <div>
-                <div className="text-[#B2BEC3] text-xs">Exposure Remaining</div>
+                <div className="text-[#B2BEC3] text-xs">Resterende Exposure</div>
                 <div className="text-[#2D3436] font-medium">
                   {formatCurrency(safetyLimits.exposureRemaining ?? 0)} / {formatCurrency(safetyLimits.maxDailyExposure ?? 0)}
                 </div>
@@ -299,21 +299,21 @@ export default function PortfolioOverview({ onPrefillOrder }) {
           <table className="w-full">
             <thead className="bg-[#F5F6F4]">
               <tr>
-                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Symbol</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Qty</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Avg Cost</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Last Price</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Market Value</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">P&L (EUR)</th>
-                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">P&L %</th>
-                <th className="text-center text-[#636E72] text-sm font-medium px-4 py-3">Actions</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Symbool</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Aantal</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Gem. Kosten</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Laatste Prijs</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Marktwaarde</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">W/V (EUR)</th>
+                <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">W/V %</th>
+                <th className="text-center text-[#636E72] text-sm font-medium px-4 py-3">Acties</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8E8E6]">
               {positions.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center text-[#B2BEC3] py-8">
-                    No positions found
+                    Geen posities gevonden
                   </td>
                 </tr>
               ) : (
@@ -367,19 +367,19 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                             onClick={() => handleBuyMore(position)}
                             disabled={!getConidForPosition(position)}
                             className="flex items-center gap-1 px-2 py-1 bg-[#7C9885]/10 text-[#7C9885] border border-[#7C9885]/30 rounded text-xs font-medium hover:bg-[#7C9885]/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Buy more shares"
+                            title="Koop meer aandelen"
                           >
                             <Plus className="w-3 h-3" />
-                            Buy
+                            Koop
                           </button>
                           <button
                             onClick={() => handleSell(position)}
                             disabled={qty <= 0 || !getConidForPosition(position)}
                             className="flex items-center gap-1 px-2 py-1 bg-[#C0736D]/10 text-[#C0736D] border border-[#C0736D]/30 rounded text-xs font-medium hover:bg-[#C0736D]/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title={qty <= 0 ? 'No shares to sell' : 'Sell shares'}
+                            title={qty <= 0 ? 'Geen aandelen om te verkopen' : 'Verkoop aandelen'}
                           >
                             <Minus className="w-3 h-3" />
-                            Sell
+                            Verkoop
                           </button>
                         </div>
                       </td>
@@ -392,7 +392,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
             {positions.length > 0 && (
               <tfoot className="bg-[#F5F6F4] border-t border-[#E8E8E6]">
                 <tr>
-                  <td className="px-4 py-3 font-bold text-[#2D3436]">Positions Total</td>
+                  <td className="px-4 py-3 font-bold text-[#2D3436]">Totaal Posities</td>
                   <td className="px-4 py-3"></td>
                   <td className="px-4 py-3"></td>
                   <td className="px-4 py-3"></td>
