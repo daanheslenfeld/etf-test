@@ -3079,11 +3079,11 @@ useEffect(() => {
             <div
               className="absolute pointer-events-none"
               style={{
-                width: '200%',
-                height: '200%',
-                top: '-50%',
-                left: '-50%',
-                background: 'radial-gradient(ellipse 40% 45% at 50% 50%, rgba(124, 152, 133, 0.35) 0%, rgba(124, 152, 133, 0.2) 25%, rgba(124, 152, 133, 0.08) 45%, rgba(124, 152, 133, 0.02) 60%, transparent 75%)',
+                width: '280%',
+                height: '280%',
+                top: '-90%',
+                left: '-90%',
+                background: 'radial-gradient(ellipse 45% 50% at 50% 50%, rgba(124, 152, 133, 0.55) 0%, rgba(124, 152, 133, 0.4) 15%, rgba(124, 152, 133, 0.25) 30%, rgba(124, 152, 133, 0.12) 45%, rgba(124, 152, 133, 0.04) 60%, transparent 80%)',
               }}
             ></div>
             {/* iPhone Mockup - 3D */}
