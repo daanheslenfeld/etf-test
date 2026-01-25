@@ -6,8 +6,8 @@
  */
 
 import { getTradingInfo } from '../data/tradableETFs';
-import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
-import { MODEL_PORTFOLIOS, getModelPortfolio } from '../data/modelPortfolioDefinitions';
+import { getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
+import { getModelPortfolio } from '../data/modelPortfolioDefinitions';
 
 /**
  * Get market price for a symbol

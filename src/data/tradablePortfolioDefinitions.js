@@ -17,7 +17,7 @@
  * - Weights should allow purchase with common investment amounts (€1000+)
  */
 
-import { isTradable, getTradingInfo } from './tradableETFs';
+import { isTradable } from './tradableETFs';
 
 // Verified tradable ETFs for portfolio construction
 const VERIFIED_ETFS = {

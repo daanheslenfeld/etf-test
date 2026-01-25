@@ -1,19 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-// PIGG Kleuren
-const COLORS = {
-  primary: '#28EBCF',
-  primaryRgb: [40, 235, 207],
-  darkBg: '#0f172a',
-  mediumBg: '#1e293b',
-  text: '#ffffff',
-  lightText: '#94a3b8',
-  accent: '#3b82f6',
-  success: '#10b981',
-  danger: '#ef4444'
-};
-
 export const generatePortfolioReport = (user, portfolio, metrics, investmentDetails, staticPerformanceData, currentMonth, animatedPortfolioValue) => {
   try {
     console.log('🔷 Generating PDF report (Landscape, Rabobank-style)...');

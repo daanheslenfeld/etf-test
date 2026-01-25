@@ -14,7 +14,7 @@ import {
   validateBulkBuy,
   formatCurrency
 } from '../utils/portfolioUtils';
-import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
+import { getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
 import { MODEL_PORTFOLIOS, getModelPortfolio } from '../data/modelPortfolioDefinitions';
 
 /**
@@ -58,24 +58,9 @@ export function useBulkBuy() {
     return connected && !isDataStale;
   }, [connected, isDataStale]);
 
-  // Get all available portfolios (combines old definitions and new model portfolios)
+  // Get all available portfolios (from model portfolios)
   const availablePortfolios = useMemo(() => {
-    // Old portfolio definitions
-    const oldPortfolios = Object.entries(TRADABLE_PORTFOLIO_DEFINITIONS).map(([key, portfolio]) => ({
-      key,
-      id: key,
-      name: portfolio.name,
-      description: portfolio.description,
-      expectedReturn: portfolio.expectedReturn,
-      stdDev: portfolio.stdDev,
-      riskLevel: portfolio.riskLevel,
-      color: portfolio.color,
-      holdingsCount: portfolio.holdings.length,
-      category: 'Risk',
-      source: 'legacy',
-    }));
-
-    // New model portfolios
+    // Model portfolios
     const newPortfolios = Object.entries(MODEL_PORTFOLIOS).map(([key, portfolio]) => ({
       key,
       id: portfolio.id,
