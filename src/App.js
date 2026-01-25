@@ -3074,7 +3074,14 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="relative flex justify-center items-center overflow-hidden sm:overflow-visible" style={{ perspective: '1000px' }}>
+          <div className="relative flex justify-center items-center" style={{ perspective: '1000px' }}>
+            {/* Soft glow background - fades out smoothly */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'radial-gradient(ellipse 60% 70% at 50% 45%, rgba(124, 152, 133, 0.3) 0%, rgba(124, 152, 133, 0.15) 30%, rgba(124, 152, 133, 0.05) 50%, transparent 70%)',
+              }}
+            ></div>
             {/* iPhone Mockup - 3D */}
             <div
               className="relative w-[220px] sm:w-[250px] md:w-[280px]"
@@ -3091,9 +3098,7 @@ useEffect(() => {
                   boxShadow: `
                     inset 1px 1px 4px rgba(255,255,255,0.3),
                     inset -1px -1px 3px rgba(0,0,0,0.15),
-                    -12px 12px 24px rgba(0,0,0,0.15),
-                    0 0 60px rgba(124, 152, 133, 0.25),
-                    0 0 100px rgba(124, 152, 133, 0.15)
+                    -12px 12px 24px rgba(0,0,0,0.12)
                   `,
                   transformStyle: 'preserve-3d'
                 }}
