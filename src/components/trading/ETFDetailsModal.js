@@ -99,6 +99,129 @@ const ETF_METADATA = {
   }
 };
 
+// Demo holdings data for when API is unavailable
+const DEMO_HOLDINGS = {
+  IWDA: {
+    holdings: [
+      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 4.82 },
+      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 4.45 },
+      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 3.89 },
+      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.65 },
+      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 1.92 },
+      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.78 },
+      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.42 },
+      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.18 },
+      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.05 },
+      { name: 'UnitedHealth Group', ticker: 'UNH', sector: 'Healthcare', country: 'US', weight_percent: 0.98 },
+    ],
+    top_10_weight: 24.14,
+    total_holdings: 1512,
+    last_updated: '2026-01-24',
+    is_demo: true
+  },
+  VWCE: {
+    holdings: [
+      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 4.15 },
+      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 3.82 },
+      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 3.24 },
+      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.28 },
+      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 1.65 },
+      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.52 },
+      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.22 },
+      { name: 'Taiwan Semiconductor', ticker: 'TSM', sector: 'Technology', country: 'TW', weight_percent: 1.15 },
+      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.02 },
+      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 0.92 },
+    ],
+    top_10_weight: 20.97,
+    total_holdings: 3642,
+    last_updated: '2026-01-24',
+    is_demo: true
+  },
+  EMIM: {
+    holdings: [
+      { name: 'Taiwan Semiconductor', ticker: 'TSM', sector: 'Technology', country: 'TW', weight_percent: 7.85 },
+      { name: 'Tencent Holdings', ticker: '0700', sector: 'Communication Services', country: 'CN', weight_percent: 4.12 },
+      { name: 'Samsung Electronics', ticker: '005930', sector: 'Technology', country: 'KR', weight_percent: 3.95 },
+      { name: 'Alibaba Group', ticker: 'BABA', sector: 'Consumer Discretionary', country: 'CN', weight_percent: 2.48 },
+      { name: 'Reliance Industries', ticker: 'RELIANCE', sector: 'Energy', country: 'IN', weight_percent: 1.62 },
+      { name: 'ICICI Bank', ticker: 'ICICIBANK', sector: 'Financials', country: 'IN', weight_percent: 1.25 },
+      { name: 'Infosys Ltd.', ticker: 'INFY', sector: 'Technology', country: 'IN', weight_percent: 1.18 },
+      { name: 'China Construction Bank', ticker: '0939', sector: 'Financials', country: 'CN', weight_percent: 1.05 },
+      { name: 'Meituan', ticker: '3690', sector: 'Consumer Discretionary', country: 'CN', weight_percent: 0.98 },
+      { name: 'SK Hynix Inc.', ticker: '000660', sector: 'Technology', country: 'KR', weight_percent: 0.92 },
+    ],
+    top_10_weight: 25.40,
+    total_holdings: 3178,
+    last_updated: '2026-01-24',
+    is_demo: true
+  },
+  VUAA: {
+    holdings: [
+      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 7.12 },
+      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 6.58 },
+      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 5.85 },
+      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 3.92 },
+      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 2.45 },
+      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 2.38 },
+      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.85 },
+      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.72 },
+      { name: 'UnitedHealth Group', ticker: 'UNH', sector: 'Healthcare', country: 'US', weight_percent: 1.42 },
+      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.38 },
+    ],
+    top_10_weight: 34.67,
+    total_holdings: 503,
+    last_updated: '2026-01-24',
+    is_demo: true
+  },
+  EUNH: {
+    holdings: [
+      { name: 'Germany 0% 2026', ticker: 'DE0001102578', sector: 'Government Bond', country: 'DE', weight_percent: 8.45 },
+      { name: 'France OAT 0.5% 2029', ticker: 'FR0013286192', sector: 'Government Bond', country: 'FR', weight_percent: 7.82 },
+      { name: 'Italy BTP 1.5% 2028', ticker: 'IT0005340929', sector: 'Government Bond', country: 'IT', weight_percent: 6.15 },
+      { name: 'Spain 1.45% 2027', ticker: 'ES0000012B88', sector: 'Government Bond', country: 'ES', weight_percent: 5.42 },
+      { name: 'Germany 0.25% 2029', ticker: 'DE0001102481', sector: 'Government Bond', country: 'DE', weight_percent: 4.85 },
+      { name: 'France OAT 1% 2027', ticker: 'FR0013250578', sector: 'Government Bond', country: 'FR', weight_percent: 4.28 },
+      { name: 'Netherlands 0.5% 2028', ticker: 'NL0012650469', sector: 'Government Bond', country: 'NL', weight_percent: 3.65 },
+      { name: 'Belgium 0.8% 2028', ticker: 'BE0000346552', sector: 'Government Bond', country: 'BE', weight_percent: 3.12 },
+      { name: 'Austria 0.75% 2028', ticker: 'AT0000A1XML2', sector: 'Government Bond', country: 'AT', weight_percent: 2.85 },
+      { name: 'Finland 0.5% 2029', ticker: 'FI4000369467', sector: 'Government Bond', country: 'FI', weight_percent: 2.42 },
+    ],
+    top_10_weight: 49.01,
+    total_holdings: 356,
+    last_updated: '2026-01-24',
+    is_demo: true
+  },
+  SGLD: {
+    holdings: [
+      { name: 'Physical Gold Bullion', ticker: 'XAU', sector: 'Precious Metal', country: 'Global', weight_percent: 100.00 },
+    ],
+    top_10_weight: 100.00,
+    total_holdings: 1,
+    last_updated: '2026-01-24',
+    is_demo: true
+  }
+};
+
+// Default demo holdings for unknown ETFs
+const DEFAULT_DEMO_HOLDINGS = {
+  holdings: [
+    { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 5.25 },
+    { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 4.85 },
+    { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 4.12 },
+    { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.95 },
+    { name: 'Alphabet Inc.', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 2.15 },
+    { name: 'Meta Platforms', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.85 },
+    { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.52 },
+    { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.28 },
+    { name: 'JPMorgan Chase', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.15 },
+    { name: 'Visa Inc.', ticker: 'V', sector: 'Financials', country: 'US', weight_percent: 1.02 },
+  ],
+  top_10_weight: 26.14,
+  total_holdings: 1000,
+  last_updated: '2026-01-24',
+  is_demo: true
+};
+
 // Sector colors - Premium banking palette
 const SECTOR_COLORS = {
   'Technology': 'bg-[#6B7B8A]',
@@ -112,6 +235,8 @@ const SECTOR_COLORS = {
   'Utilities': 'bg-[#7B8A9A]',
   'Real Estate': 'bg-[#8A7B9A]',
   'Consumer Staples': 'bg-[#8B9A7B]',
+  'Government Bond': 'bg-[#6B8A9A]',
+  'Precious Metal': 'bg-[#C9A962]',
 };
 
 // Loading skeleton
@@ -141,7 +266,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
   const metadata = ETF_METADATA[symbol] || null;
   const liveMarketData = marketData?.[symbol] || null;
 
-  // Fetch holdings data
+  // Fetch holdings data (with demo fallback)
   useEffect(() => {
     if (!isOpen || !symbol) return;
 
@@ -158,14 +283,20 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
         const res = await fetch(`${TRADING_API_URL}/etfs/${symbol}/holdings`);
         const data = await res.json();
 
-        if (data.available) {
+        if (data.available && data.holdings?.length > 0) {
           holdingsCache[symbol] = data;
           setHoldings(data);
         } else {
-          setHoldings(null);
+          // Use demo data as fallback
+          const demoData = DEMO_HOLDINGS[symbol] || DEFAULT_DEMO_HOLDINGS;
+          holdingsCache[symbol] = demoData;
+          setHoldings(demoData);
         }
       } catch (err) {
-        setError('Failed to load holdings');
+        // Use demo data on error
+        const demoData = DEMO_HOLDINGS[symbol] || DEFAULT_DEMO_HOLDINGS;
+        holdingsCache[symbol] = demoData;
+        setHoldings(demoData);
       } finally {
         setLoadingHoldings(false);
       }
@@ -236,7 +367,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
               <div className="bg-[#F5F6F4] rounded-lg p-4">
                 <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                   <Info className="w-4 h-4" />
-                  General Information
+                  Algemene Informatie
                 </h3>
                 {metadata ? (
                   <div className="space-y-2 text-sm">
@@ -274,7 +405,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[#B2BEC3] text-sm">Metadata not available</p>
+                  <p className="text-[#B2BEC3] text-sm">Gegevens niet beschikbaar</p>
                 )}
               </div>
 
@@ -282,12 +413,12 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
               <div className="bg-[#F5F6F4] rounded-lg p-4">
                 <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
-                  Market Data
+                  Marktgegevens
                 </h3>
                 {liveMarketData ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-[#636E72]">Last Price</span>
+                      <span className="text-[#636E72]">Laatste Prijs</span>
                       <span className="text-[#2D3436] font-medium">
                         {formatCurrency(liveMarketData.last, metadata?.currency)}
                       </span>
@@ -321,7 +452,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                     )}
                   </div>
                 ) : (
-                  <p className="text-[#B2BEC3] text-sm">Market data unavailable</p>
+                  <p className="text-[#B2BEC3] text-sm">Marktgegevens niet beschikbaar</p>
                 )}
               </div>
 
@@ -359,12 +490,6 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                 </div>
               )}
 
-              {!loadingHoldings && !error && !holdings && (
-                <div className="flex flex-col items-center py-8 text-[#B2BEC3]">
-                  <AlertCircle className="w-8 h-8 mb-2" />
-                  <p>Look-through data coming soon</p>
-                </div>
-              )}
 
               {!loadingHoldings && holdings && (
                 <div className="space-y-2">
@@ -375,7 +500,12 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
                           {idx + 1}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[#2D3436] text-sm truncate">{holding.name}</div>
+                          <div className="text-[#2D3436] text-sm truncate">
+                            {holding.name}
+                            {holding.ticker && (
+                              <span className="ml-1.5 text-[#B2BEC3] font-mono text-xs">({holding.ticker})</span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2 text-xs text-[#B2BEC3]">
                             <span className="flex items-center gap-1">
                               <Building2 className="w-3 h-3" />
@@ -405,7 +535,13 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
 
               {holdings && (
                 <div className="mt-3 pt-3 border-t border-[#E8E8E6] text-xs text-[#B2BEC3]">
-                  Total holdings: {holdings.total_holdings?.toLocaleString()} | Updated: {holdings.last_updated}
+                  <div className="flex justify-between items-center">
+                    <span>Totaal: {holdings.total_holdings?.toLocaleString()} posities</span>
+                    <span>{holdings.last_updated}</span>
+                  </div>
+                  {holdings.is_demo && (
+                    <div className="mt-1 text-[#C9A962]">* Indicatieve data</div>
+                  )}
                 </div>
               )}
             </div>
