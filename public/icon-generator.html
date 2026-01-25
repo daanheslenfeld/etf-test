@@ -6,53 +6,64 @@
     <title>PIGG Icon Generator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
-            background: #0f172a;
-            color: white;
+            background: #F5F6F4;
+            color: #2D3436;
         }
         h1 {
-            color: #28EBCF;
+            color: #7C9885;
         }
         .icon-container {
             margin: 30px 0;
             padding: 20px;
-            background: #1e293b;
-            border-radius: 10px;
+            background: #FEFEFE;
+            border-radius: 16px;
+            border: 1px solid #E8E8E6;
+            box-shadow: 0 2px 8px rgba(45,52,54,0.06);
         }
         canvas {
-            border: 2px solid #28EBCF;
+            border: 2px solid #7C9885;
             margin: 10px 0;
             display: block;
+            border-radius: 12px;
         }
         button {
-            background: #28EBCF;
-            color: #0f172a;
+            background: #7C9885;
+            color: #FEFEFE;
             border: none;
             padding: 12px 24px;
             font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
             margin: 10px 10px 10px 0;
+            transition: background 0.2s;
         }
         button:hover {
-            background: #20D4BA;
+            background: #6B8774;
         }
         .instructions {
-            background: #1e293b;
+            background: #FEFEFE;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 16px;
             margin: 20px 0;
+            border: 1px solid #E8E8E6;
         }
         .instructions ol {
             line-height: 1.8;
         }
         .success {
-            color: #10b981;
+            color: #7C9885;
             font-weight: bold;
+        }
+        code {
+            background: #ECEEED;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -72,7 +83,7 @@
         <button onclick="downloadIcon('icon512', 'logo512.png')">Download logo512.png</button>
     </div>
 
-    <button onclick="downloadAllIcons()" style="background: #FFD700; font-size: 18px;">
+    <button onclick="downloadAllIcons()" style="background: #C9A962; font-size: 18px;">
         📥 Download All Icons
     </button>
 
@@ -99,12 +110,12 @@
                 return val * scale;
             }
 
-            // Background - PIGG dark color
-            ctx.fillStyle = '#0f172a';
+            // Background - Light sage/cream color
+            ctx.fillStyle = '#F5F6F4';
             ctx.fillRect(0, 0, size, size);
 
-            // Draw pig body (rounded rectangle shape)
-            ctx.fillStyle = '#28EBCF';
+            // Draw pig body (rounded rectangle shape) - Sage green
+            ctx.fillStyle = '#7C9885';
             ctx.beginPath();
             ctx.moveTo(s(12), s(20));
             ctx.quadraticCurveTo(s(12), s(14), s(18), s(14));
@@ -117,27 +128,27 @@
             ctx.closePath();
             ctx.fill();
 
-            // Draw coin slot (rectangle on top)
-            ctx.fillStyle = '#1a5f54';
+            // Draw coin slot (rectangle on top) - Darker sage
+            ctx.fillStyle = '#5A7261';
             ctx.beginPath();
             ctx.roundRect(s(20), s(10), s(8), s(2), s(1));
             ctx.fill();
 
             // Draw golden coin
-            ctx.fillStyle = '#FFD700';
+            ctx.fillStyle = '#C9A962';
             ctx.beginPath();
             ctx.arc(s(24), s(6), s(4), 0, Math.PI * 2);
             ctx.fill();
 
             // Draw euro symbol on coin
-            ctx.fillStyle = '#B8860B';
+            ctx.fillStyle = '#9A7B4A';
             ctx.font = `bold ${s(5)}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('€', s(24), s(6));
 
             // Draw connector from coin to pig body
-            ctx.strokeStyle = '#1a5f54';
+            ctx.strokeStyle = '#5A7261';
             ctx.lineWidth = s(1.5);
             ctx.beginPath();
             ctx.moveTo(s(20), s(14));
@@ -145,8 +156,8 @@
             ctx.quadraticCurveTo(s(28), s(10), s(28), s(14));
             ctx.stroke();
 
-            // Draw pig face - Eyes
-            ctx.fillStyle = '#1a5f54';
+            // Draw pig face - Eyes - Dark sage
+            ctx.fillStyle = '#4A5D50';
             ctx.beginPath();
             ctx.arc(s(20), s(22), s(1.2), 0, Math.PI * 2);
             ctx.fill();
@@ -154,8 +165,8 @@
             ctx.arc(s(28), s(22), s(1.2), 0, Math.PI * 2);
             ctx.fill();
 
-            // Draw pig snout (oval)
-            ctx.fillStyle = '#20D4BA';
+            // Draw pig snout (oval) - Lighter sage
+            ctx.fillStyle = '#8FAF98';
             ctx.save();
             ctx.translate(s(24), s(26));
             ctx.scale(1, 0.83); // rx=3, ry=2.5
@@ -164,8 +175,8 @@
             ctx.fill();
             ctx.restore();
 
-            // Draw nostrils
-            ctx.fillStyle = '#1a5f54';
+            // Draw nostrils - Dark sage
+            ctx.fillStyle = '#4A5D50';
             ctx.beginPath();
             ctx.arc(s(23), s(26), s(0.6), 0, Math.PI * 2);
             ctx.fill();
@@ -173,8 +184,8 @@
             ctx.arc(s(25), s(26), s(0.6), 0, Math.PI * 2);
             ctx.fill();
 
-            // Draw pig ears (curved lines)
-            ctx.strokeStyle = '#20D4BA';
+            // Draw pig ears (curved lines) - Lighter sage
+            ctx.strokeStyle = '#8FAF98';
             ctx.lineWidth = s(2);
             ctx.lineCap = 'round';
             ctx.beginPath();
@@ -186,8 +197,8 @@
             ctx.quadraticCurveTo(s(34), s(17), s(33), s(20));
             ctx.stroke();
 
-            // Draw smile
-            ctx.strokeStyle = '#1a5f54';
+            // Draw smile - Dark sage
+            ctx.strokeStyle = '#4A5D50';
             ctx.lineWidth = s(1);
             ctx.lineCap = 'round';
             ctx.beginPath();
@@ -195,8 +206,8 @@
             ctx.quadraticCurveTo(s(24), s(30), s(28), s(28));
             ctx.stroke();
 
-            // Draw pig feet (circles)
-            ctx.fillStyle = '#20D4BA';
+            // Draw pig feet (circles) - Lighter sage
+            ctx.fillStyle = '#8FAF98';
             ctx.beginPath();
             ctx.arc(s(18), s(34), s(2), 0, Math.PI * 2);
             ctx.fill();
