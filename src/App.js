@@ -3337,10 +3337,6 @@ useEffect(() => {
               ></div>
             </div>
 
-            {/* Floating particles/dots for depth */}
-            <div className="absolute top-10 -right-4 w-2 h-2 bg-[#7C9885] rounded-full opacity-40 animate-pulse"></div>
-            <div className="absolute top-1/3 -left-6 w-3 h-3 bg-[#7C9885] rounded-full opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            <div className="absolute bottom-20 -right-8 w-2 h-2 bg-[#20D4BA] rounded-full opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
         </div>
       </div>
