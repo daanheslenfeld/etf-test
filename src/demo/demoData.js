@@ -111,15 +111,15 @@ export const demoPositions = [
   },
 ];
 
-// Demo market indices
+// Demo market indices (January 2026 realistic prices)
 export const demoIndices = [
-  { symbol: 'AEX', name: 'AEX Index', price: 892.45, change: 4.23, change_percent: 0.48, currency: 'EUR' },
-  { symbol: 'DAX', name: 'DAX', price: 19245.80, change: -32.50, change_percent: -0.17, currency: 'EUR' },
-  { symbol: 'CAC40', name: 'CAC 40', price: 7823.15, change: 18.90, change_percent: 0.24, currency: 'EUR' },
-  { symbol: 'FTSE', name: 'FTSE 100', price: 8245.60, change: 12.40, change_percent: 0.15, currency: 'GBP' },
-  { symbol: 'S&P500', name: 'S&P 500', price: 5890.25, change: 28.75, change_percent: 0.49, currency: 'USD' },
-  { symbol: 'NASDAQ', name: 'NASDAQ', price: 18456.30, change: 95.20, change_percent: 0.52, currency: 'USD' },
-  { symbol: 'NIKKEI', name: 'Nikkei 225', price: 38245, change: -125, change_percent: -0.33, currency: 'JPY' },
+  { symbol: 'AEX', name: 'AEX Index', price: 923.47, change: 5.82, change_percent: 0.63, currency: 'EUR' },
+  { symbol: 'DAX', name: 'DAX', price: 21485.60, change: 124.30, change_percent: 0.58, currency: 'EUR' },
+  { symbol: 'CAC40', name: 'CAC 40', price: 7945.25, change: -18.40, change_percent: -0.23, currency: 'EUR' },
+  { symbol: 'FTSE', name: 'FTSE 100', price: 8562.80, change: 32.15, change_percent: 0.38, currency: 'GBP' },
+  { symbol: 'S&P500', name: 'S&P 500', price: 6248.90, change: 42.65, change_percent: 0.69, currency: 'USD' },
+  { symbol: 'NASDAQ', name: 'NASDAQ', price: 20125.45, change: 156.80, change_percent: 0.79, currency: 'USD' },
+  { symbol: 'NIKKEI', name: 'Nikkei 225', price: 41250, change: 285, change_percent: 0.70, currency: 'JPY' },
 ];
 
 // Demo market data

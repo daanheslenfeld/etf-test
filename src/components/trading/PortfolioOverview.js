@@ -329,16 +329,17 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
                   return (
                     <tr key={idx} className="hover:bg-[#F5F6F4] transition-colors">
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 max-w-[200px]">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedEtf(position.symbol)}
-                            className="font-medium text-[#2D3436] hover:text-[#7C9885] hover:underline cursor-pointer transition-colors text-left"
+                            className="font-medium text-[#2D3436] hover:text-[#7C9885] hover:underline cursor-pointer transition-colors text-left truncate text-sm"
+                            title={position.name || position.symbol}
                           >
                             {position.name || position.symbol}
                           </button>
                           {isStale && (
-                            <AlertTriangle className="w-3 h-3 text-[#C9A962]" title="Price may be stale" />
+                            <AlertTriangle className="w-3 h-3 text-[#C9A962] flex-shrink-0" title="Price may be stale" />
                           )}
                         </div>
                         <div className="text-xs text-[#B2BEC3]">{position.symbol} • {position.currency}</div>
