@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # Port 7496 = TWS live trading
     ib_gateway_host: str = "127.0.0.1"
     ib_gateway_port: int = 4001  # Paper trading port
-    ib_client_id: int = 3  # Unique client ID for this connection
+    ib_client_id: int = 4  # Unique client ID for this connection
     ib_connection_timeout: int = 30  # Seconds to wait for connection
 
     # ==========================================================================

@@ -5,6 +5,7 @@ import {
   TrendingUp,
   Briefcase,
   PieChart,
+  Users,
   Settings,
   HelpCircle,
   X,
@@ -35,6 +36,12 @@ const NAV_ITEMS = [
     label: 'Portfolio',
     path: '/portfolio',
     icon: Briefcase,
+  },
+  {
+    id: 'community',
+    label: 'Community',
+    path: '/community',
+    icon: Users,
   },
   {
     id: 'analysis',

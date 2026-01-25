@@ -1,0 +1,900 @@
+/**
+ * Model Portfolio Definitions
+ *
+ * IMPORTANT: All ISINs in these portfolios have been verified to exist
+ * in TRADABLE_ETFS and are tradable via LYNX/Interactive Brokers.
+ *
+ * Portfolio Categories:
+ * - RISK: Risk-based portfolios (Defensive, Balanced, Growth, Aggressive)
+ * - THEME: Theme-based portfolios (AI/Tech, ESG, Dividend, etc.)
+ * - STRATEGY: Strategy-based portfolios (Core-Satellite, Factor Investing, etc.)
+ * - COMMUNITY: User-created portfolios (stored in database)
+ *
+ * Each portfolio includes:
+ * - id: Unique identifier
+ * - name: Display name
+ * - category: RISK | THEME | STRATEGY | COMMUNITY
+ * - description: Human readable description
+ * - holdings: Array of { isin, weight, category, name }
+ * - rebalanceFrequency: quarterly | yearly | monthly
+ * - riskLevel: 1-5
+ * - lastUpdated: ISO timestamp
+ * - regionExposure: Array of region weights
+ * - tags: Array of searchable tags
+ */
+
+import { isTradable, getTradingInfo } from './tradableETFs';
+
+// ============================================
+// VERIFIED TRADABLE ETFs FOR PORTFOLIO CONSTRUCTION
+// ============================================
+
+export const VERIFIED_ETFS = {
+  // World Equity
+  IWDA: { isin: 'IE00B4L5Y983', name: 'iShares Core MSCI World UCITS ETF', category: 'Aandelen', region: 'World' },
+  VWCE: { isin: 'IE00BK5BQT80', name: 'Vanguard FTSE All-World UCITS ETF', category: 'Aandelen', region: 'World' },
+
+  // US Equity
+  SXR8: { isin: 'IE00B5BMR087', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
+  VUAA: { isin: 'IE00BFMXXD54', name: 'Vanguard S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
+  CSPX: { isin: 'IE00B5BMR087', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
+
+  // Emerging Markets
+  EMIM: { isin: 'IE00BKM4GZ66', name: 'iShares Core MSCI EM IMI UCITS ETF', category: 'Aandelen', region: 'Emerging' },
+  VFEM: { isin: 'IE00B3VVMM84', name: 'Vanguard FTSE Emerging Markets UCITS ETF', category: 'Aandelen', region: 'Emerging' },
+
+  // Europe
+  IEUS: { isin: 'IE00B1YZSC51', name: 'iShares MSCI Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
+  VEUR: { isin: 'IE00BK5BQX27', name: 'Vanguard FTSE Developed Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
+
+  // Technology
+  EQQQ: { isin: 'IE00B53SZB19', name: 'Invesco NASDAQ-100 UCITS ETF', category: 'Aandelen', theme: 'Technology' },
+  IUIT: { isin: 'IE00B3WJKG14', name: 'iShares S&P 500 Information Technology Sector', category: 'Aandelen', theme: 'Technology' },
+
+  // Sustainability / ESG
+  SUWS: { isin: 'IE00BKX55T58', name: 'iShares MSCI World SRI UCITS ETF', category: 'Aandelen', theme: 'ESG' },
+  VGEU: { isin: 'IE00BFNM3D14', name: 'Vanguard ESG Developed World All Cap', category: 'Aandelen', theme: 'ESG' },
+
+  // Dividend
+  VHYL: { isin: 'IE00B8GKDB10', name: 'Vanguard FTSE All-World High Dividend', category: 'Aandelen', theme: 'Dividend' },
+  IDVY: { isin: 'IE00B0M62S72', name: 'iShares Euro Dividend UCITS ETF', category: 'Aandelen', theme: 'Dividend' },
+
+  // Healthcare
+  HEAL: { isin: 'IE00BMW42843', name: 'iShares Healthcare Innovation UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
+  IXJ: { isin: 'IE00B43HR379', name: 'iShares Global Healthcare UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
+
+  // Clean Energy
+  INRG: { isin: 'IE00B1XNHC34', name: 'iShares Global Clean Energy UCITS ETF', category: 'Aandelen', theme: 'CleanEnergy' },
+
+  // Government Bonds
+  EUNH: { isin: 'IE00B4WXJJ64', name: 'iShares Core Euro Government Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
+  IGLT: { isin: 'IE00B1FZSB30', name: 'iShares Core UK Gilts UCITS ETF', category: 'Obligaties', region: 'UK' },
+
+  // Corporate Bonds
+  IEAC: { isin: 'IE00B3F81R35', name: 'iShares Core EUR Corporate Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
+  VUCP: { isin: 'IE00BZ163K21', name: 'Vanguard USD Corporate Bond UCITS ETF', category: 'Obligaties', region: 'US' },
+
+  // Global Bonds
+  VAGE: { isin: 'IE00BG47KB92', name: 'Vanguard Global Aggregate Bond UCITS ETF', category: 'Obligaties', region: 'World' },
+
+  // Inflation-Linked Bonds
+  ITPS: { isin: 'IE00B0M62X26', name: 'iShares EUR Inflation Linked Government Bond', category: 'Obligaties', theme: 'InflationProtection' },
+
+  // Commodities
+  SGLD: { isin: 'IE00B579F325', name: 'Invesco Physical Gold A', category: 'Commodities' },
+  CMOD: { isin: 'IE00BD4TYG73', name: 'iShares Diversified Commodity Swap UCITS ETF', category: 'Commodities' },
+
+  // Real Estate
+  IWDP: { isin: 'IE00B1FZS350', name: 'iShares Developed Markets Property Yield', category: 'Vastgoed', region: 'World' },
+  VGRE: { isin: 'IE00B5L01S80', name: 'Vanguard Global Real Estate UCITS ETF', category: 'Vastgoed', region: 'World' },
+
+  // Money Market
+  XEON: { isin: 'LU0290358497', name: 'Xtrackers II EUR Overnight Rate Swap UCITS ETF', category: 'Money market' },
+
+  // Value Factor
+  IWVL: { isin: 'IE00BP3QZB59', name: 'iShares Edge MSCI World Value Factor', category: 'Aandelen', theme: 'Value' },
+
+  // Momentum Factor
+  IWMO: { isin: 'IE00BP3QZ825', name: 'iShares Edge MSCI World Momentum Factor', category: 'Aandelen', theme: 'Momentum' },
+
+  // Quality Factor
+  IWQU: { isin: 'IE00BP3QZ601', name: 'iShares Edge MSCI World Quality Factor', category: 'Aandelen', theme: 'Quality' },
+
+  // Small Cap
+  WSML: { isin: 'IE00BF4RFH31', name: 'iShares MSCI World Small Cap UCITS ETF', category: 'Aandelen', theme: 'SmallCap' },
+};
+
+// ============================================
+// PORTFOLIO CATEGORIES
+// ============================================
+
+export const PORTFOLIO_CATEGORIES = {
+  RISK: 'Risk',
+  THEME: 'Theme',
+  STRATEGY: 'Strategy',
+  COMMUNITY: 'Community',
+};
+
+export const REBALANCE_FREQUENCIES = {
+  MONTHLY: 'monthly',
+  QUARTERLY: 'quarterly',
+  YEARLY: 'yearly',
+};
+
+// ============================================
+// RISK-BASED PORTFOLIOS (Existing + Enhanced)
+// ============================================
+
+const RISK_PORTFOLIOS = {
+  'risk-bonds100': {
+    id: 'risk-bonds100',
+    name: '100% Obligaties',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Zeer laag risico - Focus op kapitaalbehoud met stabiele inkomsten uit obligaties',
+    expectedReturn: 0.025,
+    stdDev: 0.05,
+    riskLevel: 1,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.YEARLY,
+    color: '#3B82F6',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'Europe', weight: 80 },
+      { region: 'World', weight: 20 },
+    ],
+    tags: ['conservative', 'bonds', 'income', 'low-risk', 'capital-preservation'],
+    holdings: [
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 50, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 30, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 20, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+
+  'risk-defensive': {
+    id: 'risk-defensive',
+    name: 'Defensief',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Laag risico - Stabiele groei met bescherming tegen marktschommelingen',
+    expectedReturn: 0.035,
+    stdDev: 0.08,
+    riskLevel: 2,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#22C55E',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 25 },
+      { region: 'Europe', weight: 55 },
+      { region: 'Emerging', weight: 10 },
+      { region: 'Other', weight: 10 },
+    ],
+    tags: ['defensive', 'low-risk', 'balanced', 'stable'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 10, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 30, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 25, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 5, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 5, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 10, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+
+  'risk-neutral': {
+    id: 'risk-neutral',
+    name: 'Neutraal',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Gemiddeld risico - Balans tussen groei en stabiliteit',
+    expectedReturn: 0.05,
+    stdDev: 0.11,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#F59E0B',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 35 },
+      { region: 'US', weight: 15 },
+      { region: 'Europe', weight: 35 },
+      { region: 'Emerging', weight: 15 },
+    ],
+    tags: ['balanced', 'moderate-risk', 'diversified'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SXR8.isin, weight: 5, category: 'Aandelen', name: VERIFIED_ETFS.SXR8.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 20, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 5, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 5, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 5, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+
+  'risk-offensive': {
+    id: 'risk-offensive',
+    name: 'Offensief',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Hoger risico - Focus op vermogensgroei met acceptabele volatiliteit',
+    expectedReturn: 0.065,
+    stdDev: 0.14,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#EF4444',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 40 },
+      { region: 'US', weight: 20 },
+      { region: 'Emerging', weight: 20 },
+      { region: 'Europe', weight: 15 },
+      { region: 'Other', weight: 5 },
+    ],
+    tags: ['growth', 'higher-risk', 'equity-focused'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 40, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SXR8.isin, weight: 10, category: 'Aandelen', name: VERIFIED_ETFS.SXR8.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 10, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 5, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 7.5, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 5, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 2.5, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+
+  'risk-aggressive': {
+    id: 'risk-aggressive',
+    name: 'Zeer Offensief',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Hoog risico - Maximale groei voor ervaren beleggers',
+    expectedReturn: 0.075,
+    stdDev: 0.16,
+    riskLevel: 5,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#DC2626',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 45 },
+      { region: 'Emerging', weight: 25 },
+      { region: 'US', weight: 15 },
+      { region: 'Other', weight: 15 },
+    ],
+    tags: ['aggressive', 'high-risk', 'maximum-growth'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 45, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SXR8.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.SXR8.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 10, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 5, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+    ],
+  },
+
+  'risk-stocks100': {
+    id: 'risk-stocks100',
+    name: '100% Aandelen',
+    category: PORTFOLIO_CATEGORIES.RISK,
+    description: 'Maximaal risico - Volledige focus op aandelenrendement',
+    expectedReturn: 0.08,
+    stdDev: 0.18,
+    riskLevel: 5,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#7C3AED',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 60 },
+      { region: 'Emerging', weight: 25 },
+      { region: 'US', weight: 15 },
+    ],
+    tags: ['stocks', 'maximum-risk', 'equity-only'],
+    holdings: [
+      { isin: VERIFIED_ETFS.VWCE.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.VWCE.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.VUAA.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.VUAA.name },
+    ],
+  },
+};
+
+// ============================================
+// THEME-BASED PORTFOLIOS
+// ============================================
+
+const THEME_PORTFOLIOS = {
+  'theme-ai-technology': {
+    id: 'theme-ai-technology',
+    name: 'AI & Technology',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Investeer in de toekomst van AI, cloud computing en technologie innovatie',
+    expectedReturn: 0.12,
+    stdDev: 0.25,
+    riskLevel: 5,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#8B5CF6',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'US', weight: 70 },
+      { region: 'World', weight: 20 },
+      { region: 'Asia', weight: 10 },
+    ],
+    tags: ['technology', 'ai', 'growth', 'nasdaq', 'innovation'],
+    holdings: [
+      { isin: VERIFIED_ETFS.EQQQ.isin, weight: 50, category: 'Aandelen', name: VERIFIED_ETFS.EQQQ.name },
+      { isin: VERIFIED_ETFS.IUIT.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.IUIT.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+    ],
+  },
+
+  'theme-sustainability-esg': {
+    id: 'theme-sustainability-esg',
+    name: 'Sustainability / ESG',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Duurzaam beleggen met focus op milieu, sociaal en governance criteria',
+    expectedReturn: 0.065,
+    stdDev: 0.14,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#10B981',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 60 },
+      { region: 'Europe', weight: 25 },
+      { region: 'Emerging', weight: 15 },
+    ],
+    tags: ['esg', 'sustainable', 'sri', 'green', 'responsible'],
+    holdings: [
+      { isin: VERIFIED_ETFS.SUWS.isin, weight: 50, category: 'Aandelen', name: VERIFIED_ETFS.SUWS.name },
+      { isin: VERIFIED_ETFS.INRG.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.INRG.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 20, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 10, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+    ],
+  },
+
+  'theme-dividend-income': {
+    id: 'theme-dividend-income',
+    name: 'Dividend Income',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Focus op hoge dividendrendementen voor regelmatig passief inkomen',
+    expectedReturn: 0.055,
+    stdDev: 0.12,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#F59E0B',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 50 },
+      { region: 'Europe', weight: 30 },
+      { region: 'US', weight: 20 },
+    ],
+    tags: ['dividend', 'income', 'passive-income', 'yield'],
+    holdings: [
+      { isin: VERIFIED_ETFS.VHYL.isin, weight: 40, category: 'Aandelen', name: VERIFIED_ETFS.VHYL.name },
+      { isin: VERIFIED_ETFS.IDVY.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.IDVY.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 15, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 10, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+    ],
+  },
+
+  'theme-inflation-protection': {
+    id: 'theme-inflation-protection',
+    name: 'Inflation Protection',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Bescherm je vermogen tegen inflatie met reële activa',
+    expectedReturn: 0.045,
+    stdDev: 0.10,
+    riskLevel: 2,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#EF4444',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 30 },
+      { region: 'Europe', weight: 40 },
+      { region: 'US', weight: 20 },
+      { region: 'Other', weight: 10 },
+    ],
+    tags: ['inflation', 'protection', 'real-assets', 'commodities', 'tips'],
+    holdings: [
+      { isin: VERIFIED_ETFS.ITPS.isin, weight: 25, category: 'Obligaties', name: VERIFIED_ETFS.ITPS.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 20, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 20, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.CMOD.isin, weight: 15, category: 'Commodities', name: VERIFIED_ETFS.CMOD.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+    ],
+  },
+
+  'theme-emerging-markets': {
+    id: 'theme-emerging-markets',
+    name: 'Emerging Markets',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Profiteer van de groei in opkomende economieën',
+    expectedReturn: 0.085,
+    stdDev: 0.20,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#EC4899',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'Emerging', weight: 70 },
+      { region: 'Asia', weight: 20 },
+      { region: 'World', weight: 10 },
+    ],
+    tags: ['emerging-markets', 'growth', 'asia', 'brics', 'developing'],
+    holdings: [
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.VFEM.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.VFEM.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+    ],
+  },
+
+  'theme-healthcare-aging': {
+    id: 'theme-healthcare-aging',
+    name: 'Healthcare & Aging',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Investeer in de gezondheidszorg sector en de vergrijzende bevolking',
+    expectedReturn: 0.07,
+    stdDev: 0.15,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#06B6D4',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 50 },
+      { region: 'US', weight: 40 },
+      { region: 'Europe', weight: 10 },
+    ],
+    tags: ['healthcare', 'pharma', 'biotech', 'aging', 'medical'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IXJ.isin, weight: 45, category: 'Aandelen', name: VERIFIED_ETFS.IXJ.name },
+      { isin: VERIFIED_ETFS.HEAL.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.HEAL.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 20, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 10, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+    ],
+  },
+
+  'theme-energy-transition': {
+    id: 'theme-energy-transition',
+    name: 'Energy Transition',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Profiteer van de overgang naar schone energie',
+    expectedReturn: 0.09,
+    stdDev: 0.22,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#84CC16',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 50 },
+      { region: 'Europe', weight: 30 },
+      { region: 'US', weight: 20 },
+    ],
+    tags: ['clean-energy', 'renewable', 'solar', 'wind', 'transition'],
+    holdings: [
+      { isin: VERIFIED_ETFS.INRG.isin, weight: 50, category: 'Aandelen', name: VERIFIED_ETFS.INRG.name },
+      { isin: VERIFIED_ETFS.SUWS.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.SUWS.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+    ],
+  },
+
+  'theme-all-weather': {
+    id: 'theme-all-weather',
+    name: 'All-Weather Portfolio',
+    category: PORTFOLIO_CATEGORIES.THEME,
+    description: 'Gebalanceerde portefeuille die in alle marktomstandigheden presteert',
+    expectedReturn: 0.055,
+    stdDev: 0.09,
+    riskLevel: 2,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#6366F1',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 30 },
+      { region: 'US', weight: 20 },
+      { region: 'Europe', weight: 30 },
+      { region: 'Other', weight: 20 },
+    ],
+    tags: ['all-weather', 'balanced', 'diversified', 'stable', 'ray-dalio'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 25, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.VAGE.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.VAGE.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 15, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+      { isin: VERIFIED_ETFS.CMOD.isin, weight: 10, category: 'Commodities', name: VERIFIED_ETFS.CMOD.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 5, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+};
+
+// ============================================
+// STRATEGY-BASED PORTFOLIOS
+// ============================================
+
+const STRATEGY_PORTFOLIOS = {
+  'strategy-core-satellite': {
+    id: 'strategy-core-satellite',
+    name: 'Core-Satellite',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Stabiele kern van wereldwijde ETFs met tactische satellietposities',
+    expectedReturn: 0.07,
+    stdDev: 0.13,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#14B8A6',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 60 },
+      { region: 'US', weight: 20 },
+      { region: 'Emerging', weight: 15 },
+      { region: 'Europe', weight: 5 },
+    ],
+    tags: ['core-satellite', 'diversified', 'tactical', 'balanced'],
+    holdings: [
+      // Core (70%)
+      { isin: VERIFIED_ETFS.VWCE.isin, weight: 50, category: 'Aandelen', name: VERIFIED_ETFS.VWCE.name },
+      { isin: VERIFIED_ETFS.VAGE.isin, weight: 20, category: 'Obligaties', name: VERIFIED_ETFS.VAGE.name },
+      // Satellites (30%)
+      { isin: VERIFIED_ETFS.EQQQ.isin, weight: 10, category: 'Aandelen', name: VERIFIED_ETFS.EQQQ.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 10, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 10, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+    ],
+  },
+
+  'strategy-buy-hold-world': {
+    id: 'strategy-buy-hold-world',
+    name: 'Buy & Hold World',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Simpele wereldwijde spreiding - Koop en houd vast voor de lange termijn',
+    expectedReturn: 0.065,
+    stdDev: 0.15,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.YEARLY,
+    color: '#0EA5E9',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 100 },
+    ],
+    tags: ['buy-hold', 'passive', 'simple', 'long-term', 'world'],
+    holdings: [
+      { isin: VERIFIED_ETFS.VWCE.isin, weight: 100, category: 'Aandelen', name: VERIFIED_ETFS.VWCE.name },
+    ],
+  },
+
+  'strategy-monthly-income': {
+    id: 'strategy-monthly-income',
+    name: 'Monthly Income',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Geoptimaliseerd voor regelmatige maandelijkse inkomsten',
+    expectedReturn: 0.05,
+    stdDev: 0.10,
+    riskLevel: 2,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#F97316',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 40 },
+      { region: 'Europe', weight: 35 },
+      { region: 'US', weight: 25 },
+    ],
+    tags: ['income', 'monthly', 'dividend', 'bonds', 'cash-flow'],
+    holdings: [
+      { isin: VERIFIED_ETFS.VHYL.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.VHYL.name },
+      { isin: VERIFIED_ETFS.IDVY.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.IDVY.name },
+      { isin: VERIFIED_ETFS.IWDP.isin, weight: 15, category: 'Vastgoed', name: VERIFIED_ETFS.IWDP.name },
+      { isin: VERIFIED_ETFS.IEAC.isin, weight: 20, category: 'Obligaties', name: VERIFIED_ETFS.IEAC.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+      { isin: VERIFIED_ETFS.XEON.isin, weight: 5, category: 'Money market', name: VERIFIED_ETFS.XEON.name },
+    ],
+  },
+
+  'strategy-value-growth': {
+    id: 'strategy-value-growth',
+    name: 'Value vs Growth',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Balans tussen waarde-aandelen en groeiaandelen',
+    expectedReturn: 0.075,
+    stdDev: 0.16,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#A855F7',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 70 },
+      { region: 'US', weight: 30 },
+    ],
+    tags: ['value', 'growth', 'factor', 'balanced'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWVL.isin, weight: 35, category: 'Aandelen', name: VERIFIED_ETFS.IWVL.name },
+      { isin: VERIFIED_ETFS.EQQQ.isin, weight: 35, category: 'Aandelen', name: VERIFIED_ETFS.EQQQ.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+    ],
+  },
+
+  'strategy-factor-value': {
+    id: 'strategy-factor-value',
+    name: 'Factor: Value',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Focus op ondergewaardeerde aandelen met lage waardering',
+    expectedReturn: 0.07,
+    stdDev: 0.17,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#D946EF',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 70 },
+      { region: 'Emerging', weight: 30 },
+    ],
+    tags: ['factor', 'value', 'undervalued', 'contrarian'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWVL.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.IWVL.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+    ],
+  },
+
+  'strategy-factor-momentum': {
+    id: 'strategy-factor-momentum',
+    name: 'Factor: Momentum',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Investeer in aandelen met sterke recente prestaties',
+    expectedReturn: 0.08,
+    stdDev: 0.18,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#EC4899',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 80 },
+      { region: 'US', weight: 20 },
+    ],
+    tags: ['factor', 'momentum', 'trend', 'performance'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWMO.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.IWMO.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 15, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+    ],
+  },
+
+  'strategy-factor-quality': {
+    id: 'strategy-factor-quality',
+    name: 'Factor: Quality',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Focus op hoogwaardige bedrijven met sterke fundamenten',
+    expectedReturn: 0.07,
+    stdDev: 0.14,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#22D3EE',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 80 },
+      { region: 'US', weight: 20 },
+    ],
+    tags: ['factor', 'quality', 'fundamentals', 'stable'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWQU.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.IWQU.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 15, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+    ],
+  },
+
+  'strategy-factor-multifactor': {
+    id: 'strategy-factor-multifactor',
+    name: 'Multi-Factor',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Combineer meerdere factoren voor robuuste rendementen',
+    expectedReturn: 0.075,
+    stdDev: 0.15,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#F472B6',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 85 },
+      { region: 'Emerging', weight: 15 },
+    ],
+    tags: ['factor', 'multi-factor', 'diversified', 'smart-beta'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWVL.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWVL.name },
+      { isin: VERIFIED_ETFS.IWMO.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWMO.name },
+      { isin: VERIFIED_ETFS.IWQU.isin, weight: 25, category: 'Aandelen', name: VERIFIED_ETFS.IWQU.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 10, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+    ],
+  },
+
+  'strategy-small-cap-tilt': {
+    id: 'strategy-small-cap-tilt',
+    name: 'Small Cap Tilt',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Extra allocatie naar kleine bedrijven voor hogere groei',
+    expectedReturn: 0.085,
+    stdDev: 0.19,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.QUARTERLY,
+    color: '#FB923C',
+    lastUpdated: '2025-01-22T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 70 },
+      { region: 'US', weight: 20 },
+      { region: 'Emerging', weight: 10 },
+    ],
+    tags: ['small-cap', 'growth', 'size-factor', 'higher-risk'],
+    holdings: [
+      { isin: VERIFIED_ETFS.WSML.isin, weight: 40, category: 'Aandelen', name: VERIFIED_ETFS.WSML.name },
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 35, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 15, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+      { isin: VERIFIED_ETFS.SGLD.isin, weight: 10, category: 'Commodities', name: VERIFIED_ETFS.SGLD.name },
+    ],
+  },
+};
+
+// ============================================
+// COMBINED PORTFOLIOS
+// ============================================
+
+export const MODEL_PORTFOLIOS = {
+  ...RISK_PORTFOLIOS,
+  ...THEME_PORTFOLIOS,
+  ...STRATEGY_PORTFOLIOS,
+};
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Get a portfolio definition by ID
+ */
+export function getModelPortfolio(id) {
+  return MODEL_PORTFOLIOS[id] || null;
+}
+
+/**
+ * Get all portfolios
+ */
+export function getAllModelPortfolios() {
+  return Object.values(MODEL_PORTFOLIOS);
+}
+
+/**
+ * Get portfolios by category
+ */
+export function getPortfoliosByCategory(category) {
+  return Object.values(MODEL_PORTFOLIOS).filter(p => p.category === category);
+}
+
+/**
+ * Get portfolios by risk level
+ */
+export function getPortfoliosByRiskLevel(level) {
+  return Object.values(MODEL_PORTFOLIOS).filter(p => p.riskLevel === level);
+}
+
+/**
+ * Get portfolios by tag
+ */
+export function getPortfoliosByTag(tag) {
+  return Object.values(MODEL_PORTFOLIOS).filter(p => p.tags.includes(tag.toLowerCase()));
+}
+
+/**
+ * Search portfolios by text (name, description, tags)
+ */
+export function searchPortfolios(query) {
+  const q = query.toLowerCase();
+  return Object.values(MODEL_PORTFOLIOS).filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.description.toLowerCase().includes(q) ||
+    p.tags.some(t => t.includes(q))
+  );
+}
+
+/**
+ * Get unique tags across all portfolios
+ */
+export function getAllTags() {
+  const tags = new Set();
+  Object.values(MODEL_PORTFOLIOS).forEach(p => {
+    p.tags.forEach(t => tags.add(t));
+  });
+  return Array.from(tags).sort();
+}
+
+/**
+ * Get unique regions across all portfolios
+ */
+export function getAllRegions() {
+  const regions = new Set();
+  Object.values(MODEL_PORTFOLIOS).forEach(p => {
+    p.regionExposure.forEach(r => regions.add(r.region));
+  });
+  return Array.from(regions).sort();
+}
+
+/**
+ * Validate portfolio holdings are all tradable
+ */
+export function validatePortfolioTradability(portfolio) {
+  const errors = [];
+  const holdings = portfolio.holdings || [];
+
+  holdings.forEach(holding => {
+    if (!isTradable(holding.isin)) {
+      errors.push(`ISIN ${holding.isin} (${holding.name}) is not tradable`);
+    }
+  });
+
+  const totalWeight = holdings.reduce((sum, h) => sum + h.weight, 0);
+  if (Math.abs(totalWeight - 100) > 0.01) {
+    errors.push(`Weights sum to ${totalWeight.toFixed(2)}%, expected 100%`);
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Get portfolio category allocation summary
+ */
+export function getPortfolioCategorySummary(portfolio) {
+  const categories = {};
+  portfolio.holdings.forEach(h => {
+    const cat = h.category || 'Other';
+    categories[cat] = (categories[cat] || 0) + h.weight;
+  });
+  return categories;
+}
+
+/**
+ * Filter portfolios with multiple criteria
+ */
+export function filterPortfolios({
+  category = null,
+  riskLevel = null,
+  minRiskLevel = null,
+  maxRiskLevel = null,
+  tags = [],
+  region = null,
+  searchQuery = '',
+}) {
+  let results = Object.values(MODEL_PORTFOLIOS);
+
+  if (category) {
+    results = results.filter(p => p.category === category);
+  }
+
+  if (riskLevel !== null) {
+    results = results.filter(p => p.riskLevel === riskLevel);
+  }
+
+  if (minRiskLevel !== null) {
+    results = results.filter(p => p.riskLevel >= minRiskLevel);
+  }
+
+  if (maxRiskLevel !== null) {
+    results = results.filter(p => p.riskLevel <= maxRiskLevel);
+  }
+
+  if (tags.length > 0) {
+    results = results.filter(p =>
+      tags.some(tag => p.tags.includes(tag.toLowerCase()))
+    );
+  }
+
+  if (region) {
+    results = results.filter(p =>
+      p.regionExposure.some(r => r.region === region)
+    );
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    results = results.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.tags.some(t => t.includes(q))
+    );
+  }
+
+  return results;
+}
+
+export default MODEL_PORTFOLIOS;

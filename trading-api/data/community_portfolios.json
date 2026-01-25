@@ -1,0 +1,105 @@
+{
+  "portfolios": {
+    "test-portfolio-1": {
+      "id": "test-portfolio-1",
+      "name": "Tech Growth Portfolio",
+      "description": "Een gediversificeerde tech-portfolio met focus op groei.",
+      "creator_id": "user-1",
+      "creator_name": "Jan de Belegger",
+      "visibility": "public",
+      "published_at": "2026-01-15T10:00:00Z",
+      "created_at": "2026-01-10T09:00:00Z",
+      "risk_level": 4,
+      "followers": 42,
+      "holdings": [
+        {"isin": "IE00B4L5Y983", "name": "iShares Core MSCI World", "weight": 40, "category": "Aandelen"},
+        {"isin": "IE00B52SFT06", "name": "iShares NASDAQ 100", "weight": 35, "category": "Aandelen"},
+        {"isin": "IE00BKM4GZ66", "name": "iShares Core EM IMI", "weight": 25, "category": "Aandelen"}
+      ],
+      "tags": ["tech", "growth", "global"]
+    },
+    "test-portfolio-2": {
+      "id": "test-portfolio-2",
+      "name": "Dividend Income",
+      "description": "Stabiele dividend ETFs voor passief inkomen.",
+      "creator_id": "user-2",
+      "creator_name": "Maria Investor",
+      "visibility": "public",
+      "published_at": "2026-01-12T14:00:00Z",
+      "created_at": "2026-01-08T11:00:00Z",
+      "risk_level": 2,
+      "followers": 128,
+      "holdings": [
+        {"isin": "IE00B0M62Q58", "name": "iShares STOXX Europe 600", "weight": 50, "category": "Aandelen"},
+        {"isin": "IE00B3RBWM25", "name": "Vanguard FTSE All-World", "weight": 30, "category": "Aandelen"},
+        {"isin": "IE00B4L5YC18", "name": "iShares Edge MSCI World Value", "weight": 20, "category": "Aandelen"}
+      ],
+      "tags": ["dividend", "income", "europe"]
+    },
+    "test-portfolio-3": {
+      "id": "test-portfolio-3",
+      "name": "Balanced 60/40",
+      "description": "Klassieke 60/40 verdeling tussen aandelen en obligaties.",
+      "creator_id": "user-3",
+      "creator_name": "Peter Steady",
+      "visibility": "public",
+      "published_at": "2026-01-18T08:30:00Z",
+      "created_at": "2026-01-05T16:00:00Z",
+      "risk_level": 3,
+      "followers": 85,
+      "holdings": [
+        {"isin": "IE00B4L5Y983", "name": "iShares Core MSCI World", "weight": 60, "category": "Aandelen"},
+        {"isin": "IE00B3F81R35", "name": "iShares Core Euro Govt Bond", "weight": 40, "category": "Obligaties"}
+      ],
+      "tags": ["balanced", "conservative", "bonds"]
+    },
+    "test-portfolio-4": {
+      "id": "test-portfolio-4",
+      "name": "ESG Sustainable",
+      "description": "Duurzaam beleggen met ESG-screened ETFs.",
+      "creator_id": "user-4",
+      "creator_name": "Eva Green",
+      "visibility": "public",
+      "published_at": "2026-01-20T12:00:00Z",
+      "created_at": "2026-01-14T10:00:00Z",
+      "risk_level": 3,
+      "followers": 67,
+      "holdings": [
+        {"isin": "IE00BFNM3J75", "name": "iShares MSCI World SRI", "weight": 70, "category": "Aandelen"},
+        {"isin": "IE00BFNM3K80", "name": "iShares MSCI EM SRI", "weight": 30, "category": "Aandelen"}
+      ],
+      "tags": ["esg", "sustainable", "sri"]
+    },
+    "test-portfolio-5": {
+      "id": "test-portfolio-5",
+      "name": "High Risk Crypto Adjacent",
+      "description": "Hoog risico portfolio met blockchain en fintech exposure.",
+      "creator_id": "user-5",
+      "creator_name": "Rick Trader",
+      "visibility": "public",
+      "published_at": "2026-01-21T09:00:00Z",
+      "created_at": "2026-01-19T15:00:00Z",
+      "risk_level": 5,
+      "followers": 23,
+      "holdings": [
+        {"isin": "IE00BGBN6P67", "name": "Invesco CoinShares Global Blockchain", "weight": 50, "category": "Aandelen"},
+        {"isin": "IE00B4L5Y983", "name": "iShares Core MSCI World", "weight": 50, "category": "Aandelen"}
+      ],
+      "tags": ["crypto", "blockchain", "fintech", "high-risk"]
+    },
+    "test-portfolio-private": {
+      "id": "test-portfolio-private",
+      "name": "My Private Strategy",
+      "description": "Dit is een prive portfolio.",
+      "creator_id": "user-1",
+      "creator_name": "Jan de Belegger",
+      "visibility": "private",
+      "published_at": null,
+      "created_at": "2026-01-22T10:00:00Z",
+      "risk_level": 4,
+      "followers": 0,
+      "holdings": [],
+      "tags": []
+    }
+  }
+}

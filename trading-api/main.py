@@ -33,6 +33,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import get_settings, TradingMode
 from routers import etfs_router, quotes_router, orders_router, positions_router, account_router, health_router, marketdata_router, holdings_router, tradability_router, indices_router
+from routers.portfolios import router as portfolios_router
+from routers.community import router as community_router
+from routers.notifications import router as notifications_router
+from routers.competitions import router as competitions_router
 
 
 # =============================================================================
@@ -203,6 +207,10 @@ app.include_router(marketdata_router)
 app.include_router(holdings_router)
 app.include_router(tradability_router)
 app.include_router(indices_router)
+app.include_router(portfolios_router)
+app.include_router(community_router)
+app.include_router(notifications_router)
+app.include_router(competitions_router)
 
 
 # =============================================================================

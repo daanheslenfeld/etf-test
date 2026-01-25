@@ -68,6 +68,9 @@ export {
 // Mobile drawer component
 export { MobileDrawer, DrawerSection } from './MobileDrawer';
 
+// Notification components
+export { default as NotificationBell } from './NotificationBell';
+
 // Data card components (mobile table alternatives)
 export {
   DataCard,

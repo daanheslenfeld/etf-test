@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Settings, LogOut, User, Bell } from 'lucide-react';
-import { StatusBadge, Badge } from '../common';
+import { Menu, Settings, LogOut, User } from 'lucide-react';
+import { StatusBadge, Badge, NotificationBell } from '../common';
 
 /**
  * Header Component - Pastel Design System
@@ -57,9 +57,10 @@ export function Header({
         {/* Right section */}
         <div className="flex items-center gap-2">
           {/* Notifications */}
-          <button className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-xl transition-colors relative">
-            <Bell className="w-5 h-5" />
-          </button>
+          <NotificationBell onNavigateToPortfolio={(portfolioId) => {
+            // Could navigate to portfolio detail
+            console.log('Navigate to portfolio:', portfolioId);
+          }} />
 
           {/* Settings */}
           <Link

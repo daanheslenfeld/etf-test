@@ -14,6 +14,7 @@ import PremadePortfolioCard from './components/PremadePortfolioCard';
 import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
 import BulkBuyFlow from './components/portfolio/BulkBuyFlow';
 import { ModelPortfoliosPage } from './components/portfolio';
+import { CommunityPage } from './components/community';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from './data/tradablePortfolioDefinitions';
 
 // Helper: Get categories that have tradable ETFs
@@ -966,6 +967,7 @@ const ETFPortal = () => {
     'customerDatabase',
     'customerDetail',
     'trading',
+    'community',
   ];
 
   // Initialize state from localStorage or URL
@@ -2521,7 +2523,7 @@ useEffect(() => {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             {(() => {
               const tradableInPortfolio = portfolio.filter(p => p.isTradableViaLynx).length;
               const totalInPortfolio = portfolio.length;
@@ -2572,7 +2574,22 @@ useEffect(() => {
                 <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">Risico</span>
                 <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded">Thema</span>
                 <span className="text-xs px-2 py-0.5 bg-teal-500/20 text-teal-400 rounded">Strategie</span>
-                <span className="text-xs px-2 py-0.5 bg-pink-500/20 text-pink-400 rounded">Community</span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setCurrentPage('community')}
+              className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
+            >
+              <div className="text-3xl sm:text-4xl mb-3">👥</div>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Community</h3>
+              <p className="text-xs sm:text-sm text-[#636E72]">
+                Ontdek en volg de beste beleggers
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs px-2 py-0.5 bg-[#C9A962]/20 text-[#C9A962] rounded">Leaderboard</span>
+                <span className="text-xs px-2 py-0.5 bg-[#C0736D]/20 text-[#C0736D] rounded">Volgen</span>
+                <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded">Kopieren</span>
               </div>
             </button>
           </div>
@@ -10749,6 +10766,7 @@ useEffect(() => {
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
+      {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Bulk Buy Modal */}

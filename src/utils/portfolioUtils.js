@@ -7,6 +7,7 @@
 
 import { getTradingInfo } from '../data/tradableETFs';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
+import { MODEL_PORTFOLIOS, getModelPortfolio } from '../data/modelPortfolioDefinitions';
 
 /**
  * Get market price for a symbol
@@ -36,14 +37,18 @@ export function getMarketPrice(symbol, marketData) {
  * - ETFs with 0 units are skipped
  * - ETFs without price data are skipped
  *
- * @param {string} portfolioKey - Key from TRADABLE_PORTFOLIO_DEFINITIONS
+ * @param {string} portfolioKey - Key from TRADABLE_PORTFOLIO_DEFINITIONS or MODEL_PORTFOLIOS
  * @param {number} investmentAmount - Total amount to invest in EUR
  * @param {Object} marketData - Current market data { [symbol]: { last, bid, ask } }
  * @param {number} availableCash - Available funds from broker account
  * @returns {Object} - { orders, totalCost, skippedETFs, remainingCash, portfolioKey, investmentAmount }
  */
 export function calculateBulkBuyOrders(portfolioKey, investmentAmount, marketData, availableCash) {
-  const portfolio = getPortfolioDefinition(portfolioKey);
+  // Try to get portfolio from old definitions first, then from new model portfolios
+  let portfolio = getPortfolioDefinition(portfolioKey);
+  if (!portfolio) {
+    portfolio = getModelPortfolio(portfolioKey);
+  }
 
   if (!portfolio) {
     return {
@@ -215,7 +220,11 @@ function scaleDownOrders(orders, scaleFactor, marketData, existingSkipped, portf
     });
   }
 
-  const portfolio = getPortfolioDefinition(portfolioKey);
+  // Try both portfolio sources
+  let portfolio = getPortfolioDefinition(portfolioKey);
+  if (!portfolio) {
+    portfolio = getModelPortfolio(portfolioKey);
+  }
 
   return {
     orders: scaledOrders,

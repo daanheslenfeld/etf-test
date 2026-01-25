@@ -4,7 +4,12 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#28EBCF" />
+    <meta name="theme-color" content="#7C9885" />
+
+    <!-- Premium Banking Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
@@ -45,7 +50,7 @@
         padding: 0;
       }
 
-      /* Green bar at the very top in standalone mode */
+      /* Subtle accent bar at the very top in standalone mode */
       body::before {
         content: '';
         position: fixed;
@@ -54,7 +59,7 @@
         right: 0;
         height: constant(safe-area-inset-top); /* iOS 11.0 */
         height: env(safe-area-inset-top); /* iOS 11.2+ */
-        background-color: #28EBCF;
+        background-color: #7C9885;
         z-index: 9999;
         pointer-events: none;
       }
@@ -71,12 +76,18 @@
       input, textarea, select {
         -webkit-user-select: text !important;
         user-select: text !important;
-        -webkit-tap-highlight-color: rgba(40, 235, 207, 0.3) !important;
+        -webkit-tap-highlight-color: rgba(14, 165, 233, 0.3) !important;
         touch-action: manipulation !important;
         pointer-events: auto !important;
         min-height: 44px !important; /* iOS minimum touch target */
         -webkit-appearance: none !important;
         appearance: none !important;
+      }
+
+      /* Premium banking theme base */
+      html, body {
+        background-color: #F5F6F4;
+        color: #2D3436;
       }
 
       /* Prevent iOS from disabling input focus */
@@ -91,7 +102,7 @@
       }
 
       /* Fix for Capacitor WebView - allow inputs to receive events */
-      .bg-gray-900, .bg-\[#1A1B1F\] {
+      .bg-white, .bg-slate-50 {
         isolation: auto !important;
       }
 

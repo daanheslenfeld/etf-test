@@ -15,6 +15,7 @@ import {
   formatCurrency
 } from '../utils/portfolioUtils';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
+import { MODEL_PORTFOLIOS, getModelPortfolio } from '../data/modelPortfolioDefinitions';
 
 /**
  * Hook for managing bulk portfolio purchases
@@ -57,18 +58,40 @@ export function useBulkBuy() {
     return connected && !isDataStale;
   }, [connected, isDataStale]);
 
-  // Get all available portfolios
+  // Get all available portfolios (combines old definitions and new model portfolios)
   const availablePortfolios = useMemo(() => {
-    return Object.entries(TRADABLE_PORTFOLIO_DEFINITIONS).map(([key, portfolio]) => ({
+    // Old portfolio definitions
+    const oldPortfolios = Object.entries(TRADABLE_PORTFOLIO_DEFINITIONS).map(([key, portfolio]) => ({
       key,
+      id: key,
       name: portfolio.name,
       description: portfolio.description,
       expectedReturn: portfolio.expectedReturn,
       stdDev: portfolio.stdDev,
       riskLevel: portfolio.riskLevel,
       color: portfolio.color,
-      holdingsCount: portfolio.holdings.length
+      holdingsCount: portfolio.holdings.length,
+      category: 'Risk',
+      source: 'legacy',
     }));
+
+    // New model portfolios
+    const newPortfolios = Object.entries(MODEL_PORTFOLIOS).map(([key, portfolio]) => ({
+      key,
+      id: portfolio.id,
+      name: portfolio.name,
+      description: portfolio.description,
+      expectedReturn: portfolio.expectedReturn,
+      stdDev: portfolio.stdDev,
+      riskLevel: portfolio.riskLevel,
+      color: portfolio.color,
+      holdingsCount: portfolio.holdings.length,
+      category: portfolio.category,
+      tags: portfolio.tags,
+      source: 'model',
+    }));
+
+    return [...newPortfolios];
   }, []);
 
   /**
@@ -176,7 +199,11 @@ export function useBulkBuy() {
   const calculationSummary = useMemo(() => {
     if (!calculation) return null;
 
-    const portfolio = getPortfolioDefinition(selectedPortfolio);
+    // Try both portfolio sources
+    let portfolio = getPortfolioDefinition(selectedPortfolio);
+    if (!portfolio) {
+      portfolio = getModelPortfolio(selectedPortfolio);
+    }
 
     return {
       portfolioName: portfolio?.name || 'Onbekend',

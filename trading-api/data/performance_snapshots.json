@@ -1,0 +1,110 @@
+{
+  "snapshots": {
+    "snap-1-old": {
+      "id": "snap-1-old",
+      "portfolio_id": "test-portfolio-1",
+      "timestamp": "2025-12-23T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 10000.00,
+      "cash": 0,
+      "return_pct": 0,
+      "return_abs": 0,
+      "cumulative_return_pct": 0,
+      "holdings_snapshot": []
+    },
+    "snap-1-new": {
+      "id": "snap-1-new",
+      "portfolio_id": "test-portfolio-1",
+      "timestamp": "2026-01-22T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 10850.00,
+      "cash": 0,
+      "return_pct": 0.5,
+      "return_abs": 50,
+      "cumulative_return_pct": 8.5,
+      "holdings_snapshot": []
+    },
+    "snap-2-old": {
+      "id": "snap-2-old",
+      "portfolio_id": "test-portfolio-2",
+      "timestamp": "2025-12-23T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 25000.00,
+      "cash": 0,
+      "return_pct": 0,
+      "return_abs": 0,
+      "cumulative_return_pct": 0,
+      "holdings_snapshot": []
+    },
+    "snap-2-new": {
+      "id": "snap-2-new",
+      "portfolio_id": "test-portfolio-2",
+      "timestamp": "2026-01-22T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 25625.00,
+      "cash": 0,
+      "return_pct": 0.2,
+      "return_abs": 50,
+      "cumulative_return_pct": 2.5,
+      "holdings_snapshot": []
+    },
+    "snap-3-old": {
+      "id": "snap-3-old",
+      "portfolio_id": "test-portfolio-3",
+      "timestamp": "2025-12-23T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 15000.00,
+      "cash": 0,
+      "return_pct": 0,
+      "return_abs": 0,
+      "cumulative_return_pct": 0,
+      "holdings_snapshot": []
+    },
+    "snap-3-new": {
+      "id": "snap-3-new",
+      "portfolio_id": "test-portfolio-3",
+      "timestamp": "2026-01-22T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 15300.00,
+      "cash": 0,
+      "return_pct": 0.1,
+      "return_abs": 15,
+      "cumulative_return_pct": 2.0,
+      "holdings_snapshot": []
+    },
+    "snap-4-old": {
+      "id": "snap-4-old",
+      "portfolio_id": "test-portfolio-4",
+      "timestamp": "2025-12-23T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 8000.00,
+      "cash": 0,
+      "return_pct": 0,
+      "return_abs": 0,
+      "cumulative_return_pct": 0,
+      "holdings_snapshot": []
+    },
+    "snap-4-new": {
+      "id": "snap-4-new",
+      "portfolio_id": "test-portfolio-4",
+      "timestamp": "2026-01-22T10:00:00Z",
+      "period_type": "daily",
+      "total_value": 7680.00,
+      "cash": 0,
+      "return_pct": -0.3,
+      "return_abs": -24,
+      "cumulative_return_pct": -4.0,
+      "holdings_snapshot": []
+    }
+  },
+  "by_portfolio": {
+    "test-portfolio-1": ["snap-1-old", "snap-1-new"],
+    "test-portfolio-2": ["snap-2-old", "snap-2-new"],
+    "test-portfolio-3": ["snap-3-old", "snap-3-new"],
+    "test-portfolio-4": ["snap-4-old", "snap-4-new"]
+  },
+  "by_type": {
+    "daily": ["snap-1-old", "snap-1-new", "snap-2-old", "snap-2-new", "snap-3-old", "snap-3-new", "snap-4-old", "snap-4-new"]
+  },
+  "last_updated": "2026-01-22T10:00:00Z"
+}
