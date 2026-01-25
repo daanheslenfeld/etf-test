@@ -2870,7 +2870,7 @@ useEffect(() => {
     return (
     <div className="min-h-screen bg-[#F5F6F4]">
       {/* Navigation with Menu */}
-      <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] relative z-10">
+      <nav className="bg-[#FEFEFE] sm:bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
@@ -3055,7 +3055,7 @@ useEffect(() => {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center">
+      <section id="hero" className="min-h-screen flex items-center pt-8 sm:pt-0">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12 sm:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
