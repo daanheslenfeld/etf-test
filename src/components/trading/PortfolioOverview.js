@@ -230,8 +230,8 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                     <DataCard key={idx} variant={isStale ? 'highlighted' : 'default'}>
                       <DataCardHeader>
                         <DataCardTitle
-                          title={position.symbol}
-                          subtitle={position.currency}
+                          title={position.name || position.symbol}
+                          subtitle={`${position.symbol} • ${position.currency}`}
                           badge={formatPercent(pnlPercent)}
                           badgeVariant={isPositive ? 'success' : 'danger'}
                         />
@@ -299,7 +299,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
           <table className="w-full">
             <thead className="bg-[#F5F6F4]">
               <tr>
-                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">Symbool</th>
+                <th className="text-left text-[#636E72] text-sm font-medium px-4 py-3">ETF</th>
                 <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Aantal</th>
                 <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Gem. Kosten</th>
                 <th className="text-right text-[#636E72] text-sm font-medium px-4 py-3">Laatste Prijs</th>
@@ -333,15 +333,15 @@ export default function PortfolioOverview({ onPrefillOrder }) {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedEtf(position.symbol)}
-                            className="font-medium text-[#2D3436] hover:text-[#7C9885] hover:underline cursor-pointer transition-colors"
+                            className="font-medium text-[#2D3436] hover:text-[#7C9885] hover:underline cursor-pointer transition-colors text-left"
                           >
-                            {position.symbol}
+                            {position.name || position.symbol}
                           </button>
                           {isStale && (
                             <AlertTriangle className="w-3 h-3 text-[#C9A962]" title="Price may be stale" />
                           )}
                         </div>
-                        <div className="text-xs text-[#B2BEC3]">{position.currency}</div>
+                        <div className="text-xs text-[#B2BEC3]">{position.symbol} • {position.currency}</div>
                       </td>
                       <td className="px-4 py-3 text-right text-[#2D3436]">
                         {qty.toFixed(0)}
