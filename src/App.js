@@ -3090,66 +3090,65 @@ useEffect(() => {
             <div
               className="relative w-[220px] sm:w-[250px] md:w-[280px]"
               style={{
-                transform: 'rotateY(-12deg) rotateX(5deg)',
+                transform: 'rotateY(-18deg) rotateX(8deg)',
                 transformStyle: 'preserve-3d'
               }}
             >
-              {/* 3D Side edge - left */}
+              {/* iPhone Frame - Space Gray style */}
               <div
-                className="absolute left-0 top-4 bottom-4 w-[3px] rounded-l-lg"
+                className="relative rounded-[3rem] p-[3px]"
                 style={{
-                  background: 'linear-gradient(180deg, #6B8774 0%, #5a7563 50%, #4a6553 100%)',
-                  transform: 'translateX(-3px) rotateY(-90deg)',
-                  transformOrigin: 'right center'
-                }}
-              ></div>
-
-              {/* iPhone Frame with glossy green border */}
-              <div
-                className="relative rounded-[2.5rem] p-[6px]"
-                style={{
-                  background: 'linear-gradient(135deg, #9AB8A3 0%, #7C9885 40%, #6B8774 100%)',
+                  background: 'linear-gradient(145deg, #3a3a3c 0%, #1c1c1e 50%, #0a0a0a 100%)',
                   boxShadow: `
-                    inset 2px 2px 6px rgba(255,255,255,0.4),
-                    inset -2px -2px 4px rgba(0,0,0,0.1),
-                    -20px 25px 40px rgba(0,0,0,0.2),
-                    -8px 10px 20px rgba(0,0,0,0.15),
-                    0 5px 15px rgba(0,0,0,0.1)
+                    inset 1px 1px 2px rgba(255,255,255,0.1),
+                    inset -1px -1px 2px rgba(0,0,0,0.3),
+                    -20px 25px 50px rgba(0,0,0,0.4),
+                    -10px 15px 30px rgba(0,0,0,0.3),
+                    0 5px 20px rgba(0,0,0,0.2)
                   `,
                   transformStyle: 'preserve-3d'
                 }}
               >
+                {/* Side buttons - Volume */}
+                <div className="absolute -left-[2px] top-[25%] w-[3px] h-6 bg-[#2a2a2c] rounded-l-sm"></div>
+                <div className="absolute -left-[2px] top-[35%] w-[3px] h-6 bg-[#2a2a2c] rounded-l-sm"></div>
+                {/* Side button - Power */}
+                <div className="absolute -right-[2px] top-[30%] w-[3px] h-10 bg-[#2a2a2c] rounded-r-sm"></div>
+
                 {/* Glossy shine overlay */}
                 <div
-                  className="absolute inset-0 rounded-[2.5rem] pointer-events-none"
+                  className="absolute inset-0 rounded-[3rem] pointer-events-none z-10"
                   style={{
-                    background: 'linear-gradient(125deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 20%, rgba(255,255,255,0.05) 40%, transparent 50%)'
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 30%, transparent 50%)'
                   }}
                 ></div>
                 {/* Screen Content */}
-                <div className="bg-[#F5F6F4] rounded-[2.2rem] overflow-hidden aspect-[9/19] relative">
+                <div className="bg-[#F5F6F4] rounded-[2.8rem] overflow-hidden aspect-[9/19.5] relative">
                   {/* Glass reflection overlay */}
                   <div
-                    className="absolute inset-0 pointer-events-none z-30 rounded-[2.2rem]"
+                    className="absolute inset-0 pointer-events-none z-30 rounded-[2.8rem]"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.05) 100%)'
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)'
                     }}
                   ></div>
 
                   {/* iOS Status Bar */}
-                  <div className="px-4 pt-2 pb-1">
+                  <div className="px-5 pt-3 pb-1">
                     <div className="flex justify-between items-center">
                       {/* Time - left */}
-                      <div className="text-[#2D3436] text-[9px] font-semibold w-12">9:41</div>
+                      <div className="text-[#2D3436] text-[10px] font-semibold w-12">9:41</div>
 
-                      {/* Dynamic Island - center */}
+                      {/* Dynamic Island - center (black pill) */}
                       <div
-                        className="w-14 h-4 rounded-full flex items-center justify-center bg-[#7C9885]"
+                        className="w-20 h-[22px] rounded-full bg-black flex items-center justify-center"
                         style={{
-                          boxShadow: 'inset 1px 1px 2px rgba(255,255,255,0.2), inset -1px -1px 2px rgba(0,0,0,0.1)'
+                          boxShadow: '0 0 0 1px rgba(255,255,255,0.1)'
                         }}
                       >
-                        <div className="w-5 h-1 bg-white/20 rounded-full"></div>
+                        {/* Camera dot */}
+                        <div className="w-2 h-2 rounded-full bg-[#1a1a1a] mr-4 relative">
+                          <div className="absolute inset-[2px] rounded-full bg-[#0d47a1] opacity-60"></div>
+                        </div>
                       </div>
 
                       {/* Status icons - right */}
