@@ -3087,15 +3087,13 @@ useEffect(() => {
               <div
                 className="relative rounded-[2.5rem] p-[6px]"
                 style={{
-                  background: 'linear-gradient(145deg, #9BB3A3 0%, #7C9885 30%, #5a7a64 70%, #4a6a54 100%)',
+                  background: 'linear-gradient(160deg, #8FAF98 0%, #7C9885 50%, #6B8774 100%)',
                   boxShadow: `
-                    inset 2px 2px 6px rgba(255,255,255,0.4),
-                    inset -1px -1px 4px rgba(0,0,0,0.2),
-                    -15px 15px 30px rgba(0,0,0,0.25),
-                    0 0 40px rgba(124, 152, 133, 0.5),
-                    0 0 80px rgba(124, 152, 133, 0.4),
-                    0 0 120px rgba(124, 152, 133, 0.3),
-                    0 0 160px rgba(124, 152, 133, 0.2)
+                    inset 1px 1px 4px rgba(255,255,255,0.3),
+                    inset -1px -1px 3px rgba(0,0,0,0.15),
+                    -12px 12px 24px rgba(0,0,0,0.15),
+                    0 0 60px rgba(124, 152, 133, 0.25),
+                    0 0 100px rgba(124, 152, 133, 0.15)
                   `,
                   transformStyle: 'preserve-3d'
                 }}
@@ -3104,7 +3102,7 @@ useEffect(() => {
                 <div
                   className="absolute inset-0 rounded-[2.5rem] pointer-events-none"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 40%, transparent 60%)'
                   }}
                 ></div>
                 {/* Screen Content */}
