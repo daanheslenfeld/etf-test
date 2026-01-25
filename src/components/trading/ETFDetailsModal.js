@@ -1,310 +1,197 @@
 import React, { useState, useEffect } from 'react';
-import { X, Building2, Globe, PieChart, TrendingUp, TrendingDown, Loader2, AlertCircle, Info, DollarSign, Percent } from 'lucide-react';
-import { useTrading } from '../../context/TradingContext';
+import { X } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
-
-// Cache for holdings data
-const holdingsCache = {};
-
-// ETF metadata (static info not available from IB)
-const ETF_METADATA = {
+// Extended ETF metadata with all fields needed
+const ETF_DATA = {
   IWDA: {
     name: 'iShares Core MSCI World UCITS ETF',
     isin: 'IE00B4L5Y983',
-    provider: 'iShares (BlackRock)',
-    ter: 0.20,
-    currency: 'EUR',
-    index: 'MSCI World',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  },
-  VUSA: {
-    name: 'Vanguard S&P 500 UCITS ETF',
-    isin: 'IE00B3XXRP09',
-    provider: 'Vanguard',
-    ter: 0.07,
-    currency: 'EUR',
-    index: 'S&P 500',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
+    category: 'Aandelen Wereld',
+    ter: '0.20%',
+    ytd: '+18.5%',
+    fundSize: '65,420',
+    volatility: '14.2%',
+    holdings: '1,512',
+    distribution: 'Acc',
+    returns: { '2021': 27.5, '2022': -13.2, '2023': 19.8, '2024': 22.1 }
   },
   VWCE: {
-    name: 'Vanguard FTSE All-World UCITS ETF (Acc)',
-    isin: 'IE00BK5BQT80',
-    provider: 'Vanguard',
-    ter: 0.22,
-    currency: 'EUR',
-    index: 'FTSE All-World',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  },
-  CSPX: {
-    name: 'iShares Core S&P 500 UCITS ETF',
-    isin: 'IE00B5BMR087',
-    provider: 'iShares (BlackRock)',
-    ter: 0.07,
-    currency: 'USD',
-    index: 'S&P 500',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  },
-  IUSA: {
-    name: 'iShares S&P 500 UCITS ETF',
-    isin: 'IE0031442068',
-    provider: 'iShares (BlackRock)',
-    ter: 0.07,
-    currency: 'USD',
-    index: 'S&P 500',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  },
-  VWRL: {
     name: 'Vanguard FTSE All-World UCITS ETF',
-    isin: 'IE00B3RBWM25',
-    provider: 'Vanguard',
-    ter: 0.22,
-    currency: 'USD',
-    index: 'FTSE All-World',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  },
-  IEMM: {
-    name: 'iShares MSCI EM UCITS ETF',
-    isin: 'IE00B0M63177',
-    provider: 'iShares (BlackRock)',
-    ter: 0.18,
-    currency: 'USD',
-    index: 'MSCI Emerging Markets',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
+    isin: 'IE00BK5BQT80',
+    category: 'Aandelen Wereld',
+    ter: '0.22%',
+    ytd: '+17.8%',
+    fundSize: '28,150',
+    volatility: '14.8%',
+    holdings: '3,642',
+    distribution: 'Acc',
+    returns: { '2021': 26.8, '2022': -13.8, '2023': 18.5, '2024': 21.2 }
   },
   EMIM: {
     name: 'iShares Core MSCI EM IMI UCITS ETF',
     isin: 'IE00BKM4GZ66',
-    provider: 'iShares (BlackRock)',
-    ter: 0.18,
-    currency: 'USD',
-    index: 'MSCI Emerging Markets IMI',
-    assetClass: 'Equity',
-    domicile: 'Ireland',
-    replication: 'Physical'
-  }
-};
-
-// Demo holdings data for when API is unavailable
-const DEMO_HOLDINGS = {
-  IWDA: {
-    holdings: [
-      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 4.82 },
-      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 4.45 },
-      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 3.89 },
-      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.65 },
-      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 1.92 },
-      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.78 },
-      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.42 },
-      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.18 },
-      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.05 },
-      { name: 'UnitedHealth Group', ticker: 'UNH', sector: 'Healthcare', country: 'US', weight_percent: 0.98 },
-    ],
-    top_10_weight: 24.14,
-    total_holdings: 1512,
-    last_updated: '2026-01-24',
-    is_demo: true
-  },
-  VWCE: {
-    holdings: [
-      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 4.15 },
-      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 3.82 },
-      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 3.24 },
-      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.28 },
-      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 1.65 },
-      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.52 },
-      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.22 },
-      { name: 'Taiwan Semiconductor', ticker: 'TSM', sector: 'Technology', country: 'TW', weight_percent: 1.15 },
-      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.02 },
-      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 0.92 },
-    ],
-    top_10_weight: 20.97,
-    total_holdings: 3642,
-    last_updated: '2026-01-24',
-    is_demo: true
-  },
-  EMIM: {
-    holdings: [
-      { name: 'Taiwan Semiconductor', ticker: 'TSM', sector: 'Technology', country: 'TW', weight_percent: 7.85 },
-      { name: 'Tencent Holdings', ticker: '0700', sector: 'Communication Services', country: 'CN', weight_percent: 4.12 },
-      { name: 'Samsung Electronics', ticker: '005930', sector: 'Technology', country: 'KR', weight_percent: 3.95 },
-      { name: 'Alibaba Group', ticker: 'BABA', sector: 'Consumer Discretionary', country: 'CN', weight_percent: 2.48 },
-      { name: 'Reliance Industries', ticker: 'RELIANCE', sector: 'Energy', country: 'IN', weight_percent: 1.62 },
-      { name: 'ICICI Bank', ticker: 'ICICIBANK', sector: 'Financials', country: 'IN', weight_percent: 1.25 },
-      { name: 'Infosys Ltd.', ticker: 'INFY', sector: 'Technology', country: 'IN', weight_percent: 1.18 },
-      { name: 'China Construction Bank', ticker: '0939', sector: 'Financials', country: 'CN', weight_percent: 1.05 },
-      { name: 'Meituan', ticker: '3690', sector: 'Consumer Discretionary', country: 'CN', weight_percent: 0.98 },
-      { name: 'SK Hynix Inc.', ticker: '000660', sector: 'Technology', country: 'KR', weight_percent: 0.92 },
-    ],
-    top_10_weight: 25.40,
-    total_holdings: 3178,
-    last_updated: '2026-01-24',
-    is_demo: true
+    category: 'Aandelen Emerging Markets',
+    ter: '0.18%',
+    ytd: '+8.2%',
+    fundSize: '18,920',
+    volatility: '18.5%',
+    holdings: '3,178',
+    distribution: 'Acc',
+    returns: { '2021': 5.2, '2022': -15.4, '2023': 9.8, '2024': 12.5 }
   },
   VUAA: {
-    holdings: [
-      { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 7.12 },
-      { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 6.58 },
-      { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 5.85 },
-      { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 3.92 },
-      { name: 'Alphabet Inc. Class A', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 2.45 },
-      { name: 'Meta Platforms Inc.', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 2.38 },
-      { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.85 },
-      { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.72 },
-      { name: 'UnitedHealth Group', ticker: 'UNH', sector: 'Healthcare', country: 'US', weight_percent: 1.42 },
-      { name: 'JPMorgan Chase & Co.', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.38 },
-    ],
-    top_10_weight: 34.67,
-    total_holdings: 503,
-    last_updated: '2026-01-24',
-    is_demo: true
+    name: 'Vanguard S&P 500 UCITS ETF',
+    isin: 'IE00BFMXXD54',
+    category: 'Aandelen VS',
+    ter: '0.07%',
+    ytd: '+24.2%',
+    fundSize: '42,800',
+    volatility: '15.2%',
+    holdings: '503',
+    distribution: 'Acc',
+    returns: { '2021': 38.5, '2022': -13.0, '2023': 24.2, '2024': 28.5 }
+  },
+  SXR8: {
+    name: 'iShares Core S&P 500 UCITS ETF',
+    isin: 'IE00B5BMR087',
+    category: 'Aandelen VS',
+    ter: '0.07%',
+    ytd: '+24.1%',
+    fundSize: '78,500',
+    volatility: '15.1%',
+    holdings: '503',
+    distribution: 'Acc',
+    returns: { '2021': 38.2, '2022': -12.8, '2023': 24.0, '2024': 28.2 }
   },
   EUNH: {
-    holdings: [
-      { name: 'Germany 0% 2026', ticker: 'DE0001102578', sector: 'Government Bond', country: 'DE', weight_percent: 8.45 },
-      { name: 'France OAT 0.5% 2029', ticker: 'FR0013286192', sector: 'Government Bond', country: 'FR', weight_percent: 7.82 },
-      { name: 'Italy BTP 1.5% 2028', ticker: 'IT0005340929', sector: 'Government Bond', country: 'IT', weight_percent: 6.15 },
-      { name: 'Spain 1.45% 2027', ticker: 'ES0000012B88', sector: 'Government Bond', country: 'ES', weight_percent: 5.42 },
-      { name: 'Germany 0.25% 2029', ticker: 'DE0001102481', sector: 'Government Bond', country: 'DE', weight_percent: 4.85 },
-      { name: 'France OAT 1% 2027', ticker: 'FR0013250578', sector: 'Government Bond', country: 'FR', weight_percent: 4.28 },
-      { name: 'Netherlands 0.5% 2028', ticker: 'NL0012650469', sector: 'Government Bond', country: 'NL', weight_percent: 3.65 },
-      { name: 'Belgium 0.8% 2028', ticker: 'BE0000346552', sector: 'Government Bond', country: 'BE', weight_percent: 3.12 },
-      { name: 'Austria 0.75% 2028', ticker: 'AT0000A1XML2', sector: 'Government Bond', country: 'AT', weight_percent: 2.85 },
-      { name: 'Finland 0.5% 2029', ticker: 'FI4000369467', sector: 'Government Bond', country: 'FI', weight_percent: 2.42 },
-    ],
-    top_10_weight: 49.01,
-    total_holdings: 356,
-    last_updated: '2026-01-24',
-    is_demo: true
+    name: 'iShares Core Euro Government Bond',
+    isin: 'IE00B4WXJJ64',
+    category: 'Obligaties Euro',
+    ter: '0.07%',
+    ytd: '+2.8%',
+    fundSize: '12,450',
+    volatility: '6.2%',
+    holdings: '356',
+    distribution: 'Dist',
+    returns: { '2021': -3.5, '2022': -18.2, '2023': 6.8, '2024': 4.2 }
+  },
+  IEAC: {
+    name: 'iShares Core EUR Corporate Bond',
+    isin: 'IE00B3F81R35',
+    category: 'Obligaties Bedrijven',
+    ter: '0.20%',
+    ytd: '+4.5%',
+    fundSize: '15,280',
+    volatility: '5.8%',
+    holdings: '3,124',
+    distribution: 'Dist',
+    returns: { '2021': -1.2, '2022': -14.5, '2023': 8.2, '2024': 5.8 }
+  },
+  VAGE: {
+    name: 'Vanguard Global Aggregate Bond',
+    isin: 'IE00BG47KB92',
+    category: 'Obligaties Wereld',
+    ter: '0.10%',
+    ytd: '+3.2%',
+    fundSize: '8,920',
+    volatility: '7.5%',
+    holdings: '8,542',
+    distribution: 'Acc',
+    returns: { '2021': -1.8, '2022': -16.2, '2023': 5.5, '2024': 3.8 }
   },
   SGLD: {
-    holdings: [
-      { name: 'Physical Gold Bullion', ticker: 'XAU', sector: 'Precious Metal', country: 'Global', weight_percent: 100.00 },
-    ],
-    top_10_weight: 100.00,
-    total_holdings: 1,
-    last_updated: '2026-01-24',
-    is_demo: true
+    name: 'Invesco Physical Gold ETC',
+    isin: 'IE00B579F325',
+    category: 'Grondstoffen',
+    ter: '0.12%',
+    ytd: '+28.5%',
+    fundSize: '15,680',
+    volatility: '12.8%',
+    holdings: '1',
+    distribution: 'N/A',
+    returns: { '2021': -4.2, '2022': 0.5, '2023': 12.8, '2024': 32.5 }
+  },
+  IWDP: {
+    name: 'iShares Developed Markets Property Yield',
+    isin: 'IE00B1FZS350',
+    category: 'Vastgoed',
+    ter: '0.59%',
+    ytd: '+5.8%',
+    fundSize: '3,420',
+    volatility: '18.2%',
+    holdings: '324',
+    distribution: 'Dist',
+    returns: { '2021': 28.5, '2022': -25.2, '2023': 8.5, '2024': 6.2 }
+  },
+  XEON: {
+    name: 'Xtrackers II EUR Overnight Rate Swap',
+    isin: 'LU0290358497',
+    category: 'Geldmarkt',
+    ter: '0.10%',
+    ytd: '+3.8%',
+    fundSize: '6,850',
+    volatility: '0.2%',
+    holdings: '1',
+    distribution: 'Acc',
+    returns: { '2021': -0.5, '2022': 0.2, '2023': 3.2, '2024': 3.8 }
   }
 };
 
-// Default demo holdings for unknown ETFs
-const DEFAULT_DEMO_HOLDINGS = {
-  holdings: [
-    { name: 'Apple Inc.', ticker: 'AAPL', sector: 'Technology', country: 'US', weight_percent: 5.25 },
-    { name: 'Microsoft Corp.', ticker: 'MSFT', sector: 'Technology', country: 'US', weight_percent: 4.85 },
-    { name: 'NVIDIA Corp.', ticker: 'NVDA', sector: 'Technology', country: 'US', weight_percent: 4.12 },
-    { name: 'Amazon.com Inc.', ticker: 'AMZN', sector: 'Consumer Discretionary', country: 'US', weight_percent: 2.95 },
-    { name: 'Alphabet Inc.', ticker: 'GOOGL', sector: 'Communication Services', country: 'US', weight_percent: 2.15 },
-    { name: 'Meta Platforms', ticker: 'META', sector: 'Communication Services', country: 'US', weight_percent: 1.85 },
-    { name: 'Tesla Inc.', ticker: 'TSLA', sector: 'Consumer Discretionary', country: 'US', weight_percent: 1.52 },
-    { name: 'Berkshire Hathaway', ticker: 'BRK.B', sector: 'Financials', country: 'US', weight_percent: 1.28 },
-    { name: 'JPMorgan Chase', ticker: 'JPM', sector: 'Financials', country: 'US', weight_percent: 1.15 },
-    { name: 'Visa Inc.', ticker: 'V', sector: 'Financials', country: 'US', weight_percent: 1.02 },
+// Demo holdings data
+const TOP_HOLDINGS = {
+  IWDA: [
+    { name: 'Apple Inc.', weight: '4.8%' },
+    { name: 'Microsoft Corp.', weight: '4.5%' },
+    { name: 'NVIDIA Corp.', weight: '3.9%' },
+    { name: 'Amazon.com Inc.', weight: '2.7%' },
+    { name: 'Alphabet Inc.', weight: '1.9%' },
   ],
-  top_10_weight: 26.14,
-  total_holdings: 1000,
-  last_updated: '2026-01-24',
-  is_demo: true
+  VWCE: [
+    { name: 'Apple Inc.', weight: '4.2%' },
+    { name: 'Microsoft Corp.', weight: '3.8%' },
+    { name: 'NVIDIA Corp.', weight: '3.2%' },
+    { name: 'Amazon.com Inc.', weight: '2.3%' },
+    { name: 'Alphabet Inc.', weight: '1.7%' },
+  ],
+  EMIM: [
+    { name: 'Taiwan Semiconductor', weight: '7.9%' },
+    { name: 'Tencent Holdings', weight: '4.1%' },
+    { name: 'Samsung Electronics', weight: '4.0%' },
+    { name: 'Alibaba Group', weight: '2.5%' },
+    { name: 'Reliance Industries', weight: '1.6%' },
+  ],
+  VUAA: [
+    { name: 'Apple Inc.', weight: '7.1%' },
+    { name: 'Microsoft Corp.', weight: '6.6%' },
+    { name: 'NVIDIA Corp.', weight: '5.9%' },
+    { name: 'Amazon.com Inc.', weight: '3.9%' },
+    { name: 'Alphabet Inc.', weight: '2.5%' },
+  ],
+  DEFAULT: [
+    { name: 'Apple Inc.', weight: '5.2%' },
+    { name: 'Microsoft Corp.', weight: '4.8%' },
+    { name: 'NVIDIA Corp.', weight: '4.1%' },
+    { name: 'Amazon.com Inc.', weight: '3.0%' },
+    { name: 'Alphabet Inc.', weight: '2.2%' },
+  ]
 };
 
-// Sector colors - Premium banking palette
-const SECTOR_COLORS = {
-  'Technology': 'bg-[#6B7B8A]',
-  'Consumer Discretionary': 'bg-[#8B7B9A]',
-  'Communication Services': 'bg-[#9A7B8B]',
-  'Financials': 'bg-[#7C9885]',
-  'Healthcare': 'bg-[#C0736D]',
-  'Energy': 'bg-[#C9A962]',
-  'Industrials': 'bg-[#B8956B]',
-  'Materials': 'bg-[#7B9A8B]',
-  'Utilities': 'bg-[#7B8A9A]',
-  'Real Estate': 'bg-[#8A7B9A]',
-  'Consumer Staples': 'bg-[#8B9A7B]',
-  'Government Bond': 'bg-[#6B8A9A]',
-  'Precious Metal': 'bg-[#C9A962]',
+// Default ETF data for unknown symbols
+const DEFAULT_ETF = {
+  name: 'ETF',
+  isin: '-',
+  category: 'Aandelen',
+  ter: '0.20%',
+  ytd: '+10.0%',
+  fundSize: '10,000',
+  volatility: '15.0%',
+  holdings: '500',
+  distribution: 'Acc',
+  returns: { '2021': 15.0, '2022': -10.0, '2023': 12.0, '2024': 15.0 }
 };
-
-// Loading skeleton
-function LoadingSkeleton() {
-  return (
-    <div className="animate-pulse space-y-3">
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="flex items-center gap-4 p-2 bg-[#F5F6F4] rounded">
-          <div className="w-6 h-6 bg-[#E8E8E6] rounded" />
-          <div className="flex-1">
-            <div className="h-4 bg-[#E8E8E6] rounded w-3/4 mb-1" />
-            <div className="h-3 bg-[#E8E8E6] rounded w-1/2" />
-          </div>
-          <div className="w-16 h-4 bg-[#E8E8E6] rounded" />
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
-  const { marketData } = useTrading();
-  const [holdings, setHoldings] = useState(null);
-  const [loadingHoldings, setLoadingHoldings] = useState(false);
-  const [error, setError] = useState(null);
-
-  const metadata = ETF_METADATA[symbol] || null;
-  const liveMarketData = marketData?.[symbol] || null;
-
-  // Fetch holdings data (with demo fallback)
-  useEffect(() => {
-    if (!isOpen || !symbol) return;
-
-    if (holdingsCache[symbol]) {
-      setHoldings(holdingsCache[symbol]);
-      return;
-    }
-
-    const fetchHoldings = async () => {
-      setLoadingHoldings(true);
-      setError(null);
-
-      try {
-        const res = await fetch(`${TRADING_API_URL}/etfs/${symbol}/holdings`);
-        const data = await res.json();
-
-        if (data.available && data.holdings?.length > 0) {
-          holdingsCache[symbol] = data;
-          setHoldings(data);
-        } else {
-          // Use demo data as fallback
-          const demoData = DEMO_HOLDINGS[symbol] || DEFAULT_DEMO_HOLDINGS;
-          holdingsCache[symbol] = demoData;
-          setHoldings(demoData);
-        }
-      } catch (err) {
-        // Use demo data on error
-        const demoData = DEMO_HOLDINGS[symbol] || DEFAULT_DEMO_HOLDINGS;
-        holdingsCache[symbol] = demoData;
-        setHoldings(demoData);
-      } finally {
-        setLoadingHoldings(false);
-      }
-    };
-
-    fetchHoldings();
-  }, [isOpen, symbol]);
-
   // Close on escape key and prevent body scroll
   useEffect(() => {
     const handleEscape = (e) => {
@@ -312,7 +199,6 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
     };
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Prevent body scroll on mobile
       document.body.style.overflow = 'hidden';
       return () => {
         document.removeEventListener('keydown', handleEscape);
@@ -321,229 +207,114 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
     }
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !symbol) return null;
 
-  const formatCurrency = (value, currency = 'EUR') => {
-    if (!value && value !== 0) return '-';
-    return new Intl.NumberFormat('nl-NL', { style: 'currency', currency }).format(value);
-  };
+  const etf = ETF_DATA[symbol] || { ...DEFAULT_ETF, name: symbol };
+  const holdings = TOP_HOLDINGS[symbol] || TOP_HOLDINGS.DEFAULT;
 
-  const spread = liveMarketData?.ask && liveMarketData?.bid
-    ? (liveMarketData.ask - liveMarketData.bid).toFixed(3)
-    : null;
-
-  const getSectorColor = (sector) => SECTOR_COLORS[sector] || 'bg-[#B2BEC3]';
+  const chartData = Object.entries(etf.returns).map(([year, value]) => ({
+    year,
+    return: value
+  }));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
-      {/* Backdrop - click to close */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-[#2D3436]/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal - Full screen on mobile, centered on desktop */}
-      <div className="relative bg-[#FEFEFE] border-t sm:border border-[#E8E8E6] rounded-t-2xl sm:rounded-xl w-full sm:max-w-3xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-[0_-4px_32px_rgba(45,52,54,0.12)] sm:shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
-        {/* Mobile drag handle */}
-        <div className="sm:hidden flex justify-center pt-2 pb-1">
-          <div className="w-10 h-1 bg-[#E8E8E6] rounded-full" />
-        </div>
-
+      {/* Modal */}
+      <div className="relative bg-[#FEFEFE] rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl border border-[#E8E8E6]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#E8E8E6]">
-          <div className="min-w-0 flex-1 pr-2">
-            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436]">
-              {symbol}
-            </h2>
-            {metadata && (
-              <p className="text-sm text-[#636E72] mt-0.5 truncate">{metadata.name}</p>
-            )}
-          </div>
+        <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] px-4 py-3 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-[#2D3436]">{etf.name}</h3>
           <button
             onClick={onClose}
-            className="p-2 text-[#636E72] hover:text-[#2D3436] hover:bg-[#F5F6F4] rounded-lg transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="text-2xl text-[#636E72] hover:text-[#2D3436] transition-colors w-8 h-8 flex items-center justify-center"
           >
-            <X className="w-6 h-6" />
+            ×
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-140px)]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Left Column */}
-            <div className="space-y-4">
-              {/* General Info */}
-              <div className="bg-[#F5F6F4] rounded-lg p-4">
-                <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
-                  <Info className="w-4 h-4" />
-                  Algemene Informatie
-                </h3>
-                {metadata ? (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Symbol</span>
-                      <span className="text-[#2D3436] font-mono">{symbol}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">ISIN</span>
-                      <span className="text-[#2D3436] font-mono">{metadata.isin}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Provider</span>
-                      <span className="text-[#2D3436]">{metadata.provider}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Index</span>
-                      <span className="text-[#2D3436]">{metadata.index}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">TER</span>
-                      <span className="text-[#7C9885] font-medium">{metadata.ter.toFixed(2)}%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Currency</span>
-                      <span className="text-[#2D3436]">{metadata.currency}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Domicile</span>
-                      <span className="text-[#2D3436]">{metadata.domicile}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Replication</span>
-                      <span className="text-[#2D3436]">{metadata.replication}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-[#B2BEC3] text-sm">Gegevens niet beschikbaar</p>
-                )}
-              </div>
-
-              {/* Market Info */}
-              <div className="bg-[#F5F6F4] rounded-lg p-4">
-                <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  Marktgegevens
-                </h3>
-                {liveMarketData ? (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Laatste Prijs</span>
-                      <span className="text-[#2D3436] font-medium">
-                        {formatCurrency(liveMarketData.last, metadata?.currency)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Bid</span>
-                      <span className="text-[#7C9885]">
-                        {formatCurrency(liveMarketData.bid, metadata?.currency)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#636E72]">Ask</span>
-                      <span className="text-[#C0736D]">
-                        {formatCurrency(liveMarketData.ask, metadata?.currency)}
-                      </span>
-                    </div>
-                    {spread && (
-                      <div className="flex justify-between">
-                        <span className="text-[#636E72]">Spread</span>
-                        <span className="text-[#C9A962]">{spread}</span>
-                      </div>
-                    )}
-                    {liveMarketData.volume && (
-                      <div className="flex justify-between">
-                        <span className="text-[#636E72]">Volume</span>
-                        <span className="text-[#2D3436]">{liveMarketData.volume.toLocaleString()}</span>
-                      </div>
-                    )}
-                    {liveMarketData.delayed && (
-                      <div className="text-xs text-[#C9A962] mt-2">* Delayed data</div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-[#B2BEC3] text-sm">Marktgegevens niet beschikbaar</p>
-                )}
-              </div>
-
-              {/* Asset Allocation */}
-              {metadata && (
-                <div className="bg-[#F5F6F4] rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
-                    <PieChart className="w-4 h-4" />
-                    Asset Class
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 flex-1 bg-[#7C9885] rounded-full" />
-                    <span className="text-[#2D3436] text-sm">{metadata.assetClass} 100%</span>
-                  </div>
+        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(90vh-60px)]">
+          {/* Two-column info grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {/* Basis Info */}
+            <div>
+              <div className="font-semibold mb-2 text-[#2D3436]">Basis Info</div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">ISIN:</span>
+                  <span className="text-[#636E72]">{etf.isin}</span>
                 </div>
-              )}
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">Categorie:</span>
+                  <span className="text-[#636E72]">{etf.category}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">TER:</span>
+                  <span className="text-[#7C9885] font-medium">{etf.ter}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">YTD:</span>
+                  <span className={etf.ytd.startsWith('+') ? 'text-green-500' : 'text-red-500'}>{etf.ytd}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Holdings - Shows first on mobile (order-first), second on desktop */}
-            <div className="bg-[#F5F6F4] rounded-lg p-4 order-first sm:order-none">
-              <h3 className="text-sm font-medium text-[#636E72] mb-3 flex items-center gap-2">
-                <Percent className="w-4 h-4" />
-                Top 10 Holdings
-                {holdings && (
-                  <span className="ml-auto text-[#7C9885] text-xs sm:text-sm">{holdings.top_10_weight}%</span>
-                )}
-              </h3>
-
-              {loadingHoldings && <LoadingSkeleton />}
-
-              {error && (
-                <div className="flex flex-col items-center py-8 text-[#B2BEC3]">
-                  <AlertCircle className="w-8 h-8 mb-2" />
-                  <p>{error}</p>
+            {/* Details */}
+            <div>
+              <div className="font-semibold mb-2 text-[#2D3436]">Details</div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">Fund Size:</span>
+                  <span className="text-[#636E72]">€{etf.fundSize}M</span>
                 </div>
-              )}
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">Volatiliteit 1j:</span>
+                  <span className="text-[#636E72]">{etf.volatility}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">Holdings:</span>
+                  <span className="text-[#636E72]">{etf.holdings}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#636E72]">Distributie:</span>
+                  <span className="text-[#636E72]">{etf.distribution}</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-
-              {!loadingHoldings && holdings && (
-                <div className="space-y-1 sm:space-y-2">
-                  {holdings.holdings.map((holding, idx) => (
-                    <div key={idx} className="group">
-                      <div className="flex items-center gap-2 p-2 rounded active:bg-[#ECEEED] sm:hover:bg-[#ECEEED] transition-colors">
-                        <span className="w-5 h-5 bg-[#E8E8E6] rounded flex items-center justify-center text-xs text-[#636E72] font-mono flex-shrink-0">
-                          {idx + 1}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[#2D3436] text-sm truncate">
-                            {holding.name}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-[#B2BEC3]">
-                            <span className="truncate">{holding.sector}</span>
-                            <span className="hidden sm:inline">• {holding.country}</span>
-                          </div>
-                        </div>
-                        <span className="text-[#2D3436] font-medium text-sm flex-shrink-0">
-                          {holding.weight_percent.toFixed(1)}%
-                        </span>
-                      </div>
-                      {/* Weight bar - hidden on mobile for cleaner look */}
-                      <div className="hidden sm:block h-1 mx-2 bg-[#E8E8E6] rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${getSectorColor(holding.sector)} transition-all`}
-                          style={{ width: `${Math.min(holding.weight_percent * 10, 100)}%` }}
-                        />
-                      </div>
-                    </div>
+          {/* Historical Returns Chart */}
+          <div>
+            <div className="font-semibold mb-2 text-sm text-[#2D3436]">Historisch Rendement</div>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={chartData}>
+                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fill: '#636E72', fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#636E72', fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
+                <Bar dataKey="return" radius={[4, 4, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.return >= 0 ? '#7C9885' : '#C0736D'} />
                   ))}
-                </div>
-              )}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
-              {holdings && (
-                <div className="mt-3 pt-3 border-t border-[#E8E8E6] text-xs text-[#B2BEC3]">
-                  <div className="flex justify-between items-center">
-                    <span>Totaal: {holdings.total_holdings?.toLocaleString()} posities</span>
-                    <span>{holdings.last_updated}</span>
-                  </div>
-                  {holdings.is_demo && (
-                    <div className="mt-1 text-[#C9A962]">* Indicatieve data</div>
-                  )}
+          {/* Top Holdings */}
+          <div>
+            <div className="font-semibold mb-3 text-sm text-[#2D3436]">Top 5 Posities</div>
+            <div className="space-y-2">
+              {holdings.map((holding, idx) => (
+                <div key={idx} className="flex justify-between text-sm py-1.5 border-b border-[#E8E8E6] last:border-b-0">
+                  <span className="text-[#2D3436]">{holding.name}</span>
+                  <span className="text-[#7C9885] font-medium">{holding.weight}</span>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
