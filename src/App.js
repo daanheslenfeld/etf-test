@@ -3057,8 +3057,8 @@ useEffect(() => {
       {/* Hero Section */}
       <section id="hero" className="min-h-screen flex items-center pt-8 sm:pt-0">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12 sm:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12 sm:pb-16 overflow-visible">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start overflow-visible">
           <div className="text-[#2D3436]">
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight">
               {t.hero.title}
@@ -3074,12 +3074,16 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="relative flex justify-center items-center" style={{ perspective: '1000px' }}>
-            {/* Soft glow background - fades out smoothly */}
+          <div className="relative flex justify-center items-center overflow-visible" style={{ perspective: '1000px' }}>
+            {/* Soft glow background - extends beyond container and fades smoothly */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="absolute pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse 60% 70% at 50% 45%, rgba(124, 152, 133, 0.3) 0%, rgba(124, 152, 133, 0.15) 30%, rgba(124, 152, 133, 0.05) 50%, transparent 70%)',
+                width: '200%',
+                height: '200%',
+                top: '-50%',
+                left: '-50%',
+                background: 'radial-gradient(ellipse 40% 45% at 50% 50%, rgba(124, 152, 133, 0.35) 0%, rgba(124, 152, 133, 0.2) 25%, rgba(124, 152, 133, 0.08) 45%, rgba(124, 152, 133, 0.02) 60%, transparent 75%)',
               }}
             ></div>
             {/* iPhone Mockup - 3D */}
