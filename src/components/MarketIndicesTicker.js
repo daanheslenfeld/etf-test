@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TrendingUp, TrendingDown, RefreshCw, Globe } from 'lucide-react';
+import { isDemoMode, demoApi } from '../demo';
 
 const TRADING_API_URL = 'http://localhost:8002';
+const IS_DEMO = isDemoMode();
 
 const formatPrice = (price, currency) => {
   if (!price || price === 0) return '-';
@@ -40,6 +42,16 @@ export default function MarketIndicesTicker() {
 
   const fetchIndices = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getIndices();
+        setIndices(data.indices || []);
+        setLastUpdate(new Date());
+        setError(null);
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(`${TRADING_API_URL}/trading/indices`);
 
       if (!response.ok) {

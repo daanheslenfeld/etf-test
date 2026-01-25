@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
+import { isDemoMode, demoApi } from '../demo';
 
 const TRADING_API_URL = 'http://localhost:8002';
+
+// Check demo mode once at load time
+const IS_DEMO = isDemoMode();
+console.log('[TradingContext] Demo mode:', IS_DEMO);
 
 // Cache keys for localStorage
 const CACHE_KEYS = {
@@ -219,6 +224,20 @@ export function TradingProvider({ user, children }) {
   // API: Check connection status
   const checkConnection = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const health = await demoApi.getHealth();
+        dispatch({
+          type: ACTIONS.SET_CONNECTION,
+          payload: { connected: true, accountId: 'DEMO123456', tradingMode: 'DEMO' }
+        });
+        dispatch({
+          type: ACTIONS.SET_TRADING_MODE,
+          payload: { mode: 'DEMO', isLive: false }
+        });
+        return true;
+      }
+
       const healthRes = await fetch(`${TRADING_API_URL}/health`);
       if (!healthRes.ok) throw new Error('API not available');
 
@@ -256,6 +275,25 @@ export function TradingProvider({ user, children }) {
   // API: Fetch user's safety limits
   const fetchSafetyLimits = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getSafetyLimits();
+        dispatch({
+          type: ACTIONS.SET_SAFETY_LIMITS,
+          payload: {
+            maxOrderSize: data.max_order_size,
+            maxOrderValue: data.max_order_value,
+            maxDailyOrders: data.max_orders,
+            maxDailyExposure: data.max_exposure,
+            ordersRemaining: data.orders_remaining,
+            exposureRemaining: data.exposure_remaining,
+            orderCount: data.order_count,
+            totalExposure: data.total_exposure,
+          }
+        });
+        return;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/safety/limits`, {
         headers: getAuthHeaders()
       });
@@ -284,6 +322,23 @@ export function TradingProvider({ user, children }) {
   // API: Pre-check order safety
   const checkOrderSafety = useCallback(async (order) => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.checkOrderSafety(order);
+        return {
+          allowed: data.allowed,
+          reason: data.reason,
+          requiresConfirmation: data.requires_confirmation,
+          confirmationType: data.confirmation_type,
+          warnings: data.warnings || ['Demo mode - orders are simulated'],
+          tradingMode: 'DEMO',
+          isLive: false,
+          availableFunds: data.available_funds,
+          requiredFunds: data.required_funds,
+          estimatedPrice: data.estimated_price
+        };
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/safety/check`, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -317,6 +372,16 @@ export function TradingProvider({ user, children }) {
   // API: Check if user has linked broker account
   const checkBrokerLink = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getAccountInfo();
+        dispatch({
+          type: ACTIONS.SET_BROKER_LINKED,
+          payload: { linked: true, accountId: 'DEMO123456' }
+        });
+        return true;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/account/info`, {
         headers: getAuthHeaders()
       });
@@ -342,6 +407,16 @@ export function TradingProvider({ user, children }) {
   // API: Link broker account
   const linkBrokerAccount = useCallback(async (accountId = null) => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.linkBroker();
+        dispatch({
+          type: ACTIONS.SET_BROKER_LINKED,
+          payload: { linked: true, accountId: 'DEMO123456' }
+        });
+        return { success: true, accountId: 'DEMO123456', message: 'Demo account connected' };
+      }
+
       const body = accountId ? { account_id: accountId } : null;
       const res = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
         method: 'POST',
@@ -370,6 +445,12 @@ export function TradingProvider({ user, children }) {
   // API: Get available accounts
   const getAvailableAccounts = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getAvailableAccounts();
+        return data.accounts || ['DEMO123456'];
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/account/available`, {
         headers: getAuthHeaders()
       });
@@ -388,6 +469,13 @@ export function TradingProvider({ user, children }) {
   // API: Fetch ETFs
   const fetchETFs = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getETFs();
+        dispatch({ type: ACTIONS.SET_ETFS, payload: data.etfs || [] });
+        return;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/etfs`, {
         headers: getAuthHeaders()
       });
@@ -403,6 +491,23 @@ export function TradingProvider({ user, children }) {
   // API: Fetch tradability data (which ETFs can be traded via LYNX)
   const fetchTradability = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getTradability();
+        const etfsByIsin = {};
+        (data.tradable_etfs || []).forEach(etf => {
+          etfsByIsin[etf.isin] = etf;
+        });
+        const stats = {
+          totalChecked: data.metadata?.total_checked || 0,
+          totalTradable: data.metadata?.total_tradable || 0,
+          totalBlocked: data.metadata?.total_blocked || 0,
+          checkedAt: data.metadata?.checked_at || null,
+        };
+        dispatch({ type: ACTIONS.SET_TRADABILITY, payload: { etfs: etfsByIsin, stats } });
+        return;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/tradability`, {
         headers: getAuthHeaders()
       });
@@ -450,6 +555,22 @@ export function TradingProvider({ user, children }) {
   // API: Fetch account summary
   const fetchAccountSummary = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getAccountSummary();
+        const summary = {
+          cashBalance: data.cash_balance || 0,
+          availableFunds: data.available_funds || 0,
+          portfolioValue: data.portfolio_value || 0,
+          totalValue: data.total_value || 0,
+          unrealizedPnL: data.unrealized_pnl || 0,
+          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
+          buyingPower: data.buying_power || 0,
+        };
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
+        return summary;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/account/summary`, {
         headers: getAuthHeaders()
       });
@@ -477,6 +598,30 @@ export function TradingProvider({ user, children }) {
   // API: Fetch positions with caching
   const fetchPositions = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const [posData, summaryData] = await Promise.all([
+          demoApi.getPositions(),
+          demoApi.getAccountSummary()
+        ]);
+
+        dispatch({ type: ACTIONS.SET_POSITIONS, payload: posData.positions || [] });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
+        dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: Date.now() });
+
+        const summary = {
+          cashBalance: summaryData.cash_balance || 0,
+          availableFunds: summaryData.available_funds || 0,
+          portfolioValue: summaryData.portfolio_value || 0,
+          totalValue: summaryData.total_value || 0,
+          unrealizedPnL: summaryData.unrealized_pnl || 0,
+          unrealizedPnLPercent: summaryData.unrealized_pnl_percent || 0,
+          buyingPower: summaryData.buying_power || 0,
+        };
+        dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
+        return;
+      }
+
       // Fetch positions and account summary in parallel
       const [posRes, summaryRes] = await Promise.all([
         fetch(`${TRADING_API_URL}/trading/positions`, { headers: getAuthHeaders() }),
@@ -527,6 +672,13 @@ export function TradingProvider({ user, children }) {
   // API: Fetch orders
   const fetchOrders = useCallback(async () => {
     try {
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getOrders();
+        dispatch({ type: ACTIONS.SET_ORDERS, payload: data.orders || [] });
+        return;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/orders`, {
         headers: getAuthHeaders()
       });
@@ -542,6 +694,12 @@ export function TradingProvider({ user, children }) {
   // API: Subscribe to all market data
   const subscribeToMarketData = useCallback(async () => {
     try {
+      // No-op in demo mode
+      if (IS_DEMO) {
+        await demoApi.subscribeMarketData();
+        return;
+      }
+
       await fetch(`${TRADING_API_URL}/trading/marketdata/subscribe/all`, {
         method: 'POST',
         headers: getAuthHeaders()
@@ -555,6 +713,32 @@ export function TradingProvider({ user, children }) {
   const fetchMarketData = useCallback(async () => {
     try {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: true });
+
+      // Use demo API in demo mode
+      if (IS_DEMO) {
+        const data = await demoApi.getMarketData();
+        const marketDataBySymbol = {};
+        (data.data || []).forEach(item => {
+          marketDataBySymbol[item.symbol] = {
+            conid: item.conid,
+            bid: item.bid,
+            ask: item.ask,
+            last: item.last,
+            bidSize: item.bidSize,
+            askSize: item.askSize,
+            spread: item.spread,
+            midPrice: item.midPrice,
+            delayed: item.delayed,
+            timestamp: item.timestamp,
+          };
+        });
+        dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: marketDataBySymbol });
+        dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
+        dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: Date.now() });
+        dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: false });
+        return;
+      }
+
       const res = await fetch(`${TRADING_API_URL}/trading/marketdata`, {
         headers: getAuthHeaders()
       });
@@ -635,6 +819,20 @@ export function TradingProvider({ user, children }) {
   // API: Place single order (with optional confirmation)
   const placeOrder = useCallback(async (order, confirmed = false) => {
     try {
+      // Use demo API in demo mode - NEVER execute real orders
+      if (IS_DEMO) {
+        const data = await demoApi.placeOrder(order);
+        return {
+          success: true,
+          orderId: data.order_id,
+          message: 'Demo: Order gesimuleerd (geen echte uitvoering)',
+          details: data.details,
+          isLive: false,
+          tradingMode: 'DEMO',
+          isDemo: true,
+        };
+      }
+
       const url = confirmed
         ? `${TRADING_API_URL}/trading/order?confirmed=true`
         : `${TRADING_API_URL}/trading/order`;
@@ -897,6 +1095,7 @@ export function TradingProvider({ user, children }) {
 
   const value = {
     ...state,
+    isDemo: IS_DEMO,
     checkConnection,
     checkBrokerLink,
     linkBrokerAccount,
