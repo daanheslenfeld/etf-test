@@ -49,9 +49,10 @@ const initialState = {
   isLive: false,  // Critical: true means real money
   brokerLinked: false,  // Whether user has a linked broker account
 
-  // Trading access (owner lock)
+  // Trading access (owner lock + broker link)
   canTrade: true,  // Default true, will be set to false for non-owners
   tradingAccessMessage: null,  // Message to show non-owners
+  needsBrokerLink: false,  // True if user needs to connect LYNX account
 
   // Safety limits
   safetyLimits: {
@@ -210,6 +211,7 @@ function tradingReducer(state, action) {
         ...state,
         canTrade: action.payload.canTrade,
         tradingAccessMessage: action.payload.message,
+        needsBrokerLink: action.payload.needsBrokerLink || false,
       };
     default:
       return state;
@@ -330,14 +332,14 @@ export function TradingProvider({ user, children }) {
     }
   }, [getAuthHeaders]);
 
-  // API: Check trading access (owner lock)
+  // API: Check trading access (owner lock + broker link)
   const checkTradingAccess = useCallback(async () => {
     try {
       // In demo mode, always allow trading
       if (IS_DEMO) {
         dispatch({
           type: ACTIONS.SET_TRADING_ACCESS,
-          payload: { canTrade: true, message: null }
+          payload: { canTrade: true, message: null, needsBrokerLink: false }
         });
         return { canTrade: true };
       }
@@ -345,21 +347,37 @@ export function TradingProvider({ user, children }) {
       const res = await fetch(`${TRADING_API_URL}/trading/access`, {
         headers: getAuthHeaders()
       });
+
       if (res.ok) {
         const data = await res.json();
         dispatch({
           type: ACTIONS.SET_TRADING_ACCESS,
           payload: {
             canTrade: data.can_trade,
-            message: data.can_trade ? null : data.message
+            message: data.can_trade ? null : data.message,
+            needsBrokerLink: false
           }
         });
         return { canTrade: data.can_trade, message: data.message };
-      } else {
-        // If endpoint fails, assume no trading access for safety
+      } else if (res.status === 403) {
+        // Check if it's a broker link issue
+        const errorData = await res.json();
+        const needsBrokerLink = errorData.detail?.includes('Connect your LYNX account') ||
+                                errorData.detail?.includes('broker account linked');
         dispatch({
           type: ACTIONS.SET_TRADING_ACCESS,
-          payload: { canTrade: false, message: 'Trading disabled. Demo mode only.' }
+          payload: {
+            canTrade: false,
+            message: errorData.detail || 'Trading disabled.',
+            needsBrokerLink
+          }
+        });
+        return { canTrade: false, message: errorData.detail, needsBrokerLink };
+      } else {
+        // Other errors - assume no trading access for safety
+        dispatch({
+          type: ACTIONS.SET_TRADING_ACCESS,
+          payload: { canTrade: false, message: 'Trading disabled. Demo mode only.', needsBrokerLink: false }
         });
         return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
       }
@@ -368,7 +386,7 @@ export function TradingProvider({ user, children }) {
       // On error, default to no trading for safety
       dispatch({
         type: ACTIONS.SET_TRADING_ACCESS,
-        payload: { canTrade: false, message: 'Trading disabled. Demo mode only.' }
+        payload: { canTrade: false, message: 'Trading disabled. Demo mode only.', needsBrokerLink: false }
       });
       return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
     }

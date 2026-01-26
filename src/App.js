@@ -10755,7 +10755,7 @@ useEffect(() => {
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
-      {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
+      {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}

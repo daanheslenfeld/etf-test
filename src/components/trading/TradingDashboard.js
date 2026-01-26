@@ -22,7 +22,7 @@ const formatTimeAgo = (timestamp) => {
   return `${Math.floor(hours / 24)}d ago`;
 };
 
-function TradingDashboardContent({ onBack }) {
+function TradingDashboardContent({ onBack, onNavigateToBroker }) {
   const {
     connected,
     accountId,
@@ -49,6 +49,7 @@ function TradingDashboardContent({ onBack }) {
     fetchMarketData,
     canTrade,
     tradingAccessMessage,
+    needsBrokerLink,
   } = useTrading();
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -319,11 +320,21 @@ function TradingDashboardContent({ onBack }) {
 
         {/* Demo Mode Banner - Trading Disabled */}
         {!canTrade && (
-          <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-xl p-4 mb-6 flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-[#C9A962] flex-shrink-0" />
-            <p className="text-[#C9A962] font-medium">
-              {tradingAccessMessage || 'Trading is uitgeschakeld. Alleen demo modus.'}
-            </p>
+          <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-xl p-4 mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-[#C9A962] flex-shrink-0" />
+              <p className="text-[#C9A962] font-medium">
+                {tradingAccessMessage || 'Trading is uitgeschakeld. Alleen demo modus.'}
+              </p>
+            </div>
+            {needsBrokerLink && onNavigateToBroker && (
+              <button
+                onClick={onNavigateToBroker}
+                className="px-4 py-2 bg-[#C9A962] text-white font-medium rounded-lg hover:bg-[#B89952] transition-colors whitespace-nowrap"
+              >
+                LYNX Koppelen
+              </button>
+            )}
           </div>
         )}
 
@@ -469,10 +480,10 @@ function TradingDashboardContent({ onBack }) {
 }
 
 // Wrapper with Provider
-export default function TradingDashboard({ user, onBack }) {
+export default function TradingDashboard({ user, onBack, onNavigateToBroker }) {
   return (
     <TradingProvider user={user}>
-      <TradingDashboardContent onBack={onBack} />
+      <TradingDashboardContent onBack={onBack} onNavigateToBroker={onNavigateToBroker} />
     </TradingProvider>
   );
 }

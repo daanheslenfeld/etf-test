@@ -136,10 +136,10 @@ async def get_current_user(
             detail="Authentication failed: email mismatch."
         )
 
-    # Get THIS user's broker account if linked
-    broker_account = await db.get_broker_account(customer_id)
-    broker_account_id = broker_account.get("id") if broker_account else None
-    ib_account_id = broker_account.get("account_id") if broker_account else None
+    # Get THIS user's broker link from broker_links table (new system)
+    broker_link = await db.get_active_broker_link(customer_id)
+    broker_account_id = broker_link.get("id") if broker_link else None
+    ib_account_id = broker_link.get("ib_account_id") if broker_link else None
 
     trading_status = customer.get("trading_status", "pending")
 
@@ -213,11 +213,32 @@ def get_client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-async def require_trading_owner(
+async def require_broker_linked_for_trading(
     user: UserContext = Depends(get_current_user)
 ) -> UserContext:
     """
+    Require user to have a linked broker account (status=linked) to trade.
+
+    Returns 403 with specific message to connect LYNX account.
+    """
+    if not user.ib_account_id:
+        logger.warning(f"Trading blocked - no broker linked: {user.email}")
+        raise HTTPException(
+            status_code=403,
+            detail="Connect your LYNX account to trade."
+        )
+    return user
+
+
+async def require_trading_owner(
+    user: UserContext = Depends(require_broker_linked_for_trading)
+) -> UserContext:
+    """
     HARD SAFETY LOCK: Only the owner email can place trades.
+
+    Checks:
+    1. User must have a linked broker account (via require_broker_linked_for_trading)
+    2. User must be the configured trading owner
 
     All other users get 403 Forbidden. This prevents unauthorized trading
     through the shared LYNX account.
