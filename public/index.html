@@ -45,16 +45,19 @@
 
     <!-- iOS PWA Input Fix -->
     <style>
-      /* iOS Safe Area Support - Green bar for standalone mode */
+      /* iOS Safe Area Support */
       html, body {
         margin: 0;
         padding: 0;
+        background-color: #F5F6F4;
       }
 
       /* Ensure root container accounts for safe area */
       #root {
         position: relative;
         min-height: 100vh;
+        min-height: 100dvh; /* Dynamic viewport height for mobile */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
       }
 
       /* iOS Capacitor Input Fix - Ensure inputs are always interactive */
