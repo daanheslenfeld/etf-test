@@ -51,26 +51,10 @@
         padding: 0;
       }
 
-      /* Subtle accent bar at the very top in standalone mode */
-      body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: constant(safe-area-inset-top); /* iOS 11.0 */
-        height: env(safe-area-inset-top); /* iOS 11.2+ */
-        background-color: #7C9885;
-        z-index: 9999;
-        pointer-events: none;
-      }
-
       /* Ensure root container accounts for safe area */
       #root {
         position: relative;
         min-height: 100vh;
-        padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-        padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
       }
 
       /* iOS Capacitor Input Fix - Ensure inputs are always interactive */

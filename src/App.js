@@ -2877,6 +2877,7 @@ useEffect(() => {
           background: 'rgba(254, 254, 254, 0.92)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
