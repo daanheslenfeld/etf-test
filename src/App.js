@@ -3210,27 +3210,27 @@ useEffect(() => {
                         <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
                           <defs>
                             <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#7C9885" stopOpacity="0.3" />
-                              <stop offset="100%" stopColor="#7C9885" stopOpacity="0" />
+                              <stop offset="0%" stopColor="#7C9885" stopOpacity="0.35" />
+                              <stop offset="100%" stopColor="#7C9885" stopOpacity="0.02" />
                             </linearGradient>
                           </defs>
                           {/* Gradient fill under line */}
                           <path
-                            d="M 0,35 C 8,34 12,32 20,30 C 28,28 32,29 40,26 C 48,23 52,24 60,20 C 68,16 72,17 80,12 C 88,7 92,8 100,5 L 100,40 L 0,40 Z"
+                            d="M 0,32 L 5,30 L 10,33 L 15,29 L 20,32 L 25,26 L 30,29 L 35,24 L 40,27 L 45,22 L 50,25 L 55,19 L 60,22 L 65,16 L 70,19 L 75,13 L 80,16 L 85,10 L 90,13 L 95,7 L 100,5 L 100,40 L 0,40 Z"
                             fill="url(#chartGradient)"
                           />
-                          {/* Main bullish line - smooth curve going up */}
+                          {/* Main bullish line with realistic ups and downs */}
                           <path
-                            d="M 0,35 C 8,34 12,32 20,30 C 28,28 32,29 40,26 C 48,23 52,24 60,20 C 68,16 72,17 80,12 C 88,7 92,8 100,5"
+                            d="M 0,32 L 5,30 L 10,33 L 15,29 L 20,32 L 25,26 L 30,29 L 35,24 L 40,27 L 45,22 L 50,25 L 55,19 L 60,22 L 65,16 L 70,19 L 75,13 L 80,16 L 85,10 L 90,13 L 95,7 L 100,5"
                             fill="none"
                             stroke="#7C9885"
-                            strokeWidth="2"
+                            strokeWidth="1.8"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
                           {/* End point dot */}
                           <circle cx="100" cy="5" r="2.5" fill="#7C9885" />
-                          <circle cx="100" cy="5" r="1.5" fill="#FEFEFE" />
+                          <circle cx="100" cy="5" r="1.2" fill="#FEFEFE" />
                         </svg>
                       </div>
                     </div>
