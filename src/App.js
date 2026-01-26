@@ -3201,60 +3201,36 @@ useEffect(() => {
 
                     {/* Performance Chart */}
                     <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-3 mb-3 shadow-sm">
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="text-[#2D3436] text-xs font-semibold">Performance</div>
-                        <div className="flex gap-2 text-[8px]">
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-0.5 bg-red-500"></div>
-                            <span className="text-[#636E72]">Slecht</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-0.5 bg-[#7C9885]"></div>
-                            <span className="text-[#636E72]">Goed</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-0.5 bg-yellow-500 border-yellow-500" style={{borderStyle: 'dashed', borderWidth: '1px', height: '0'}}></div>
-                            <span className="text-[#636E72]">Verwacht</span>
-                          </div>
-                        </div>
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="text-[#2D3436] text-xs font-semibold">Portfolio</div>
+                        <div className="text-[#7C9885] text-[10px] font-semibold">+12.4%</div>
                       </div>
-                      {/* Multi-Line Chart */}
-                      <div className="relative h-20">
+                      {/* Single Bullish Line Chart */}
+                      <div className="relative h-16">
                         <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
-                          {/* Bad scenario (red) - declining */}
+                          <defs>
+                            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="#7C9885" stopOpacity="0.3" />
+                              <stop offset="100%" stopColor="#7C9885" stopOpacity="0" />
+                            </linearGradient>
+                          </defs>
+                          {/* Gradient fill under line */}
                           <path
-                            d="M 0,30 L 20,32 L 40,35 L 60,36 L 80,37 L 100,38"
-                            fill="none"
-                            stroke="#EF4444"
-                            strokeWidth="1.5"
+                            d="M 0,35 C 8,34 12,32 20,30 C 28,28 32,29 40,26 C 48,23 52,24 60,20 C 68,16 72,17 80,12 C 88,7 92,8 100,5 L 100,40 L 0,40 Z"
+                            fill="url(#chartGradient)"
                           />
-                          {/* Good scenario (teal) - growing well */}
+                          {/* Main bullish line - smooth curve going up */}
                           <path
-                            d="M 0,30 L 20,25 L 40,22 L 60,16 L 80,12 L 100,8"
+                            d="M 0,35 C 8,34 12,32 20,30 C 28,28 32,29 40,26 C 48,23 52,24 60,20 C 68,16 72,17 80,12 C 88,7 92,8 100,5"
                             fill="none"
                             stroke="#7C9885"
                             strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
-                          {/* Expected scenario (yellow dashed) - moderate growth */}
-                          <path
-                            d="M 0,30 L 20,28 L 40,27 L 60,24 L 80,22 L 100,20"
-                            fill="none"
-                            stroke="#EAB308"
-                            strokeWidth="1.5"
-                            strokeDasharray="3,2"
-                          />
-                          {/* Fill under good scenario */}
-                          <path
-                            d="M 0,30 L 20,25 L 40,22 L 60,16 L 80,12 L 100,8 L 100,40 L 0,40 Z"
-                            fill="url(#gradient)"
-                            opacity="0.2"
-                          />
-                          <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#7C9885" />
-                              <stop offset="100%" stopColor="transparent" />
-                            </linearGradient>
-                          </defs>
+                          {/* End point dot */}
+                          <circle cx="100" cy="5" r="2.5" fill="#7C9885" />
+                          <circle cx="100" cy="5" r="1.5" fill="#FEFEFE" />
                         </svg>
                       </div>
                     </div>
