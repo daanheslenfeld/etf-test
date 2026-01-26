@@ -3210,27 +3210,26 @@ useEffect(() => {
                         <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
                           <defs>
                             <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#7C9885" stopOpacity="0.25" />
+                              <stop offset="0%" stopColor="#7C9885" stopOpacity="0.2" />
                               <stop offset="100%" stopColor="#7C9885" stopOpacity="0" />
                             </linearGradient>
                           </defs>
-                          {/* Gradient fill under line */}
+                          {/* Gradient fill */}
                           <path
-                            d="M 0,32 C 8,31 12,34 20,28 C 28,22 32,26 40,21 C 48,16 52,19 60,14 C 68,9 72,12 80,8 C 88,4 94,6 100,4 L 100,40 L 0,40 Z"
+                            d="M 0,28 C 10,30 18,26 28,24 C 38,22 42,27 52,22 C 62,17 68,19 78,12 C 88,5 95,7 100,5 L 100,40 L 0,40 Z"
                             fill="url(#chartGradient)"
                           />
-                          {/* Smooth bullish curve with gentle organic waves */}
+                          {/* Natural flowing stock line */}
                           <path
-                            d="M 0,32 C 8,31 12,34 20,28 C 28,22 32,26 40,21 C 48,16 52,19 60,14 C 68,9 72,12 80,8 C 88,4 94,6 100,4"
+                            d="M 0,28 C 10,30 18,26 28,24 C 38,22 42,27 52,22 C 62,17 68,19 78,12 C 88,5 95,7 100,5"
                             fill="none"
                             stroke="#7C9885"
                             strokeWidth="2"
                             strokeLinecap="round"
-                            strokeLinejoin="round"
                           />
-                          {/* End point dot */}
-                          <circle cx="100" cy="4" r="2.5" fill="#7C9885" />
-                          <circle cx="100" cy="4" r="1.2" fill="#FEFEFE" />
+                          {/* End dot */}
+                          <circle cx="100" cy="5" r="2.5" fill="#7C9885" />
+                          <circle cx="100" cy="5" r="1.2" fill="#FEFEFE" />
                         </svg>
                       </div>
                     </div>
