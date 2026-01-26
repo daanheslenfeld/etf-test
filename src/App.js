@@ -6,6 +6,7 @@ import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
 import { TradingProvider } from './context/TradingContext';
+import BrokerSettings from './components/settings/BrokerSettings';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
 import FinancialOverviewCards from './components/FinancialOverviewCards';
 import MarketIndicesTicker from './components/MarketIndicesTicker';
@@ -2483,6 +2484,7 @@ useEffect(() => {
             </button>
             <div className="flex items-center gap-4 sm:gap-6">
               <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#7C9885] font-medium text-sm sm:text-base">Home</button>
+              <button onClick={() => setCurrentPage('brokerSettings')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium text-sm sm:text-base">Broker</button>
               <div className="text-sm text-[#636E72] hidden sm:block">
                 {user?.name?.split(' ')[0]}
               </div>
@@ -10756,6 +10758,7 @@ useEffect(() => {
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
+      {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Bulk Buy Modal */}

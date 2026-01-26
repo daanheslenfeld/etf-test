@@ -37,6 +37,7 @@ from routers.portfolios import router as portfolios_router
 from routers.community import router as community_router
 from routers.notifications import router as notifications_router
 from routers.competitions import router as competitions_router
+from routers.broker import router as broker_router
 
 
 # =============================================================================
@@ -211,6 +212,7 @@ app.include_router(portfolios_router)
 app.include_router(community_router)
 app.include_router(notifications_router)
 app.include_router(competitions_router)
+app.include_router(broker_router)
 
 
 # =============================================================================
