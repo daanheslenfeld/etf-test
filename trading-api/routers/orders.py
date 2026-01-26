@@ -7,7 +7,7 @@ from models.schemas import (
     OrderRequest, OrderResponse, OrdersResponse, OrderStatus,
     UserContext, OrderSide
 )
-from middleware.auth import require_trading_approved, get_client_ip
+from middleware.auth import require_trading_approved, require_trading_owner, get_client_ip
 from services.ib_client import get_ib_client
 from services.audit import get_audit_service
 from services.safety import get_safety_service
@@ -56,6 +56,38 @@ class UserLimitsResponse(BaseModel):
     max_order_value: float
     trading_mode: str
     is_live: bool
+
+
+class TradingAccessResponse(BaseModel):
+    """Trading access status for current user."""
+    can_trade: bool
+    is_owner: bool
+    message: str
+    user_email: str
+
+
+@router.get("/access", response_model=TradingAccessResponse)
+async def check_trading_access(
+    user: UserContext = Depends(require_trading_approved)
+) -> TradingAccessResponse:
+    """Check if current user has trading access (is the owner)."""
+    settings = get_settings()
+    is_owner = settings.is_trading_owner(user.email)
+
+    if is_owner:
+        return TradingAccessResponse(
+            can_trade=True,
+            is_owner=True,
+            message="Trading enabled.",
+            user_email=user.email
+        )
+    else:
+        return TradingAccessResponse(
+            can_trade=False,
+            is_owner=False,
+            message="Trading disabled. Demo mode only.",
+            user_email=user.email
+        )
 
 
 @router.get("/safety/limits", response_model=UserLimitsResponse)
@@ -169,7 +201,7 @@ async def place_order(
     request: Request,
     order: OrderRequest,
     confirmed: bool = False,
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(require_trading_owner)
 ) -> OrderResponse:
     """
     Place an order to buy or sell an ETF.

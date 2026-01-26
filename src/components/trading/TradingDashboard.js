@@ -47,6 +47,8 @@ function TradingDashboardContent({ onBack }) {
     getAvailableAccounts,
     subscribeToMarketData,
     fetchMarketData,
+    canTrade,
+    tradingAccessMessage,
   } = useTrading();
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -312,6 +314,16 @@ function TradingDashboardContent({ onBack }) {
             <button onClick={clearError} className="text-[#C0736D] hover:text-[#B06359]">
               Sluiten
             </button>
+          </div>
+        )}
+
+        {/* Demo Mode Banner - Trading Disabled */}
+        {!canTrade && (
+          <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-xl p-4 mb-6 flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-[#C9A962] flex-shrink-0" />
+            <p className="text-[#C9A962] font-medium">
+              {tradingAccessMessage || 'Trading is uitgeschakeld. Alleen demo modus.'}
+            </p>
           </div>
         )}
 

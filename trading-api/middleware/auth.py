@@ -4,6 +4,7 @@ from typing import Optional, Dict
 from models.schemas import UserContext, TradingStatus
 from services.supabase_service import get_supabase_service
 from services.ib_client import get_ib_client
+from config import get_settings
 import logging
 import os
 
@@ -210,3 +211,34 @@ def get_client_ip(request: Request) -> str:
     if forwarded:
         return forwarded.split(",")[0].strip()
     return request.client.host if request.client else "unknown"
+
+
+async def require_trading_owner(
+    user: UserContext = Depends(get_current_user)
+) -> UserContext:
+    """
+    HARD SAFETY LOCK: Only the owner email can place trades.
+
+    All other users get 403 Forbidden. This prevents unauthorized trading
+    through the shared LYNX account.
+    """
+    settings = get_settings()
+
+    # Check if owner email is configured
+    if not settings.trading_owner_email:
+        logger.error("TRADING_OWNER_EMAIL not configured - all trading blocked")
+        raise HTTPException(
+            status_code=403,
+            detail="Trading disabled: No owner configured."
+        )
+
+    # Check if current user is the owner
+    if not settings.is_trading_owner(user.email):
+        logger.warning(f"Trading blocked for non-owner: {user.email}")
+        raise HTTPException(
+            status_code=403,
+            detail="Trading disabled for this user."
+        )
+
+    logger.info(f"Trading owner verified: {user.email}")
+    return user

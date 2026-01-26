@@ -10,7 +10,7 @@ const ORDER_TYPE_LABELS = {
 };
 
 export default function OrderBasket({ onExecute }) {
-  const { orderBasket, removeFromBasket, clearBasket, isExecuting, marketData, safetyLimits, isLive, tradingMode } = useTrading();
+  const { orderBasket, removeFromBasket, clearBasket, isExecuting, marketData, safetyLimits, isLive, tradingMode, canTrade } = useTrading();
 
   const formatPrice = (price) => {
     if (!price) return '-';
@@ -216,17 +216,24 @@ export default function OrderBasket({ onExecute }) {
             {/* Execute Button */}
             <button
               onClick={onExecute}
-              disabled={isExecuting || orderBasket.length === 0}
+              disabled={isExecuting || orderBasket.length === 0 || !canTrade}
               className={`w-full py-3 font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-                isLive
-                  ? 'bg-[#6B7B8A] hover:bg-[#5A6A79] text-white'
-                  : 'bg-[#7C9885] hover:bg-[#6B8A74] text-white'
+                !canTrade
+                  ? 'bg-[#B2BEC3] text-white cursor-not-allowed'
+                  : isLive
+                    ? 'bg-[#6B7B8A] hover:bg-[#5A6A79] text-white'
+                    : 'bg-[#7C9885] hover:bg-[#6B8A74] text-white'
               }`}
             >
               {isExecuting ? (
                 <>
                   <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
                   Executing...
+                </>
+              ) : !canTrade ? (
+                <>
+                  <AlertTriangle className="w-5 h-5" />
+                  Demo Mode - Trading Uitgeschakeld
                 </>
               ) : (
                 <>

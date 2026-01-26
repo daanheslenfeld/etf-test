@@ -49,6 +49,10 @@ const initialState = {
   isLive: false,  // Critical: true means real money
   brokerLinked: false,  // Whether user has a linked broker account
 
+  // Trading access (owner lock)
+  canTrade: true,  // Default true, will be set to false for non-owners
+  tradingAccessMessage: null,  // Message to show non-owners
+
   // Safety limits
   safetyLimits: {
     maxOrderSize: 100,
@@ -126,6 +130,7 @@ const ACTIONS = {
   SET_LAST_MARKET_DATA_UPDATE: 'SET_LAST_MARKET_DATA_UPDATE',
   SET_LAST_POSITIONS_UPDATE: 'SET_LAST_POSITIONS_UPDATE',
   SET_TRADABILITY: 'SET_TRADABILITY',
+  SET_TRADING_ACCESS: 'SET_TRADING_ACCESS',
 };
 
 // Reducer
@@ -199,6 +204,12 @@ function tradingReducer(state, action) {
         ...state,
         tradableETFs: action.payload.etfs,
         tradabilityStats: action.payload.stats,
+      };
+    case ACTIONS.SET_TRADING_ACCESS:
+      return {
+        ...state,
+        canTrade: action.payload.canTrade,
+        tradingAccessMessage: action.payload.message,
       };
     default:
       return state;
@@ -316,6 +327,50 @@ export function TradingProvider({ user, children }) {
       }
     } catch (error) {
       console.error('Error fetching safety limits:', error);
+    }
+  }, [getAuthHeaders]);
+
+  // API: Check trading access (owner lock)
+  const checkTradingAccess = useCallback(async () => {
+    try {
+      // In demo mode, always allow trading
+      if (IS_DEMO) {
+        dispatch({
+          type: ACTIONS.SET_TRADING_ACCESS,
+          payload: { canTrade: true, message: null }
+        });
+        return { canTrade: true };
+      }
+
+      const res = await fetch(`${TRADING_API_URL}/trading/access`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        dispatch({
+          type: ACTIONS.SET_TRADING_ACCESS,
+          payload: {
+            canTrade: data.can_trade,
+            message: data.can_trade ? null : data.message
+          }
+        });
+        return { canTrade: data.can_trade, message: data.message };
+      } else {
+        // If endpoint fails, assume no trading access for safety
+        dispatch({
+          type: ACTIONS.SET_TRADING_ACCESS,
+          payload: { canTrade: false, message: 'Trading disabled. Demo mode only.' }
+        });
+        return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
+      }
+    } catch (error) {
+      console.error('Error checking trading access:', error);
+      // On error, default to no trading for safety
+      dispatch({
+        type: ACTIONS.SET_TRADING_ACCESS,
+        payload: { canTrade: false, message: 'Trading disabled. Demo mode only.' }
+      });
+      return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
     }
   }, [getAuthHeaders]);
 
@@ -1051,6 +1106,7 @@ export function TradingProvider({ user, children }) {
         // Load all other data in background (non-blocking)
         fetchTradability().catch(console.error);
         fetchETFs().catch(console.error);
+        checkTradingAccess().catch(console.error);
 
         if (hasLinkedAccount) {
           fetchPositions().catch(console.error);
@@ -1107,6 +1163,7 @@ export function TradingProvider({ user, children }) {
     fetchMarketData,
     fetchSafetyLimits,
     checkOrderSafety,
+    checkTradingAccess,
     subscribeToMarketData,
     getMarketDataForSymbol,
     placeOrder,
