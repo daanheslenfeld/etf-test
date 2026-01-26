@@ -3066,13 +3066,26 @@ useEffect(() => {
           <div className="relative flex justify-center items-center overflow-visible" style={{ perspective: '1000px' }}>
             {/* Soft glow background - extends beyond container and fades smoothly */}
             <div
-              className="absolute pointer-events-none"
+              className="absolute pointer-events-none hidden sm:block"
               style={{
                 width: '280%',
                 height: '280%',
                 top: '-90%',
                 left: '-90%',
+                zIndex: -1,
                 background: 'radial-gradient(ellipse 45% 50% at 50% 50%, rgba(124, 152, 133, 0.55) 0%, rgba(124, 152, 133, 0.4) 15%, rgba(124, 152, 133, 0.25) 30%, rgba(124, 152, 133, 0.12) 45%, rgba(124, 152, 133, 0.04) 60%, transparent 80%)',
+              }}
+            ></div>
+            {/* Mobile glow - contained */}
+            <div
+              className="absolute pointer-events-none sm:hidden"
+              style={{
+                width: '150%',
+                height: '150%',
+                top: '-25%',
+                left: '-25%',
+                zIndex: -1,
+                background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(124, 152, 133, 0.4) 0%, rgba(124, 152, 133, 0.2) 30%, transparent 70%)',
               }}
             ></div>
             {/* iPhone Mockup - 3D */}
