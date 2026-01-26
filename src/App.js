@@ -1355,6 +1355,19 @@ const ETFPortal = () => {
     return flagMap[lang] || lang;
   };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track scroll position for sticky header
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollThreshold = 80;
+      setIsScrolled(window.scrollY > scrollThreshold);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const [selectedProfile, setSelectedProfile] = useState(() => {
     const saved = localStorage.getItem('selectedProfile');
     return saved || null;
@@ -2867,190 +2880,198 @@ useEffect(() => {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Shared nav content component
+    const NavContent = ({ isSticky = false }) => (
+      <div className="flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+          <svg viewBox="0 0 48 48" fill="none" className={isSticky ? "w-9 h-9 sm:w-10 sm:h-10" : "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"} style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+            <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
+            <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+            <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+            <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+            <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+            <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+            <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+            <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+            <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+            <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+            <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+            <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+            <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+            <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+          </svg>
+          <div>
+            <div className={`font-bold text-[#2D3436] ${isSticky ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl md:text-3xl'}`} style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>PIGG</div>
+            {!isSticky && <div className="text-xs sm:text-sm md:text-base text-[#636E72] hidden sm:block">{t.tagline}</div>}
+          </div>
+        </div>
+
+        {/* Desktop Menu Items */}
+        <div className="hidden lg:flex gap-6">
+          <button onClick={() => scrollToSection('hero')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
+            {t.nav.home}
+          </button>
+          <button onClick={() => scrollToSection('features')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
+            {t.nav.features}
+          </button>
+          <button onClick={() => scrollToSection('how-it-works')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
+            {t.nav.howItWorks}
+          </button>
+          <button onClick={() => scrollToSection('pricing')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
+            {t.nav.pricing}
+          </button>
+        </div>
+
+        {/* Right side */}
+        <div className="flex gap-2 items-center">
+          {/* Language Selector - Mobile */}
+          <select
+            key={`mobile-lang-${language}-${isSticky}`}
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="lg:hidden pl-8 pr-2 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-xs hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[70px]"
+            style={{
+              backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: '6px center',
+              backgroundSize: '18px 13px'
+            }}
+          >
+            <option value="nl">NL</option>
+            <option value="en">EN</option>
+            <option value="de">DE</option>
+            <option value="fr">FR</option>
+            <option value="es">ES</option>
+          </select>
+
+          {/* Language Selector - Desktop */}
+          <select
+            key={`desktop-lang-${language}-${isSticky}`}
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="hidden lg:block pl-10 pr-4 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-sm hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[140px]"
+            style={{
+              backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: '8px center',
+              backgroundSize: '24px 18px'
+            }}
+          >
+            <option value="nl">Nederlands</option>
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+          </select>
+
+          {/* Login and Start Now buttons */}
+          <button
+            onClick={() => setCurrentPage('login')}
+            className="px-3 py-2 text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium text-sm lg:text-base lg:px-4"
+          >
+            {t.nav.login}
+          </button>
+          <button
+            onClick={() => setCurrentPage('register')}
+            className="px-3 py-2 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap text-sm lg:text-base lg:px-4"
+          >
+            {t.nav.startNow}
+          </button>
+
+          {/* Hamburger Menu Button - Mobile only */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-[#2D3436] hover:text-[#7C9885] transition-colors"
+            aria-label="Menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+
+    // Mobile menu dropdown component
+    const MobileMenuDropdown = () => (
+      <div className="lg:hidden mt-4 pb-4 border-t border-[#E8E8E6] pt-4 animate-fadeIn">
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => {scrollToSection('hero'); setMobileMenuOpen(false);}}
+            className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
+          >
+            {t.nav.home}
+          </button>
+          <button
+            onClick={() => {scrollToSection('features'); setMobileMenuOpen(false);}}
+            className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
+          >
+            {t.nav.features}
+          </button>
+          <button
+            onClick={() => {scrollToSection('how-it-works'); setMobileMenuOpen(false);}}
+            className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
+          >
+            {t.nav.howItWorks}
+          </button>
+          <button
+            onClick={() => {scrollToSection('pricing'); setMobileMenuOpen(false);}}
+            className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
+          >
+            {t.nav.pricing}
+          </button>
+          <div className="border-t border-[#E8E8E6] pt-3 mt-2 flex flex-col gap-2">
+            <button
+              onClick={() => {setCurrentPage('login'); setMobileMenuOpen(false);}}
+              className="text-left text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
+            >
+              {t.nav.login}
+            </button>
+            <button
+              onClick={() => {setCurrentPage('register'); setMobileMenuOpen(false);}}
+              className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-center"
+            >
+              {t.nav.startNow}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+
     return (
     <div className="min-h-screen bg-[#F5F6F4]">
-      {/* Navigation with Menu */}
-      <nav className="bg-[#FEFEFE] sm:bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] relative z-50">
+      {/* Static Navigation - visible at top */}
+      <nav className="bg-[#FEFEFE] sm:bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] relative z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-              <svg viewBox="0 0 48 48" fill="none" className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
-                {/* Original piggy bank body */}
-                <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
+          <NavContent isSticky={false} />
+          {mobileMenuOpen && !isScrolled && <MobileMenuDropdown />}
+        </div>
+      </nav>
 
-                {/* Coin slot on top */}
-                <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-
-                {/* Gold coin */}
-                <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-                <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-                <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-
-                {/* Pig face - Eyes */}
-                <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
-                <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
-
-                {/* Pig snout */}
-                <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
-                <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
-                <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
-
-                {/* Pig ears */}
-                <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-
-                {/* Smile */}
-                <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
-
-                {/* Legs/feet */}
-                <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-              </svg>
-              <div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
-                <div className="text-xs sm:text-sm md:text-base text-[#636E72] hidden sm:block">{t.tagline}</div>
-              </div>
-            </div>
-
-            {/* Desktop Menu Items */}
-            <div className="hidden lg:flex gap-6">
-              <button onClick={() => scrollToSection('hero')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
-                {t.nav.home}
-              </button>
-              <button onClick={() => scrollToSection('features')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
-                {t.nav.features}
-              </button>
-              <button onClick={() => scrollToSection('how-it-works')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
-                {t.nav.howItWorks}
-              </button>
-              <button onClick={() => scrollToSection('pricing')} className="text-[#636E72] hover:text-[#7C9885] transition-colors font-medium">
-                {t.nav.pricing}
-              </button>
-            </div>
-
-            {/* Right side - Mobile: only language + hamburger | Desktop: full buttons */}
-            <div className="flex gap-2 items-center">
-              {/* Language Selector */}
-              <div className="relative">
-                <select
-                  key={`mobile-lang-${language}`}
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="lg:hidden pl-8 pr-2 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-xs hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[70px]"
-                  style={{
-                    backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '6px center',
-                    backgroundSize: '18px 13px'
-                  }}
-                >
-                  <option value="nl">NL</option>
-                  <option value="en">EN</option>
-                  <option value="de">DE</option>
-                  <option value="fr">FR</option>
-                  <option value="es">ES</option>
-                </select>
-
-                {/* Desktop Language Selector */}
-                <select
-                  key={`desktop-lang-${language}`}
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="hidden lg:block pl-10 pr-4 py-2 bg-[#ECEEED] border border-[#E8E8E6] rounded text-[#2D3436] text-sm hover:border-[#7C9885] focus:outline-none focus:border-[#7C9885] transition-colors appearance-none cursor-pointer w-[140px]"
-                  style={{
-                    backgroundImage: `url(https://flagcdn.com/24x18/${getFlagCode(language)}.png)`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '8px center',
-                    backgroundSize: '24px 18px'
-                  }}
-                >
-                  <option value="nl">Nederlands</option>
-                  <option value="en">English</option>
-                  <option value="de">Deutsch</option>
-                  <option value="fr">Français</option>
-                  <option value="es">Español</option>
-                </select>
-              </div>
-
-              {/* Login and Start Now buttons - visible on all screens */}
-              <button
-                onClick={() => setCurrentPage('login')}
-                className="px-3 py-2 text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium text-sm lg:text-base lg:px-4"
-              >
-                {t.nav.login}
-              </button>
-              <button
-                onClick={() => setCurrentPage('register')}
-                className="px-3 py-2 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold whitespace-nowrap text-sm lg:text-base lg:px-4"
-              >
-                {t.nav.startNow}
-              </button>
-
-              {/* Hamburger Menu Button - Mobile only */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-[#2D3436] hover:text-[#7C9885] transition-colors"
-                aria-label="Menu"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden mt-4 pb-4 border-t border-[#E8E8E6] pt-4 animate-fadeIn">
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => {scrollToSection('hero'); setMobileMenuOpen(false);}}
-                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
-                >
-                  {t.nav.home}
-                </button>
-                <button
-                  onClick={() => {scrollToSection('features'); setMobileMenuOpen(false);}}
-                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
-                >
-                  {t.nav.features}
-                </button>
-                <button
-                  onClick={() => {scrollToSection('how-it-works'); setMobileMenuOpen(false);}}
-                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
-                >
-                  {t.nav.howItWorks}
-                </button>
-                <button
-                  onClick={() => {scrollToSection('pricing'); setMobileMenuOpen(false);}}
-                  className="text-left text-[#636E72] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
-                >
-                  {t.nav.pricing}
-                </button>
-
-                {/* Mobile menu buttons */}
-                <div className="border-t border-[#E8E8E6] pt-3 mt-2 flex flex-col gap-2">
-                  <button
-                    onClick={() => {setCurrentPage('login'); setMobileMenuOpen(false);}}
-                    className="text-left text-[#2D3436] hover:text-[#7C9885] transition-colors font-medium py-2 px-2 rounded hover:bg-[#ECEEED]/50"
-                  >
-                    {t.nav.login}
-                  </button>
-                  <button
-                    onClick={() => {setCurrentPage('register'); setMobileMenuOpen(false);}}
-                    className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] transition-all font-semibold text-center"
-                  >
-                    {t.nav.startNow}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+      {/* Floating Sticky Navigation - appears on scroll */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
+          isScrolled
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 -translate-y-full pointer-events-none'
+        }`}
+        style={{
+          background: 'rgba(254, 254, 254, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.08)' : 'none',
+        }}
+        aria-hidden={!isScrolled}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
+          <NavContent isSticky={true} />
+          {mobileMenuOpen && isScrolled && <MobileMenuDropdown />}
         </div>
       </nav>
 
