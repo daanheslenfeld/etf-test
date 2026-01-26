@@ -52,6 +52,19 @@
         background-color: #F5F6F4;
       }
 
+      /* Bottom safe area fill */
+      body::after {
+        content: '';
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: env(safe-area-inset-bottom, 0px);
+        background-color: #F5F6F4;
+        z-index: 9999;
+        pointer-events: none;
+      }
+
       /* Ensure root container accounts for safe area */
       #root {
         position: relative;
