@@ -52,25 +52,11 @@
         background-color: #F5F6F4;
       }
 
-      /* Bottom safe area fill */
-      body::after {
-        content: '';
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: env(safe-area-inset-bottom, 0px);
-        background-color: #F5F6F4;
-        z-index: 9999;
-        pointer-events: none;
-      }
-
-      /* Ensure root container accounts for safe area */
+      /* Ensure root container fills screen */
       #root {
         position: relative;
         min-height: 100vh;
-        min-height: 100dvh; /* Dynamic viewport height for mobile */
-        padding-bottom: env(safe-area-inset-bottom, 0px);
+        min-height: 100dvh;
       }
 
       /* iOS Capacitor Input Fix - Ensure inputs are always interactive */
