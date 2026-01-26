@@ -27,6 +27,13 @@ class TradingStatus(str, Enum):
     REJECTED = "rejected"
 
 
+class BrokerLinkStatus(str, Enum):
+    """Broker link status."""
+    UNLINKED = "unlinked"
+    LINKED = "linked"
+    DISABLED = "disabled"
+
+
 # ETF Models
 class ETFInfo(BaseModel):
     """ETF information."""
@@ -196,3 +203,37 @@ class UserContext(BaseModel):
     trading_status: TradingStatus
     broker_account_id: Optional[int] = None
     ib_account_id: Optional[str] = None
+
+
+# Broker Link Models
+class BrokerLink(BaseModel):
+    """Broker link record from database."""
+    id: str  # UUID
+    user_id: int
+    broker: str = "LYNX"
+    ib_account_id: Optional[str] = None
+    status: BrokerLinkStatus = BrokerLinkStatus.UNLINKED
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class BrokerLinkCreate(BaseModel):
+    """Request to create a broker link."""
+    ib_account_id: str = Field(..., min_length=1, max_length=50, description="IB account ID (e.g., DU0521473)")
+    broker: str = Field(default="LYNX", max_length=50)
+
+
+class BrokerLinkUpdate(BaseModel):
+    """Request to update a broker link."""
+    ib_account_id: Optional[str] = Field(None, min_length=1, max_length=50)
+    status: Optional[BrokerLinkStatus] = None
+
+
+class BrokerLinkResponse(BaseModel):
+    """Response for broker link operations."""
+    success: bool
+    message: str
+    broker_link: Optional[BrokerLink] = None

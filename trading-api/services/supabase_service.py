@@ -287,6 +287,339 @@ class SupabaseService:
             logger.error(f"Error fetching customers: {type(e).__name__}: {e}")
             return []
 
+    # =========================================================================
+    # Broker Links (per-user broker account linking)
+    # =========================================================================
+
+    async def get_broker_link(self, user_id: int, broker: str = "LYNX") -> Optional[dict]:
+        """
+        Get the broker link for a user.
+
+        Args:
+            user_id: The user's database ID
+            broker: The broker name (default: "LYNX")
+
+        Returns:
+            The broker link record, or None if not found
+        """
+        if not self._configured:
+            logger.debug("Supabase not configured, returning None for broker link lookup")
+            return None
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    params={
+                        "user_id": f"eq.{user_id}",
+                        "broker": f"eq.{broker}",
+                        "select": "*"
+                    }
+                )
+                response.raise_for_status()
+                data = response.json()
+                return data[0] if data else None
+        except httpx.TimeoutException:
+            logger.error(f"Timeout getting broker link for user {user_id}")
+            return None
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error getting broker link: {e.response.status_code}")
+            return None
+        except Exception as e:
+            logger.error(f"Error getting broker link: {type(e).__name__}: {e}")
+            return None
+
+    async def get_active_broker_link(self, user_id: int, broker: str = "LYNX") -> Optional[dict]:
+        """
+        Get the active (linked) broker link for a user.
+
+        Args:
+            user_id: The user's database ID
+            broker: The broker name (default: "LYNX")
+
+        Returns:
+            The broker link record if status is 'linked', None otherwise
+        """
+        if not self._configured:
+            return None
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    params={
+                        "user_id": f"eq.{user_id}",
+                        "broker": f"eq.{broker}",
+                        "status": "eq.linked",
+                        "select": "*"
+                    }
+                )
+                response.raise_for_status()
+                data = response.json()
+                return data[0] if data else None
+        except Exception as e:
+            logger.error(f"Error getting active broker link: {type(e).__name__}: {e}")
+            return None
+
+    async def create_broker_link(
+        self,
+        user_id: int,
+        ib_account_id: str,
+        broker: str = "LYNX",
+        status: str = "linked"
+    ) -> Optional[dict]:
+        """
+        Create a new broker link for a user.
+
+        Args:
+            user_id: The user's database ID
+            ib_account_id: The IB account ID (e.g., "DU0521473")
+            broker: The broker name (default: "LYNX")
+            status: Initial status (default: "linked")
+
+        Returns:
+            The created broker link record, or None on failure
+
+        Raises:
+            SupabaseServiceError: On database errors
+        """
+        if not self._configured:
+            logger.warning("Supabase not configured - returning mock broker link")
+            return {
+                "id": "mock-uuid",
+                "user_id": user_id,
+                "broker": broker,
+                "ib_account_id": ib_account_id,
+                "status": status,
+                "created_at": None,
+                "updated_at": None
+            }
+
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.post(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    json={
+                        "user_id": user_id,
+                        "broker": broker,
+                        "ib_account_id": ib_account_id,
+                        "status": status
+                    }
+                )
+
+                if response.status_code == 409 or (response.status_code >= 400 and "duplicate" in response.text.lower()):
+                    raise SupabaseServiceError(
+                        f"Broker link already exists for user {user_id}",
+                        status_code=409
+                    )
+
+                response.raise_for_status()
+                data = response.json()
+                result = data[0] if isinstance(data, list) else data
+                logger.info(f"Created broker link for user {user_id}: {result.get('id')}")
+                return result
+
+        except SupabaseServiceError:
+            raise
+        except httpx.TimeoutException:
+            raise SupabaseServiceError("Database timeout creating broker link", status_code=504)
+        except httpx.HTTPStatusError as e:
+            raise SupabaseServiceError(
+                f"Database error: {e.response.status_code}",
+                status_code=e.response.status_code,
+                details={"response": e.response.text}
+            )
+        except Exception as e:
+            raise SupabaseServiceError(f"Unexpected error: {type(e).__name__}: {e}")
+
+    async def update_broker_link(
+        self,
+        user_id: int,
+        broker: str = "LYNX",
+        ib_account_id: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> Optional[dict]:
+        """
+        Update an existing broker link.
+
+        Args:
+            user_id: The user's database ID
+            broker: The broker name (default: "LYNX")
+            ib_account_id: New IB account ID (optional)
+            status: New status (optional)
+
+        Returns:
+            The updated broker link record, or None on failure
+        """
+        if not self._configured:
+            logger.warning("Supabase not configured - cannot update broker link")
+            return None
+
+        update_data = {}
+        if ib_account_id is not None:
+            update_data["ib_account_id"] = ib_account_id
+        if status is not None:
+            update_data["status"] = status
+
+        if not update_data:
+            logger.warning("No fields to update for broker link")
+            return await self.get_broker_link(user_id, broker)
+
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.patch(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    params={
+                        "user_id": f"eq.{user_id}",
+                        "broker": f"eq.{broker}"
+                    },
+                    json=update_data
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                if not data:
+                    return await self.get_broker_link(user_id, broker)
+
+                result = data[0] if isinstance(data, list) else data
+                logger.info(f"Updated broker link for user {user_id}")
+                return result
+
+        except httpx.TimeoutException:
+            logger.error(f"Timeout updating broker link for user {user_id}")
+            return None
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error updating broker link: {e.response.status_code}")
+            return None
+        except Exception as e:
+            logger.error(f"Error updating broker link: {type(e).__name__}: {e}")
+            return None
+
+    async def upsert_broker_link(
+        self,
+        user_id: int,
+        ib_account_id: str,
+        broker: str = "LYNX",
+        status: str = "linked"
+    ) -> Optional[dict]:
+        """
+        Create or update a broker link (upsert).
+
+        If a broker link exists for this user/broker, update it.
+        Otherwise, create a new one.
+
+        Args:
+            user_id: The user's database ID
+            ib_account_id: The IB account ID
+            broker: The broker name (default: "LYNX")
+            status: Status to set (default: "linked")
+
+        Returns:
+            The created/updated broker link record
+        """
+        existing = await self.get_broker_link(user_id, broker)
+
+        if existing:
+            return await self.update_broker_link(
+                user_id=user_id,
+                broker=broker,
+                ib_account_id=ib_account_id,
+                status=status
+            )
+        else:
+            return await self.create_broker_link(
+                user_id=user_id,
+                ib_account_id=ib_account_id,
+                broker=broker,
+                status=status
+            )
+
+    async def disable_broker_link(self, user_id: int, broker: str = "LYNX") -> bool:
+        """
+        Disable a broker link (set status to 'disabled').
+
+        Args:
+            user_id: The user's database ID
+            broker: The broker name (default: "LYNX")
+
+        Returns:
+            True if successful, False otherwise
+        """
+        result = await self.update_broker_link(user_id, broker, status="disabled")
+        return result is not None
+
+    async def unlink_broker(self, user_id: int, broker: str = "LYNX") -> bool:
+        """
+        Unlink a broker (set status to 'unlinked' and clear ib_account_id).
+
+        Args:
+            user_id: The user's database ID
+            broker: The broker name (default: "LYNX")
+
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self._configured:
+            return False
+
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.patch(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    params={
+                        "user_id": f"eq.{user_id}",
+                        "broker": f"eq.{broker}"
+                    },
+                    json={
+                        "ib_account_id": None,
+                        "status": "unlinked"
+                    }
+                )
+                response.raise_for_status()
+                logger.info(f"Unlinked broker for user {user_id}")
+                return True
+        except Exception as e:
+            logger.error(f"Error unlinking broker: {type(e).__name__}: {e}")
+            return False
+
+    async def get_user_by_ib_account(self, ib_account_id: str, broker: str = "LYNX") -> Optional[dict]:
+        """
+        Find the user who has linked a specific IB account.
+
+        Args:
+            ib_account_id: The IB account ID to look up
+            broker: The broker name (default: "LYNX")
+
+        Returns:
+            The broker link record with user info, or None if not found
+        """
+        if not self._configured:
+            return None
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(
+                    f"{self.base_url}/broker_links",
+                    headers=self.headers,
+                    params={
+                        "ib_account_id": f"eq.{ib_account_id}",
+                        "broker": f"eq.{broker}",
+                        "status": "eq.linked",
+                        "select": "*"
+                    }
+                )
+                response.raise_for_status()
+                data = response.json()
+                return data[0] if data else None
+        except Exception as e:
+            logger.error(f"Error finding user by IB account: {type(e).__name__}: {e}")
+            return None
+
 
 # Singleton instance
 _supabase_service: Optional[SupabaseService] = None
