@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 # Environment flag for local development without database
 LOCAL_DEV_MODE = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
 
-# TEMPORARY: Disable auth for local testing
-AUTH_DISABLED = True
+# Auth bypass - set to False for production with user isolation
+AUTH_DISABLED = False
 
 
 def get_dev_mode_linked_accounts() -> Dict[int, dict]:
