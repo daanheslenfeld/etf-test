@@ -7,7 +7,7 @@ const TRADING_API_URL = 'http://localhost:8002';
 const IS_DEMO = isDemoMode();
 console.log('[TradingContext] Demo mode:', IS_DEMO);
 
-// Cache keys for localStorage
+// Base cache keys for localStorage (will be made user-specific)
 const CACHE_KEYS = {
   MARKET_DATA: 'trading_cache_marketData',
   POSITIONS: 'trading_cache_positions',
@@ -15,8 +15,15 @@ const CACHE_KEYS = {
   TRADABILITY: 'trading_cache_tradability',
 };
 
+// Get user-specific cache key to prevent data leakage between users
+const getUserCacheKey = (baseKey, userId) => {
+  if (!userId || userId === 0) return null; // No caching for guest/unauthenticated users
+  return `${baseKey}_user_${userId}`;
+};
+
 // Cache helper functions
 const saveToCache = (key, data) => {
+  if (!key) return; // Skip if no valid key (guest user)
   try {
     const cacheEntry = {
       data,
@@ -29,6 +36,7 @@ const saveToCache = (key, data) => {
 };
 
 const loadFromCache = (key) => {
+  if (!key) return null; // Skip if no valid key (guest user)
   try {
     const cached = localStorage.getItem(key);
     if (cached) {
@@ -132,6 +140,7 @@ const ACTIONS = {
   SET_LAST_POSITIONS_UPDATE: 'SET_LAST_POSITIONS_UPDATE',
   SET_TRADABILITY: 'SET_TRADABILITY',
   SET_TRADING_ACCESS: 'SET_TRADING_ACCESS',
+  RESET_PORTFOLIO_STATE: 'RESET_PORTFOLIO_STATE', // Reset all portfolio data on user change
 };
 
 // Reducer
@@ -213,6 +222,32 @@ function tradingReducer(state, action) {
         tradingAccessMessage: action.payload.message,
         needsBrokerLink: action.payload.needsBrokerLink || false,
       };
+    case ACTIONS.RESET_PORTFOLIO_STATE:
+      // Reset all portfolio-related state when user changes (prevents data leakage)
+      return {
+        ...state,
+        positions: [],
+        cashBalance: 0,
+        availableFunds: 0,
+        portfolioValue: 0,
+        totalValue: 0,
+        unrealizedPnL: 0,
+        unrealizedPnLPercent: 0,
+        buyingPower: 0,
+        orders: [],
+        orderBasket: [],
+        executionResults: [],
+        marketData: {},
+        brokerLinked: false,
+        accountId: null,
+        isDataStale: false,
+        lastMarketDataUpdate: null,
+        lastPositionsUpdate: null,
+        connected: false,
+        canTrade: true,
+        tradingAccessMessage: null,
+        needsBrokerLink: false,
+      };
     default:
       return state;
   }
@@ -224,6 +259,23 @@ const TradingContext = createContext(null);
 // Provider
 export function TradingProvider({ user, children }) {
   const [state, dispatch] = useReducer(tradingReducer, initialState);
+
+  // Track previous user ID to detect user changes
+  const prevUserIdRef = useRef(user?.id);
+
+  // Reset state when user changes (prevents data leakage between users)
+  useEffect(() => {
+    const prevUserId = prevUserIdRef.current;
+    const currentUserId = user?.id;
+
+    // Only reset if user actually changed (not on initial mount)
+    if (prevUserId !== undefined && prevUserId !== currentUserId) {
+      console.log('[TradingContext] User changed from', prevUserId, 'to', currentUserId, '- resetting portfolio state');
+      dispatch({ type: ACTIONS.RESET_PORTFOLIO_STATE });
+    }
+
+    prevUserIdRef.current = currentUserId;
+  }, [user?.id]);
 
   // Create auth headers for API calls
   const getAuthHeaders = useCallback(() => {
@@ -625,7 +677,7 @@ export function TradingProvider({ user, children }) {
     return null;
   }, [state.tradableETFs]);
 
-  // API: Fetch account summary
+  // API: Fetch account summary (USER-SPECIFIC)
   const fetchAccountSummary = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -659,16 +711,18 @@ export function TradingProvider({ user, children }) {
           buyingPower: data.buying_power || 0,
         };
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
-        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, summary);
+        // Use user-specific cache key
+        const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
+        saveToCache(summaryCacheKey, summary);
         return summary;
       }
     } catch (error) {
       console.error('Error fetching account summary:', error);
     }
     return null;
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, user?.id]);
 
-  // API: Fetch positions with caching
+  // API: Fetch positions with caching (USER-SPECIFIC)
   const fetchPositions = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -701,6 +755,10 @@ export function TradingProvider({ user, children }) {
         fetch(`${TRADING_API_URL}/trading/account/summary`, { headers: getAuthHeaders() })
       ]);
 
+      // Use user-specific cache keys
+      const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user?.id);
+      const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
+
       if (posRes.ok) {
         const data = await posRes.json();
         const positions = data.positions || [];
@@ -708,7 +766,7 @@ export function TradingProvider({ user, children }) {
         dispatch({ type: ACTIONS.SET_POSITIONS, payload: positions });
         dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
         dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: Date.now() });
-        saveToCache(CACHE_KEYS.POSITIONS, positions);
+        saveToCache(positionsCacheKey, positions);
       }
 
       if (summaryRes.ok) {
@@ -723,13 +781,16 @@ export function TradingProvider({ user, children }) {
           buyingPower: data.buying_power || 0,
         };
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
-        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, summary);
+        saveToCache(summaryCacheKey, summary);
       }
     } catch (error) {
       console.error('Error fetching positions:', error);
-      // Load from cache on failure
-      const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
-      const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+      // Load from user-specific cache on failure
+      const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user?.id);
+      const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
+
+      const cachedPositions = loadFromCache(positionsCacheKey);
+      const cachedSummary = loadFromCache(summaryCacheKey);
 
       if (cachedPositions?.data) {
         dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
@@ -740,9 +801,9 @@ export function TradingProvider({ user, children }) {
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
       }
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, user?.id]);
 
-  // API: Fetch orders
+  // API: Fetch orders (USER-SPECIFIC)
   const fetchOrders = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -837,15 +898,17 @@ export function TradingProvider({ user, children }) {
         dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
         dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: Date.now() });
 
-        // Save to cache
-        saveToCache(CACHE_KEYS.MARKET_DATA, marketDataBySymbol);
+        // Save to user-specific cache
+        const marketDataCacheKey = getUserCacheKey(CACHE_KEYS.MARKET_DATA, user?.id);
+        saveToCache(marketDataCacheKey, marketDataBySymbol);
       } else {
         throw new Error('API returned error');
       }
     } catch (error) {
       console.error('Error fetching market data:', error);
-      // Load from cache on failure
-      const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
+      // Load from user-specific cache on failure
+      const marketDataCacheKey = getUserCacheKey(CACHE_KEYS.MARKET_DATA, user?.id);
+      const cachedMarketData = loadFromCache(marketDataCacheKey);
       if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
         dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
         dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
@@ -854,7 +917,7 @@ export function TradingProvider({ user, children }) {
     } finally {
       dispatch({ type: ACTIONS.SET_MARKET_DATA_LOADING, payload: false });
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, user?.id]);
 
   // Get market data for a specific symbol
   const getMarketDataForSymbol = useCallback((symbol) => {
@@ -1082,30 +1145,14 @@ export function TradingProvider({ user, children }) {
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: [] });
   }, []);
 
-  // Initial load - FAST: show UI immediately, load data in background
+  // Initial load - USER ISOLATION: Only load THIS user's data
   useEffect(() => {
     const init = async () => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
 
       try {
-        // Load cached data immediately for instant display
-        const cachedMarketData = loadFromCache(CACHE_KEYS.MARKET_DATA);
-        const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
-        const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
-
-        if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
-          dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
-          dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
-        }
-        if (cachedPositions?.data) {
-          dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
-          dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
-        }
-        if (cachedSummary?.data) {
-          dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
-        }
-
-        // Quick connection check with timeout
+        // FIRST: Check broker link status BEFORE loading any portfolio data
+        // This ensures we never show another user's cached data
         const connectionPromise = Promise.race([
           checkConnection(),
           new Promise(resolve => setTimeout(() => resolve(false), 3000))
@@ -1118,6 +1165,49 @@ export function TradingProvider({ user, children }) {
 
         const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
 
+        // Always load cached data if user is authenticated (cache is user-specific by user.id)
+        if (user?.id) {
+          const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user.id);
+          const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user.id);
+          const marketDataCacheKey = getUserCacheKey(CACHE_KEYS.MARKET_DATA, user.id);
+
+          const cachedPositions = loadFromCache(positionsCacheKey);
+          const cachedSummary = loadFromCache(summaryCacheKey);
+          const cachedMarketData = loadFromCache(marketDataCacheKey);
+
+          if (cachedMarketData?.data && Object.keys(cachedMarketData.data).length > 0) {
+            dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: cachedMarketData.data });
+            dispatch({ type: ACTIONS.SET_LAST_MARKET_DATA_UPDATE, payload: cachedMarketData.timestamp });
+          }
+          if (cachedPositions?.data) {
+            dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
+            dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+          }
+          if (cachedSummary?.data) {
+            dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+          }
+
+          // Mark data as stale if we couldn't connect
+          if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
+            dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+          }
+        } else {
+          // Guest user (not authenticated) = empty portfolio
+          console.log('[TradingContext] Guest user - setting empty portfolio');
+          dispatch({ type: ACTIONS.SET_POSITIONS, payload: [] });
+          dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: {
+            cashBalance: 0,
+            availableFunds: 0,
+            portfolioValue: 0,
+            totalValue: 0,
+            unrealizedPnL: 0,
+            unrealizedPnLPercent: 0,
+            buyingPower: 0,
+          }});
+          dispatch({ type: ACTIONS.SET_ORDERS, payload: [] });
+          dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: {} });
+        }
+
         // Set loading false IMMEDIATELY after broker check - show UI now
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
 
@@ -1126,18 +1216,12 @@ export function TradingProvider({ user, children }) {
         fetchETFs().catch(console.error);
         checkTradingAccess().catch(console.error);
 
-        if (hasLinkedAccount) {
-          fetchPositions().catch(console.error);
-          fetchOrders().catch(console.error);
-          fetchSafetyLimits().catch(console.error);
-          subscribeToMarketData().catch(console.error);
-          fetchMarketData().catch(console.error);
-        }
-
-        // Mark data as stale if we couldn't connect
-        if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
-          dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
-        }
+        // Fetch live portfolio data (API handles missing broker gracefully)
+        fetchPositions().catch(console.error);
+        fetchOrders().catch(console.error);
+        fetchSafetyLimits().catch(console.error);
+        subscribeToMarketData().catch(console.error);
+        fetchMarketData().catch(console.error);
       } catch (error) {
         console.error('Error during init:', error);
         // Always set loading false even on error
@@ -1150,10 +1234,7 @@ export function TradingProvider({ user, children }) {
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
-  // Only poll if broker is linked
   useEffect(() => {
-    if (!state.brokerLinked) return;
-
     const interval = setInterval(async () => {
       // Try to check connection periodically
       if (!state.connected) {
@@ -1165,7 +1246,7 @@ export function TradingProvider({ user, children }) {
     }, 5000); // Poll every 5 seconds for market data
 
     return () => clearInterval(interval);
-  }, [state.connected, state.brokerLinked, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
+  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
 
   const value = {
     ...state,

@@ -8,7 +8,7 @@ import os
 import logging
 
 from services.ib_client import get_ib_client
-from middleware.auth import require_trading_approved
+from middleware.auth import require_trading_approved, get_current_user
 from models.schemas import UserContext
 
 logger = logging.getLogger(__name__)
@@ -114,7 +114,7 @@ def _format_market_data(data: Optional[dict], subscribed: bool = True) -> Option
 @router.get("/marketdata/{symbol}", response_model=MarketDataResponse)
 async def get_market_data_by_symbol(
     symbol: str = Path(..., description="ETF symbol (e.g., VUSA, IWDA)"),
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> MarketDataResponse:
     """
     Get streaming market data for a symbol.
@@ -149,7 +149,7 @@ async def get_market_data_by_symbol(
 
 @router.get("/marketdata", response_model=AllMarketDataResponse)
 async def get_all_market_data(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> AllMarketDataResponse:
     """
     Get streaming market data for all subscribed symbols.

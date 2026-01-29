@@ -9,7 +9,7 @@ from models.schemas import (
     ETFContract,
     UserContext,
 )
-from middleware.auth import require_trading_approved
+from middleware.auth import get_current_user
 from services.tradability_service import get_tradability_service
 
 router = APIRouter(prefix="/trading", tags=["Tradability"])
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/trading", tags=["Tradability"])
 
 @router.get("/tradability", response_model=TradabilityResponse)
 async def get_tradable_etfs(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> TradabilityResponse:
     """
     Get all ETFs that are tradable via LYNX/IB.
@@ -73,7 +73,7 @@ async def get_tradable_etfs(
 @router.get("/tradability/{isin}")
 async def check_etf_tradability(
     isin: str,
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> dict:
     """
     Check if a specific ETF is tradable.
@@ -100,7 +100,7 @@ async def check_etf_tradability(
 
 @router.get("/tradability/stats/summary")
 async def get_tradability_stats(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> dict:
     """
     Get tradability statistics summary.
@@ -113,7 +113,7 @@ async def get_tradability_stats(
 
 @router.post("/tradability/reload")
 async def reload_tradability_data(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> dict:
     """
     Reload tradability data from file.

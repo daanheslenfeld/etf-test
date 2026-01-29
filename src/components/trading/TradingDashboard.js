@@ -47,6 +47,7 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
     getAvailableAccounts,
     subscribeToMarketData,
     fetchMarketData,
+    positions,
     canTrade,
     tradingAccessMessage,
     needsBrokerLink,
@@ -127,8 +128,9 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
     );
   }
 
-  // Broker not linked - show connection flow
-  if (!brokerLinked) {
+  // Broker not linked AND no cached data - show connection flow
+  const hasCachedData = positions && positions.length > 0;
+  if (!brokerLinked && !hasCachedData) {
     return (
       <div className="min-h-screen bg-[#F5F6F4]">
         <MarketIndicesTicker />

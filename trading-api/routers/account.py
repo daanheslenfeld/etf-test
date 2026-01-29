@@ -71,14 +71,24 @@ async def link_broker_account_simple(
     """
     Link a LYNX/IB account to the current user.
 
-    MULTI-USER ISOLATION: Each user links their OWN IB account.
-    The account must be available in the connected IB Gateway.
+    SECURITY: Only the trading owner can link broker accounts.
+    This prevents unauthorized users from linking to the shared broker.
 
     Without request body: Auto-selects the first available account.
     With request body {"account_id": "DU..."}: Links the specified account.
 
     If IB Gateway is not connected, this will attempt to reconnect first.
     """
+    from config import get_settings
+    settings = get_settings()
+
+    # Only trading owner can link broker accounts
+    if not settings.is_trading_owner(user.email):
+        raise HTTPException(
+            status_code=403,
+            detail="Broker linking not available for this user."
+        )
+
     ib_client = get_ib_client()
 
     # If not connected, attempt to reconnect
@@ -127,9 +137,12 @@ async def link_broker_account_simple(
 
     logger.info(f"User {user.customer_id} linking IB account: {ib_account} (type: {account_type})")
 
-    # For LOCAL_DEV_MODE (customer_id=0 or no database), use in-memory storage
+    # Check if LOCAL_DEV_MODE is enabled
+    local_dev_mode = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
+
+    # For LOCAL_DEV_MODE or no database, use in-memory storage
     db = get_supabase_service()
-    if user.customer_id == 0 or not db.is_configured():
+    if local_dev_mode or user.customer_id == 0 or not db.is_configured():
         _dev_mode_linked_accounts[user.customer_id] = {
             "ib_account_id": ib_account,
             "account_type": account_type
@@ -316,7 +329,22 @@ async def get_account_info(
 async def get_available_accounts(
     user: UserContext = Depends(get_current_user)
 ) -> dict:
-    """Get list of available IB accounts from the connected gateway."""
+    """Get list of available IB accounts from the connected gateway.
+
+    SECURITY: Only the trading owner (demo@pigg.nl) can see available accounts.
+    Other users see an empty list to prevent exposure of broker account IDs.
+    """
+    from config import get_settings
+    settings = get_settings()
+
+    # Only trading owner can see available accounts
+    if not settings.is_trading_owner(user.email):
+        return {
+            "connected": False,
+            "accounts": [],
+            "message": "Account linking not available for this user."
+        }
+
     ib_client = get_ib_client()
 
     # Try to connect if not connected

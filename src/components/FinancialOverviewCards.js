@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight } from 'lucide-react';
 import { useTrading } from '../context/TradingContext';
 
 const formatCurrency = (value) => {
@@ -23,7 +23,7 @@ const formatTimeAgo = (timestamp) => {
   return `${Math.floor(hours / 24)}d geleden`;
 };
 
-export default function FinancialOverviewCards() {
+export default function FinancialOverviewCards({ onNavigate }) {
   const {
     totalValue,
     portfolioValue,
@@ -95,57 +95,81 @@ export default function FinancialOverviewCards() {
       {/* Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
         {/* Total Value Card */}
-        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#7C9885]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
-          <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium mb-3">
-            <div className="p-1.5 bg-[#7C9885]/10 rounded-lg">
-              <PiggyBank className="w-4 h-4 text-[#7C9885]" />
+        <button
+          onClick={() => onNavigate?.('totaleWaardeDetail')}
+          className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#7C9885]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)] text-left active:scale-[0.98] group"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium">
+              <div className="p-1.5 bg-[#7C9885]/10 rounded-lg">
+                <PiggyBank className="w-4 h-4 text-[#7C9885]" />
+              </div>
+              Totale Waarde
             </div>
-            Totale Waarde
+            <ChevronRight className="w-4 h-4 text-[#B2BEC3] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="text-xl sm:text-2xl font-bold text-[#2D3436] tabular-nums">
             {formatCurrency(totalValue)}
           </div>
-        </div>
+        </button>
 
         {/* Portfolio Value Card */}
-        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#6B7B8A]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
-          <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium mb-3">
-            <div className="p-1.5 bg-[#6B7B8A]/10 rounded-lg">
-              <BarChart3 className="w-4 h-4 text-[#6B7B8A]" />
+        <button
+          onClick={() => onNavigate?.('belegdVermogenDetail')}
+          className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#6B7B8A]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)] text-left active:scale-[0.98] group"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium">
+              <div className="p-1.5 bg-[#6B7B8A]/10 rounded-lg">
+                <BarChart3 className="w-4 h-4 text-[#6B7B8A]" />
+              </div>
+              Belegd Vermogen
             </div>
-            Belegd Vermogen
+            <ChevronRight className="w-4 h-4 text-[#B2BEC3] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="text-xl sm:text-2xl font-bold text-[#2D3436] tabular-nums">
             {formatCurrency(portfolioValue)}
           </div>
-        </div>
+        </button>
 
         {/* Cash Balance Card */}
-        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#7C9885]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
-          <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium mb-3">
-            <div className="p-1.5 bg-[#7C9885]/10 rounded-lg">
-              <Wallet className="w-4 h-4 text-[#7C9885]" />
+        <button
+          onClick={() => onNavigate?.('beschikbaarDetail')}
+          className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 hover:border-[#7C9885]/40 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)] text-left active:scale-[0.98] group"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium">
+              <div className="p-1.5 bg-[#7C9885]/10 rounded-lg">
+                <Wallet className="w-4 h-4 text-[#7C9885]" />
+              </div>
+              Beschikbaar
             </div>
-            Beschikbaar
+            <ChevronRight className="w-4 h-4 text-[#B2BEC3] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className={`text-xl sm:text-2xl font-bold tabular-nums ${cashBalance > 0 ? 'text-[#7C9885]' : 'text-[#2D3436]'}`}>
             {formatCurrency(cashBalance)}
           </div>
-        </div>
+        </button>
 
         {/* Returns Card */}
-        <div className={`bg-[#FEFEFE] border rounded-2xl p-5 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)] ${
-          unrealizedPnL >= 0 ? 'border-[#7C9885]/30' : 'border-[#C0736D]/30'
-        }`}>
-          <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium mb-3">
-            <div className={`p-1.5 rounded-lg ${unrealizedPnL >= 0 ? 'bg-[#7C9885]/10' : 'bg-[#C0736D]/10'}`}>
-              {unrealizedPnL >= 0 ? (
-                <TrendingUp className="w-4 h-4 text-[#7C9885]" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-[#C0736D]" />
-              )}
+        <button
+          onClick={() => onNavigate?.('rendementDetail')}
+          className={`bg-[#FEFEFE] border rounded-2xl p-5 hover:shadow-[0_4px_16px_rgba(45,52,54,0.08)] transition-all duration-200 shadow-[0_2px_8px_rgba(45,52,54,0.06)] text-left active:scale-[0.98] group ${
+            unrealizedPnL >= 0 ? 'border-[#7C9885]/30' : 'border-[#C0736D]/30'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium">
+              <div className={`p-1.5 rounded-lg ${unrealizedPnL >= 0 ? 'bg-[#7C9885]/10' : 'bg-[#C0736D]/10'}`}>
+                {unrealizedPnL >= 0 ? (
+                  <TrendingUp className="w-4 h-4 text-[#7C9885]" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-[#C0736D]" />
+                )}
+              </div>
+              Rendement
             </div>
-            Rendement
+            <ChevronRight className="w-4 h-4 text-[#B2BEC3] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className={`text-xl sm:text-2xl font-bold tabular-nums ${unrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
             {formatCurrency(unrealizedPnL)}
@@ -153,7 +177,7 @@ export default function FinancialOverviewCards() {
           <div className={`text-sm mt-1 tabular-nums ${unrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
             {formatPercent(unrealizedPnLPercent)}
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Last Updated Footer or Connect Prompt */}

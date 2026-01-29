@@ -14,3 +14,8 @@ export { default as CommunityPortfolioDetail } from './CommunityPortfolioDetail'
 export { default as PerformanceChart } from './PerformanceChart';
 export { default as CreatePortfolio } from './CreatePortfolio';
 export { default as ModelPortfoliosPage } from './ModelPortfoliosPage';
+export { default as DetailPageHeader } from './DetailPageHeader';
+export { default as TotaleWaardeDetail } from './TotaleWaardeDetail';
+export { default as BelegdVermogenDetail } from './BelegdVermogenDetail';
+export { default as RendementDetail } from './RendementDetail';
+export { default as BeschikbaarDetail } from './BeschikbaarDetail';

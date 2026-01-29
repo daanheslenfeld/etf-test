@@ -17,7 +17,8 @@ class Settings(BaseSettings):
 
     # Supabase
     supabase_url: str = "https://rfmbhdgfovnglegqxjnj.supabase.co"
-    supabase_key: str = ""
+    supabase_key: str = ""  # anon key for public access
+    supabase_service_role_key: str = ""  # service role key for backend (bypasses RLS)
 
     # ==========================================================================
     # TRADING MODE - CRITICAL SAFETY SETTING
@@ -79,7 +80,7 @@ class Settings(BaseSettings):
     api_port: int = 8002
 
     class Config:
-        env_file = "../.env"
+        env_file = (".env", "../.env")  # Check current dir first, then parent
         env_file_encoding = "utf-8"
         extra = "ignore"
 

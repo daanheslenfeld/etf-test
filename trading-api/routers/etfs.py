@@ -1,7 +1,7 @@
 """ETF list and metadata endpoints."""
 from fastapi import APIRouter, Depends
 from models.schemas import ETFListResponse, ETFInfo, UserContext
-from middleware.auth import require_trading_approved
+from middleware.auth import get_current_user
 from services.ib_client import get_ib_client
 
 router = APIRouter(prefix="/trading", tags=["ETFs"])
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/trading", tags=["ETFs"])
 
 @router.get("/etfs", response_model=ETFListResponse)
 async def get_etfs(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> ETFListResponse:
     """
     Get list of tradable ETFs.

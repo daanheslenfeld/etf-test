@@ -1,7 +1,7 @@
 """Portfolio positions endpoints with real-time market values."""
 from fastapi import APIRouter, Depends
 from models.schemas import PositionsResponse, Position, UserContext
-from middleware.auth import require_trading_approved
+from middleware.auth import get_current_user
 from services.ib_client import get_ib_client
 from decimal import Decimal
 from typing import Optional
@@ -27,7 +27,7 @@ def safe_decimal(value, default=0) -> Decimal:
 
 @router.get("/positions", response_model=PositionsResponse)
 async def get_positions(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> PositionsResponse:
     """
     Get current portfolio positions with real-time market values.
@@ -44,6 +44,16 @@ async def get_positions(
     - This matches the account summary calculation exactly
     """
     ib_client = get_ib_client()
+
+    if not user.ib_account_id:
+        return PositionsResponse(
+            positions=[],
+            account_id=None,
+            count=0,
+            total_market_value=0,
+            total_unrealized_pnl=0,
+            total_unrealized_pnl_pct=0
+        )
 
     raw_positions = await ib_client.get_positions(user.ib_account_id)
     market_data = ib_client.get_all_market_data()

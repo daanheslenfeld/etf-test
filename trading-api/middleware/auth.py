@@ -136,12 +136,47 @@ async def get_current_user(
             detail="Authentication failed: email mismatch."
         )
 
-    # Get THIS user's broker link from broker_links table (new system)
-    broker_link = await db.get_active_broker_link(customer_id)
-    broker_account_id = broker_link.get("id") if broker_link else None
-    ib_account_id = broker_link.get("ib_account_id") if broker_link else None
+    # Get THIS user's broker link
+    broker_link = None
+    ib_account_id = None
+    broker_account_id = None
 
+    # In LOCAL_DEV_MODE, first check in-memory linked accounts
+    if LOCAL_DEV_MODE:
+        dev_accounts = get_dev_mode_linked_accounts()
+        linked = dev_accounts.get(customer_id, {})
+        if linked.get("ib_account_id"):
+            ib_account_id = linked.get("ib_account_id")
+            logger.info(f"Dev mode: Using in-memory broker link for user {customer_id}: {ib_account_id}")
+
+    # If not found in dev mode, try database
+    if not ib_account_id:
+        try:
+            broker_link = await db.get_active_broker_link(customer_id)
+            broker_account_id = broker_link.get("id") if broker_link else None
+            ib_account_id = broker_link.get("ib_account_id") if broker_link else None
+        except Exception as e:
+            if LOCAL_DEV_MODE:
+                logger.warning(f"Database broker link lookup failed (dev mode): {e}")
+            else:
+                raise
+
+    # In LOCAL_DEV_MODE, fall back to IB primary account if no broker link found
+    if LOCAL_DEV_MODE and not ib_account_id:
+        try:
+            ib_client = get_ib_client()
+            primary = ib_client.get_primary_account()
+            if primary:
+                ib_account_id = primary
+                logger.info(f"Dev mode: Using IB primary account {primary} for user {customer_id}")
+        except Exception:
+            pass
+
+    # In LOCAL_DEV_MODE, override trading_status to APPROVED for convenience
     trading_status = customer.get("trading_status", "pending")
+    if LOCAL_DEV_MODE and trading_status == "pending":
+        trading_status = "approved"
+        logger.info(f"Dev mode: Auto-approving trading status for user {customer_id}")
 
     return UserContext(
         customer_id=customer_id,

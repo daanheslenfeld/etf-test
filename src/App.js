@@ -6,6 +6,7 @@ import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
 import { TradingProvider } from './context/TradingContext';
+import { BatchTradingDashboard } from './components/batch-trading';
 import BrokerSettings from './components/settings/BrokerSettings';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
 import FinancialOverviewCards from './components/FinancialOverviewCards';
@@ -15,6 +16,10 @@ import PremadePortfolioCard from './components/PremadePortfolioCard';
 import { enrichWithTradability, isTradable, validatePortfolioTradability, getTradableCount, TRADABLE_ETFS } from './data/tradableETFs';
 import BulkBuyFlow from './components/portfolio/BulkBuyFlow';
 import { ModelPortfoliosPage } from './components/portfolio';
+import TotaleWaardeDetail from './components/portfolio/TotaleWaardeDetail';
+import BelegdVermogenDetail from './components/portfolio/BelegdVermogenDetail';
+import BeschikbaarDetail from './components/portfolio/BeschikbaarDetail';
+import RendementDetail from './components/portfolio/RendementDetail';
 import { CommunityPage } from './components/community';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from './data/tradablePortfolioDefinitions';
 
@@ -969,6 +974,10 @@ const ETFPortal = () => {
     'customerDetail',
     'trading',
     'community',
+    'totaleWaardeDetail',
+    'belegdVermogenDetail',
+    'beschikbaarDetail',
+    'rendementDetail',
   ];
 
   // Initialize state from localStorage or URL
@@ -2513,7 +2522,7 @@ useEffect(() => {
 
         {/* Financial Overview + Positions - shared TradingProvider */}
         <TradingProvider user={user}>
-          <FinancialOverviewCards />
+          <FinancialOverviewCards onNavigate={(page) => setCurrentPage(page)} />
           {/* Je Huidige Portfolio - Live posities van broker */}
           <PortfolioPositionsCard />
         </TradingProvider>
@@ -2563,6 +2572,25 @@ useEffect(() => {
                 </button>
               );
             })()}
+
+            <button
+              onClick={() => setCurrentPage('batchTrading')}
+              className="bg-[#FEFEFE] border border-[#7C9885]/30 rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="text-3xl sm:text-4xl">⏰</div>
+                <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
+                  14:00 CET
+                </span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Batch Trading</h3>
+              <p className="text-xs sm:text-sm text-[#636E72]">
+                Submit orders for the next daily batch execution
+              </p>
+              <p className="text-xs text-[#7C9885] mt-2">
+                Virtual portfolio with user isolation
+              </p>
+            </button>
 
             <button
               onClick={() => setCurrentPage('modelPortfolios')}
@@ -10756,9 +10784,45 @@ useEffect(() => {
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
+      {currentPage === 'batchTrading' && (
+        <TradingProvider user={user}>
+          <div className="min-h-screen bg-[#F5F6F4]">
+            <div className="max-w-7xl mx-auto px-4 py-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#7C9885] hover:text-[#6B8A74] text-sm mb-2">&larr; Back to Dashboard</button>
+                  <h1 className="text-2xl font-bold text-[#2D3436]">Batch Trading</h1>
+                  <p className="text-[#636E72]">Submit orders to be executed in the next daily batch</p>
+                </div>
+              </div>
+              <BatchTradingDashboard user={user} />
+            </div>
+          </div>
+        </TradingProvider>
+      )}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}
+      {currentPage === 'totaleWaardeDetail' && (
+        <TradingProvider user={user}>
+          <TotaleWaardeDetail onBack={() => setCurrentPage('mainDashboard')} />
+        </TradingProvider>
+      )}
+      {currentPage === 'belegdVermogenDetail' && (
+        <TradingProvider user={user}>
+          <BelegdVermogenDetail onBack={() => setCurrentPage('mainDashboard')} />
+        </TradingProvider>
+      )}
+      {currentPage === 'beschikbaarDetail' && (
+        <TradingProvider user={user}>
+          <BeschikbaarDetail onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />
+        </TradingProvider>
+      )}
+      {currentPage === 'rendementDetail' && (
+        <TradingProvider user={user}>
+          <RendementDetail onBack={() => setCurrentPage('mainDashboard')} />
+        </TradingProvider>
+      )}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
       {/* Bulk Buy Modal */}

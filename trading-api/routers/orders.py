@@ -7,7 +7,7 @@ from models.schemas import (
     OrderRequest, OrderResponse, OrdersResponse, OrderStatus,
     UserContext, OrderSide
 )
-from middleware.auth import require_trading_approved, require_trading_owner, get_client_ip
+from middleware.auth import require_trading_approved, require_trading_owner, get_current_user, get_client_ip
 from services.ib_client import get_ib_client
 from services.audit import get_audit_service
 from services.safety import get_safety_service
@@ -68,7 +68,7 @@ class TradingAccessResponse(BaseModel):
 
 @router.get("/access", response_model=TradingAccessResponse)
 async def check_trading_access(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> TradingAccessResponse:
     """Check if current user has trading access (is the owner)."""
     settings = get_settings()

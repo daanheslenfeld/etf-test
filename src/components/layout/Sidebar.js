@@ -10,6 +10,7 @@ import {
   HelpCircle,
   X,
   ChevronLeft,
+  Clock,
 } from 'lucide-react';
 
 /**
