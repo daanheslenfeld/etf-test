@@ -12,104 +12,20 @@ export const demoAccountInfo = {
   status: 'Active',
 };
 
-// Demo account summary
+// Demo account summary — 100% cash, no positions
 export const demoAccountSummary = {
-  cash_balance: 15420.50,
-  available_funds: 14850.25,
-  portfolio_value: 52340.80,
-  total_value: 67761.30,
-  unrealized_pnl: 3240.50,
-  unrealized_pnl_percent: 6.59,
-  buying_power: 14850.25,
+  cash_balance: 10000.00,
+  available_funds: 10000.00,
+  portfolio_value: 0,
+  total_value: 10000.00,
+  unrealized_pnl: 0,
+  unrealized_pnl_percent: 0,
+  buying_power: 10000.00,
 };
 
-// Demo positions (using snake_case to match backend API format)
-export const demoPositions = [
-  {
-    symbol: 'IWDA',
-    conid: 43645828,
-    name: 'iShares Core MSCI World UCITS ETF',
-    isin: 'IE00B4L5Y983',
-    quantity: 125,
-    avg_cost: 78.50,
-    last_price: 82.45,
-    market_value: 10306.25,
-    unrealized_pnl: 493.75,
-    unrealized_pnl_pct: 5.03,
-    currency: 'EUR',
-    exchange: 'AEB',
-  },
-  {
-    symbol: 'VWCE',
-    conid: 428759564,
-    name: 'Vanguard FTSE All-World UCITS ETF',
-    isin: 'IE00BK5BQT80',
-    quantity: 85,
-    avg_cost: 105.20,
-    last_price: 112.80,
-    market_value: 9588.00,
-    unrealized_pnl: 646.00,
-    unrealized_pnl_pct: 7.23,
-    currency: 'EUR',
-    exchange: 'AEB',
-  },
-  {
-    symbol: 'EMIM',
-    conid: 239782328,
-    name: 'iShares Core MSCI EM IMI UCITS ETF',
-    isin: 'IE00BKM4GZ66',
-    quantity: 200,
-    avg_cost: 28.90,
-    last_price: 30.15,
-    market_value: 6030.00,
-    unrealized_pnl: 250.00,
-    unrealized_pnl_pct: 4.33,
-    currency: 'EUR',
-    exchange: 'AEB',
-  },
-  {
-    symbol: 'VUAA',
-    conid: 362750943,
-    name: 'Vanguard S&P 500 UCITS ETF',
-    isin: 'IE00BFMXXD54',
-    quantity: 60,
-    avg_cost: 85.40,
-    last_price: 92.30,
-    market_value: 5538.00,
-    unrealized_pnl: 414.00,
-    unrealized_pnl_pct: 8.08,
-    currency: 'EUR',
-    exchange: 'AEB',
-  },
-  {
-    symbol: 'EUNH',
-    conid: 28905730,
-    name: 'iShares Core Euro Government Bond',
-    isin: 'IE00B4WXJJ64',
-    quantity: 150,
-    avg_cost: 122.80,
-    last_price: 119.45,
-    market_value: 17917.50,
-    unrealized_pnl: -502.50,
-    unrealized_pnl_pct: -2.73,
-    currency: 'EUR',
-    exchange: 'IBIS',
-  },
-  {
-    symbol: 'SGLD',
-    conid: 38709473,
-    name: 'Invesco Physical Gold ETC',
-    isin: 'IE00B579F325',
-    quantity: 15,
-    avg_cost: 185.20,
-    last_price: 198.40,
-    market_value: 2976.00,
-    unrealized_pnl: 198.00,
-    unrealized_pnl_pct: 7.13,
-    currency: 'USD',
-    exchange: 'LSE',
-  },
-];
+// Demo positions — empty by default (100% cash state)
+// Positions are only created through the virtual account system via real orders.
+export const demoPositions = [];
 
 // Demo market indices (January 2026 realistic prices)
 export const demoIndices = [

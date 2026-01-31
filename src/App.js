@@ -21,6 +21,7 @@ import BelegdVermogenDetail from './components/portfolio/BelegdVermogenDetail';
 import BeschikbaarDetail from './components/portfolio/BeschikbaarDetail';
 import RendementDetail from './components/portfolio/RendementDetail';
 import { CommunityPage } from './components/community';
+import { AdminCashAllocation } from './components/admin/AdminCashAllocation';
 import { TRADABLE_PORTFOLIO_DEFINITIONS, getPortfolioDefinition } from './data/tradablePortfolioDefinitions';
 
 // Helper: Get categories that have tradable ETFs
@@ -1938,27 +1939,31 @@ useEffect(() => {
         })
       });
 
-      const data = await response.json();
+      // Handle non-JSON responses (e.g. HTML error pages)
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', response.status, text.substring(0, 200));
+        alert(`Registratie mislukt (server fout ${response.status}). Probeer opnieuw.`);
+        return;
+      }
 
-      console.log('Registration response:', data);
+      const data = await response.json();
 
       if (data.success) {
         if (data.requiresVerification) {
-          // Email verification required - go to verification page
           setPendingVerificationEmail(email);
           setCurrentPage('verify-code');
         } else {
-          // No verification needed - go to login
           alert(data.message || 'Registratie succesvol! Je kunt nu inloggen.');
           setCurrentPage('login');
         }
       } else {
-        console.error('Registration failed:', data);
-        alert(data.message || 'Registratie mislukt');
+        alert(data.message || 'Registratie mislukt.');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registratie mislukt. Probeer opnieuw.');
+      alert('Kan geen verbinding maken met de server. Controleer je internetverbinding en probeer opnieuw.');
     }
   };
 
@@ -2520,12 +2525,10 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* Financial Overview + Positions - shared TradingProvider */}
-        <TradingProvider user={user}>
+        {/* Financial Overview + Positions */}
           <FinancialOverviewCards onNavigate={(page) => setCurrentPage(page)} />
           {/* Je Huidige Portfolio - Live posities van broker */}
           <PortfolioPositionsCard />
-        </TradingProvider>
 
         {/* Portfolio Beheer Section */}
         <div className="mb-8">
@@ -2623,6 +2626,7 @@ useEffect(() => {
                 <span className="text-xs px-2 py-0.5 bg-[#7C9885]/20 text-[#7C9885] rounded">Kopieren</span>
               </div>
             </button>
+
           </div>
         </div>
 
@@ -9178,6 +9182,16 @@ useEffect(() => {
             >
               Chat Vragen ({chatInquiries.length})
             </button>
+            <button
+              onClick={() => setCustomerPortalTab('cashAllocation')}
+              className={`px-6 py-3 font-medium transition-colors ${
+                customerPortalTab === 'cashAllocation'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
+              }`}
+            >
+              Cash Allocation
+            </button>
           </div>
 
           {customerPortalTab === 'customers' && (
@@ -9435,6 +9449,10 @@ useEffect(() => {
                 </table>
               </div>
             </div>
+          )}
+
+          {customerPortalTab === 'cashAllocation' && (
+            <AdminCashAllocation user={user} onBack={() => setCustomerPortalTab('customers')} embedded />
           )}
 
           {/* Conversation Modal */}
@@ -9885,7 +9903,11 @@ useEffect(() => {
       try {
         const response = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Customer-ID': user?.id?.toString() || '0',
+            'X-Customer-Email': user?.email || ''
+          }
         });
         if (response.ok) {
           const data = await response.json();
@@ -10764,6 +10786,7 @@ useEffect(() => {
           animation: phone-float 3s ease-in-out infinite;
         }
       `}</style>
+      <TradingProvider user={user}>
       <div className="font-sans">
         {currentPage === 'landing' && <LandingPage />}
       {currentPage === 'login' && <LoginPage />}
@@ -10785,7 +10808,6 @@ useEffect(() => {
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
       {currentPage === 'batchTrading' && (
-        <TradingProvider user={user}>
           <div className="min-h-screen bg-[#F5F6F4]">
             <div className="max-w-7xl mx-auto px-4 py-8">
               <div className="flex items-center justify-between mb-6">
@@ -10798,30 +10820,21 @@ useEffect(() => {
               <BatchTradingDashboard user={user} />
             </div>
           </div>
-        </TradingProvider>
       )}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'totaleWaardeDetail' && (
-        <TradingProvider user={user}>
           <TotaleWaardeDetail onBack={() => setCurrentPage('mainDashboard')} />
-        </TradingProvider>
       )}
       {currentPage === 'belegdVermogenDetail' && (
-        <TradingProvider user={user}>
           <BelegdVermogenDetail onBack={() => setCurrentPage('mainDashboard')} />
-        </TradingProvider>
       )}
       {currentPage === 'beschikbaarDetail' && (
-        <TradingProvider user={user}>
           <BeschikbaarDetail onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />
-        </TradingProvider>
       )}
       {currentPage === 'rendementDetail' && (
-        <TradingProvider user={user}>
           <RendementDetail onBack={() => setCurrentPage('mainDashboard')} />
-        </TradingProvider>
       )}
       {selectedETF && <ETFDetailModal etf={selectedETF} onClose={() => setSelectedETF(null)} />}
 
@@ -10854,6 +10867,7 @@ useEffect(() => {
 
       <Footer />
       </div>
+      </TradingProvider>
     </>
   );
 };

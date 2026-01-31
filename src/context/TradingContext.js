@@ -21,6 +21,25 @@ const getUserCacheKey = (baseKey, userId) => {
   return `${baseKey}_user_${userId}`;
 };
 
+// One-time cleanup of legacy non-user-specific cache keys that may contain
+// stale IB positions from before the virtual-account migration.
+const LEGACY_CACHE_CLEANED_KEY = 'trading_legacy_cache_cleaned_v1';
+(() => {
+  try {
+    if (!localStorage.getItem(LEGACY_CACHE_CLEANED_KEY)) {
+      // Remove old shared (non-user-specific) cache entries
+      localStorage.removeItem('trading_cache_positions');
+      localStorage.removeItem('trading_cache_accountSummary');
+      localStorage.removeItem('trading_cache_marketData');
+      localStorage.removeItem('trading_cache_tradability');
+      localStorage.setItem(LEGACY_CACHE_CLEANED_KEY, Date.now().toString());
+      console.log('[TradingContext] Cleared legacy non-user-specific cache');
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+})();
+
 // Cache helper functions
 const saveToCache = (key, data) => {
   if (!key) return; // Skip if no valid key (guest user)
@@ -106,6 +125,11 @@ const initialState = {
   isExecuting: false,
   executionResults: [],
 
+  // Virtual account (per-user isolation)
+  virtualAccountId: null,
+  virtualAccountName: null,
+  isFrozen: false,
+
   // Cache state
   isDataStale: false,
   lastMarketDataUpdate: null,
@@ -140,6 +164,7 @@ const ACTIONS = {
   SET_LAST_POSITIONS_UPDATE: 'SET_LAST_POSITIONS_UPDATE',
   SET_TRADABILITY: 'SET_TRADABILITY',
   SET_TRADING_ACCESS: 'SET_TRADING_ACCESS',
+  SET_VIRTUAL_ACCOUNT: 'SET_VIRTUAL_ACCOUNT',
   RESET_PORTFOLIO_STATE: 'RESET_PORTFOLIO_STATE', // Reset all portfolio data on user change
 };
 
@@ -222,6 +247,13 @@ function tradingReducer(state, action) {
         tradingAccessMessage: action.payload.message,
         needsBrokerLink: action.payload.needsBrokerLink || false,
       };
+    case ACTIONS.SET_VIRTUAL_ACCOUNT:
+      return {
+        ...state,
+        virtualAccountId: action.payload.id,
+        virtualAccountName: action.payload.name,
+        isFrozen: action.payload.isFrozen || false,
+      };
     case ACTIONS.RESET_PORTFOLIO_STATE:
       // Reset all portfolio-related state when user changes (prevents data leakage)
       return {
@@ -247,6 +279,8 @@ function tradingReducer(state, action) {
         canTrade: true,
         tradingAccessMessage: null,
         needsBrokerLink: false,
+        virtualAccountId: null,
+        virtualAccountName: null,
       };
     default:
       return state;
@@ -261,30 +295,17 @@ export function TradingProvider({ user, children }) {
   const [state, dispatch] = useReducer(tradingReducer, initialState);
 
   // Track previous user ID to detect user changes
-  const prevUserIdRef = useRef(user?.id);
-
-  // Reset state when user changes (prevents data leakage between users)
-  useEffect(() => {
-    const prevUserId = prevUserIdRef.current;
-    const currentUserId = user?.id;
-
-    // Only reset if user actually changed (not on initial mount)
-    if (prevUserId !== undefined && prevUserId !== currentUserId) {
-      console.log('[TradingContext] User changed from', prevUserId, 'to', currentUserId, '- resetting portfolio state');
-      dispatch({ type: ACTIONS.RESET_PORTFOLIO_STATE });
-    }
-
-    prevUserIdRef.current = currentUserId;
-  }, [user?.id]);
+  const prevUserIdRef = useRef(undefined);
 
   // Create auth headers for API calls
+  // Depend only on specific fields to avoid cascading re-renders
   const getAuthHeaders = useCallback(() => {
     return {
       'Content-Type': 'application/json',
       'X-Customer-ID': user?.id?.toString() || '0',
       'X-Customer-Email': user?.email || '',
     };
-  }, [user]);
+  }, [user?.id, user?.email]);
 
   // API: Check connection status
   const checkConnection = useCallback(async () => {
@@ -677,7 +698,31 @@ export function TradingProvider({ user, children }) {
     return null;
   }, [state.tradableETFs]);
 
-  // API: Fetch account summary (USER-SPECIFIC)
+  // API: Fetch virtual account for current user (auto-creates if needed)
+  const fetchVirtualAccount = useCallback(async () => {
+    try {
+      if (IS_DEMO) {
+        dispatch({ type: ACTIONS.SET_VIRTUAL_ACCOUNT, payload: { id: 'demo-virtual', name: 'Demo Portfolio' } });
+        return 'demo-virtual';
+      }
+
+      const res = await fetch(`${TRADING_API_URL}/virtual-accounts/me`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        dispatch({ type: ACTIONS.SET_VIRTUAL_ACCOUNT, payload: { id: data.id, name: data.name, isFrozen: data.is_frozen || false } });
+        return data.id;
+      }
+      console.error('Failed to fetch virtual account:', res.status);
+      return null;
+    } catch (error) {
+      console.error('Error fetching virtual account:', error);
+      return null;
+    }
+  }, [getAuthHeaders]);
+
+  // API: Fetch account summary from virtual account (USER-SPECIFIC)
   const fetchAccountSummary = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -696,22 +741,24 @@ export function TradingProvider({ user, children }) {
         return summary;
       }
 
-      const res = await fetch(`${TRADING_API_URL}/trading/account/summary`, {
+      const vaId = state.virtualAccountId;
+      if (!vaId) return null;
+
+      const res = await fetch(`${TRADING_API_URL}/virtual-accounts/${vaId}`, {
         headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
         const summary = {
           cashBalance: data.cash_balance || 0,
-          availableFunds: data.available_funds || 0,
-          portfolioValue: data.portfolio_value || 0,
-          totalValue: data.total_value || 0,
-          unrealizedPnL: data.unrealized_pnl || 0,
-          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
-          buyingPower: data.buying_power || 0,
+          availableFunds: data.available_balance || 0,
+          portfolioValue: 0, // Updated by fetchPositions
+          totalValue: data.cash_balance || 0,
+          unrealizedPnL: 0,
+          unrealizedPnLPercent: 0,
+          buyingPower: data.available_balance || 0,
         };
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
-        // Use user-specific cache key
         const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
         saveToCache(summaryCacheKey, summary);
         return summary;
@@ -720,9 +767,9 @@ export function TradingProvider({ user, children }) {
       console.error('Error fetching account summary:', error);
     }
     return null;
-  }, [getAuthHeaders, user?.id]);
+  }, [getAuthHeaders, user?.id, state.virtualAccountId]);
 
-  // API: Fetch positions with caching (USER-SPECIFIC)
+  // API: Fetch positions from virtual account with caching (USER-SPECIFIC)
   const fetchPositions = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -749,36 +796,53 @@ export function TradingProvider({ user, children }) {
         return;
       }
 
-      // Fetch positions and account summary in parallel
-      const [posRes, summaryRes] = await Promise.all([
-        fetch(`${TRADING_API_URL}/trading/positions`, { headers: getAuthHeaders() }),
-        fetch(`${TRADING_API_URL}/trading/account/summary`, { headers: getAuthHeaders() })
-      ]);
+      // Use virtual account endpoint for per-user isolation
+      const vaId = state.virtualAccountId;
+      if (!vaId) return;
 
-      // Use user-specific cache keys
+      const res = await fetch(`${TRADING_API_URL}/virtual-accounts/${vaId}/positions`, {
+        headers: getAuthHeaders()
+      });
+
       const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user?.id);
       const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
 
-      if (posRes.ok) {
-        const data = await posRes.json();
-        const positions = data.positions || [];
+      if (res.ok) {
+        const data = await res.json();
+
+        // Map virtual positions to TradingContext format
+        const positions = (data.positions || []).map(p => ({
+          symbol: p.symbol,
+          conid: p.conid,
+          name: p.name || p.symbol,
+          isin: p.isin,
+          quantity: p.quantity,
+          avg_cost: p.avg_cost_basis,
+          last_price: p.last_price,
+          market_value: p.market_value,
+          unrealized_pnl: p.unrealized_pnl,
+          unrealized_pnl_pct: p.unrealized_pnl_pct,
+          currency: 'EUR',
+          price_stale: p.last_price === null || p.last_price === undefined,
+        }));
 
         dispatch({ type: ACTIONS.SET_POSITIONS, payload: positions });
         dispatch({ type: ACTIONS.SET_DATA_STALE, payload: false });
         dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: Date.now() });
         saveToCache(positionsCacheKey, positions);
-      }
 
-      if (summaryRes.ok) {
-        const data = await summaryRes.json();
+        // Build account summary from virtual positions response
+        const costBasis = (data.positions || []).reduce((sum, p) => sum + ((p.avg_cost_basis || 0) * (p.quantity || 0)), 0);
         const summary = {
           cashBalance: data.cash_balance || 0,
-          availableFunds: data.available_funds || 0,
-          portfolioValue: data.portfolio_value || 0,
-          totalValue: data.total_value || 0,
-          unrealizedPnL: data.unrealized_pnl || 0,
-          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
-          buyingPower: data.buying_power || 0,
+          availableFunds: data.cash_balance || 0,
+          portfolioValue: data.total_market_value || 0,
+          totalValue: data.total_portfolio_value || 0,
+          unrealizedPnL: data.total_unrealized_pnl || 0,
+          unrealizedPnLPercent: costBasis > 0
+            ? ((data.total_unrealized_pnl || 0) / costBasis * 100)
+            : 0,
+          buyingPower: data.cash_balance || 0,
         };
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
         saveToCache(summaryCacheKey, summary);
@@ -801,9 +865,9 @@ export function TradingProvider({ user, children }) {
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
       }
     }
-  }, [getAuthHeaders, user?.id]);
+  }, [getAuthHeaders, user?.id, state.virtualAccountId]);
 
-  // API: Fetch orders (USER-SPECIFIC)
+  // API: Fetch orders from virtual account (USER-SPECIFIC)
   const fetchOrders = useCallback(async () => {
     try {
       // Use demo API in demo mode
@@ -813,12 +877,27 @@ export function TradingProvider({ user, children }) {
         return;
       }
 
-      const res = await fetch(`${TRADING_API_URL}/trading/orders`, {
+      const vaId = state.virtualAccountId;
+      if (!vaId) return;
+
+      const res = await fetch(`${TRADING_API_URL}/virtual-accounts/${vaId}/orders`, {
         headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
-        dispatch({ type: ACTIONS.SET_ORDERS, payload: data.orders || [] });
+        // Map virtual order format to TradingContext format
+        const orders = (data.orders || []).map(o => ({
+          order_id: o.id,
+          symbol: o.symbol,
+          side: o.side,
+          quantity: o.quantity,
+          filled_quantity: o.filled_quantity || 0,
+          avg_fill_price: o.fill_price,
+          status: o.status === 'filled' ? 'Filled' : o.status === 'rejected' ? 'Rejected' : o.status === 'pending' ? 'PendingSubmit' : o.status,
+          order_type: o.order_type,
+          time: o.submitted_at,
+        }));
+        dispatch({ type: ACTIONS.SET_ORDERS, payload: orders });
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -952,7 +1031,7 @@ export function TradingProvider({ user, children }) {
     return { valid: true, availableFunds: available };
   }, [state.availableFunds, state.cashBalance]);
 
-  // API: Place single order (with optional confirmation)
+  // API: Place order via virtual account
   const placeOrder = useCallback(async (order, confirmed = false) => {
     try {
       // Use demo API in demo mode - NEVER execute real orders
@@ -969,9 +1048,16 @@ export function TradingProvider({ user, children }) {
         };
       }
 
-      const url = confirmed
-        ? `${TRADING_API_URL}/trading/order?confirmed=true`
-        : `${TRADING_API_URL}/trading/order`;
+      const vaId = state.virtualAccountId;
+      if (!vaId) {
+        return { success: false, message: 'No virtual account available. Please reload.' };
+      }
+
+      // Get estimated price from market data for virtual balance validation
+      const md = state.marketData[order.symbol];
+      const estimatedPrice = order.limitPrice || md?.last || md?.ask || md?.bid || null;
+
+      const url = `${TRADING_API_URL}/virtual-accounts/${vaId}/order?confirmed=${confirmed}`;
 
       const res = await fetch(url, {
         method: 'POST',
@@ -981,15 +1067,16 @@ export function TradingProvider({ user, children }) {
           conid: order.conid,
           side: order.side,
           quantity: parseInt(order.quantity),
-          order_type: order.orderType,
+          order_type: order.orderType || 'MKT',
           limit_price: order.limitPrice || null,
           stop_price: order.stopPrice || null,
+          estimated_price: estimatedPrice,
         })
       });
 
       const data = await res.json();
 
-      // Check if confirmation is required
+      // Check if confirmation is required (safety limits)
       if (data.details?.error === 'CONFIRMATION_REQUIRED') {
         return {
           success: false,
@@ -997,8 +1084,8 @@ export function TradingProvider({ user, children }) {
           confirmationType: data.details.confirmation_type,
           warnings: data.details.warnings || [],
           message: data.message,
-          isLive: data.details.is_live === true,
-          tradingMode: (data.details.trading_mode || 'paper').toUpperCase()
+          isLive: data.details?.is_live === true,
+          tradingMode: (data.details?.trading_mode || 'paper').toUpperCase()
         };
       }
 
@@ -1008,8 +1095,8 @@ export function TradingProvider({ user, children }) {
           success: false,
           safetyBlocked: true,
           message: data.message,
-          isLive: data.details.is_live === true,
-          tradingMode: (data.details.trading_mode || 'paper').toUpperCase()
+          isLive: data.details?.is_live === true,
+          tradingMode: (data.details?.trading_mode || 'paper').toUpperCase()
         };
       }
 
@@ -1024,7 +1111,7 @@ export function TradingProvider({ user, children }) {
     } catch (error) {
       return { success: false, message: error.message };
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, state.virtualAccountId, state.marketData]);
 
   // Execute all orders in basket (with confirmation flag)
   const executeBasket = useCallback(async (confirmed = false) => {
@@ -1145,14 +1232,29 @@ export function TradingProvider({ user, children }) {
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: [] });
   }, []);
 
-  // Initial load - USER ISOLATION: Only load THIS user's data
+  // Initial load - re-runs when user changes (login/logout)
   useEffect(() => {
+    const currentUserId = user?.id;
+    const prevUserId = prevUserIdRef.current;
+
+    // Reset portfolio state when user changes (prevents data leakage)
+    if (prevUserId !== undefined && prevUserId !== currentUserId) {
+      console.log('[TradingContext] User changed from', prevUserId, 'to', currentUserId, '- resetting');
+      dispatch({ type: ACTIONS.RESET_PORTFOLIO_STATE });
+    }
+    prevUserIdRef.current = currentUserId;
+
+    // Skip init if no user logged in
+    if (user == null) {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      return;
+    }
+
     const init = async () => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
 
       try {
         // FIRST: Check broker link status BEFORE loading any portfolio data
-        // This ensures we never show another user's cached data
         const connectionPromise = Promise.race([
           checkConnection(),
           new Promise(resolve => setTimeout(() => resolve(false), 3000))
@@ -1165,8 +1267,14 @@ export function TradingProvider({ user, children }) {
 
         const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
 
-        // Always load cached data if user is authenticated (cache is user-specific by user.id)
-        if (user?.id) {
+        // If connected but broker not linked, auto-link
+        if (connected && !hasLinkedAccount) {
+          console.log('[TradingContext] Connected but no broker link - auto-linking...');
+          await linkBrokerAccount();
+        }
+
+        // Load cached data (user.id can be 0 for demo user)
+        if (user?.id != null) {
           const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user.id);
           const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user.id);
           const marketDataCacheKey = getUserCacheKey(CACHE_KEYS.MARKET_DATA, user.id);
@@ -1187,54 +1295,47 @@ export function TradingProvider({ user, children }) {
             dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
           }
 
-          // Mark data as stale if we couldn't connect
           if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
             dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
           }
-        } else {
-          // Guest user (not authenticated) = empty portfolio
-          console.log('[TradingContext] Guest user - setting empty portfolio');
-          dispatch({ type: ACTIONS.SET_POSITIONS, payload: [] });
-          dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: {
-            cashBalance: 0,
-            availableFunds: 0,
-            portfolioValue: 0,
-            totalValue: 0,
-            unrealizedPnL: 0,
-            unrealizedPnLPercent: 0,
-            buyingPower: 0,
-          }});
-          dispatch({ type: ACTIONS.SET_ORDERS, payload: [] });
-          dispatch({ type: ACTIONS.SET_MARKET_DATA, payload: {} });
         }
 
-        // Set loading false IMMEDIATELY after broker check - show UI now
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
 
         // Load all other data in background (non-blocking)
         fetchTradability().catch(console.error);
         fetchETFs().catch(console.error);
         checkTradingAccess().catch(console.error);
-
-        // Fetch live portfolio data (API handles missing broker gracefully)
-        fetchPositions().catch(console.error);
-        fetchOrders().catch(console.error);
         fetchSafetyLimits().catch(console.error);
         subscribeToMarketData().catch(console.error);
         fetchMarketData().catch(console.error);
+
+        // Resolve virtual account — positions & orders fetch
+        // will trigger automatically via the virtualAccountId effect below
+        fetchVirtualAccount().catch(console.error);
       } catch (error) {
         console.error('Error during init:', error);
-        // Always set loading false even on error
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       }
     };
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.id]);
+
+  // Fetch positions & orders once virtual account is resolved
+  useEffect(() => {
+    if (state.virtualAccountId) {
+      fetchPositions().catch(console.error);
+      fetchOrders().catch(console.error);
+    }
+  }, [state.virtualAccountId, fetchPositions, fetchOrders]);
 
   // Polling for updates (positions, orders, market data)
   // Continue polling even when disconnected to update cache and detect reconnection
   useEffect(() => {
+    // Don't poll positions/orders until virtual account is resolved
+    if (!state.virtualAccountId) return;
+
     const interval = setInterval(async () => {
       // Try to check connection periodically
       if (!state.connected) {
@@ -1246,7 +1347,7 @@ export function TradingProvider({ user, children }) {
     }, 5000); // Poll every 5 seconds for market data
 
     return () => clearInterval(interval);
-  }, [state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
+  }, [state.virtualAccountId, state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
 
   const value = {
     ...state,

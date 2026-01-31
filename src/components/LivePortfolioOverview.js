@@ -19,14 +19,20 @@ const ETF_NAMES = {
 
 const TRADING_API_URL = 'http://localhost:8002';
 
-// Shared cache keys (same as TradingContext for consistency)
+// User-specific cache keys (must match TradingContext format)
 const CACHE_KEYS = {
   POSITIONS: 'trading_cache_positions',
   ACCOUNT_SUMMARY: 'trading_cache_accountSummary',
 };
 
+const getUserCacheKey = (baseKey, userId) => {
+  if (!userId || userId === 0) return null;
+  return `${baseKey}_user_${userId}`;
+};
+
 // Cache helpers
 const saveToCache = (key, data) => {
+  if (!key) return;
   try {
     localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
   } catch (e) {
@@ -35,6 +41,7 @@ const saveToCache = (key, data) => {
 };
 
 const loadFromCache = (key) => {
+  if (!key) return null;
   try {
     const cached = localStorage.getItem(key);
     return cached ? JSON.parse(cached) : null;
@@ -107,60 +114,80 @@ export default function LivePortfolioOverview({ user }) {
     }
   }, []);
 
-  // Fetch positions and account summary from backend (single source of truth)
+  // Fetch positions via virtual account endpoint (per-user isolation)
   const fetchData = useCallback(async () => {
     try {
-      const [posRes, summaryRes] = await Promise.all([
-        fetch(`${TRADING_API_URL}/trading/positions`, { headers: getAuthHeaders() }),
-        fetch(`${TRADING_API_URL}/trading/account/summary`, { headers: getAuthHeaders() })
-      ]);
+      // First resolve the user's virtual account
+      const vaRes = await fetch(`${TRADING_API_URL}/virtual-accounts/me`, { headers: getAuthHeaders() });
+      if (!vaRes.ok) throw new Error('Failed to resolve virtual account');
+      const vaData = await vaRes.json();
+      const vaId = vaData.id;
+      if (!vaId) throw new Error('No virtual account');
 
-      let dataUpdated = false;
+      // Fetch positions from virtual account
+      const posRes = await fetch(`${TRADING_API_URL}/virtual-accounts/${vaId}/positions`, { headers: getAuthHeaders() });
 
-      if (posRes.ok) {
-        const data = await posRes.json();
-        const positionsData = data.positions || [];
-        setPositions(positionsData);
-        saveToCache(CACHE_KEYS.POSITIONS, positionsData);
-        dataUpdated = true;
-      }
+      if (!posRes.ok) throw new Error('Failed to fetch positions');
 
-      if (summaryRes.ok) {
-        const data = await summaryRes.json();
-        setPortfolioValue(data.portfolio_value || 0);
-        setAvailableFunds(data.available_funds || 0);
-        setTotalValue(data.total_value || 0);
-        setUnrealizedPnL(data.unrealized_pnl || 0);
-        setUnrealizedPnLPercent(data.unrealized_pnl_percent || 0);
+      const data = await posRes.json();
 
-        saveToCache(CACHE_KEYS.ACCOUNT_SUMMARY, {
-          portfolioValue: data.portfolio_value || 0,
-          availableFunds: data.available_funds || 0,
-          totalValue: data.total_value || 0,
-          unrealizedPnL: data.unrealized_pnl || 0,
-          unrealizedPnLPercent: data.unrealized_pnl_percent || 0,
-        });
-        dataUpdated = true;
-      }
+      // Map virtual positions to display format
+      const positionsData = (data.positions || []).map(p => ({
+        symbol: p.symbol,
+        conid: p.conid,
+        name: p.name || p.symbol,
+        isin: p.isin,
+        quantity: p.quantity,
+        avg_cost: p.avg_cost_basis,
+        last_price: p.last_price,
+        market_value: p.market_value,
+        unrealized_pnl: p.unrealized_pnl,
+        unrealized_pnl_pct: p.unrealized_pnl_pct,
+        currency: 'EUR',
+        price_stale: p.last_price === null || p.last_price === undefined,
+      }));
 
-      if (dataUpdated) {
-        setIsDataStale(false);
-        setLastUpdate(Date.now());
-        setError(null);
-        return true;
-      }
+      setPositions(positionsData);
 
-      throw new Error('Failed to fetch data');
+      const costBasis = (data.positions || []).reduce((sum, p) => sum + ((p.avg_cost_basis || 0) * (p.quantity || 0)), 0);
+      const pv = data.total_market_value || 0;
+      const cash = data.cash_balance || 0;
+      const pnl = data.total_unrealized_pnl || 0;
+
+      setPortfolioValue(pv);
+      setAvailableFunds(cash);
+      setTotalValue(data.total_portfolio_value || 0);
+      setUnrealizedPnL(pnl);
+      setUnrealizedPnLPercent(costBasis > 0 ? (pnl / costBasis * 100) : 0);
+
+      // Save to user-specific cache
+      const posCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user?.id);
+      const sumCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
+      saveToCache(posCacheKey, positionsData);
+      saveToCache(sumCacheKey, {
+        portfolioValue: pv,
+        availableFunds: cash,
+        totalValue: data.total_portfolio_value || 0,
+        unrealizedPnL: pnl,
+        unrealizedPnLPercent: costBasis > 0 ? (pnl / costBasis * 100) : 0,
+      });
+
+      setIsDataStale(false);
+      setLastUpdate(Date.now());
+      setError(null);
+      return true;
     } catch (err) {
       console.error('Error fetching portfolio data:', err);
       return false;
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, user?.id]);
 
-  // Load from cache (used when backend unavailable)
+  // Load from user-specific cache (used when backend unavailable)
   const loadCachedData = useCallback(() => {
-    const cachedPositions = loadFromCache(CACHE_KEYS.POSITIONS);
-    const cachedSummary = loadFromCache(CACHE_KEYS.ACCOUNT_SUMMARY);
+    const posCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user?.id);
+    const sumCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user?.id);
+    const cachedPositions = loadFromCache(posCacheKey);
+    const cachedSummary = loadFromCache(sumCacheKey);
     let hasData = false;
 
     if (cachedPositions?.data) {
@@ -183,7 +210,7 @@ export default function LivePortfolioOverview({ user }) {
     }
 
     return hasData;
-  }, []);
+  }, [user?.id]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
