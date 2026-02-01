@@ -8835,6 +8835,16 @@ useEffect(() => {
             >
               Cash Allocation
             </button>
+            <button
+              onClick={() => setCustomerPortalTab('batchTrading')}
+              className={`px-6 py-3 font-medium transition-colors ${
+                customerPortalTab === 'batchTrading'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
+              }`}
+            >
+              Batch Trading
+            </button>
           </div>
 
           {customerPortalTab === 'customers' && (
@@ -9096,6 +9106,10 @@ useEffect(() => {
 
           {customerPortalTab === 'cashAllocation' && (
             <AdminCashAllocation user={user} onBack={() => setCustomerPortalTab('customers')} embedded />
+          )}
+
+          {customerPortalTab === 'batchTrading' && (
+            <BatchTradingDashboard user={user} />
           )}
 
           {/* Conversation Modal */}

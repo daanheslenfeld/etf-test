@@ -24,16 +24,37 @@ module.exports = async (req, res) => {
   const { id } = req.query;
 
   try {
+    // Delete related records first to avoid foreign key constraints
+    const relatedTables = [
+      'investment_details',
+      'broker_links',
+      'virtual_accounts',
+      'chat_inquiries',
+      'notifications',
+    ];
+
+    for (const table of relatedTables) {
+      const { error } = await supabase
+        .from(table)
+        .delete()
+        .eq('customer_id', id);
+
+      if (error) {
+        console.log(`Note: Could not delete from ${table}:`, error.message);
+      }
+    }
+
+    // Now delete the customer
     const { error } = await supabase
       .from('customers')
       .delete()
       .eq('id', id);
 
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('Supabase error deleting customer:', error);
       return res.status(400).json({
         success: false,
-        message: 'Verwijderen mislukt'
+        message: `Verwijderen mislukt: ${error.message}`
       });
     }
 
