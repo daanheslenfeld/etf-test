@@ -16,6 +16,7 @@ import {
   BarChart3,
   Users,
   Search,
+  LayoutGrid,
 } from 'lucide-react';
 import { TradingProvider, useTrading } from '../../context/TradingContext';
 import { useBulkBuy } from '../../hooks/useBulkBuy';
@@ -24,6 +25,7 @@ import {
   MODEL_PORTFOLIOS,
   PORTFOLIO_CATEGORIES,
   getPortfoliosByCategory,
+  getAllModelPortfolios,
   filterPortfolios,
 } from '../../data/modelPortfolioDefinitions';
 import ModelPortfolioDetail from './ModelPortfolioDetail';
@@ -33,6 +35,7 @@ import CreatePortfolio from './CreatePortfolio';
 
 // Tab configurations
 const TABS = [
+  { id: 'all', label: 'Alles', icon: LayoutGrid, category: null, color: 'green' },
   { id: 'risk', label: 'Risico', icon: Shield, category: PORTFOLIO_CATEGORIES.RISK, color: 'blue' },
   { id: 'theme', label: 'Thema', icon: Sparkles, category: PORTFOLIO_CATEGORIES.THEME, color: 'purple' },
   { id: 'strategy', label: 'Strategie', icon: BarChart3, category: PORTFOLIO_CATEGORIES.STRATEGY, color: 'teal' },
@@ -55,7 +58,7 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
   } = useBulkBuy();
 
   // State
-  const [activeTab, setActiveTab] = useState('risk');
+  const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPortfolioId, setSelectedPortfolioId] = useState(null);
   const [buyPortfolioId, setBuyPortfolioId] = useState(null);
@@ -63,10 +66,16 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
 
   // Get portfolios for active tab
   const filteredPortfolios = useMemo(() => {
-    const activeTabConfig = TABS.find(t => t.id === activeTab);
-    if (!activeTabConfig || activeTab === 'community') return [];
+    if (activeTab === 'community') return [];
 
-    let portfolios = getPortfoliosByCategory(activeTabConfig.category);
+    let portfolios;
+    if (activeTab === 'all') {
+      portfolios = getAllModelPortfolios();
+    } else {
+      const activeTabConfig = TABS.find(t => t.id === activeTab);
+      if (!activeTabConfig) return [];
+      portfolios = getPortfoliosByCategory(activeTabConfig.category);
+    }
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -206,20 +215,18 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
         ) : (
           <>
             {/* Search bar */}
-            {filteredPortfolios.length > 6 && (
-              <div className="mb-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Zoek portefeuilles..."
-                    className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
-                  />
-                </div>
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Zoek op naam, beschrijving of thema..."
+                  className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
+                />
               </div>
-            )}
+            </div>
 
             {/* Portfolio grid - compact cards */}
             {filteredPortfolios.length === 0 ? (
@@ -229,16 +236,19 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                 <p className="text-sm text-[#636E72]">Pas je zoekopdracht aan</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredPortfolios.map(portfolio => {
                   const minInvestment = calculateMinimumInvestment(portfolio.id, marketData || {});
+                  const categoryLabel = portfolio.category === 'Risk' ? 'Risico' :
+                    portfolio.category === 'Theme' ? 'Thema' :
+                    portfolio.category === 'Strategy' ? 'Strategie' : portfolio.category;
                   return (
                     <button
                       key={portfolio.id}
                       onClick={() => handleSelectPortfolio(portfolio.id)}
                       className="bg-[#FEFEFE] rounded-xl p-4 text-left border border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-[0_4px_12px_rgba(45,52,54,0.08)] transition-all group"
                     >
-                      <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-start justify-between mb-1">
                         <h4 className="font-bold text-[#2D3436] group-hover:text-[#7C9885] transition-colors text-sm leading-tight">
                           {portfolio.name}
                         </h4>
@@ -246,10 +256,20 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                           {(portfolio.expectedReturn * 100).toFixed(1)}%
                         </span>
                       </div>
+                      <p className="text-xs text-[#636E72] leading-relaxed mb-2 line-clamp-2">
+                        {portfolio.description}
+                      </p>
                       <div className="flex items-center justify-between">
-                        <span className={`text-xs ${riskColors[portfolio.riskLevel] || 'text-[#636E72]'}`}>
-                          {riskLabels[portfolio.riskLevel] || 'Onbekend'} risico
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {activeTab === 'all' && (
+                            <span className="text-xs px-1.5 py-0.5 bg-[#ECEEED] text-[#636E72] rounded">
+                              {categoryLabel}
+                            </span>
+                          )}
+                          <span className={`text-xs ${riskColors[portfolio.riskLevel] || 'text-[#636E72]'}`}>
+                            {riskLabels[portfolio.riskLevel] || 'Onbekend'} risico
+                          </span>
+                        </div>
                         {minInvestment.minimum > 0 && (
                           <span className="text-xs text-[#636E72]">
                             min. {formatCurrency(minInvestment.minimum)}
