@@ -968,7 +968,6 @@ const ETFPortal = () => {
   // Routes that are safe to restore (explicit allowlist)
   const ALLOWED_RESTORE_ROUTES = [
     'mainDashboard',
-    'welcome',
     'dashboard',
     'portfolioOverview',
     'financialNews',
@@ -1009,19 +1008,19 @@ const ETFPortal = () => {
     if (saved && BLOCKED_RESTORE_ROUTES.includes(saved)) {
       console.log('Blocked wizard route restore:', saved, '-> redirecting to safe default');
       localStorage.removeItem('currentPage');
-      return savedUser ? 'welcome' : 'landing';
+      return savedUser ? 'mainDashboard' : 'landing';
     }
 
     // Only restore if route is in allowlist
     if (saved && !ALLOWED_RESTORE_ROUTES.includes(saved)) {
       console.log('Unknown route not in allowlist:', saved, '-> redirecting to safe default');
       localStorage.removeItem('currentPage');
-      return savedUser ? 'welcome' : 'landing';
+      return savedUser ? 'mainDashboard' : 'landing';
     }
 
     // If user is logged in and no saved page, go to welcome instead of landing
     if (savedUser && !saved) {
-      return 'welcome';
+      return 'mainDashboard';
     }
 
     return saved || 'landing';
@@ -4785,7 +4784,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-xl md:text-2xl font-bold text-[#7C9885]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#636E72] hover:text-[#7C9885] font-medium transition-colors text-xs sm:text-sm md:text-base">
                   Home
                 </button>
                 {portfolio.length > 0 && (
@@ -7386,7 +7385,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="text-[#7C9885] font-medium text-xs sm:text-sm md:text-base">Dashboard</button>
                 <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
                 <button
@@ -8406,426 +8405,6 @@ useEffect(() => {
     );
   };
 
-  const WelcomePage = () => {
-    const [marketData, setMarketData] = useState({
-      indices: [
-        { name: 'S&P 500', value: 5234.18, baseValue: 5234.18, change: 1.2, positive: true },
-        { name: 'Dow Jones', value: 41250.50, baseValue: 41250.50, change: 0.8, positive: true },
-        { name: 'NASDAQ', value: 16825.93, baseValue: 16825.93, change: 1.5, positive: true },
-        { name: 'AEX', value: 915.32, baseValue: 915.32, change: -0.3, positive: false },
-        { name: 'DAX', value: 19850.45, baseValue: 19850.45, change: 0.6, positive: true },
-        { name: 'FTSE 100', value: 8350.22, baseValue: 8350.22, change: 0.4, positive: true },
-      ],
-      currencies: [
-        { name: 'EUR/USD', value: 1.0875, baseValue: 1.0875, change: 0.2, positive: true },
-        { name: 'GBP/USD', value: 1.2650, baseValue: 1.2650, change: -0.1, positive: false },
-        { name: 'USD/JPY', value: 149.85, baseValue: 149.85, change: 0.3, positive: true },
-        { name: 'EUR/GBP', value: 0.8595, baseValue: 0.8595, change: 0.1, positive: true },
-      ],
-      commodities: [
-        { name: 'Gold', symbol: 'XAU', value: 2345.60, baseValue: 2345.60, change: 0.8, positive: true },
-        { name: 'Bitcoin', symbol: 'BTC', value: 98250.00, baseValue: 98250.00, change: 2.3, positive: true },
-        { name: 'Ethereum', symbol: 'ETH', value: 3420.50, baseValue: 3420.50, change: 1.9, positive: true },
-      ]
-    });
-
-    // Navbar is always visible - removed auto-hide functionality
-
-    // Simulate real-time price updates
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setMarketData(prevData => {
-          const updateCategory = (items) => items.map(item => {
-            // Random price change between -0.15% and +0.15%
-            const randomChange = (Math.random() - 0.5) * 0.3;
-            const newValue = item.value * (1 + randomChange / 100);
-
-            // Calculate change percentage from base value
-            const changePercent = ((newValue - item.baseValue) / item.baseValue) * 100;
-
-            return {
-              ...item,
-              value: newValue,
-              change: changePercent,
-              positive: changePercent >= 0
-            };
-          });
-
-          return {
-            indices: updateCategory(prevData.indices),
-            currencies: updateCategory(prevData.currencies),
-            commodities: updateCategory(prevData.commodities)
-          };
-        });
-      }, 2000); // Update every 2 seconds
-
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
-      <div className="min-h-screen bg-[#F5F6F4]">
-        {/* Spacer to prevent content from going under fixed navbar */}
-        <div style={{ height: '72px' }}></div>
-
-        <nav
-          className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg fixed top-0 left-0 right-0 z-50"
-        >
-          <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
-            <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
-                <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
-                  {/* Original piggy bank body */}
-                  <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
-
-                  {/* Coin slot on top */}
-                  <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-
-                  {/* Gold coin */}
-                  <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-                  <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-                  <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-
-                  {/* Pig face - Eyes */}
-                  <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
-                  <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
-
-                  {/* Pig snout */}
-                  <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
-                  <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
-                  <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
-
-                  {/* Pig ears */}
-                  <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                  <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-
-                  {/* Smile */}
-                  <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
-
-                  {/* Legs/feet */}
-                  <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-                  <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-                </svg>
-                <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
-              </button>
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-[#7C9885] font-medium text-xs sm:text-sm md:text-base">Home</button>
-                <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Dashboard</button>
-                <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
-                <button
-                  onClick={handleLogout}
-                  className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base"
-                >
-                  Uitloggen
-                </button>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
-          <div className="mb-6 sm:mb-8 md:mb-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436] mb-2">Welkom terug, {user?.firstName || user?.name?.split(' ')[0]}!</h1>
-            <p className="text-sm sm:text-base text-[#636E72]">Bekijk de laatste marktgegevens en beheer je portfolio</p>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">SNELLE ACTIES</div>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-            <button
-              onClick={() => setCurrentPage('dashboard')}
-              className="bg-gradient-to-br from-[#7C9885] to-[#20D4BA] hover:shadow-xl hover:shadow-[#7C9885]/30 rounded-lg p-3 text-left transition-all group border border-[#7C9885]/50"
-            >
-              <div className="text-2xl mb-1.5">📊</div>
-              <h3 className="text-base font-bold text-gray-900 mb-1">Mijn Portfolio</h3>
-              <p className="text-xs text-gray-800">Bekijk en beheer je beleggingen</p>
-              <div className="mt-2 text-xs text-gray-900 font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Ga naar dashboard →
-              </div>
-            </button>
-
-            <button
-              onClick={() => setCurrentPage('financialNews')}
-              className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-lg hover:shadow-[#7C9885]/20 rounded-lg p-3 text-left transition-all group"
-            >
-              <div className="text-2xl mb-1.5">📰</div>
-              <h3 className="text-base font-bold text-[#2D3436] mb-1">Financieel Nieuws</h3>
-              <p className="text-xs text-[#636E72]">Blijf op de hoogte van marktontwikkelingen</p>
-              <div className="mt-2 text-xs text-[#7C9885] font-medium group-hover:translate-x-2 transition-transform inline-block">
-                Bekijk nieuws →
-              </div>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <div className="text-[#7C9885] font-semibold text-sm tracking-wider">MARKTGEGEVENS</div>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-          </div>
-
-          {/* Market Indices */}
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">📈 Beursindices</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {marketData.indices.map((index, i) => (
-                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
-                  <div className="text-xs text-[#636E72] mb-0.5 uppercase tracking-wide truncate">{index.name}</div>
-                  <div className="text-sm sm:text-base font-bold text-[#2D3436] mb-1">{index.value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className="h-px bg-[#ECEEED] mb-1"></div>
-                  <div className={`text-xs font-bold ${index.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
-                    {index.positive ? '▲' : '▼'} {index.positive ? '+' : ''}{index.change.toFixed(2)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Currencies */}
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">💱 Valuta</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {marketData.currencies.map((currency, i) => (
-                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2 sm:p-2.5 transition-all hover:shadow-md">
-                  <div className="text-xs text-[#636E72] mb-0.5 uppercase tracking-wide">{currency.name}</div>
-                  <div className="text-sm sm:text-base font-bold text-[#2D3436] mb-1">{currency.value.toFixed(4)}</div>
-                  <div className="h-px bg-[#ECEEED] mb-1"></div>
-                  <div className={`text-xs font-bold ${currency.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
-                    {currency.positive ? '▲' : '▼'} {currency.positive ? '+' : ''}{currency.change.toFixed(2)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Commodities */}
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-[#2D3436] mb-2 sm:mb-3">🪙 Grondstoffen & Crypto</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {marketData.commodities.map((commodity, i) => (
-                <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] hover:border-[#E8E8E6] rounded-lg p-2.5 sm:p-3 transition-all hover:shadow-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div className="text-sm font-semibold text-[#2D3436]">{commodity.name}</div>
-                      <div className="text-xs text-[#636E72] uppercase tracking-wider">{commodity.symbol}</div>
-                    </div>
-                    <div className="text-xl sm:text-2xl">
-                      {commodity.name === 'Gold' && '🥇'}
-                      {commodity.name === 'Bitcoin' && '₿'}
-                      {commodity.name === 'Ethereum' && 'Ξ'}
-                    </div>
-                  </div>
-                  <div className="h-px bg-[#ECEEED] mb-2"></div>
-                  <div className="text-base sm:text-lg font-bold text-[#2D3436] mb-1">${commodity.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  <div className={`text-xs sm:text-sm font-bold ${commodity.positive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
-                    {commodity.positive ? '▲' : '▼'} {commodity.positive ? '+' : ''}{commodity.change.toFixed(2)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="bg-gradient-to-r from-[#7C9885]/20 to-blue-600/20 border-2 border-[#7C9885]/50 rounded-xl p-4 sm:p-6 md:p-8 text-center shadow-lg shadow-[#7C9885]/10">
-            <h3 className="text-xl sm:text-2xl font-bold text-[#2D3436] mb-2 sm:mb-4">Klaar om te beleggen?</h3>
-            <p className="text-sm sm:text-base text-[#636E72] mb-4 sm:mb-6">Bekijk je portfolio en volg de ontwikkeling van je beleggingen in real-time</p>
-            <button
-              onClick={() => setCurrentPage('dashboard')}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-[#7C9885] text-gray-900 rounded-lg hover:bg-[#20D4BA] font-bold text-base sm:text-lg transition-all inline-flex items-center gap-2"
-            >
-              Naar Mijn Dashboard
-              <span>→</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Post-registration welcome page (shown once after account creation)
-  const PostRegisterWelcome = () => {
-    return (
-      <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
-        <div className="max-w-lg w-full text-center">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20">
-              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
-              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
-              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
-              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
-              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
-              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
-              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
-              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-            </svg>
-          </div>
-
-          {/* Title & subtitle */}
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-3">
-            Welkom bij PIGG{user?.firstName ? `, ${user.firstName}` : ''}!
-          </h1>
-          <p className="text-base sm:text-lg text-[#636E72] mb-10">
-            Je account is aangemaakt en klaar voor gebruik.
-          </p>
-
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => setCurrentPage('mainDashboard')}
-              className="px-8 py-4 bg-gradient-to-r from-[#7C9885] to-[#20D4BA] text-white font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-[#7C9885]/30 transition-all"
-            >
-              Direct investeren
-            </button>
-            <button
-              onClick={() => setCurrentPage('welcome')}
-              className="px-8 py-4 border-2 border-[#7C9885] text-[#7C9885] font-bold text-lg rounded-xl hover:bg-[#7C9885]/10 transition-all"
-            >
-              Rond kijken
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // First-time user welcome page (no portfolio yet)
-  const FirstTimeWelcome = () => {
-    return (
-      <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
-        <div className="max-w-3xl w-full">
-          {/* Logo at the top */}
-          <div className="flex justify-center mb-12">
-            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20 sm:w-24 sm:h-24">
-              {/* Piggy bank body */}
-              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
-
-              {/* Coin slot on top */}
-              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
-
-              {/* Gold coin */}
-              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
-              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
-              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
-
-              {/* Pig face - Eyes */}
-              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
-              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
-
-              {/* Pig snout */}
-              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
-              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
-              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
-
-              {/* Pig ears */}
-              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
-
-              {/* Smile */}
-              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
-
-              {/* Legs/feet */}
-              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
-              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
-            </svg>
-          </div>
-
-          {/* Welcome content */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#2D3436] mb-6 leading-tight">
-              Invest your money
-              <br />
-              <span className="bg-gradient-to-r from-[#7C9885] to-blue-500 bg-clip-text text-transparent">
-                in the world!
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl text-[#636E72] max-w-2xl mx-auto">
-              Start building your investment portfolio today and watch your wealth grow with smart ETF investments.
-            </p>
-          </div>
-
-          {/* Shiny Invest Now button */}
-          <div className="flex justify-center">
-            <button
-              onClick={() => setCurrentPage('mainDashboard')}
-              className="group relative px-12 py-6 text-xl sm:text-2xl font-bold text-gray-900 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#7C9885]/50"
-              style={{
-                background: 'linear-gradient(135deg, #7C9885 0%, #20D4BA 50%, #7C9885 100%)',
-                backgroundSize: '200% 100%',
-                animation: 'shimmer 3s ease-in-out infinite'
-              }}
-            >
-              {/* Shine effect overlay */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                  animation: 'shine 2s ease-in-out infinite'
-                }}
-              />
-
-              <span className="relative z-10 flex items-center gap-3">
-                Invest Now
-                <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-
-              {/* Glow effect */}
-              <div className="absolute inset-0 rounded-2xl opacity-75 blur-xl"
-                style={{
-                  background: 'linear-gradient(135deg, #7C9885, #20D4BA)',
-                  zIndex: -1
-                }}
-              />
-            </button>
-          </div>
-
-          {/* Additional info */}
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            <div className="p-4">
-              <div className="text-3xl mb-2">🌍</div>
-              <div className="text-sm text-[#636E72]">Global ETF Access</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl mb-2">📊</div>
-              <div className="text-sm text-[#636E72]">Smart Portfolio Building</div>
-            </div>
-            <div className="p-4">
-              <div className="text-3xl mb-2">🔒</div>
-              <div className="text-sm text-[#636E72]">Secure & Reliable</div>
-            </div>
-          </div>
-        </div>
-
-        {/* CSS animations */}
-        <style jsx>{`
-          @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            50% { background-position: 0% 0; }
-            100% { background-position: -200% 0; }
-          }
-
-          @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-          }
-        `}</style>
-      </div>
-    );
-  };
-
   const FinancialNewsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -8855,7 +8434,7 @@ useEffect(() => {
         <nav className="bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6] shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
             <div className="flex justify-between items-center">
-              <button onClick={() => setCurrentPage('welcome')} className="flex items-center gap-2 sm:gap-3">
+              <button onClick={() => setCurrentPage('mainDashboard')} className="flex items-center gap-2 sm:gap-3">
                 <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                   <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
                   <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
@@ -8876,7 +8455,7 @@ useEffect(() => {
                 <div className="text-lg sm:text-2xl md:text-3xl font-bold text-[#2D3436]">PIGG</div>
               </button>
               <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <button onClick={() => setCurrentPage('welcome')} className="text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
+                <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Home</button>
                 <button onClick={() => setCurrentPage('dashboard')} className="hidden sm:block text-[#636E72] hover:text-[#2D3436] text-xs sm:text-sm md:text-base">Dashboard</button>
                 <div className="hidden lg:block text-xs sm:text-sm text-[#636E72] truncate max-w-[100px]">{user?.name}</div>
                 <button onClick={handleLogout} className="text-[#636E72] hover:text-[#2D3436] font-medium text-xs sm:text-sm md:text-base">
@@ -10861,8 +10440,7 @@ useEffect(() => {
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
-      {currentPage === 'welcome' && <WelcomePage />}
-      {currentPage === 'postRegisterWelcome' && <PostRegisterWelcome />}
+{currentPage === 'postRegisterWelcome' && <PostRegisterWelcome />}
       {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
