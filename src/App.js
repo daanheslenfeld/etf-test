@@ -958,6 +958,7 @@ const ETFPortal = () => {
     'customPortfolioBuilder',
     'purchase',
     'firstTimeWelcome',
+    'postRegisterWelcome',
     'verify-code',
     'verify-email',
     'emailVerificationPending',
@@ -1905,9 +1906,15 @@ useEffect(() => {
           role: 'customer'
         });
 
-        // Redirect to Main Dashboard (Portfolio, LYNX Trading, Vooraf Samengesteld)
-        console.log('➡️ Redirecting to Main Dashboard');
-        setCurrentPage('mainDashboard');
+        // Redirect new users to welcome page, returning users to main dashboard
+        if (localStorage.getItem('justRegistered')) {
+          localStorage.removeItem('justRegistered');
+          console.log('➡️ New user - redirecting to post-register welcome');
+          setCurrentPage('postRegisterWelcome');
+        } else {
+          console.log('➡️ Redirecting to Main Dashboard');
+          setCurrentPage('mainDashboard');
+        }
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -1951,6 +1958,7 @@ useEffect(() => {
       const data = await response.json();
 
       if (data.success) {
+        localStorage.setItem('justRegistered', 'true');
         if (data.requiresVerification) {
           setPendingVerificationEmail(email);
           setCurrentPage('verify-code');
@@ -8639,6 +8647,60 @@ useEffect(() => {
     );
   };
 
+  // Post-registration welcome page (shown once after account creation)
+  const PostRegisterWelcome = () => {
+    return (
+      <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
+        <div className="max-w-lg w-full text-center">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <svg viewBox="0 0 48 48" fill="none" className="w-20 h-20">
+              <path d="M 12 20 Q 12 14 18 14 L 30 14 Q 36 14 36 20 L 36 28 Q 36 34 30 34 L 18 34 Q 12 34 12 28 Z" fill="#7C9885"/>
+              <rect x="20" y="10" width="8" height="2" rx="1" fill="#1a5f54"/>
+              <circle cx="24" cy="6" r="4" fill="#FFD700"/>
+              <text x="24" y="8.5" fontSize="5" fill="#B8860B" fontWeight="bold" textAnchor="middle">€</text>
+              <path d="M 20 14 Q 20 10 24 10 Q 28 10 28 14" stroke="#1a5f54" strokeWidth="1.5" fill="none"/>
+              <circle cx="20" cy="22" r="1.2" fill="#1a5f54"/>
+              <circle cx="28" cy="22" r="1.2" fill="#1a5f54"/>
+              <ellipse cx="24" cy="26" rx="3" ry="2.5" fill="#20D4BA"/>
+              <circle cx="23" cy="26" r="0.6" fill="#1a5f54"/>
+              <circle cx="25" cy="26" r="0.6" fill="#1a5f54"/>
+              <path d="M 16 16 Q 14 17 15 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 32 16 Q 34 17 33 20" stroke="#20D4BA" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 20 28 Q 24 30 28 28" stroke="#1a5f54" strokeWidth="1" fill="none" strokeLinecap="round"/>
+              <circle cx="18" cy="34" r="2" fill="#20D4BA"/>
+              <circle cx="30" cy="34" r="2" fill="#20D4BA"/>
+            </svg>
+          </div>
+
+          {/* Title & subtitle */}
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436] mb-3">
+            Welkom bij PIGG{user?.firstName ? `, ${user.firstName}` : ''}!
+          </h1>
+          <p className="text-base sm:text-lg text-[#636E72] mb-10">
+            Je account is aangemaakt en klaar voor gebruik.
+          </p>
+
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => setCurrentPage('mainDashboard')}
+              className="px-8 py-4 bg-gradient-to-r from-[#7C9885] to-[#20D4BA] text-white font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-[#7C9885]/30 transition-all"
+            >
+              Direct investeren
+            </button>
+            <button
+              onClick={() => setCurrentPage('welcome')}
+              className="px-8 py-4 border-2 border-[#7C9885] text-[#7C9885] font-bold text-lg rounded-xl hover:bg-[#7C9885]/10 transition-all"
+            >
+              Rond kijken
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // First-time user welcome page (no portfolio yet)
   const FirstTimeWelcome = () => {
     return (
@@ -10800,6 +10862,7 @@ useEffect(() => {
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
       {currentPage === 'welcome' && <WelcomePage />}
+      {currentPage === 'postRegisterWelcome' && <PostRegisterWelcome />}
       {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
