@@ -35,3 +35,15 @@ __pycache__/
 tmpclaude-*
 .claude/settings.local.json
 nul
+_ul
+_ul-*
+
+# Supabase temp
+supabase/.temp/
+supabase/supabase/
+
+# Trading API data cache
+trading-api/data/*.json
+
+# Temp openapi files
+*openapi.json
