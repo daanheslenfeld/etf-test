@@ -15,25 +15,17 @@ import {
   Sparkles,
   BarChart3,
   Users,
-  Wifi,
-  WifiOff,
-  ShoppingCart,
   Search,
-  Filter,
-  LayoutGrid,
-  List,
-  Plus,
-  Trophy,
 } from 'lucide-react';
 import { TradingProvider, useTrading } from '../../context/TradingContext';
 import { useBulkBuy } from '../../hooks/useBulkBuy';
+import { calculateMinimumInvestment, formatCurrency } from '../../utils/portfolioUtils';
 import {
   MODEL_PORTFOLIOS,
   PORTFOLIO_CATEGORIES,
   getPortfoliosByCategory,
   filterPortfolios,
 } from '../../data/modelPortfolioDefinitions';
-import ModelPortfolioCard from './ModelPortfolioCard';
 import ModelPortfolioDetail from './ModelPortfolioDetail';
 import BulkBuyModal from './BulkBuyModal';
 import CommunityPortfolios from './CommunityPortfolios';
@@ -65,7 +57,6 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
   // State
   const [activeTab, setActiveTab] = useState('risk');
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
   const [selectedPortfolioId, setSelectedPortfolioId] = useState(null);
   const [buyPortfolioId, setBuyPortfolioId] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -133,10 +124,20 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
     setShowCreateModal(false);
   }, []);
 
+  // Risk level labels
+  const riskLabels = { 1: 'Zeer laag', 2: 'Laag', 3: 'Gemiddeld', 4: 'Hoog', 5: 'Zeer hoog' };
+  const riskColors = {
+    1: 'text-[#6B7B8A]',
+    2: 'text-[#7C9885]',
+    3: 'text-[#C9A962]',
+    4: 'text-[#B8956B]',
+    5: 'text-[#C0736D]',
+  };
+
   return (
-    <div className="min-h-screen bg-[#0D0E12]">
+    <div className="min-h-screen bg-[#F5F6F4]">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-[#0D0E12]/95 backdrop-blur-sm border-b border-gray-800">
+      <div className="sticky top-0 z-40 bg-[#FEFEFE]/95 backdrop-blur-sm border-b border-[#E8E8E6]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4">
             {/* Title row */}
@@ -145,44 +146,17 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                 {onBack && (
                   <button
                     onClick={onBack}
-                    className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
+                    className="p-2 rounded-lg hover:bg-[#F5F6F4] transition-colors"
                   >
-                    <ArrowLeft className="w-5 h-5 text-gray-400" />
+                    <ArrowLeft className="w-5 h-5 text-[#636E72]" />
                   </button>
                 )}
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Model Portfolios</h1>
-                  <p className="text-sm text-gray-400">
-                    Kies uit kant-en-klare portefeuilles of maak je eigen
+                  <h1 className="text-2xl font-bold text-[#2D3436]">Model Portfolios</h1>
+                  <p className="text-sm text-[#636E72]">
+                    Kies een portefeuille om de details te bekijken
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {/* Connection status */}
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-                  connected && !isDataStale
-                    ? 'bg-green-500/10 text-green-400'
-                    : 'bg-yellow-500/10 text-yellow-400'
-                }`}>
-                  {connected && !isDataStale ? (
-                    <Wifi className="w-4 h-4" />
-                  ) : (
-                    <WifiOff className="w-4 h-4" />
-                  )}
-                  <span className="text-xs font-medium hidden sm:inline">
-                    {connected && !isDataStale ? 'Live prijzen' : 'Gecachete prijzen'}
-                  </span>
-                </div>
-
-                {/* Available cash */}
-                {availableCash > 0 && (
-                  <div className="hidden md:block text-right">
-                    <div className="text-xs text-gray-400">Beschikbaar</div>
-                    <div className="text-sm font-bold text-[#28EBCF]">
-                      {new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(availableCash)}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -191,12 +165,6 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
               {TABS.map(tab => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
-                const colorClasses = {
-                  blue: isActive ? 'bg-blue-500/20 text-blue-400 border-blue-500' : 'hover:bg-blue-500/10',
-                  purple: isActive ? 'bg-purple-500/20 text-purple-400 border-purple-500' : 'hover:bg-purple-500/10',
-                  teal: isActive ? 'bg-teal-500/20 text-teal-400 border-teal-500' : 'hover:bg-teal-500/10',
-                  pink: isActive ? 'bg-pink-500/20 text-pink-400 border-pink-500' : 'hover:bg-pink-500/10',
-                };
 
                 return (
                   <button
@@ -205,16 +173,16 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                       setActiveTab(tab.id);
                       setSearchQuery('');
                     }}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors whitespace-nowrap ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors whitespace-nowrap text-sm ${
                       isActive
-                        ? colorClasses[tab.color]
-                        : `border-transparent text-gray-400 ${colorClasses[tab.color]}`
+                        ? 'bg-[#7C9885] text-white border-[#7C9885]'
+                        : 'border-[#E8E8E6] text-[#636E72] hover:bg-[#F5F6F4]'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="font-medium">{tab.label}</span>
                     {tab.id === 'community' && (
-                      <span className="ml-1 px-1.5 py-0.5 text-xs bg-pink-500/20 text-pink-400 rounded">
+                      <span className="ml-1 px-1.5 py-0.5 text-xs bg-[#C0736D]/15 text-[#C0736D] rounded">
                         Nieuw
                       </span>
                     )}
@@ -229,7 +197,6 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'community' ? (
-          // Community portfolios tab
           <CommunityPortfolios
             currentUserId={user?.id}
             onSelectPortfolio={handleSelectPortfolio}
@@ -237,84 +204,61 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
             onCreatePortfolio={handleCreatePortfolio}
           />
         ) : (
-          // Model portfolios tabs (Risk, Theme, Strategy)
           <>
             {/* Search bar */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Zoek portefeuilles..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#1A1B1F] border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#28EBCF]"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center bg-gray-800 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid' ? 'bg-[#28EBCF] text-gray-900' : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <LayoutGrid className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list' ? 'bg-[#28EBCF] text-gray-900' : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Offline banner */}
-            {(!connected || isDataStale) && (
-              <div className="mb-6 flex items-center gap-3 p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                <WifiOff className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                <div>
-                  <p className="text-yellow-400 font-medium">Prijzen kunnen vertraagd zijn</p>
-                  <p className="text-yellow-300 text-sm">
-                    Je bekijkt gecachete data. Verbind met de broker voor actuele koersen.
-                  </p>
+            {filteredPortfolios.length > 6 && (
+              <div className="mb-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Zoek portefeuilles..."
+                    className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
+                  />
                 </div>
               </div>
             )}
 
-            {/* Portfolio grid/list */}
+            {/* Portfolio grid - compact cards */}
             {filteredPortfolios.length === 0 ? (
-              <div className="text-center py-12 bg-[#1A1B1F] rounded-2xl border border-gray-800">
-                <Search className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">Geen portefeuilles gevonden</h3>
-                <p className="text-gray-400">Pas je zoekopdracht aan</p>
-              </div>
-            ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredPortfolios.map(portfolio => (
-                  <ModelPortfolioCard
-                    key={portfolio.id}
-                    portfolio={portfolio}
-                    onSelect={handleSelectPortfolio}
-                    onBuyNow={handleBuyNow}
-                  />
-                ))}
+              <div className="text-center py-12 bg-[#FEFEFE] rounded-xl border border-[#E8E8E6]">
+                <Search className="w-10 h-10 text-[#B2BEC3] mx-auto mb-3" />
+                <h3 className="text-base font-medium text-[#2D3436] mb-1">Geen portefeuilles gevonden</h3>
+                <p className="text-sm text-[#636E72]">Pas je zoekopdracht aan</p>
               </div>
             ) : (
-              <div className="space-y-2">
-                {filteredPortfolios.map(portfolio => (
-                  <ModelPortfolioCard
-                    key={portfolio.id}
-                    portfolio={portfolio}
-                    onSelect={handleSelectPortfolio}
-                    onBuyNow={handleBuyNow}
-                    compact
-                  />
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filteredPortfolios.map(portfolio => {
+                  const minInvestment = calculateMinimumInvestment(portfolio.id, marketData || {});
+                  return (
+                    <button
+                      key={portfolio.id}
+                      onClick={() => handleSelectPortfolio(portfolio.id)}
+                      className="bg-[#FEFEFE] rounded-xl p-4 text-left border border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-[0_4px_12px_rgba(45,52,54,0.08)] transition-all group"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-bold text-[#2D3436] group-hover:text-[#7C9885] transition-colors text-sm leading-tight">
+                          {portfolio.name}
+                        </h4>
+                        <span className="text-lg font-bold text-[#7C9885] ml-2 flex-shrink-0">
+                          {(portfolio.expectedReturn * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs ${riskColors[portfolio.riskLevel] || 'text-[#636E72]'}`}>
+                          {riskLabels[portfolio.riskLevel] || 'Onbekend'} risico
+                        </span>
+                        {minInvestment.minimum > 0 && (
+                          <span className="text-xs text-[#636E72]">
+                            min. {formatCurrency(minInvestment.minimum)}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </>
