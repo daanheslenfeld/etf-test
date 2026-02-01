@@ -7,7 +7,7 @@
 
 import { getTradingInfo } from '../data/tradableETFs';
 import { getPortfolioDefinition } from '../data/tradablePortfolioDefinitions';
-import { getModelPortfolio } from '../data/modelPortfolioDefinitions';
+import { getModelPortfolio, VERIFIED_ETFS } from '../data/modelPortfolioDefinitions';
 
 /**
  * Get market price for a symbol
@@ -267,7 +267,12 @@ export function calculateMinimumInvestment(portfolioKey, marketData) {
     const tradingInfo = getTradingInfo(holding.isin);
     if (!tradingInfo) continue;
 
-    const price = getMarketPrice(tradingInfo.symbol, marketData);
+    // Use live/cached price, fall back to reference price from VERIFIED_ETFS
+    let price = getMarketPrice(tradingInfo.symbol, marketData);
+    if (!price || price <= 0) {
+      const verifiedEntry = Object.values(VERIFIED_ETFS).find(e => e.isin === holding.isin);
+      price = verifiedEntry?.refPrice || null;
+    }
     if (!price || price <= 0) continue;
 
     // Minimum total investment so this holding's allocation covers 1 unit
