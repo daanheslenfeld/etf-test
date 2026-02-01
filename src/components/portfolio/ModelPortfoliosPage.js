@@ -17,7 +17,6 @@ import {
   Users,
   Search,
   LayoutGrid,
-  Wallet,
 } from 'lucide-react';
 import { TradingProvider, useTrading } from '../../context/TradingContext';
 import { useBulkBuy } from '../../hooks/useBulkBuy';
@@ -239,9 +238,38 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
           />
         ) : (
           <>
-            {/* Search and budget filter */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="relative flex-1">
+            {/* Budget input - prominent */}
+            <div className="bg-[#FEFEFE] rounded-xl border border-[#E8E8E6] p-4 mb-6">
+              <label className="block text-sm font-medium text-[#2D3436] mb-2">
+                Hoeveel wil je beleggen?
+              </label>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#636E72] font-medium text-sm">€</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={budgetInput}
+                    onChange={(e) => setBudgetInput(e.target.value)}
+                    placeholder="Vul een bedrag in..."
+                    className="w-full pl-8 pr-4 py-2.5 bg-[#F5F6F4] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] focus:bg-white text-base font-medium"
+                  />
+                </div>
+                {budgetAmount ? (
+                  <span className="text-sm text-[#7C9885] font-medium whitespace-nowrap">
+                    {affordableCount} van {filteredPortfolios.length} portfolios beschikbaar
+                  </span>
+                ) : (
+                  <span className="text-sm text-[#B2BEC3] whitespace-nowrap hidden sm:inline">
+                    Vul in om te filteren
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Search bar */}
+            <div className="mb-6">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
                 <input
                   type="text"
@@ -250,22 +278,6 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                   placeholder="Zoek op naam, beschrijving of thema..."
                   className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
                 />
-              </div>
-              <div className="relative sm:w-64">
-                <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={budgetInput}
-                  onChange={(e) => setBudgetInput(e.target.value)}
-                  placeholder="Beschikbaar bedrag..."
-                  className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
-                />
-                {budgetAmount && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#7C9885] font-medium">
-                    ({affordableCount}/{filteredPortfolios.length})
-                  </span>
-                )}
               </div>
             </div>
 

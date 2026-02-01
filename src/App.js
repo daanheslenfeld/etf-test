@@ -2583,24 +2583,26 @@ useEffect(() => {
               );
             })()}
 
-            <button
-              onClick={() => setCurrentPage('batchTrading')}
-              className="bg-[#FEFEFE] border border-[#7C9885]/30 rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <div className="text-3xl sm:text-4xl">⏰</div>
-                <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
-                  14:00 CET
-                </span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Batch Trading</h3>
-              <p className="text-xs sm:text-sm text-[#636E72]">
-                Submit orders for the next daily batch execution
-              </p>
-              <p className="text-xs text-[#7C9885] mt-2">
-                Virtual portfolio with user isolation
-              </p>
-            </button>
+            {user?.role === 'accountmanager' && (
+              <button
+                onClick={() => setCurrentPage('batchTrading')}
+                className="bg-[#FEFEFE] border border-[#7C9885]/30 rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="text-3xl sm:text-4xl">⏰</div>
+                  <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
+                    14:00 CET
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Batch Trading</h3>
+                <p className="text-xs sm:text-sm text-[#636E72]">
+                  Submit orders for the next daily batch execution
+                </p>
+                <p className="text-xs text-[#7C9885] mt-2">
+                  Virtual portfolio with user isolation
+                </p>
+              </button>
+            )}
 
             <button
               onClick={() => setCurrentPage('modelPortfolios')}
@@ -10448,7 +10450,7 @@ useEffect(() => {
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
-      {currentPage === 'batchTrading' && (
+      {currentPage === 'batchTrading' && user?.role === 'accountmanager' && (
           <div className="min-h-screen bg-[#F5F6F4]">
             <div className="max-w-7xl mx-auto px-4 py-8">
               <div className="flex items-center justify-between mb-6">
