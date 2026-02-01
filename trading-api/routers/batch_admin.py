@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-from middleware.auth import get_current_user
+from middleware.auth import get_current_user, require_admin
 from models.schemas import UserContext
 from services.batch_execution_service import get_batch_execution_service, BatchExecutionError
 from services.order_intention_service import get_order_intention_service
@@ -69,19 +69,6 @@ class BatchHistoryResponse(BaseModel):
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
-
-def require_admin(user: UserContext = Depends(get_current_user)) -> UserContext:
-    """Dependency to require admin (trading owner) access."""
-    from config import get_settings
-    settings = get_settings()
-
-    if not settings.is_trading_owner(user.email):
-        raise HTTPException(
-            status_code=403,
-            detail="Admin access required for batch operations."
-        )
-    return user
-
 
 # =============================================================================
 # ADMIN ENDPOINTS

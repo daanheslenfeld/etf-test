@@ -82,8 +82,8 @@ async def link_broker_account_simple(
     from config import get_settings
     settings = get_settings()
 
-    # Only trading owner can link broker accounts
-    if not settings.is_trading_owner(user.email):
+    # Only trading owner can link broker accounts (skip in dev mode)
+    if not settings.local_dev_mode and user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Broker linking not available for this user."
@@ -137,12 +137,9 @@ async def link_broker_account_simple(
 
     logger.info(f"User {user.customer_id} linking IB account: {ib_account} (type: {account_type})")
 
-    # Check if LOCAL_DEV_MODE is enabled
-    local_dev_mode = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
-
     # For LOCAL_DEV_MODE or no database, use in-memory storage
     db = get_supabase_service()
-    if local_dev_mode or user.customer_id == 0 or not db.is_configured():
+    if settings.local_dev_mode or user.customer_id == 0 or not db.is_configured():
         _dev_mode_linked_accounts[user.customer_id] = {
             "ib_account_id": ib_account,
             "account_type": account_type
@@ -331,14 +328,11 @@ async def get_available_accounts(
 ) -> dict:
     """Get list of available IB accounts from the connected gateway.
 
-    SECURITY: Only the trading owner (demo@pigg.nl) can see available accounts.
+    SECURITY: Only admin users can see available accounts.
     Other users see an empty list to prevent exposure of broker account IDs.
     """
-    from config import get_settings
-    settings = get_settings()
-
-    # Only trading owner can see available accounts
-    if not settings.is_trading_owner(user.email):
+    # Only admin can see available accounts
+    if user.role != "admin":
         return {
             "connected": False,
             "accounts": [],

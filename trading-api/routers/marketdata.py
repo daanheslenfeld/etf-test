@@ -204,7 +204,7 @@ async def get_all_market_data(
 
 @router.post("/marketdata/subscribe/all", response_model=SubscribeResponse)
 async def subscribe_all_market_data(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> SubscribeResponse:
     """
     Subscribe to streaming market data for all MVP ETFs.

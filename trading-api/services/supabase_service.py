@@ -23,15 +23,19 @@ class SupabaseService:
     def __init__(self):
         settings = get_settings()
         self.base_url = f"{settings.supabase_url}/rest/v1"
+        # Use service_role key to bypass RLS for backend access
+        api_key = settings.supabase_service_role_key or settings.supabase_key
         self.headers = {
-            "apikey": settings.supabase_key,
-            "Authorization": f"Bearer {settings.supabase_key}",
+            "apikey": api_key,
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation"
         }
-        self._configured = bool(settings.supabase_key)
+        self._configured = bool(api_key)
         if not self._configured:
             logger.warning("Supabase service not configured: missing supabase_key")
+        elif not settings.supabase_service_role_key:
+            logger.warning("Supabase service using anon key - RLS may block broker_links operations")
 
     def is_configured(self) -> bool:
         """Check if Supabase service is properly configured."""

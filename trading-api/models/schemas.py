@@ -200,6 +200,7 @@ class UserContext(BaseModel):
     """User context passed through middleware."""
     customer_id: int
     email: str
+    role: str = "user"
     trading_status: TradingStatus
     broker_account_id: Optional[int] = None
     ib_account_id: Optional[str] = None

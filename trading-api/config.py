@@ -32,13 +32,6 @@ class Settings(BaseSettings):
     live_trading_confirmation: str = ""
 
     # ==========================================================================
-    # TRADING OWNER LOCK - CRITICAL SAFETY SETTING
-    # ==========================================================================
-    # Only this email address can place trades. All other users are in demo mode.
-    # Set via environment variable TRADING_OWNER_EMAIL
-    trading_owner_email: str = ""
-
-    # ==========================================================================
     # IB Gateway Connection
     # ==========================================================================
     # Port 4001 = IB Gateway paper trading
@@ -76,6 +69,9 @@ class Settings(BaseSettings):
     # ==========================================================================
     debug: bool = True
 
+    # Local development mode - disables database requirements and owner checks
+    local_dev_mode: bool = False
+
     # API server port - MUST be 8002 to match frontend expectations
     api_port: int = 8002
 
@@ -105,12 +101,6 @@ class Settings(BaseSettings):
                 f"expects port {expected}, but ib_gateway_port={self.ib_gateway_port}"
             )
         return True, "OK"
-
-    def is_trading_owner(self, email: str) -> bool:
-        """Check if the given email is the trading owner."""
-        if not self.trading_owner_email:
-            return False  # No owner configured = no one can trade
-        return email.lower().strip() == self.trading_owner_email.lower().strip()
 
 
 @lru_cache()

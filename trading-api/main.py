@@ -46,6 +46,8 @@ from routers.broker import router as broker_router
 from routers.virtual_portfolio import router as virtual_portfolio_router
 from routers.order_intentions import router as order_intentions_router
 from routers.batch_admin import router as batch_admin_router
+# Virtual trading accounts
+from routers.virtual_accounts import router as virtual_accounts_router
 
 
 # =============================================================================
@@ -231,6 +233,8 @@ app.include_router(broker_router)
 app.include_router(virtual_portfolio_router)
 app.include_router(order_intentions_router)
 app.include_router(batch_admin_router)
+# Virtual trading accounts
+app.include_router(virtual_accounts_router)
 
 
 # =============================================================================

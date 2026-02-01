@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TradingProvider, useTrading } from '../../context/TradingContext';
+import { useTrading } from '../../context/TradingContext';
 import PortfolioOverview from './PortfolioOverview';
 import OrderForm from './OrderForm';
 import OrderBasket from './OrderBasket';
@@ -481,11 +481,9 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
   );
 }
 
-// Wrapper with Provider
+// Export content directly - TradingProvider is at app root
 export default function TradingDashboard({ user, onBack, onNavigateToBroker }) {
   return (
-    <TradingProvider user={user}>
-      <TradingDashboardContent onBack={onBack} onNavigateToBroker={onNavigateToBroker} />
-    </TradingProvider>
+    <TradingDashboardContent onBack={onBack} onNavigateToBroker={onNavigateToBroker} />
   );
 }

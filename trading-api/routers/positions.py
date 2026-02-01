@@ -48,7 +48,7 @@ async def get_positions(
     if not user.ib_account_id:
         return PositionsResponse(
             positions=[],
-            account_id=None,
+            account_id="",
             count=0,
             total_market_value=0,
             total_unrealized_pnl=0,

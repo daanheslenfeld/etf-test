@@ -4,7 +4,6 @@ from typing import Optional, Dict
 from models.schemas import UserContext, TradingStatus
 from services.supabase_service import get_supabase_service
 from services.ib_client import get_ib_client
-from config import get_settings
 import logging
 import os
 
@@ -52,6 +51,7 @@ async def get_current_user(
         return UserContext(
             customer_id=0,
             email="local@localhost",
+            role="admin",
             trading_status=TradingStatus.APPROVED,
             broker_account_id=None,
             ib_account_id=ib_account
@@ -64,6 +64,7 @@ async def get_current_user(
             return UserContext(
                 customer_id=0,
                 email="dev@localhost",
+                role="user",
                 trading_status=TradingStatus.PENDING,  # NOT approved by default
                 broker_account_id=None,
                 ib_account_id=None  # NO automatic IB account
@@ -89,12 +90,28 @@ async def get_current_user(
             # Check if account was linked in-memory
             dev_accounts = get_dev_mode_linked_accounts()
             linked = dev_accounts.get(0, {})
+            ib_account_id = linked.get("ib_account_id")
+
+            # Fallback to IB primary account if no in-memory link
+            if not ib_account_id:
+                try:
+                    ib_client = get_ib_client()
+                    primary = ib_client.get_primary_account()
+                    if primary:
+                        ib_account_id = primary
+                        # Auto-store so subsequent requests are fast
+                        dev_accounts[0] = {"ib_account_id": primary, "account_type": "paper"}
+                        logger.info(f"Dev mode: Auto-linked IB primary account {primary} for customer_id=0")
+                except Exception:
+                    pass
+
             return UserContext(
                 customer_id=0,
                 email=x_customer_email or "dev@localhost",
+                role="admin",
                 trading_status=TradingStatus.APPROVED,  # Approved for local testing
                 broker_account_id=None,
-                ib_account_id=linked.get("ib_account_id")  # From in-memory storage
+                ib_account_id=ib_account_id
             )
         raise HTTPException(
             status_code=401,
@@ -111,6 +128,7 @@ async def get_current_user(
             return UserContext(
                 customer_id=customer_id,
                 email=x_customer_email or "",
+                role="user",
                 trading_status=TradingStatus.APPROVED,
                 broker_account_id=None,
                 ib_account_id=None
@@ -181,6 +199,7 @@ async def get_current_user(
     return UserContext(
         customer_id=customer_id,
         email=customer.get("email", ""),
+        role=customer.get("role") or "user",
         trading_status=TradingStatus(trading_status) if trading_status else TradingStatus.PENDING,
         broker_account_id=broker_account_id,
         ib_account_id=ib_account_id  # Only THIS user's linked account
@@ -215,6 +234,25 @@ async def require_trading_approved(
             detail="No broker account linked. Please link your LYNX account first via POST /trading/broker/link"
         )
 
+    return user
+
+
+async def require_admin(
+    user: UserContext = Depends(get_current_user)
+) -> UserContext:
+    """
+    Dependency that requires the user to have admin role.
+
+    Used for: cash allocation, trading approval, freeze/unfreeze,
+    batch execution, portfolio admin operations.
+
+    Role is determined by the 'role' column in the customers table.
+    """
+    if user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required."
+        )
     return user
 
 
@@ -269,32 +307,18 @@ async def require_trading_owner(
     user: UserContext = Depends(require_broker_linked_for_trading)
 ) -> UserContext:
     """
-    HARD SAFETY LOCK: Only the owner email can place trades.
+    HARD SAFETY LOCK: Only admin users can place real IB trades.
 
     Checks:
     1. User must have a linked broker account (via require_broker_linked_for_trading)
-    2. User must be the configured trading owner
-
-    All other users get 403 Forbidden. This prevents unauthorized trading
-    through the shared LYNX account.
+    2. User must have role='admin' in the database
     """
-    settings = get_settings()
-
-    # Check if owner email is configured
-    if not settings.trading_owner_email:
-        logger.error("TRADING_OWNER_EMAIL not configured - all trading blocked")
-        raise HTTPException(
-            status_code=403,
-            detail="Trading disabled: No owner configured."
-        )
-
-    # Check if current user is the owner
-    if not settings.is_trading_owner(user.email):
-        logger.warning(f"Trading blocked for non-owner: {user.email}")
+    if user.role != "admin":
+        logger.warning(f"Trading blocked for non-admin: {user.email} (role={user.role})")
         raise HTTPException(
             status_code=403,
             detail="Trading disabled for this user."
         )
 
-    logger.info(f"Trading owner verified: {user.email}")
+    logger.info(f"Trading admin verified: {user.email}")
     return user

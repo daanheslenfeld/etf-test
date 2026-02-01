@@ -369,11 +369,7 @@ async def get_pending_summary(
 
     ADMIN ONLY - Requires trading owner permission.
     """
-    from config import get_settings
-    settings = get_settings()
-
-    # Only trading owner can see all pending orders
-    if not settings.is_trading_owner(user.email):
+    if user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Admin access required."

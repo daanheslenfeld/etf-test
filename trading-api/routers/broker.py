@@ -7,10 +7,13 @@ from middleware.auth import get_current_user
 from services.supabase_service import get_supabase_service, SupabaseServiceError
 import logging
 import re
+import os
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/broker", tags=["Broker"])
+
+LOCAL_DEV_MODE = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
 
 
 class BrokerLinkStatusResponse(BaseModel):
@@ -53,6 +56,20 @@ async def get_broker_link(
 
     Returns whether the user has linked a LYNX account and the account ID if linked.
     """
+    # In LOCAL_DEV_MODE with customer_id=0, use in-memory storage
+    if LOCAL_DEV_MODE and user.customer_id == 0:
+        from routers.account import _dev_mode_linked_accounts
+        linked = _dev_mode_linked_accounts.get(0, {})
+        ib_account_id = linked.get("ib_account_id")
+        is_linked = bool(ib_account_id)
+        return BrokerLinkStatusResponse(
+            linked=is_linked,
+            status="linked" if is_linked else "unlinked",
+            ib_account_id=ib_account_id,
+            broker="LYNX",
+            message="Broker account linked" if is_linked else "No broker account linked."
+        )
+
     db = get_supabase_service()
 
     if not db.is_configured():
@@ -105,6 +122,22 @@ async def link_broker(
     The ib_account_id must be in format DUxxxxxx (demo account).
     Only one broker link per user is allowed.
     """
+    ib_account_id = request.ib_account_id
+
+    logger.info(f"User {user.customer_id} ({user.email}) linking broker account: {ib_account_id}")
+
+    # In LOCAL_DEV_MODE with customer_id=0, use in-memory storage
+    if LOCAL_DEV_MODE and user.customer_id == 0:
+        from routers.account import _dev_mode_linked_accounts
+        _dev_mode_linked_accounts[0] = {"ib_account_id": ib_account_id, "account_type": "paper"}
+        logger.info(f"Dev mode: Linked broker account {ib_account_id} in-memory for user 0")
+        return LinkBrokerResponse(
+            success=True,
+            message=f"LYNX account {ib_account_id} linked successfully",
+            ib_account_id=ib_account_id,
+            status="linked"
+        )
+
     db = get_supabase_service()
 
     if not db.is_configured():
@@ -112,10 +145,6 @@ async def link_broker(
             status_code=503,
             detail="Database not configured. Cannot save broker link."
         )
-
-    ib_account_id = request.ib_account_id
-
-    logger.info(f"User {user.customer_id} ({user.email}) linking broker account: {ib_account_id}")
 
     try:
         # Use upsert to create or update
@@ -165,6 +194,19 @@ async def unlink_broker(
 
     Sets the broker link status to 'unlinked' and clears the account ID.
     """
+    logger.info(f"User {user.customer_id} ({user.email}) unlinking broker account")
+
+    # In LOCAL_DEV_MODE with customer_id=0, use in-memory storage
+    if LOCAL_DEV_MODE and user.customer_id == 0:
+        from routers.account import _dev_mode_linked_accounts
+        _dev_mode_linked_accounts.pop(0, None)
+        logger.info(f"Dev mode: Unlinked broker account in-memory for user 0")
+        return LinkBrokerResponse(
+            success=True,
+            message="LYNX account disconnected successfully",
+            status="unlinked"
+        )
+
     db = get_supabase_service()
 
     if not db.is_configured():
@@ -172,8 +214,6 @@ async def unlink_broker(
             status_code=503,
             detail="Database not configured"
         )
-
-    logger.info(f"User {user.customer_id} ({user.email}) unlinking broker account")
 
     try:
         # Check if user has a broker link

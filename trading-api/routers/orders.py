@@ -70,14 +70,20 @@ class TradingAccessResponse(BaseModel):
 async def check_trading_access(
     user: UserContext = Depends(get_current_user)
 ) -> TradingAccessResponse:
-    """Check if current user has trading access (is the owner)."""
-    settings = get_settings()
-    is_owner = settings.is_trading_owner(user.email)
+    """Check if current user has trading access.
 
-    if is_owner:
+    Any approved user with a linked broker can trade via virtual accounts.
+    The is_owner flag indicates direct IB account access (admin).
+    """
+    is_owner = user.role == "admin"
+    has_broker = bool(user.ib_account_id)
+    is_approved = user.trading_status.value == "approved"
+    can_trade = has_broker and is_approved
+
+    if can_trade:
         return TradingAccessResponse(
             can_trade=True,
-            is_owner=True,
+            is_owner=is_owner,
             message="Trading enabled.",
             user_email=user.email
         )
@@ -85,14 +91,14 @@ async def check_trading_access(
         return TradingAccessResponse(
             can_trade=False,
             is_owner=False,
-            message="Trading disabled. Demo mode only.",
+            message="Trading disabled. Link your broker account to start trading.",
             user_email=user.email
         )
 
 
 @router.get("/safety/limits", response_model=UserLimitsResponse)
 async def get_user_limits(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> UserLimitsResponse:
     """Get current user's trading limits and daily stats."""
     settings = get_settings()
@@ -506,13 +512,16 @@ async def place_order(
 
 @router.get("/orders", response_model=OrdersResponse)
 async def get_orders(
-    user: UserContext = Depends(require_trading_approved)
+    user: UserContext = Depends(get_current_user)
 ) -> OrdersResponse:
     """
     Get status of recent orders for the current user's linked account.
 
     MULTI-USER ISOLATION: Only returns orders for the user's linked IB account.
     """
+    if not user.ib_account_id:
+        return OrdersResponse(orders=[], count=0)
+
     ib_client = get_ib_client()
 
     raw_orders = await ib_client.get_orders()

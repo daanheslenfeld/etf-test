@@ -254,11 +254,7 @@ async def admin_deposit(
 
     ADMIN ONLY - Requires trading owner permission.
     """
-    from config import get_settings
-    settings = get_settings()
-
-    # Only trading owner can deposit
-    if not settings.is_trading_owner(user.email):
+    if user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Admin access required for deposits."
@@ -302,11 +298,7 @@ async def admin_withdraw(
     ADMIN ONLY - Requires trading owner permission.
     Will fail if insufficient available funds.
     """
-    from config import get_settings
-    settings = get_settings()
-
-    # Only trading owner can withdraw
-    if not settings.is_trading_owner(user.email):
+    if user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Admin access required for withdrawals."
@@ -349,11 +341,7 @@ async def admin_get_portfolio(
 
     ADMIN ONLY - Requires trading owner permission.
     """
-    from config import get_settings
-    settings = get_settings()
-
-    # Only trading owner can view other portfolios
-    if not settings.is_trading_owner(user.email):
+    if user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Admin access required."
