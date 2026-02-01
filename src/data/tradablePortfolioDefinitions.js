@@ -20,27 +20,28 @@
 import { isTradable } from './tradableETFs';
 
 // Verified tradable ETFs for portfolio construction
+// All conids and exchanges verified against LYNX/IB tradableETFs registry
 const VERIFIED_ETFS = {
   // Aandelen (Equity)
-  IWDA: { isin: 'IE00B4L5Y983', name: 'iShares Core MSCI World UCITS ETF', category: 'Aandelen' },
-  EMIM: { isin: 'IE00BKM4GZ66', name: 'iShares Core MSCI EM IMI UCITS ETF', category: 'Aandelen' },
-  SXR8: { isin: 'IE00B5BMR087', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen' },
-  VWCE: { isin: 'IE00BK5BQT80', name: 'Vanguard FTSE All-World UCITS ETF', category: 'Aandelen' },
-  VUAA: { isin: 'IE00BFMXXD54', name: 'Vanguard S&P 500 UCITS ETF', category: 'Aandelen' },
+  IWDA: { isin: 'IE00B4L5Y983', symbol: 'IWDA', conid: 100292038, exchange: 'AEB', name: 'iShares Core MSCI World UCITS ETF', category: 'Aandelen' },
+  EMIM: { isin: 'IE00BKM4GZ66', symbol: 'EMIM', conid: 153454120, exchange: 'AEB', name: 'iShares Core MSCI EM IMI UCITS ETF', category: 'Aandelen' },
+  SXR8: { isin: 'IE00B5BMR087', symbol: 'SXR8', conid: 75776072, exchange: 'IBIS2', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen' },
+  VWCE: { isin: 'IE00BK5BQT80', symbol: 'VWCE', conid: 375858281, exchange: 'IBIS2', name: 'Vanguard FTSE All-World UCITS ETF', category: 'Aandelen' },
+  VUAA: { isin: 'IE00BFMXXD54', symbol: 'VUAA', conid: 399364021, exchange: 'BVME.ETF', name: 'Vanguard S&P 500 UCITS ETF', category: 'Aandelen' },
 
   // Obligaties (Bonds)
-  EUNH: { isin: 'IE00B4WXJJ64', name: 'iShares Core Euro Government Bond UCITS ETF', category: 'Obligaties' },
-  IEAC: { isin: 'IE00B3F81R35', name: 'iShares Core EUR Corporate Bond UCITS ETF', category: 'Obligaties' },
-  VAGE: { isin: 'IE00BG47KB92', name: 'Vanguard Global Aggregate Bond UCITS ETF', category: 'Obligaties' },
+  EUNH: { isin: 'IE00B4WXJJ64', symbol: 'EUNH', conid: 68490077, exchange: 'IBIS2', name: 'iShares Core Euro Government Bond UCITS ETF', category: 'Obligaties' },
+  IEAC: { isin: 'IE00B3F81R35', symbol: 'IEAC', conid: 60470164, exchange: 'LSEETF', name: 'iShares Core EUR Corporate Bond UCITS ETF', category: 'Obligaties' },
+  VAGE: { isin: 'IE00BG47KB92', symbol: 'VAGE', conid: 371588182, exchange: 'IBIS2', name: 'Vanguard Global Aggregate Bond UCITS ETF', category: 'Obligaties' },
 
   // Commodities
-  SGLD: { isin: 'IE00B579F325', name: 'Invesco Physical Gold A', category: 'Commodities' },
+  SGLD: { isin: 'IE00B579F325', symbol: 'SGLD', conid: 175394979, exchange: 'BVME.ETF', name: 'Invesco Physical Gold A', category: 'Commodities' },
 
   // Vastgoed (Real Estate)
-  IWDP: { isin: 'IE00B1FZS350', name: 'iShares Developed Markets Property Yield UCITS ETF', category: 'Vastgoed' },
+  IWDP: { isin: 'IE00B1FZS350', symbol: 'IWDP', conid: 42492945, exchange: 'AEB', name: 'iShares Developed Markets Property Yield UCITS ETF', category: 'Vastgoed' },
 
   // Money Market
-  XEON: { isin: 'LU0290358497', name: 'Xtrackers II EUR Overnight Rate Swap UCITS ETF', category: 'Money market' },
+  XEON: { isin: 'LU0290358497', symbol: 'XEON', conid: 46041702, exchange: 'IBIS2', name: 'Xtrackers II EUR Overnight Rate Swap UCITS ETF', category: 'Money market' },
 };
 
 /**

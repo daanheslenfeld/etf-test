@@ -31,77 +31,76 @@ import { isTradable, getTradingInfo } from './tradableETFs';
 
 export const VERIFIED_ETFS = {
   // World Equity
-  IWDA: { isin: 'IE00B4L5Y983', name: 'iShares Core MSCI World UCITS ETF', category: 'Aandelen', region: 'World' },
-  VWCE: { isin: 'IE00BK5BQT80', name: 'Vanguard FTSE All-World UCITS ETF', category: 'Aandelen', region: 'World' },
+  IWDA: { isin: 'IE00B4L5Y983', symbol: 'IWDA', conid: 100292038, exchange: 'AEB', name: 'iShares Core MSCI World UCITS ETF', category: 'Aandelen', region: 'World' },
+  VWCE: { isin: 'IE00BK5BQT80', symbol: 'VWCE', conid: 375858281, exchange: 'IBIS2', name: 'Vanguard FTSE All-World UCITS ETF', category: 'Aandelen', region: 'World' },
 
   // US Equity
-  SXR8: { isin: 'IE00B5BMR087', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
-  VUAA: { isin: 'IE00BFMXXD54', name: 'Vanguard S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
-  CSPX: { isin: 'IE00B5BMR087', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
+  SXR8: { isin: 'IE00B5BMR087', symbol: 'SXR8', conid: 75776072, exchange: 'IBIS2', name: 'iShares Core S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
+  VUAA: { isin: 'IE00BFMXXD54', symbol: 'VUAA', conid: 399364021, exchange: 'BVME.ETF', name: 'Vanguard S&P 500 UCITS ETF', category: 'Aandelen', region: 'US' },
 
   // Emerging Markets
-  EMIM: { isin: 'IE00BKM4GZ66', name: 'iShares Core MSCI EM IMI UCITS ETF', category: 'Aandelen', region: 'Emerging' },
-  VFEM: { isin: 'IE00B3VVMM84', name: 'Vanguard FTSE Emerging Markets UCITS ETF', category: 'Aandelen', region: 'Emerging' },
+  EMIM: { isin: 'IE00BKM4GZ66', symbol: 'EMIM', conid: 153454120, exchange: 'AEB', name: 'iShares Core MSCI EM IMI UCITS ETF', category: 'Aandelen', region: 'Emerging' },
+  VFEM: { isin: 'IE00B3VVMM84', symbol: 'VFEM', conid: 128831223, exchange: 'AEB', name: 'Vanguard FTSE Emerging Markets UCITS ETF', category: 'Aandelen', region: 'Emerging' },
 
   // Europe
-  IEUS: { isin: 'IE00B1YZSC51', name: 'iShares MSCI Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
-  VEUR: { isin: 'IE00BK5BQX27', name: 'Vanguard FTSE Developed Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
+  IEUS: { isin: 'IE00B1YZSC51', symbol: 'IMEU', conid: 45998497, exchange: 'AEB', name: 'iShares Core MSCI Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
+  VEUR: { isin: 'IE00BK5BQX27', symbol: 'VWCG', conid: 375858284, exchange: 'IBIS2', name: 'Vanguard FTSE Developed Europe UCITS ETF', category: 'Aandelen', region: 'Europe' },
 
   // Technology
-  EQQQ: { isin: 'IE00B53SZB19', name: 'Invesco NASDAQ-100 UCITS ETF', category: 'Aandelen', theme: 'Technology' },
-  IUIT: { isin: 'IE00B3WJKG14', name: 'iShares S&P 500 Information Technology Sector', category: 'Aandelen', theme: 'Technology' },
+  EQQQ: { isin: 'IE0032077012', symbol: 'EQQQ', conid: 18706552, exchange: 'BVME.ETF', name: 'Invesco EQQQ NASDAQ-100 UCITS ETF', category: 'Aandelen', theme: 'Technology' },
+  IUIT: { isin: 'IE00B3WJKG14', symbol: 'QDVE', conid: 242717020, exchange: 'IBIS2', name: 'iShares S&P 500 Information Technology Sector UCITS ETF', category: 'Aandelen', theme: 'Technology' },
 
   // Sustainability / ESG
-  SUWS: { isin: 'IE00BKX55T58', name: 'iShares MSCI World SRI UCITS ETF', category: 'Aandelen', theme: 'ESG' },
-  VGEU: { isin: 'IE00BFNM3D14', name: 'Vanguard ESG Developed World All Cap', category: 'Aandelen', theme: 'ESG' },
+  SUWS: { isin: 'IE00BYX2JD69', symbol: 'SUSW', conid: 292495500, exchange: 'LSEETF', name: 'iShares MSCI World SRI UCITS ETF', category: 'Aandelen', theme: 'ESG' },
+  VGEU: { isin: 'IE00BNG8L278', symbol: 'V3AA', conid: 478811098, exchange: 'IBIS2', name: 'Vanguard ESG Global All Cap UCITS ETF', category: 'Aandelen', theme: 'ESG' },
 
   // Dividend
-  VHYL: { isin: 'IE00B8GKDB10', name: 'Vanguard FTSE All-World High Dividend', category: 'Aandelen', theme: 'Dividend' },
-  IDVY: { isin: 'IE00B0M62S72', name: 'iShares Euro Dividend UCITS ETF', category: 'Aandelen', theme: 'Dividend' },
+  VHYL: { isin: 'IE00B8GKDB10', symbol: 'VHYL', conid: 128831209, exchange: 'AEB', name: 'Vanguard FTSE All-World High Dividend Yield UCITS ETF', category: 'Aandelen', theme: 'Dividend' },
+  IDVY: { isin: 'IE00B0M62S72', symbol: 'IDVY', conid: 37036662, exchange: 'AEB', name: 'iShares Euro Dividend UCITS ETF', category: 'Aandelen', theme: 'Dividend' },
 
   // Healthcare
-  HEAL: { isin: 'IE00BMW42843', name: 'iShares Healthcare Innovation UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
-  IXJ: { isin: 'IE00B43HR379', name: 'iShares Global Healthcare UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
+  HEAL: { isin: 'IE00BYZK4776', symbol: 'HEAL', conid: 254447338, exchange: 'BVME.ETF', name: 'iShares Healthcare Innovation UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
+  IXJ: { isin: 'IE00B43HR379', symbol: 'QDVG', conid: 288308392, exchange: 'IBIS2', name: 'iShares S&P 500 Health Care Sector UCITS ETF', category: 'Aandelen', theme: 'Healthcare' },
 
   // Clean Energy
-  INRG: { isin: 'IE00B1XNHC34', name: 'iShares Global Clean Energy UCITS ETF', category: 'Aandelen', theme: 'CleanEnergy' },
+  INRG: { isin: 'IE00B1XNHC34', symbol: 'INRG', conid: 45998500, exchange: 'BVME.ETF', name: 'iShares Global Clean Energy UCITS ETF', category: 'Aandelen', theme: 'CleanEnergy' },
 
   // Government Bonds
-  EUNH: { isin: 'IE00B4WXJJ64', name: 'iShares Core Euro Government Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
-  IGLT: { isin: 'IE00B1FZSB30', name: 'iShares Core UK Gilts UCITS ETF', category: 'Obligaties', region: 'UK' },
+  EUNH: { isin: 'IE00B4WXJJ64', symbol: 'EUNH', conid: 68490077, exchange: 'IBIS2', name: 'iShares Core Euro Government Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
+  IGLT: { isin: 'IE00B1FZSB30', symbol: 'IGLT', conid: 521963156, exchange: 'BVME.ETF', name: 'iShares Core UK Gilts UCITS ETF', category: 'Obligaties', region: 'UK' },
 
   // Corporate Bonds
-  IEAC: { isin: 'IE00B3F81R35', name: 'iShares Core EUR Corporate Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
-  VUCP: { isin: 'IE00BZ163K21', name: 'Vanguard USD Corporate Bond UCITS ETF', category: 'Obligaties', region: 'US' },
+  IEAC: { isin: 'IE00B3F81R35', symbol: 'IEAC', conid: 60470164, exchange: 'LSEETF', name: 'iShares Core EUR Corporate Bond UCITS ETF', category: 'Obligaties', region: 'Europe' },
+  VUCP: { isin: 'IE00BZ163K21', symbol: 'VUCP', conid: 225116854, exchange: 'AEB', name: 'Vanguard USD Corporate Bond UCITS ETF', category: 'Obligaties', region: 'US' },
 
   // Global Bonds
-  VAGE: { isin: 'IE00BG47KB92', name: 'Vanguard Global Aggregate Bond UCITS ETF', category: 'Obligaties', region: 'World' },
+  VAGE: { isin: 'IE00BG47KB92', symbol: 'VAGE', conid: 371588182, exchange: 'IBIS2', name: 'Vanguard Global Aggregate Bond UCITS ETF', category: 'Obligaties', region: 'World' },
 
   // Inflation-Linked Bonds
-  ITPS: { isin: 'IE00B0M62X26', name: 'iShares EUR Inflation Linked Government Bond', category: 'Obligaties', theme: 'InflationProtection' },
+  ITPS: { isin: 'IE00B0M62X26', symbol: 'IBCI', conid: 37036668, exchange: 'AEB', name: 'iShares EUR Inflation Linked Government Bond UCITS ETF', category: 'Obligaties', theme: 'InflationProtection' },
 
   // Commodities
-  SGLD: { isin: 'IE00B579F325', name: 'Invesco Physical Gold A', category: 'Commodities' },
-  CMOD: { isin: 'IE00BD4TYG73', name: 'iShares Diversified Commodity Swap UCITS ETF', category: 'Commodities' },
+  SGLD: { isin: 'IE00B579F325', symbol: 'SGLD', conid: 175394979, exchange: 'BVME.ETF', name: 'Invesco Physical Gold A', category: 'Commodities' },
+  CMOD: { isin: 'IE00BDFL4P12', symbol: 'SXRS', conid: 321100413, exchange: 'IBIS2', name: 'iShares Diversified Commodity Swap UCITS ETF', category: 'Commodities' },
 
   // Real Estate
-  IWDP: { isin: 'IE00B1FZS350', name: 'iShares Developed Markets Property Yield', category: 'Vastgoed', region: 'World' },
-  VGRE: { isin: 'IE00B5L01S80', name: 'Vanguard Global Real Estate UCITS ETF', category: 'Vastgoed', region: 'World' },
+  IWDP: { isin: 'IE00B1FZS350', symbol: 'IWDP', conid: 42492945, exchange: 'AEB', name: 'iShares Developed Markets Property Yield UCITS ETF', category: 'Vastgoed', region: 'World' },
+  TRET: { isin: 'NL0009690239', symbol: 'TRET', conid: 86792281, exchange: 'AEB', name: 'VanEck Global Real Estate UCITS ETF', category: 'Vastgoed', region: 'World' },
 
   // Money Market
-  XEON: { isin: 'LU0290358497', name: 'Xtrackers II EUR Overnight Rate Swap UCITS ETF', category: 'Money market' },
+  XEON: { isin: 'LU0290358497', symbol: 'XEON', conid: 46041702, exchange: 'IBIS2', name: 'Xtrackers II EUR Overnight Rate Swap UCITS ETF', category: 'Money market' },
 
   // Value Factor
-  IWVL: { isin: 'IE00BP3QZB59', name: 'iShares Edge MSCI World Value Factor', category: 'Aandelen', theme: 'Value' },
+  IWVL: { isin: 'IE00BP3QZB59', symbol: 'IWVL', conid: 183908203, exchange: 'BVME.ETF', name: 'iShares Edge MSCI World Value Factor UCITS ETF', category: 'Aandelen', theme: 'Value' },
 
   // Momentum Factor
-  IWMO: { isin: 'IE00BP3QZ825', name: 'iShares Edge MSCI World Momentum Factor', category: 'Aandelen', theme: 'Momentum' },
+  IWMO: { isin: 'IE00BP3QZ825', symbol: 'IWMO', conid: 183908189, exchange: 'BVME.ETF', name: 'iShares Edge MSCI World Momentum Factor UCITS ETF', category: 'Aandelen', theme: 'Momentum' },
 
   // Quality Factor
-  IWQU: { isin: 'IE00BP3QZ601', name: 'iShares Edge MSCI World Quality Factor', category: 'Aandelen', theme: 'Quality' },
+  IWQU: { isin: 'IE00BP3QZ601', symbol: 'IWQU', conid: 183908193, exchange: 'BVME.ETF', name: 'iShares Edge MSCI World Quality Factor UCITS ETF', category: 'Aandelen', theme: 'Quality' },
 
   // Small Cap
-  WSML: { isin: 'IE00BF4RFH31', name: 'iShares MSCI World Small Cap UCITS ETF', category: 'Aandelen', theme: 'SmallCap' },
+  WSML: { isin: 'IE00BF4RFH31', symbol: 'IUSN', conid: 320057568, exchange: 'IBIS2', name: 'iShares MSCI World Small Cap UCITS ETF', category: 'Aandelen', theme: 'SmallCap' },
 };
 
 // ============================================
