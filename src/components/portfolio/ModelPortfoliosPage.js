@@ -17,6 +17,7 @@ import {
   Users,
   Search,
   LayoutGrid,
+  Wallet,
 } from 'lucide-react';
 import { TradingProvider, useTrading } from '../../context/TradingContext';
 import { useBulkBuy } from '../../hooks/useBulkBuy';
@@ -60,9 +61,15 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
   // State
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [budgetInput, setBudgetInput] = useState('');
   const [selectedPortfolioId, setSelectedPortfolioId] = useState(null);
   const [buyPortfolioId, setBuyPortfolioId] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const budgetAmount = useMemo(() => {
+    const val = parseFloat(budgetInput.replace(/[^0-9.,]/g, '').replace(',', '.'));
+    return isNaN(val) || val <= 0 ? null : val;
+  }, [budgetInput]);
 
   // Get portfolios for active tab
   const filteredPortfolios = useMemo(() => {
@@ -88,6 +95,24 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
 
     return portfolios;
   }, [activeTab, searchQuery]);
+
+  // Pre-compute minimum investments for all filtered portfolios
+  const portfolioMinInvestments = useMemo(() => {
+    const map = {};
+    filteredPortfolios.forEach(p => {
+      map[p.id] = calculateMinimumInvestment(p.id, marketData || {});
+    });
+    return map;
+  }, [filteredPortfolios, marketData]);
+
+  // Count affordable portfolios
+  const affordableCount = useMemo(() => {
+    if (!budgetAmount) return filteredPortfolios.length;
+    return filteredPortfolios.filter(p => {
+      const min = portfolioMinInvestments[p.id]?.minimum || 0;
+      return min === 0 || budgetAmount >= min;
+    }).length;
+  }, [filteredPortfolios, portfolioMinInvestments, budgetAmount]);
 
   // Selected portfolio for detail view
   const selectedPortfolio = useMemo(() => {
@@ -214,9 +239,9 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
           />
         ) : (
           <>
-            {/* Search bar */}
-            <div className="mb-6">
-              <div className="relative">
+            {/* Search and budget filter */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
                 <input
                   type="text"
@@ -225,6 +250,22 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                   placeholder="Zoek op naam, beschrijving of thema..."
                   className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
                 />
+              </div>
+              <div className="relative sm:w-64">
+                <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B2BEC3]" />
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={budgetInput}
+                  onChange={(e) => setBudgetInput(e.target.value)}
+                  placeholder="Beschikbaar bedrag..."
+                  className="w-full pl-10 pr-4 py-2 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:border-[#7C9885] text-sm"
+                />
+                {budgetAmount && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#7C9885] font-medium">
+                    ({affordableCount}/{filteredPortfolios.length})
+                  </span>
+                )}
               </div>
             </div>
 
@@ -238,7 +279,8 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredPortfolios.map(portfolio => {
-                  const minInvestment = calculateMinimumInvestment(portfolio.id, marketData || {});
+                  const minInvestment = portfolioMinInvestments[portfolio.id] || { minimum: 0 };
+                  const isAffordable = !budgetAmount || minInvestment.minimum === 0 || budgetAmount >= minInvestment.minimum;
                   const categoryLabel = portfolio.category === 'Risk' ? 'Risico' :
                     portfolio.category === 'Theme' ? 'Thema' :
                     portfolio.category === 'Strategy' ? 'Strategie' : portfolio.category;
@@ -246,7 +288,11 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
                     <button
                       key={portfolio.id}
                       onClick={() => handleSelectPortfolio(portfolio.id)}
-                      className="bg-[#FEFEFE] rounded-xl p-4 text-left border border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-[0_4px_12px_rgba(45,52,54,0.08)] transition-all group"
+                      className={`bg-[#FEFEFE] rounded-xl p-4 text-left border transition-all group ${
+                        isAffordable
+                          ? 'border-[#E8E8E6] hover:border-[#7C9885] hover:shadow-[0_4px_12px_rgba(45,52,54,0.08)]'
+                          : 'border-[#E8E8E6] opacity-40'
+                      }`}
                     >
                       <div className="flex items-start justify-between mb-1">
                         <h4 className="font-bold text-[#2D3436] group-hover:text-[#7C9885] transition-colors text-sm leading-tight">
