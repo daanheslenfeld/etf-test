@@ -6,7 +6,6 @@ import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
 import { TradingProvider } from './context/TradingContext';
-import { BatchTradingDashboard } from './components/batch-trading';
 import BrokerSettings from './components/settings/BrokerSettings';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
 import FinancialOverviewCards from './components/FinancialOverviewCards';
@@ -2582,27 +2581,6 @@ useEffect(() => {
                 </button>
               );
             })()}
-
-            {user?.role === 'accountmanager' && (
-              <button
-                onClick={() => setCurrentPage('batchTrading')}
-                className="bg-[#FEFEFE] border border-[#7C9885]/30 rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="text-3xl sm:text-4xl">⏰</div>
-                  <span className="text-xs px-2 py-1 bg-[#7C9885]/20 text-[#7C9885] rounded-full">
-                    14:00 CET
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Batch Trading</h3>
-                <p className="text-xs sm:text-sm text-[#636E72]">
-                  Submit orders for the next daily batch execution
-                </p>
-                <p className="text-xs text-[#7C9885] mt-2">
-                  Virtual portfolio with user isolation
-                </p>
-              </button>
-            )}
 
             <button
               onClick={() => setCurrentPage('modelPortfolios')}
@@ -8835,16 +8813,6 @@ useEffect(() => {
             >
               Cash Allocation
             </button>
-            <button
-              onClick={() => setCustomerPortalTab('batchTrading')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                customerPortalTab === 'batchTrading'
-                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
-                  : 'text-[#636E72] hover:text-[#2D3436]'
-              }`}
-            >
-              Batch Trading
-            </button>
           </div>
 
           {customerPortalTab === 'customers' && (
@@ -9106,10 +9074,6 @@ useEffect(() => {
 
           {customerPortalTab === 'cashAllocation' && (
             <AdminCashAllocation user={user} onBack={() => setCustomerPortalTab('customers')} embedded />
-          )}
-
-          {customerPortalTab === 'batchTrading' && (
-            <BatchTradingDashboard user={user} />
           )}
 
           {/* Conversation Modal */}
@@ -10464,20 +10428,6 @@ useEffect(() => {
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
-      {currentPage === 'batchTrading' && user?.role === 'accountmanager' && (
-          <div className="min-h-screen bg-[#F5F6F4]">
-            <div className="max-w-7xl mx-auto px-4 py-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <button onClick={() => setCurrentPage('mainDashboard')} className="text-[#7C9885] hover:text-[#6B8A74] text-sm mb-2">&larr; Back to Dashboard</button>
-                  <h1 className="text-2xl font-bold text-[#2D3436]">Batch Trading</h1>
-                  <p className="text-[#636E72]">Submit orders to be executed in the next daily batch</p>
-                </div>
-              </div>
-              <BatchTradingDashboard user={user} />
-            </div>
-          </div>
-      )}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}

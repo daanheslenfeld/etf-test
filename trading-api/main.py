@@ -42,10 +42,6 @@ from routers.community import router as community_router
 from routers.notifications import router as notifications_router
 from routers.competitions import router as competitions_router
 from routers.broker import router as broker_router
-# Batch trading routers
-from routers.virtual_portfolio import router as virtual_portfolio_router
-from routers.order_intentions import router as order_intentions_router
-from routers.batch_admin import router as batch_admin_router
 # Virtual trading accounts
 from routers.virtual_accounts import router as virtual_accounts_router
 
@@ -121,7 +117,6 @@ async def lifespan(app: FastAPI):
     """
     # Late import to avoid connection at module load
     from services.ib_client import get_ib_client, shutdown_ib_client
-    from scheduler import start_scheduler, stop_scheduler
 
     settings = get_settings()
 
@@ -174,10 +169,6 @@ async def lifespan(app: FastAPI):
     # Start auto-reconnect (will retry in background if not connected)
     await ib_client.start_auto_reconnect()
 
-    # Start batch trading scheduler (runs at 14:00 CET daily)
-    await start_scheduler()
-    logger.info("Batch trading scheduler started (14:00 CET daily)")
-
     yield
 
     # ==========================================================================
@@ -185,7 +176,6 @@ async def lifespan(app: FastAPI):
     # ==========================================================================
     logger.info("=" * 60)
     logger.info("Shutting down Trading API...")
-    await stop_scheduler()
     await shutdown_ib_client()
     logger.info("Trading API shutdown complete")
     logger.info("=" * 60)
@@ -229,10 +219,6 @@ app.include_router(community_router)
 app.include_router(notifications_router)
 app.include_router(competitions_router)
 app.include_router(broker_router)
-# Batch trading routers
-app.include_router(virtual_portfolio_router)
-app.include_router(order_intentions_router)
-app.include_router(batch_admin_router)
 # Virtual trading accounts
 app.include_router(virtual_accounts_router)
 
