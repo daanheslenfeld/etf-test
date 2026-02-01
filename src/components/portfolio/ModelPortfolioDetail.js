@@ -25,8 +25,9 @@ import {
   AlertTriangle,
   WifiOff,
 } from 'lucide-react';
-import { formatCurrency, formatPercentage } from '../../utils/portfolioUtils';
+import { formatCurrency, formatPercentage, calculateMinimumInvestment } from '../../utils/portfolioUtils';
 import { getTradingInfo } from '../../data/tradableETFs';
+import { useTrading } from '../../context/TradingContext';
 
 // Risk level colors - Premium banking palette
 const riskLevelColors = {
@@ -54,8 +55,14 @@ export default function ModelPortfolioDetail({
   isOffline = false,
   cachedPrices = {},
 }) {
+  const { marketData } = useTrading();
   const [showAllHoldings, setShowAllHoldings] = useState(false);
   const riskColors = riskLevelColors[portfolio.riskLevel] || riskLevelColors[3];
+
+  // Calculate minimum investment
+  const minimumInvestment = useMemo(() => {
+    return calculateMinimumInvestment(portfolio.id, marketData || {});
+  }, [portfolio.id, marketData]);
 
   // Calculate category allocation
   const categoryAllocation = useMemo(() => {
@@ -159,9 +166,11 @@ export default function ModelPortfolioDetail({
               </div>
             </div>
             <div className="bg-[#F5F6F4] rounded-lg p-4">
-              <div className="text-sm text-[#636E72] mb-1">Aantal ETFs</div>
+              <div className="text-sm text-[#636E72] mb-1">Minimale inleg</div>
               <div className="text-xl font-bold text-[#2D3436]">
-                {portfolio.holdings.length}
+                {minimumInvestment.minimum > 0
+                  ? formatCurrency(minimumInvestment.minimum)
+                  : `${portfolio.holdings.length} ETFs`}
               </div>
             </div>
           </div>
@@ -332,11 +341,21 @@ export default function ModelPortfolioDetail({
         {/* Footer */}
         <div className="p-6 border-t border-[#E8E8E6] bg-[#FEFEFE]">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-[#636E72]">Verwacht jaarlijks rendement</div>
-              <div className="text-2xl font-bold text-[#7C9885]">
-                {(portfolio.expectedReturn * 100).toFixed(1)}%
+            <div className="flex items-center gap-6">
+              <div>
+                <div className="text-sm text-[#636E72]">Verwacht jaarlijks rendement</div>
+                <div className="text-2xl font-bold text-[#7C9885]">
+                  {(portfolio.expectedReturn * 100).toFixed(1)}%
+                </div>
               </div>
+              {minimumInvestment.minimum > 0 && (
+                <div>
+                  <div className="text-sm text-[#636E72]">Minimale inleg</div>
+                  <div className="text-2xl font-bold text-[#2D3436]">
+                    {formatCurrency(minimumInvestment.minimum)}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex gap-3">
               <button

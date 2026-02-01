@@ -27,7 +27,9 @@ import {
   Users,
   Award,
 } from 'lucide-react';
-import { formatCurrency, formatPercentage } from '../../utils/portfolioUtils';
+import { formatCurrency, formatPercentage, calculateMinimumInvestment } from '../../utils/portfolioUtils';
+import { useTrading } from '../../context/TradingContext';
+import { getTradingInfo } from '../../data/tradableETFs';
 
 // Map portfolio categories to icons
 const categoryIcons = {
@@ -86,6 +88,7 @@ export default function ModelPortfolioCard({
   compact = false,
   showCommunityBadge = false,
 }) {
+  const { marketData } = useTrading();
   const Icon = getPortfolioIcon(portfolio);
   const riskColors = riskLevelColors[portfolio.riskLevel] || riskLevelColors[3];
   const categoryColor = categoryColors[portfolio.category] || categoryColors.Risk;
@@ -102,6 +105,18 @@ export default function ModelPortfolioCard({
   };
 
   const allocation = getCategoryAllocation();
+
+  // Get ETF symbols for display
+  const etfSymbols = (portfolio.holdings || []).map(h => {
+    const info = getTradingInfo(h.isin);
+    return info?.symbol || null;
+  }).filter(Boolean);
+
+  // Calculate minimum investment
+  const minimumInvestment = calculateMinimumInvestment(
+    portfolio.key || portfolio.id,
+    marketData || {}
+  );
 
   if (compact) {
     // Compact view for list/grid
@@ -192,6 +207,23 @@ export default function ModelPortfolioCard({
 
       {/* Content */}
       <div className="px-6 pb-4 flex-grow relative z-10">
+        {/* ETF holdings */}
+        <div className="mb-4">
+          <div className="text-xs text-[#636E72] mb-1.5">ETFs in dit portfolio</div>
+          <div className="flex flex-wrap gap-1.5">
+            {etfSymbols.slice(0, 6).map(symbol => (
+              <span key={symbol} className="text-xs px-2 py-1 bg-[#F5F6F4] text-[#2D3436] font-medium rounded">
+                {symbol}
+              </span>
+            ))}
+            {etfSymbols.length > 6 && (
+              <span className="text-xs px-2 py-1 bg-[#F5F6F4] text-[#B2BEC3] rounded">
+                +{etfSymbols.length - 6}
+              </span>
+            )}
+          </div>
+        </div>
+
         {/* Allocation breakdown */}
         <div className="space-y-1.5 mb-4">
           {allocation.slice(0, 4).map(([cat, pct]) => (
@@ -220,6 +252,18 @@ export default function ModelPortfolioCard({
             />
           </div>
         </div>
+
+        {/* Minimum investment */}
+        {minimumInvestment.minimum > 0 && (
+          <div className="mb-4 flex items-center gap-2 p-2.5 bg-[#7C9885]/8 rounded-lg">
+            <PiggyBank className="w-4 h-4 text-[#7C9885] flex-shrink-0" />
+            <div>
+              <span className="text-sm font-medium text-[#2D3436]">
+                Minimale inleg: {formatCurrency(minimumInvestment.minimum)}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Meta info */}
         <div className="flex items-center gap-4 text-xs text-[#B2BEC3]">
