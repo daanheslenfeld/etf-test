@@ -246,6 +246,50 @@ function scaleDownOrders(orders, scaleFactor, marketData, existingSkipped, portf
 }
 
 /**
+ * Calculate the minimum investment amount needed to buy at least 1 unit of every holding.
+ *
+ * For each holding: minForHolding = price / (weight / 100)
+ * The portfolio minimum = max of all minForHolding values (rounded up to nearest euro).
+ *
+ * @param {string} portfolioKey - Portfolio key
+ * @param {Object} marketData - Current market data { [symbol]: { last, bid, ask } }
+ * @returns {Object} - { minimum, holdings: [{ symbol, name, price, weight, minRequired }] }
+ */
+export function calculateMinimumInvestment(portfolioKey, marketData) {
+  let portfolio = getPortfolioDefinition(portfolioKey);
+  if (!portfolio) portfolio = getModelPortfolio(portfolioKey);
+  if (!portfolio) return { minimum: 0, holdings: [] };
+
+  let minimum = 0;
+  const holdings = [];
+
+  for (const holding of portfolio.holdings) {
+    const tradingInfo = getTradingInfo(holding.isin);
+    if (!tradingInfo) continue;
+
+    const price = getMarketPrice(tradingInfo.symbol, marketData);
+    if (!price || price <= 0) continue;
+
+    // Minimum total investment so this holding's allocation covers 1 unit
+    const minForHolding = price / (holding.weight / 100);
+
+    holdings.push({
+      symbol: tradingInfo.symbol,
+      name: tradingInfo.name,
+      price,
+      weight: holding.weight,
+      minRequired: minForHolding,
+    });
+
+    if (minForHolding > minimum) {
+      minimum = minForHolding;
+    }
+  }
+
+  return { minimum: Math.ceil(minimum), holdings };
+}
+
+/**
  * Convert bulk calculation orders to order basket format
  *
  * @param {Array} orders - Orders from calculateBulkBuyOrders

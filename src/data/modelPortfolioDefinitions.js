@@ -697,6 +697,70 @@ const STRATEGY_PORTFOLIOS = {
     ],
   },
 
+  'strategy-starter-world': {
+    id: 'strategy-starter-world',
+    name: 'Starter: Wereld',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Eenvoudigste instap - Eén wereldwijd gespreid ETF, ideaal voor kleine bedragen',
+    expectedReturn: 0.065,
+    stdDev: 0.15,
+    riskLevel: 3,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.YEARLY,
+    color: '#34D399',
+    lastUpdated: '2026-02-01T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 100 },
+    ],
+    tags: ['starter', 'small-budget', 'simple', 'beginner', 'world'],
+    holdings: [
+      { isin: VERIFIED_ETFS.VWCE.isin, weight: 100, category: 'Aandelen', name: VERIFIED_ETFS.VWCE.name },
+    ],
+  },
+
+  'strategy-starter-balanced': {
+    id: 'strategy-starter-balanced',
+    name: 'Starter: Gebalanceerd',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Instap met balans - Aandelen en obligaties, geschikt vanaf kleine bedragen',
+    expectedReturn: 0.045,
+    stdDev: 0.10,
+    riskLevel: 2,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.YEARLY,
+    color: '#60A5FA',
+    lastUpdated: '2026-02-01T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 60 },
+      { region: 'Europe', weight: 40 },
+    ],
+    tags: ['starter', 'small-budget', 'balanced', 'beginner', 'low-risk'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 60, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EUNH.isin, weight: 40, category: 'Obligaties', name: VERIFIED_ETFS.EUNH.name },
+    ],
+  },
+
+  'strategy-starter-growth': {
+    id: 'strategy-starter-growth',
+    name: 'Starter: Groei',
+    category: PORTFOLIO_CATEGORIES.STRATEGY,
+    description: 'Instap met groeifocus - Ontwikkelde en opkomende markten, geschikt vanaf kleine bedragen',
+    expectedReturn: 0.07,
+    stdDev: 0.16,
+    riskLevel: 4,
+    rebalanceFrequency: REBALANCE_FREQUENCIES.YEARLY,
+    color: '#F472B6',
+    lastUpdated: '2026-02-01T00:00:00Z',
+    regionExposure: [
+      { region: 'World', weight: 70 },
+      { region: 'Emerging', weight: 30 },
+    ],
+    tags: ['starter', 'small-budget', 'growth', 'beginner', 'emerging-markets'],
+    holdings: [
+      { isin: VERIFIED_ETFS.IWDA.isin, weight: 70, category: 'Aandelen', name: VERIFIED_ETFS.IWDA.name },
+      { isin: VERIFIED_ETFS.EMIM.isin, weight: 30, category: 'Aandelen', name: VERIFIED_ETFS.EMIM.name },
+    ],
+  },
+
   'strategy-small-cap-tilt': {
     id: 'strategy-small-cap-tilt',
     name: 'Small Cap Tilt',

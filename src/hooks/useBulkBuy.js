@@ -91,7 +91,10 @@ export function useBulkBuy() {
     setError(null);
 
     try {
-      const portfolio = getPortfolioDefinition(portfolioKey);
+      let portfolio = getPortfolioDefinition(portfolioKey);
+      if (!portfolio) {
+        portfolio = getModelPortfolio(portfolioKey);
+      }
       if (!portfolio) {
         throw new Error(`Onbekend portfolio: ${portfolioKey}`);
       }

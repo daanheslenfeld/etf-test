@@ -18,10 +18,11 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
-import { formatCurrency, formatPercentage, groupOrdersByCategory } from '../../utils/portfolioUtils';
+import { formatCurrency, formatPercentage, groupOrdersByCategory, calculateMinimumInvestment } from '../../utils/portfolioUtils';
+import { useTrading } from '../../context/TradingContext';
 
 // Investment amount presets
-const AMOUNT_PRESETS = [1000, 2500, 5000, 10000, 25000];
+const AMOUNT_PRESETS = [250, 500, 1000, 2500, 5000, 10000, 25000];
 
 export default function BulkBuyModal({
   isOpen,
@@ -37,10 +38,17 @@ export default function BulkBuyModal({
   onCalculate,
   onAddToBasket
 }) {
+  const { marketData } = useTrading();
   const [investmentAmount, setInvestmentAmount] = useState(5000);
   const [customAmount, setCustomAmount] = useState('');
   const [showSkipped, setShowSkipped] = useState(false);
   const [addedToBasket, setAddedToBasket] = useState(false);
+
+  // Calculate minimum investment for this portfolio
+  const minimumInvestment = portfolio?.key
+    ? calculateMinimumInvestment(portfolio.key, marketData || {})
+    : { minimum: 0, holdings: [] };
+  const isBelowMinimum = minimumInvestment.minimum > 0 && investmentAmount < minimumInvestment.minimum;
 
   // Reset state when modal opens
   useEffect(() => {
@@ -176,6 +184,12 @@ export default function BulkBuyModal({
             {availableCash > 0 && (
               <p className="text-xs text-[#B2BEC3] mt-2">
                 Beschikbaar saldo: {formatCurrency(availableCash)}
+              </p>
+            )}
+            {minimumInvestment.minimum > 0 && (
+              <p className={`text-xs mt-1 ${isBelowMinimum ? 'text-[#C0736D] font-medium' : 'text-[#B2BEC3]'}`}>
+                Minimaal benodigd voor alle ETFs: {formatCurrency(minimumInvestment.minimum)}
+                {isBelowMinimum && ' — sommige ETFs worden overgeslagen'}
               </p>
             )}
           </div>
