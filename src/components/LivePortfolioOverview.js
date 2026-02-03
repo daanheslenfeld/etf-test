@@ -17,7 +17,7 @@ const ETF_NAMES = {
   XEON: 'Xtrackers II EUR Overnight Rate Swap',
 };
 
-const TRADING_API_URL = 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
 // User-specific cache keys (must match TradingContext format)
 const CACHE_KEYS = {

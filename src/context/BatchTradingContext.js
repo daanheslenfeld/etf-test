@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
 
-const TRADING_API_URL = 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
 // Base cache keys for localStorage (will be made user-specific)
 const CACHE_KEYS = {
