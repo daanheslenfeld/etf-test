@@ -10391,6 +10391,75 @@ useEffect(() => {
     );
   };
 
+  const PostRegisterWelcome = () => (
+    <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
+      <div className="max-w-lg w-full text-center">
+        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-8 sm:p-12 shadow-sm">
+          <div className="text-5xl sm:text-6xl mb-6">🎉</div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2D3436] mb-3">
+            {t.common.welcome}, {user?.name?.split(' ')[0]}!
+          </h1>
+          <p className="text-[#636E72] mb-8 text-sm sm:text-base leading-relaxed">
+            Je account is succesvol aangemaakt. Ontdek wat PIGG voor je kan betekenen.
+          </p>
+
+          <div className="grid grid-cols-1 gap-3 mb-8 text-left">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-[#F5F6F4]">
+              <span className="text-xl">✨</span>
+              <div>
+                <h3 className="font-semibold text-sm text-[#2D3436]">Model Portfolios</h3>
+                <p className="text-xs text-[#636E72]">Kies uit 20+ kant-en-klare portfolio's</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-[#F5F6F4]">
+              <span className="text-xl">📈</span>
+              <div>
+                <h3 className="font-semibold text-sm text-[#2D3436]">LYNX Trading</h3>
+                <p className="text-xs text-[#636E72]">Handel ETFs via je broker account</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-[#F5F6F4]">
+              <span className="text-xl">👥</span>
+              <div>
+                <h3 className="font-semibold text-sm text-[#2D3436]">Community</h3>
+                <p className="text-xs text-[#636E72]">Ontdek en volg de beste beleggers</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setCurrentPage('mainDashboard')}
+            className="w-full bg-[#7C9885] hover:bg-[#6B8A74] text-white font-semibold py-3 px-6 rounded-xl transition-colors text-sm sm:text-base"
+          >
+            Aan de slag
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const FirstTimeWelcome = () => (
+    <div className="min-h-screen bg-[#F5F6F4] flex items-center justify-center px-4">
+      <div className="max-w-lg w-full text-center">
+        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-8 sm:p-12 shadow-sm">
+          <div className="text-5xl sm:text-6xl mb-6">👋</div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2D3436] mb-3">
+            {t.common.welcome} bij PIGG
+          </h1>
+          <p className="text-[#636E72] mb-8 text-sm sm:text-base leading-relaxed">
+            Jouw persoonlijke beleggingsplatform. Bouw, beheer en volg je portfolio op één plek.
+          </p>
+          <button
+            onClick={() => setCurrentPage('mainDashboard')}
+            className="w-full bg-[#7C9885] hover:bg-[#6B8A74] text-white font-semibold py-3 px-6 rounded-xl transition-colors text-sm sm:text-base"
+          >
+            Ga naar dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <style>{`
@@ -10420,7 +10489,7 @@ useEffect(() => {
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}
-{currentPage === 'postRegisterWelcome' && <PostRegisterWelcome />}
+      {currentPage === 'postRegisterWelcome' && <PostRegisterWelcome />}
       {currentPage === 'firstTimeWelcome' && <FirstTimeWelcome />}
       {currentPage === 'financialNews' && <FinancialNewsPage />}
       {currentPage === 'dashboard' && <DashboardPage />}
