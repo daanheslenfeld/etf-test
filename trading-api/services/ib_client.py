@@ -248,13 +248,13 @@ class IBClient:
 
                 # Subscribe to positions (non-critical, don't fail connect)
                 try:
-                    self._subscribe_positions()
+                    await self._subscribe_positions()
                 except Exception as e:
                     logger.warning(f"Position subscription failed (non-critical): {e}")
 
                 # Subscribe to account updates for real-time account values
                 try:
-                    self._ib.reqAccountUpdates(subscribe=True, account=self._primary_account)
+                    self._ib.client.reqAccountUpdates(True, self._primary_account)
                     logger.info(f"Subscribed to account updates for {self._primary_account}")
                 except Exception as e:
                     logger.warning(f"Account updates subscription failed (non-critical): {e}")
@@ -462,12 +462,12 @@ class IBClient:
         else:
             self._positions_cache[account].append(position)
 
-    def _subscribe_positions(self):
+    async def _subscribe_positions(self):
         """Subscribe to position updates once."""
         if self._positions_subscribed:
             return
         self._positions_cache.clear()
-        self._ib.reqPositions()
+        await self._ib.reqPositionsAsync()
         self._positions_subscribed = True
         logger.debug("Subscribed to position updates")
 

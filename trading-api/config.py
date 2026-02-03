@@ -55,7 +55,12 @@ class Settings(BaseSettings):
     # ==========================================================================
     # CORS
     # ==========================================================================
-    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://etf-test.vercel.app",
+        "https://uncarnivorously-unbrewed-carri.ngrok-free.dev",
+    ]
 
     # ==========================================================================
     # Logging
