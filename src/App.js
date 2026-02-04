@@ -3646,8 +3646,8 @@ useEffect(() => {
   };
 
   const LoginPage = () => {
-    const [email, setEmail] = useState('demo@pigg.nl');
-    const [password, setPassword] = useState('demo123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLoginClick = async () => {
