@@ -37,6 +37,15 @@ export default function FinancialOverviewCards({ onNavigate }) {
     brokerLinked
   } = useTrading();
 
+  const [fundsBannerDismissed, setFundsBannerDismissed] = useState(
+    () => localStorage.getItem('pigg_funds_banner_dismissed') === 'true'
+  );
+
+  const dismissFundsBanner = () => {
+    setFundsBannerDismissed(true);
+    localStorage.setItem('pigg_funds_banner_dismissed', 'true');
+  };
+
   // Show skeleton while loading (only if broker is linked)
   if (loading && brokerLinked) {
     return (
@@ -60,14 +69,6 @@ export default function FinancialOverviewCards({ onNavigate }) {
 
   // Check if we have any data to show
   const hasData = totalValue !== 0 || portfolioValue !== 0 || cashBalance !== 0;
-  const [fundsBannerDismissed, setFundsBannerDismissed] = useState(
-    () => localStorage.getItem('pigg_funds_banner_dismissed') === 'true'
-  );
-
-  const dismissFundsBanner = () => {
-    setFundsBannerDismissed(true);
-    localStorage.setItem('pigg_funds_banner_dismissed', 'true');
-  };
 
   return (
     <div className="mb-10">
