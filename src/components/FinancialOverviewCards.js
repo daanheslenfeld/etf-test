@@ -1,5 +1,5 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight, Mail, X } from 'lucide-react';
 import { useTrading } from '../context/TradingContext';
 
 const formatCurrency = (value) => {
@@ -60,9 +60,37 @@ export default function FinancialOverviewCards({ onNavigate }) {
 
   // Check if we have any data to show
   const hasData = totalValue !== 0 || portfolioValue !== 0 || cashBalance !== 0;
+  const [fundsBannerDismissed, setFundsBannerDismissed] = useState(
+    () => localStorage.getItem('pigg_funds_banner_dismissed') === 'true'
+  );
+
+  const dismissFundsBanner = () => {
+    setFundsBannerDismissed(true);
+    localStorage.setItem('pigg_funds_banner_dismissed', 'true');
+  };
 
   return (
     <div className="mb-10">
+      {/* Waiting for funds banner */}
+      {!hasData && !loading && !fundsBannerDismissed && (
+        <div className="mb-6 p-5 bg-[#FEFEFE] border border-[#7C9885]/30 rounded-2xl shadow-[0_2px_8px_rgba(45,52,54,0.06)] relative">
+          <button onClick={dismissFundsBanner} className="absolute top-3 right-3 text-[#B2BEC3] hover:text-[#636E72] transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+          <div className="flex items-start gap-4">
+            <div className="p-2.5 bg-[#7C9885]/10 rounded-xl">
+              <Mail className="w-5 h-5 text-[#7C9885]" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#2D3436] mb-1">Je account is aangemaakt</h3>
+              <p className="text-sm text-[#636E72]">
+                Zodra er geld op je rekening is gestort, ontvang je een e-mail. Daarna kun je direct beginnen met beleggen.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header with connection status */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3 flex-1">

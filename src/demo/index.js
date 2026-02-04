@@ -19,23 +19,9 @@ import {
 } from './demoData';
 
 // Check if we're in demo mode
-// Demo mode is active when:
-// 1. Running on Vercel (REACT_APP_VERCEL is set by Vercel)
-// 2. Explicitly set via REACT_APP_DEMO_MODE=true
-// 3. Not running on localhost
+// Demo mode is ONLY active when explicitly set via REACT_APP_DEMO_MODE=true
 export const isDemoMode = () => {
-  // Check environment variables
   if (process.env.REACT_APP_DEMO_MODE === 'true') return true;
-  if (process.env.REACT_APP_VERCEL === '1') return true;
-
-  // Check if we're on a production domain (not localhost)
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return true;
-    }
-  }
-
   return false;
 };
 

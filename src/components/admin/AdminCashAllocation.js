@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const API_URL = '/api';
 
 function getAuthHeaders(user) {
   return {
@@ -78,6 +79,22 @@ export function AdminCashAllocation({ user, onBack, embedded }) {
       if (!res.ok) {
         throw new Error(data.detail || `HTTP ${res.status}`);
       }
+
+      // Send email notification to account owner (best effort)
+      if (delta > 0) {
+        try {
+          await fetch(`${API_URL}/notify-allocation`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ownerId: acc.owner_id,
+              ownerName: acc.owner_name,
+              amount: target,
+            }),
+          });
+        } catch (_) { /* email is best-effort */ }
+      }
+
       // Refresh overview
       await fetchOverview();
     } catch (err) {

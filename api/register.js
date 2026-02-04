@@ -207,6 +207,21 @@ module.exports = async (req, res) => {
       } catch (_) { /* ignore */ }
     }
 
+    // ── Auto-create virtual account so user appears in admin cash allocation ──
+    try {
+      await supabase
+        .from('virtual_accounts')
+        .insert([{
+          owner_id: customer.id,
+          name: 'Portfolio',
+          description: 'Default trading portfolio',
+          is_active: true,
+        }]);
+    } catch (vaError) {
+      console.error('Error creating virtual account:', vaError.message);
+      // Non-fatal: user can still register, account will be created lazily later
+    }
+
     res.status(200).json({
       success: true,
       message: 'Registratie succesvol! Check je email voor de verificatiecode.',
