@@ -111,10 +111,29 @@ async def get_my_default_account(
     Used by the frontend to resolve the user's trading portfolio.
     """
     service = get_virtual_account_service()
-    accounts = await service.get_accounts(user.customer_id)
 
-    if accounts:
-        return VirtualAccountResponse(**accounts[0])
+    # Fast path: query accounts directly without fetching holdings
+    try:
+        import httpx as _httpx
+        async with _httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{service.base_url}/virtual_accounts",
+                headers=service.headers,
+                params={
+                    "owner_id": f"eq.{user.customer_id}",
+                    "is_active": "eq.true",
+                    "select": "*",
+                    "order": "created_at.asc",
+                    "limit": "1"
+                }
+            )
+            response.raise_for_status()
+            rows = response.json() or []
+            if rows:
+                account = service._build_account_dict(rows[0])
+                return VirtualAccountResponse(**account)
+    except Exception:
+        pass
 
     # Auto-create a default account
     try:

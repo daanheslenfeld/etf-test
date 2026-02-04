@@ -4,6 +4,7 @@ Manages virtual trading accounts: CRUD, account summaries.
 Cash is tracked directly on virtual_accounts (assigned_cash, reserved_cash, available_cash).
 All cash mutations go through CashAllocationService (RPC functions).
 """
+import asyncio
 import httpx
 from typing import Optional, List
 from config import get_settings
@@ -186,14 +187,16 @@ class VirtualAccountService:
                 response.raise_for_status()
                 accounts = response.json() or []
 
-                result = []
                 portfolio_service = get_virtual_portfolio_service()
-                for account in accounts:
-                    holdings = await portfolio_service.get_holdings(
-                        owner_id,
-                        virtual_account_id=account["id"]
-                    )
-                    result.append(self._build_account_dict(account, holdings_count=len(holdings)))
+                holdings_results = await asyncio.gather(*(
+                    portfolio_service.get_holdings(owner_id, virtual_account_id=account["id"])
+                    for account in accounts
+                ), return_exceptions=True)
+
+                result = []
+                for account, holdings in zip(accounts, holdings_results):
+                    count = len(holdings) if isinstance(holdings, list) else 0
+                    result.append(self._build_account_dict(account, holdings_count=count))
 
                 return result
 
@@ -238,21 +241,21 @@ class VirtualAccountService:
                             last = c.get("last_name") or ""
                             owner_names[c["id"]] = f"{first} {last}".strip() or None
 
-                result = []
                 portfolio_service = get_virtual_portfolio_service()
-                for account in accounts:
-                    try:
-                        holdings = await portfolio_service.get_holdings(
-                            account["owner_id"],
-                            virtual_account_id=account["id"]
-                        )
-                        holdings_count = len(holdings)
-                    except Exception:
-                        holdings_count = 0
+                holdings_results = await asyncio.gather(*(
+                    portfolio_service.get_holdings(
+                        account["owner_id"],
+                        virtual_account_id=account["id"]
+                    )
+                    for account in accounts
+                ), return_exceptions=True)
 
+                result = []
+                for account, holdings in zip(accounts, holdings_results):
+                    count = len(holdings) if isinstance(holdings, list) else 0
                     result.append(self._build_account_dict(
                         account,
-                        holdings_count=holdings_count,
+                        holdings_count=count,
                         owner_name=owner_names.get(account["owner_id"]),
                     ))
 
