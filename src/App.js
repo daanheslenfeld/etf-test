@@ -8963,6 +8963,30 @@ useEffect(() => {
                             </button>
                             <button
                               onClick={async () => {
+                                if (window.confirm(`Wachtwoord resetten voor ${customer.name}? Er wordt een nieuw wachtwoord naar ${customer.email} gestuurd.`)) {
+                                  try {
+                                    const res = await fetch(`${API_URL}/reset-customer-password`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ customerId: customer.id })
+                                    });
+                                    const data = await res.json();
+                                    if (data.success) {
+                                      alert(`Wachtwoord gereset! Een email is verstuurd naar ${customer.email}.`);
+                                    } else {
+                                      alert(`Fout: ${data.message}`);
+                                    }
+                                  } catch (error) {
+                                    alert('Fout bij resetten wachtwoord: ' + error.message);
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-[#C9A962] text-[#2D3436] rounded-lg hover:bg-[#B8956B] font-medium transition-all"
+                            >
+                              Reset Wachtwoord
+                            </button>
+                            <button
+                              onClick={async () => {
                                 if (window.confirm(`Weet je zeker dat je ${customer.name} wilt verwijderen?`)) {
                                   // Immediately remove from UI for instant feedback
                                   setCustomers(prev => prev.filter(c => c.id !== customer.id));

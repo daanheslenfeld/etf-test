@@ -187,16 +187,27 @@ class VirtualAccountService:
                 response.raise_for_status()
                 accounts = response.json() or []
 
-                portfolio_service = get_virtual_portfolio_service()
-                holdings_results = await asyncio.gather(*(
-                    portfolio_service.get_holdings(owner_id, virtual_account_id=account["id"])
-                    for account in accounts
-                ), return_exceptions=True)
+                # Batch-fetch holdings counts in a single query
+                holdings_counts = {}
+                account_ids = [a["id"] for a in accounts]
+                if account_ids:
+                    h_response = await client.get(
+                        f"{self.base_url}/virtual_holdings",
+                        headers=self.headers,
+                        params={
+                            "virtual_account_id": f"in.({','.join(account_ids)})",
+                            "quantity": "gt.0",
+                            "select": "virtual_account_id"
+                        }
+                    )
+                    if h_response.status_code == 200:
+                        for h in (h_response.json() or []):
+                            va_id = h.get("virtual_account_id")
+                            holdings_counts[va_id] = holdings_counts.get(va_id, 0) + 1
 
                 result = []
-                for account, holdings in zip(accounts, holdings_results):
-                    count = len(holdings) if isinstance(holdings, list) else 0
-                    result.append(self._build_account_dict(account, holdings_count=count))
+                for account in accounts:
+                    result.append(self._build_account_dict(account, holdings_count=holdings_counts.get(account["id"], 0)))
 
                 return result
 
@@ -241,21 +252,29 @@ class VirtualAccountService:
                             last = c.get("last_name") or ""
                             owner_names[c["id"]] = f"{first} {last}".strip() or None
 
-                portfolio_service = get_virtual_portfolio_service()
-                holdings_results = await asyncio.gather(*(
-                    portfolio_service.get_holdings(
-                        account["owner_id"],
-                        virtual_account_id=account["id"]
+                # Batch-fetch holdings counts in a single query
+                holdings_counts = {}
+                account_ids = [a["id"] for a in accounts]
+                if account_ids:
+                    h_response = await client.get(
+                        f"{self.base_url}/virtual_holdings",
+                        headers=self.headers,
+                        params={
+                            "virtual_account_id": f"in.({','.join(account_ids)})",
+                            "quantity": "gt.0",
+                            "select": "virtual_account_id"
+                        }
                     )
-                    for account in accounts
-                ), return_exceptions=True)
+                    if h_response.status_code == 200:
+                        for h in (h_response.json() or []):
+                            va_id = h.get("virtual_account_id")
+                            holdings_counts[va_id] = holdings_counts.get(va_id, 0) + 1
 
                 result = []
-                for account, holdings in zip(accounts, holdings_results):
-                    count = len(holdings) if isinstance(holdings, list) else 0
+                for account in accounts:
                     result.append(self._build_account_dict(
                         account,
-                        holdings_count=count,
+                        holdings_count=holdings_counts.get(account["id"], 0),
                         owner_name=owner_names.get(account["owner_id"]),
                     ))
 

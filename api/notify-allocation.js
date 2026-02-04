@@ -66,6 +66,9 @@ module.exports = async (req, res) => {
           <p>Hallo ${firstName},</p>
           <p>Er is <strong>${formattedAmount}</strong> op je PIGG rekening gestort.</p>
           <p>Je kunt nu beginnen met beleggen! Log in op je account om je portfolio samen te stellen.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://etf-test.vercel.app" style="display: inline-block; padding: 14px 32px; background-color: #7C9885; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">Inloggen op PIGG</a>
+          </div>
           <p>Met vriendelijke groet,<br>Het PIGG Team</p>
         </div>
       `
