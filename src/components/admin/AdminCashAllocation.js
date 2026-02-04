@@ -7,6 +7,7 @@ function getAuthHeaders(user) {
     'Content-Type': 'application/json',
     'X-Customer-ID': String(user?.id ?? 0),
     'X-Customer-Email': user?.email || 'admin@etfportal.nl',
+    'ngrok-skip-browser-warning': 'true',
   };
 }
 

@@ -304,6 +304,7 @@ export function TradingProvider({ user, children }) {
       'Content-Type': 'application/json',
       'X-Customer-ID': user?.id?.toString() || '0',
       'X-Customer-Email': user?.email || '',
+      'ngrok-skip-browser-warning': 'true',
     };
   }, [user?.id, user?.email]);
 
@@ -324,7 +325,7 @@ export function TradingProvider({ user, children }) {
         return true;
       }
 
-      const healthRes = await fetch(`${TRADING_API_URL}/health`);
+      const healthRes = await fetch(`${TRADING_API_URL}/health`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       if (!healthRes.ok) throw new Error('API not available');
 
       const health = await healthRes.json();

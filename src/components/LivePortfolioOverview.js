@@ -17,7 +17,7 @@ const ETF_NAMES = {
   XEON: 'Xtrackers II EUR Overnight Rate Swap',
 };
 
-const TRADING_API_URL = 'https://uncarnivorously-unbrewed-carri.ngrok-free.dev';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
 // User-specific cache keys (must match TradingContext format)
 const CACHE_KEYS = {
@@ -93,13 +93,14 @@ export default function LivePortfolioOverview({ user }) {
       'Content-Type': 'application/json',
       'X-Customer-ID': user?.id?.toString() || '0',
       'X-Customer-Email': user?.email || '',
+      'ngrok-skip-browser-warning': 'true',
     };
   }, [user]);
 
   // Check connection to IB Gateway
   const checkConnection = useCallback(async () => {
     try {
-      const res = await fetch(`${TRADING_API_URL}/health`);
+      const res = await fetch(`${TRADING_API_URL}/health`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
       if (res.ok) {
         const data = await res.json();
         const isConnected = data.ib_gateway?.connected || false;

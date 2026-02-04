@@ -175,6 +175,7 @@ export function BatchTradingProvider({ user, children }) {
       'Content-Type': 'application/json',
       'X-Customer-ID': user?.id?.toString() || '0',
       'X-Customer-Email': user?.email || '',
+      'ngrok-skip-browser-warning': 'true',
     };
   }, [user]);
 

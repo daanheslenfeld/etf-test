@@ -9480,7 +9480,7 @@ useEffect(() => {
     // Fetch ETFs from API
     const fetchETFs = async () => {
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/etfs`);
+        const response = await fetch(`${TRADING_API_URL}/trading/etfs`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
         if (response.ok) {
           const data = await response.json();
           setEtfs(data.etfs || []);
@@ -9496,7 +9496,7 @@ useEffect(() => {
     // Fetch orders
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/orders`);
+        const response = await fetch(`${TRADING_API_URL}/trading/orders`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
         if (response.ok) {
           const data = await response.json();
           setOrders(data.orders || []);
@@ -9509,7 +9509,7 @@ useEffect(() => {
     // Fetch positions
     const fetchPositions = async () => {
       try {
-        const response = await fetch(`${TRADING_API_URL}/trading/positions`);
+        const response = await fetch(`${TRADING_API_URL}/trading/positions`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
         if (response.ok) {
           const data = await response.json();
           setPositions(data.positions || []);
@@ -9527,7 +9527,8 @@ useEffect(() => {
           headers: {
             'Content-Type': 'application/json',
             'X-Customer-ID': user?.id?.toString() || '0',
-            'X-Customer-Email': user?.email || ''
+            'X-Customer-Email': user?.email || '',
+            'ngrok-skip-browser-warning': 'true',
           }
         });
         if (response.ok) {
@@ -9547,7 +9548,7 @@ useEffect(() => {
     // Check connection status
     const checkConnection = async () => {
       try {
-        const response = await fetch(`${TRADING_API_URL}/health`);
+        const response = await fetch(`${TRADING_API_URL}/health`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
         if (response.ok) {
           const data = await response.json();
           if (data.ib_gateway?.connected) {
@@ -9572,7 +9573,7 @@ useEffect(() => {
       try {
         const response = await fetch(`${TRADING_API_URL}/trading/order`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
           body: JSON.stringify({
             symbol: orderForm.symbol,
             conid: orderForm.conid,
@@ -9607,7 +9608,7 @@ useEffect(() => {
       try {
         const response = await fetch(`${TRADING_API_URL}/trading/order`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
           body: JSON.stringify({
             symbol,
             conid,

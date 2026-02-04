@@ -52,7 +52,7 @@ export default function MarketIndicesTicker() {
         return;
       }
 
-      const response = await fetch(`${TRADING_API_URL}/trading/indices`);
+      const response = await fetch(`${TRADING_API_URL}/trading/indices`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
 
       if (!response.ok) {
         throw new Error('Failed to fetch indices');

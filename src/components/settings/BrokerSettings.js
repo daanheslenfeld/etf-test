@@ -25,7 +25,8 @@ export default function BrokerSettings({ user, onBack }) {
     return {
       'Content-Type': 'application/json',
       'X-Customer-ID': user?.id?.toString() || '0',
-      'X-Customer-Email': user?.email || ''
+      'X-Customer-Email': user?.email || '',
+      'ngrok-skip-browser-warning': 'true',
     };
   }, [user]);
 

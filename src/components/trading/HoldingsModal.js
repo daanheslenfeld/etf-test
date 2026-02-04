@@ -59,7 +59,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
       setError(null);
 
       try {
-        const res = await fetch(`${TRADING_API_URL}/etfs/${symbol}/holdings`);
+        const res = await fetch(`${TRADING_API_URL}/etfs/${symbol}/holdings`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
         const data = await res.json();
 
         if (data.available) {
