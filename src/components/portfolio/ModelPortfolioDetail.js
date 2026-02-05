@@ -74,19 +74,23 @@ export default function ModelPortfolioDetail({
     return Object.entries(categories).sort((a, b) => b[1] - a[1]);
   }, [portfolio.holdings]);
 
-  // Get trading info for each holding
+  // Get trading info for each holding - use live marketData with cachedPrices fallback
   const enrichedHoldings = useMemo(() => {
     return portfolio.holdings.map(holding => {
       const tradingInfo = getTradingInfo(holding.isin);
-      const cachedPrice = tradingInfo ? cachedPrices[tradingInfo.symbol] : null;
+      const symbol = tradingInfo?.symbol;
+      const liveData = symbol ? (marketData || {})[symbol] : null;
+      const cachedPrice = symbol ? cachedPrices[symbol] : null;
+      const price = liveData?.last || liveData?.ask || cachedPrice?.last || cachedPrice?.ask || null;
+      const isLive = !!(liveData?.last || liveData?.ask);
       return {
         ...holding,
         tradingInfo,
-        price: cachedPrice?.last || cachedPrice?.ask || null,
-        priceStale: cachedPrice?.delayed || true,
+        price,
+        priceStale: isLive ? (liveData?.delayed || false) : true,
       };
     });
-  }, [portfolio.holdings, cachedPrices]);
+  }, [portfolio.holdings, cachedPrices, marketData]);
 
   // Visible holdings (collapsed or expanded)
   const visibleHoldings = showAllHoldings ? enrichedHoldings : enrichedHoldings.slice(0, 5);

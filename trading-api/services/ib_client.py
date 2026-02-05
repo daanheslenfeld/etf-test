@@ -895,14 +895,80 @@ class IBClient:
             logger.error(f"Error unsubscribing from market data: {e}")
             return False
 
+    # Model portfolio ETF conids - these get subscribed first so they always have prices
+    MODEL_PORTFOLIO_CONIDS = [
+        100292038,   # IWDA - iShares Core MSCI World
+        375858281,   # VWCE - Vanguard FTSE All-World
+        75776072,    # SXR8 - iShares Core S&P 500
+        399364021,   # VUAA - Vanguard S&P 500
+        153454120,   # EMIM - iShares Core MSCI EM IMI
+        128831223,   # VFEM - Vanguard FTSE Emerging Markets
+        45998497,    # IMEU - iShares Core MSCI Europe
+        375858284,   # VWCG - Vanguard FTSE Developed Europe
+        18706552,    # EQQQ - Invesco NASDAQ-100
+        242717020,   # QDVE - iShares S&P 500 IT Sector
+        292495500,   # SUSW - iShares MSCI World SRI
+        478811098,   # V3AA - Vanguard ESG Global All Cap
+        128831209,   # VHYL - Vanguard High Dividend Yield
+        37036662,    # IDVY - iShares Euro Dividend
+        254447338,   # HEAL - iShares Healthcare Innovation
+        288308392,   # QDVG - iShares S&P 500 Health Care
+        45998500,    # INRG - iShares Global Clean Energy
+        68490077,    # EUNH - iShares Euro Government Bond
+        521963156,   # IGLT - iShares Core UK Gilts
+        60470164,    # IEAC - iShares EUR Corporate Bond
+        225116854,   # VUCP - Vanguard USD Corporate Bond
+        371588182,   # VAGE - Vanguard Global Aggregate Bond
+        37036668,    # IBCI - iShares EUR Inflation Linked
+        175394979,   # SGLD - Invesco Physical Gold
+        321100413,   # SXRS - iShares Diversified Commodity
+        42492945,    # IWDP - iShares Property Yield
+        86792281,    # TRET - VanEck Global Real Estate
+        46041702,    # XEON - Xtrackers EUR Overnight Rate
+        183908203,   # IWVL - iShares World Value Factor
+        183908189,   # IWMO - iShares World Momentum Factor
+        183908193,   # IWQU - iShares World Quality Factor
+        320057568,   # IUSN - iShares MSCI World Small Cap
+    ]
+
+    # IB market data line limit (paper accounts typically allow ~100)
+    MAX_SUBSCRIPTIONS = 100
+
     async def subscribe_all_etfs(self) -> int:
-        """Subscribe to market data for all tradable ETFs. Returns count of successful subscriptions."""
+        """Subscribe to market data, prioritizing model portfolio ETFs.
+
+        IB limits concurrent market data subscriptions. We subscribe to
+        model portfolio ETFs first, then fill remaining slots with others.
+        """
         count = 0
+        subscribed_conids = set(self._market_data_tickers.keys())
+
+        # Phase 1: Subscribe to model portfolio ETFs first
+        for conid in self.MODEL_PORTFOLIO_CONIDS:
+            if count >= self.MAX_SUBSCRIPTIONS:
+                break
+            if conid not in subscribed_conids:
+                if await self.subscribe_market_data(conid):
+                    count += 1
+                    subscribed_conids.add(conid)
+                await asyncio.sleep(0.05)
+
+        logger.info(f"Subscribed to {count} model portfolio ETFs")
+
+        # Phase 2: Fill remaining slots with other tradable ETFs
         tradable_etfs = get_cached_tradable_etfs()
+        priority_set = set(self.MODEL_PORTFOLIO_CONIDS)
         for etf in tradable_etfs:
-            if await self.subscribe_market_data(etf["conid"]):
-                count += 1
-            await asyncio.sleep(0.1)  # Small delay to avoid overwhelming IB
+            if count >= self.MAX_SUBSCRIPTIONS:
+                break
+            conid = etf["conid"]
+            if conid not in subscribed_conids and conid not in priority_set:
+                if await self.subscribe_market_data(conid):
+                    count += 1
+                    subscribed_conids.add(conid)
+                await asyncio.sleep(0.05)
+
+        logger.info(f"Total market data subscriptions: {count}")
         return count
 
     def unsubscribe_all_market_data(self):
