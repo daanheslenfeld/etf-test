@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Link2, Link2Off, CheckCircle, AlertCircle, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, Link2, Link2Off, CheckCircle, AlertCircle, Loader2, Info, RefreshCw } from 'lucide-react';
 
 const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
+// Fetch with timeout helper
+const fetchWithTimeout = (url, options = {}, timeoutMs = 8000) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeout));
+};
+
 export default function BrokerSettings({ user, onBack }) {
-  const [loading, setLoading] = useState(true);
+  const [statusLoading, setStatusLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -30,15 +38,14 @@ export default function BrokerSettings({ user, onBack }) {
     };
   }, [user]);
 
-  // Fetch current broker link status
+  // Fetch current broker link status (non-blocking - form stays visible)
   const fetchBrokerLink = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setStatusLoading(true);
 
-      const response = await fetch(`${TRADING_API_URL}/broker/link`, {
+      const response = await fetchWithTimeout(`${TRADING_API_URL}/broker/link`, {
         headers: getAuthHeaders()
-      });
+      }, 5000);
 
       if (response.ok) {
         const data = await response.json();
@@ -46,15 +53,12 @@ export default function BrokerSettings({ user, onBack }) {
         if (data.ib_account_id) {
           setIbAccountId(data.ib_account_id);
         }
-      } else {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Failed to fetch broker link status');
       }
     } catch (err) {
-      setError('Failed to connect to trading API');
-      console.error('Error fetching broker link:', err);
+      // Don't show error for status check - the form is still usable
+      console.warn('Could not fetch broker link status:', err.name === 'AbortError' ? 'timeout' : err.message);
     } finally {
-      setLoading(false);
+      setStatusLoading(false);
     }
   }, [getAuthHeaders]);
 
@@ -62,20 +66,20 @@ export default function BrokerSettings({ user, onBack }) {
     fetchBrokerLink();
   }, [fetchBrokerLink]);
 
-  // Validate IB account ID format
+  // Validate IB account ID format - accept both paper (DU) and live (U) accounts
   const validateIbAccountId = (value) => {
     if (!value) {
-      return 'IB Account ID is required';
+      return 'Account ID is verplicht';
     }
-    if (!/^DU[0-9]+$/.test(value.toUpperCase())) {
-      return 'Account ID must be in format DUxxxxxx (DU followed by numbers)';
+    if (!/^(DU|DF|U|F)[0-9]+$/i.test(value.trim())) {
+      return 'Account ID moet beginnen met DU, U, DF of F gevolgd door cijfers (bijv. DU0521473 of U1234567)';
     }
     return null;
   };
 
   // Handle input change
   const handleInputChange = (e) => {
-    const value = e.target.value.toUpperCase();
+    const value = e.target.value.toUpperCase().trim();
     setIbAccountId(value);
     setValidationError(null);
     setError(null);
@@ -95,26 +99,30 @@ export default function BrokerSettings({ user, onBack }) {
       setError(null);
       setSuccess(null);
 
-      const response = await fetch(`${TRADING_API_URL}/broker/link`, {
+      const response = await fetchWithTimeout(`${TRADING_API_URL}/broker/link`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ ib_account_id: ibAccountId.toUpperCase() })
-      });
+      }, 10000);
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setSuccess(data.message || 'Broker account linked successfully');
+        setSuccess(data.message || 'Broker account succesvol gekoppeld!');
         setBrokerLink({
           linked: true,
           status: 'linked',
           ib_account_id: data.ib_account_id
         });
       } else {
-        setError(data.detail || data.message || 'Failed to link broker account');
+        setError(data.detail || data.message || 'Koppelen mislukt');
       }
     } catch (err) {
-      setError('Failed to connect to trading API');
+      if (err.name === 'AbortError') {
+        setError('Verbinding duurt te lang. Controleer of de trading API draait en probeer opnieuw.');
+      } else {
+        setError('Kan niet verbinden met trading API. Controleer of de server draait.');
+      }
       console.error('Error saving broker link:', err);
     } finally {
       setSaving(false);
@@ -123,7 +131,7 @@ export default function BrokerSettings({ user, onBack }) {
 
   // Handle disconnect
   const handleDisconnect = async () => {
-    if (!window.confirm('Are you sure you want to disconnect your LYNX account?')) {
+    if (!window.confirm('Weet je zeker dat je je LYNX account wilt ontkoppelen?')) {
       return;
     }
 
@@ -132,15 +140,15 @@ export default function BrokerSettings({ user, onBack }) {
       setError(null);
       setSuccess(null);
 
-      const response = await fetch(`${TRADING_API_URL}/broker/link`, {
+      const response = await fetchWithTimeout(`${TRADING_API_URL}/broker/link`, {
         method: 'DELETE',
         headers: getAuthHeaders()
-      });
+      }, 10000);
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setSuccess(data.message || 'Broker account disconnected');
+        setSuccess(data.message || 'Broker account ontkoppeld');
         setBrokerLink({
           linked: false,
           status: 'unlinked',
@@ -148,10 +156,14 @@ export default function BrokerSettings({ user, onBack }) {
         });
         setIbAccountId('');
       } else {
-        setError(data.detail || data.message || 'Failed to disconnect broker account');
+        setError(data.detail || data.message || 'Ontkoppelen mislukt');
       }
     } catch (err) {
-      setError('Failed to connect to trading API');
+      if (err.name === 'AbortError') {
+        setError('Verbinding duurt te lang. Probeer opnieuw.');
+      } else {
+        setError('Kan niet verbinden met trading API');
+      }
       console.error('Error disconnecting broker:', err);
     } finally {
       setSaving(false);
@@ -184,7 +196,7 @@ export default function BrokerSettings({ user, onBack }) {
             <Info className="w-5 h-5 text-[#7C9885] flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-[#2D3436] text-sm">
-                Koppel je LYNX paper trading account om ETF's te verhandelen via dit portaal.
+                Koppel je LYNX account om ETF's te verhandelen via dit portaal.
                 Je account ID vind je in LYNX Trader Workstation of de LYNX app.
               </p>
             </div>
@@ -208,7 +220,12 @@ export default function BrokerSettings({ user, onBack }) {
               <div>
                 <h2 className="text-lg font-bold text-[#2D3436]">LYNX Account</h2>
                 <p className="text-sm text-[#636E72]">
-                  {brokerLink.linked ? 'Gekoppeld' : 'Niet gekoppeld'}
+                  {statusLoading ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Status laden...
+                    </span>
+                  ) : brokerLink.linked ? 'Gekoppeld' : 'Niet gekoppeld'}
                 </p>
               </div>
               {brokerLink.linked && (
@@ -219,96 +236,94 @@ export default function BrokerSettings({ user, onBack }) {
             </div>
           </div>
 
-          {/* Content */}
+          {/* Content - always show the form, never block on loading */}
           <div className="p-6">
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-8 h-8 text-[#7C9885] animate-spin" />
+            {/* Error Message */}
+            {error && (
+              <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-4 mb-6 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-[#C0736D] flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-[#C0736D] text-sm">{error}</p>
+                </div>
+                <button onClick={() => { setError(null); fetchBrokerLink(); }} className="text-[#C0736D] hover:text-[#a05a55]">
+                  <RefreshCw className="w-4 h-4" />
+                </button>
               </div>
-            ) : (
-              <>
-                {/* Error Message */}
-                {error && (
-                  <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-4 mb-6 flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-[#C0736D] flex-shrink-0 mt-0.5" />
-                    <p className="text-[#C0736D] text-sm">{error}</p>
-                  </div>
-                )}
-
-                {/* Success Message */}
-                {success && (
-                  <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-4 mb-6 flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-[#7C9885] flex-shrink-0 mt-0.5" />
-                    <p className="text-[#7C9885] text-sm">{success}</p>
-                  </div>
-                )}
-
-                {/* Account ID Input */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-[#2D3436] mb-2">
-                    IB Account ID
-                  </label>
-                  <input
-                    type="text"
-                    value={ibAccountId}
-                    onChange={handleInputChange}
-                    placeholder="DU0521473"
-                    disabled={saving}
-                    className={`w-full px-4 py-3 border rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:ring-2 transition-colors ${
-                      validationError
-                        ? 'border-[#C0736D] focus:ring-[#C0736D]/30'
-                        : 'border-[#E8E8E6] focus:ring-[#7C9885]/30 focus:border-[#7C9885]'
-                    } disabled:bg-[#F5F6F4] disabled:cursor-not-allowed`}
-                  />
-                  {validationError && (
-                    <p className="mt-2 text-sm text-[#C0736D]">{validationError}</p>
-                  )}
-                  <p className="mt-2 text-xs text-[#636E72]">
-                    Paper trading accounts beginnen met "DU" (bijv. DU0521473)
-                  </p>
-                </div>
-
-                {/* Current Status */}
-                {brokerLink.linked && brokerLink.ib_account_id && (
-                  <div className="bg-[#F5F6F4] rounded-lg p-4 mb-6">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#636E72]">Huidig gekoppeld account:</span>
-                      <span className="font-mono font-medium text-[#2D3436]">{brokerLink.ib_account_id}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Buttons */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleSave}
-                    disabled={saving || !ibAccountId}
-                    className="flex-1 py-3 bg-[#7C9885] text-white font-bold rounded-lg hover:bg-[#6B8A74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Opslaan...
-                      </>
-                    ) : brokerLink.linked ? (
-                      'Account Bijwerken'
-                    ) : (
-                      'Account Koppelen'
-                    )}
-                  </button>
-
-                  {brokerLink.linked && (
-                    <button
-                      onClick={handleDisconnect}
-                      disabled={saving}
-                      className="px-6 py-3 bg-[#FEFEFE] border border-[#C0736D]/30 text-[#C0736D] font-medium rounded-lg hover:bg-[#C0736D]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Ontkoppelen
-                    </button>
-                  )}
-                </div>
-              </>
             )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-4 mb-6 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-[#7C9885] flex-shrink-0 mt-0.5" />
+                <p className="text-[#7C9885] text-sm">{success}</p>
+              </div>
+            )}
+
+            {/* Account ID Input */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-[#2D3436] mb-2">
+                IB Account ID
+              </label>
+              <input
+                type="text"
+                value={ibAccountId}
+                onChange={handleInputChange}
+                placeholder="DU0521473"
+                disabled={saving}
+                className={`w-full px-4 py-3 border rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:outline-none focus:ring-2 transition-colors ${
+                  validationError
+                    ? 'border-[#C0736D] focus:ring-[#C0736D]/30'
+                    : 'border-[#E8E8E6] focus:ring-[#7C9885]/30 focus:border-[#7C9885]'
+                } disabled:bg-[#F5F6F4] disabled:cursor-not-allowed`}
+                style={{ fontSize: '16px' }}
+              />
+              {validationError && (
+                <p className="mt-2 text-sm text-[#C0736D]">{validationError}</p>
+              )}
+              <p className="mt-2 text-xs text-[#636E72]">
+                Paper accounts: DU of DF (bijv. DU0521473) • Live accounts: U of F (bijv. U1234567)
+              </p>
+            </div>
+
+            {/* Current Status */}
+            {brokerLink.linked && brokerLink.ib_account_id && (
+              <div className="bg-[#F5F6F4] rounded-lg p-4 mb-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-[#636E72]">Huidig gekoppeld account:</span>
+                  <span className="font-mono font-medium text-[#2D3436]">{brokerLink.ib_account_id}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleSave}
+                disabled={saving || !ibAccountId}
+                className="flex-1 py-3 bg-[#7C9885] text-white font-bold rounded-lg hover:bg-[#6B8A74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Koppelen...
+                  </>
+                ) : brokerLink.linked ? (
+                  'Account Bijwerken'
+                ) : (
+                  'Account Koppelen'
+                )}
+              </button>
+
+              {brokerLink.linked && (
+                <button
+                  onClick={handleDisconnect}
+                  disabled={saving}
+                  className="px-6 py-3 bg-[#FEFEFE] border border-[#C0736D]/30 text-[#C0736D] font-medium rounded-lg hover:bg-[#C0736D]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Ontkoppelen
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -316,7 +331,7 @@ export default function BrokerSettings({ user, onBack }) {
         <div className="mt-6 text-center">
           <p className="text-sm text-[#636E72]">
             Problemen met koppelen?{' '}
-            <a href="mailto:support@example.com" className="text-[#7C9885] hover:underline">
+            <a href="mailto:support@pigg.nl" className="text-[#7C9885] hover:underline">
               Neem contact op met support
             </a>
           </p>

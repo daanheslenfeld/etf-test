@@ -32,10 +32,10 @@ class LinkBrokerRequest(BaseModel):
     @field_validator('ib_account_id')
     @classmethod
     def validate_ib_account_id(cls, v: str) -> str:
-        """Validate IB account ID format: DU followed by digits."""
+        """Validate IB account ID format: DU/DF (paper) or U/F (live) followed by digits."""
         v = v.strip().upper()
-        if not re.match(r'^DU[0-9]+$', v):
-            raise ValueError('IB account ID must match format DUxxxxxx (DU followed by numbers)')
+        if not re.match(r'^(DU|DF|U|F)[0-9]+$', v):
+            raise ValueError('IB account ID must match format DUxxxxxx, Uxxxxxxx, DFxxxxxx, or Fxxxxxxx')
         return v
 
 
