@@ -1332,19 +1332,9 @@ const ETFPortal = () => {
   });
   const [investmentDetails, setInvestmentDetails] = useState(() => {
     const saved = localStorage.getItem('investmentDetails');
-    return saved ? JSON.parse(saved) : {
-      goal: '',
-      goalCustom: '',
-      horizon: '',
-      horizonCustom: '',
-      amount: '',
-      amountCustom: '',
-      monthlyContribution: '500',
-      monthlyContributionCustom: '',
-      riskProfile: ''
-    };
+    return saved ? JSON.parse(saved) : {};
   });
-  const [portfolioValue, setPortfolioValue] = useState(10000);
+  const [portfolioValue, setPortfolioValue] = useState(0);
   const [showEditPortfolio, setShowEditPortfolio] = useState(false);
   const [customBuildStep, setCustomBuildStep] = useState('profile'); // 'profile', 'categories', 'selectETFs'
   const [language, setLanguage] = useState(() => {
@@ -1527,8 +1517,15 @@ const ETFPortal = () => {
 
   // Handle logout - save any state and log out
   const handleLogout = async () => {
-    // Clear user and redirect to landing
+    // Clear user and all session data
     setUser(null);
+    setPortfolio([]);
+    setInvestmentDetails({});
+    setPortfolioValue(0);
+    localStorage.removeItem('portfolio');
+    localStorage.removeItem('investmentDetails');
+    localStorage.removeItem('portfolioType');
+    localStorage.removeItem('selectedProfile');
     setCurrentPage('landing');
   };
 
@@ -6988,21 +6985,23 @@ useEffect(() => {
     const amountValue = investmentDetails.amount && investmentDetails.amount !== ''
       ? parseFloat(investmentDetails.amount)
       : null;
-    const initialValue = (amountValue && !isNaN(amountValue)) ? amountValue : 10000;
-    const monthlyContribution = parseFloat(investmentDetails.monthlyContribution) || 500;
+    const initialValue = (amountValue && !isNaN(amountValue)) ? amountValue : 0;
+    const monthlyContribution = parseFloat(investmentDetails.monthlyContribution) || 0;
     const months = horizon * 12;
 
-    // Fix: if amount is empty, initialize it with the current portfolio value
+    // Only auto-fill amount if user has actually set investment details (has riskProfile)
     useEffect(() => {
-      if ((!investmentDetails.amount || investmentDetails.amount === '') && staticPerformanceData && staticPerformanceData[0]) {
-        const initialPortfolioValue = staticPerformanceData[0].portfolioValue || 10000;
-        const updatedDetails = {
-          ...investmentDetails,
-          amount: initialPortfolioValue.toString()
-        };
-        console.log('🔧 Initializing empty investmentDetails.amount with:', initialPortfolioValue);
-        setInvestmentDetails(updatedDetails);
-        localStorage.setItem('investmentDetails', JSON.stringify(updatedDetails));
+      if (investmentDetails.riskProfile && (!investmentDetails.amount || investmentDetails.amount === '') && staticPerformanceData && staticPerformanceData[0]) {
+        const initialPortfolioValue = staticPerformanceData[0].portfolioValue || 0;
+        if (initialPortfolioValue > 0) {
+          const updatedDetails = {
+            ...investmentDetails,
+            amount: initialPortfolioValue.toString()
+          };
+          console.log('🔧 Initializing empty investmentDetails.amount with:', initialPortfolioValue);
+          setInvestmentDetails(updatedDetails);
+          localStorage.setItem('investmentDetails', JSON.stringify(updatedDetails));
+        }
       }
     }, [staticPerformanceData, investmentDetails, setInvestmentDetails]);
 
@@ -8820,8 +8819,8 @@ useEffect(() => {
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#2D3436]">Account Manager Portal</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2D3436]">Account Manager Portal</h1>
             <button
               onClick={() => {
                 fetchCustomers(true);
@@ -8835,10 +8834,10 @@ useEffect(() => {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-4 mb-8 border-b border-[#E8E8E6]">
+          <div className="flex flex-wrap gap-1 sm:gap-4 mb-8 border-b border-[#E8E8E6]">
             <button
               onClick={() => setCustomerPortalTab('customers')}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
                 customerPortalTab === 'customers'
                   ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
                   : 'text-[#636E72] hover:text-[#2D3436]'
@@ -8848,27 +8847,27 @@ useEffect(() => {
             </button>
             <button
               onClick={() => setCustomerPortalTab('inquiries')}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
                 customerPortalTab === 'inquiries'
                   ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
                   : 'text-[#636E72] hover:text-[#2D3436]'
               }`}
             >
-              Chat Vragen ({chatInquiries.length})
+              Chat ({chatInquiries.length})
             </button>
             <button
               onClick={() => setCustomerPortalTab('cashAllocation')}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
                 customerPortalTab === 'cashAllocation'
                   ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
                   : 'text-[#636E72] hover:text-[#2D3436]'
               }`}
             >
-              Cash Allocation
+              Cash
             </button>
             <button
               onClick={() => { setCustomerPortalTab('loginLog'); fetchLoginLogs(); }}
-              className={`px-6 py-3 font-medium transition-colors ${
+              className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
                 customerPortalTab === 'loginLog'
                   ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
                   : 'text-[#636E72] hover:text-[#2D3436]'
