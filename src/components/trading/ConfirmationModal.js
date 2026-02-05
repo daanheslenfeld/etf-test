@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AlertTriangle, X, ShieldAlert } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { AlertTriangle, X, ShieldAlert, Clock } from 'lucide-react';
 
 const ORDER_TYPE_LABELS = {
   'MKT': 'Market',
@@ -8,8 +8,31 @@ const ORDER_TYPE_LABELS = {
   'STP_LMT': 'Stop Limit',
 };
 
+/**
+ * Check if European markets are currently open.
+ * Main exchanges (Euronext, Xetra, LSE, Borsa Italiana) trade 9:00-17:30 CET.
+ */
+function areMarketsOpen() {
+  const now = new Date();
+  // Get CET time (UTC+1, or UTC+2 during CEST)
+  const cetString = now.toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' });
+  const cet = new Date(cetString);
+  const hours = cet.getHours();
+  const minutes = cet.getMinutes();
+  const day = cet.getDay(); // 0=Sun, 6=Sat
+  const timeInMinutes = hours * 60 + minutes;
+
+  // Weekend
+  if (day === 0 || day === 6) return false;
+  // Market hours: 9:00 - 17:30 CET
+  if (timeInMinutes < 540 || timeInMinutes >= 1050) return false;
+  return true;
+}
+
 export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, tradingMode, warnings = [], safetyLimits }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const marketsOpen = useMemo(() => areMarketsOpen(), []);
 
   if (!isOpen) return null;
 
@@ -19,6 +42,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
   // Check for large orders
   const largeOrders = orders.filter(o => o.quantity >= (safetyLimits?.largeOrderThreshold || 25));
   const isBulkOrder = orders.length >= (safetyLimits?.bulkOrderThreshold || 3);
+  const hasMarketOrders = orders.some(o => o.orderType === 'MKT');
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -59,6 +83,24 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
 
         {/* Content */}
         <div className="p-6">
+          {/* Market Closed Warning */}
+          {!marketsOpen && (
+            <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-[#C9A962] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[#C9A962] font-bold">Markten zijn gesloten</p>
+                  <p className="text-[#C9A962] text-sm mt-1">
+                    Europese beurzen zijn open van 09:00 tot 17:30 CET (ma-vr).
+                    {hasMarketOrders
+                      ? ' Market orders worden uitgevoerd bij de volgende opening en kunnen afwijken van de huidige koers.'
+                      : ' Limit orders blijven actief tot ze worden gevuld of geannuleerd.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Warning for Live Trading */}
           {isLive && (
             <div className="bg-[#6B7B8A]/10 border border-[#6B7B8A]/30 rounded-lg p-4 mb-6">

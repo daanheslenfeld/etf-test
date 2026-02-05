@@ -1199,6 +1199,29 @@ export function TradingProvider({ user, children }) {
     return { success: true };
   }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions, fetchSafetyLimits]);
 
+  // Cancel a pending order intention
+  const cancelOrder = useCallback(async (orderId) => {
+    try {
+      if (IS_DEMO) return { success: false, message: 'Cannot cancel in demo mode' };
+
+      const res = await fetch(`${TRADING_API_URL}/intentions/${orderId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Refresh orders and positions
+        await fetchOrders();
+        await fetchPositions();
+        return { success: true, message: data.message };
+      }
+      return { success: false, message: data.detail || data.message || 'Cancel failed' };
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      return { success: false, message: 'Failed to cancel order' };
+    }
+  }, [getAuthHeaders, fetchOrders, fetchPositions]);
+
   // Basket operations
   const addToBasket = useCallback((order) => {
     dispatch({ type: ACTIONS.ADD_TO_BASKET, payload: order });
@@ -1368,6 +1391,7 @@ export function TradingProvider({ user, children }) {
     subscribeToMarketData,
     getMarketDataForSymbol,
     placeOrder,
+    cancelOrder,
     executeBasket,
     addToBasket,
     addMultipleToBasket,
