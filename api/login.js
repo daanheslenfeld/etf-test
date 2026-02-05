@@ -94,6 +94,8 @@ module.exports = async (req, res) => {
   }
 
   const { email, password } = req.body;
+  const ip_address = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || null;
+  const user_agent = req.headers['user-agent'] || null;
 
   try {
     const { data: customer, error } = await supabase
@@ -104,6 +106,15 @@ module.exports = async (req, res) => {
       .single();
 
     if (error || !customer) {
+      // Log failed login attempt
+      await supabase.from('login_log').insert({
+        email: email || 'unknown',
+        success: false,
+        failure_reason: 'invalid_credentials',
+        ip_address,
+        user_agent,
+      }).then(() => {}).catch(() => {});
+
       return res.status(401).json({
         success: false,
         message: 'Onjuiste email of wachtwoord'
@@ -112,6 +123,16 @@ module.exports = async (req, res) => {
 
     // Check if email is verified
     if (!customer.email_verified) {
+      // Log unverified login attempt
+      await supabase.from('login_log').insert({
+        customer_id: customer.id,
+        email: customer.email,
+        success: false,
+        failure_reason: 'email_not_verified',
+        ip_address,
+        user_agent,
+      }).then(() => {}).catch(() => {});
+
       return res.status(403).json({
         success: false,
         message: 'Je moet eerst je email bevestigen voordat je kunt inloggen. Controleer je inbox voor de verificatiecode.',
@@ -152,6 +173,15 @@ module.exports = async (req, res) => {
     } : { pricesLastUpdated };
 
     console.log('Login - Transformed investment details:', transformedInvestmentDetails);
+
+    // Log successful login
+    await supabase.from('login_log').insert({
+      customer_id: customer.id,
+      email: customer.email,
+      success: true,
+      ip_address,
+      user_agent,
+    }).then(() => {}).catch(() => {});
 
     res.status(200).json({
       success: true,

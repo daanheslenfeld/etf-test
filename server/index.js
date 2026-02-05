@@ -123,6 +123,8 @@ app.post('/api/register', async (req, res) => {
 // Login endpoint
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
+  const ip_address = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || null;
+  const user_agent = req.headers['user-agent'] || null;
 
   try {
     const { data: customer, error } = await supabase
@@ -133,6 +135,7 @@ app.post('/api/login', async (req, res) => {
       .single();
 
     if (error || !customer) {
+      await supabase.from('login_log').insert({ email: email || 'unknown', success: false, failure_reason: 'invalid_credentials', ip_address, user_agent }).catch(() => {});
       return res.status(401).json({
         success: false,
         message: 'Onjuiste email of wachtwoord'
@@ -152,6 +155,8 @@ app.post('/api/login', async (req, res) => {
       .eq('customer_id', customer.id)
       .single();
 
+    await supabase.from('login_log').insert({ customer_id: customer.id, email: customer.email, success: true, ip_address, user_agent }).catch(() => {});
+
     res.status(200).json({
       success: true,
       customer: {
@@ -167,6 +172,84 @@ app.post('/api/login', async (req, res) => {
       success: false,
       message: 'Login mislukt. Probeer opnieuw.'
     });
+  }
+});
+
+// Log login (for admin/demo logins from frontend)
+app.post('/api/log-login', async (req, res) => {
+  const { email, success = true, role } = req.body;
+  const ip_address = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket?.remoteAddress || null;
+  const user_agent = req.headers['user-agent'] || null;
+  try {
+    await supabase.from('login_log').insert({ email, success, failure_reason: role ? `role:${role}` : null, ip_address, user_agent });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(200).json({ success: true });
+  }
+});
+
+// Fetch login logs (for admin portal)
+app.get('/api/login-log', async (req, res) => {
+  try {
+    const { email, days } = req.query;
+    const daysLimit = parseInt(days) || 30;
+    const since = new Date();
+    since.setDate(since.getDate() - daysLimit);
+
+    let query = supabase
+      .from('login_log')
+      .select('*')
+      .gte('created_at', since.toISOString())
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (email) {
+      query = query.ilike('email', `%${email}%`);
+    }
+
+    const { data: logs, error } = await query;
+    if (error) {
+      return res.status(500).json({ success: false, message: 'Failed to fetch login logs' });
+    }
+    res.status(200).json({ success: true, logs: logs || [] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch login logs' });
+  }
+});
+
+// User-initiated password reset
+app.post('/api/user-reset-password', async (req, res) => {
+  const { action, email, newPassword } = req.body;
+  if (!email) return res.status(400).json({ success: false, message: 'Email is verplicht' });
+
+  try {
+    if (action === 'check-email') {
+      const { data: customer, error } = await supabase
+        .from('customers')
+        .select('id, email, first_name')
+        .eq('email', email.toLowerCase())
+        .maybeSingle();
+      if (error || !customer) {
+        return res.status(404).json({ success: false, message: 'Geen account gevonden met dit email adres' });
+      }
+      return res.status(200).json({ success: true, firstName: customer.first_name });
+    } else if (action === 'reset-password') {
+      if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ success: false, message: 'Wachtwoord moet minimaal 6 tekens zijn' });
+      }
+      const { error: updateError } = await supabase
+        .from('customers')
+        .update({ password: newPassword })
+        .eq('email', email.toLowerCase());
+      if (updateError) {
+        return res.status(500).json({ success: false, message: 'Wachtwoord resetten mislukt' });
+      }
+      return res.status(200).json({ success: true, message: 'Wachtwoord succesvol gewijzigd' });
+    } else {
+      return res.status(400).json({ success: false, message: 'Ongeldige actie' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Er is een fout opgetreden' });
   }
 });
 

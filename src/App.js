@@ -1778,6 +1778,7 @@ useEffect(() => {
     if (email === 'admin@etfportal.nl' && password === 'admin123') {
       setUser({ email, name: 'Account Manager', role: 'accountmanager' });
       setCurrentPage('customerDatabase');
+      fetch(`${API_URL}/log-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, success: true, role: 'accountmanager' }) }).catch(() => {});
       return { success: true };
     }
 
@@ -1828,6 +1829,7 @@ useEffect(() => {
       });
       // Redirect to Main Dashboard (Portfolio, LYNX Trading, Vooraf Samengesteld)
       setCurrentPage('mainDashboard');
+      fetch(`${API_URL}/log-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, success: true, role: 'demo' }) }).catch(() => {});
       return { success: true };
     }
 
@@ -3721,7 +3723,7 @@ useEffect(() => {
               </div>
             )}
 
-            <div className="space-y-3 sm:space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); handleLoginClick(); }} className="space-y-3 sm:space-y-4">
               <div>
                 <label className="block text-xs sm:text-sm font-semibold mb-1.5 sm:mb-2 text-[#636E72]">{t.common.email}</label>
                 <input
@@ -3730,7 +3732,6 @@ useEffect(() => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onTouchStart={(e) => e.target.focus()}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   placeholder={t.common.email}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
@@ -3744,7 +3745,6 @@ useEffect(() => {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onTouchStart={(e) => e.target.focus()}
                   className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
                   placeholder={t.auth.password}
                   style={{ fontSize: '16px', touchAction: 'manipulation' }}
@@ -3752,19 +3752,20 @@ useEffect(() => {
               </div>
 
               <button
-                onClick={handleLoginClick}
+                type="submit"
                 className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Inloggen
               </button>
 
               <button
+                type="button"
                 onClick={handleDemoLogin}
                 className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-gray-700 text-[#2D3436] border-2 border-[#7C9885] rounded-lg sm:rounded-xl hover:bg-gray-600 transition-all font-semibold mt-3"
               >
                 🚀 Probeer Demo Account
               </button>
-            </div>
+            </form>
 
             <div className="text-center mt-5 sm:mt-6 text-xs sm:text-sm text-[#636E72]">
               <button onClick={() => setCurrentPage('resetPassword')} className="text-[#7C9885] hover:text-[#20D4BA] hover:underline font-semibold">
@@ -3792,24 +3793,37 @@ useEffect(() => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    const handleEmailSubmit = () => {
+    const [loading, setLoading] = useState(false);
+
+    const handleEmailSubmit = async () => {
       if (!email) {
         setError('Vul een email adres in');
         return;
       }
 
-      const customer = customers.find(c => c.email.toLowerCase() === email.toLowerCase());
-      if (!customer) {
-        setError('Geen account gevonden met dit email adres');
-        return;
-      }
-
+      setLoading(true);
       setError('');
-      setSuccess(t.auth.emailFound);
-      setStep(2);
+      try {
+        const response = await fetch(`${API_URL}/user-reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check-email', email })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setSuccess(t.auth.emailFound);
+          setStep(2);
+        } else {
+          setError(data.message || 'Geen account gevonden met dit email adres');
+        }
+      } catch (error) {
+        setError('Er is een fout opgetreden. Probeer opnieuw.');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handlePasswordReset = () => {
+    const handlePasswordReset = async () => {
       if (!newPassword || !confirmPassword) {
         setError('Vul alle velden in');
         return;
@@ -3825,19 +3839,28 @@ useEffect(() => {
         return;
       }
 
-      // Update customer password
-      setCustomers(prev => prev.map(customer =>
-        customer.email.toLowerCase() === email.toLowerCase()
-          ? { ...customer, password: newPassword }
-          : customer
-      ));
-
+      setLoading(true);
       setError('');
-      setSuccess(t.auth.passwordChanged);
-
-      setTimeout(() => {
-        setCurrentPage('login');
-      }, 2000);
+      try {
+        const response = await fetch(`${API_URL}/user-reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reset-password', email, newPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setSuccess(t.auth.passwordChanged);
+          setTimeout(() => {
+            setCurrentPage('login');
+          }, 2000);
+        } else {
+          setError(data.message || 'Wachtwoord resetten mislukt');
+        }
+      } catch (error) {
+        setError('Er is een fout opgetreden. Probeer opnieuw.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (
@@ -4263,7 +4286,7 @@ useEffect(() => {
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 text-[#7C9885]">Maak een gratis account</h2>
             <p className="text-xs sm:text-sm text-[#636E72] mb-4 sm:mb-6">Vul uw gegevens in om te registreren</p>
 
-            <div className="space-y-3 sm:space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-3 sm:space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-[#636E72]">Voornaam *</label>
@@ -4273,6 +4296,7 @@ useEffect(() => {
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Jan"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                    style={{ fontSize: '16px', touchAction: 'manipulation' }}
                     required
                   />
                 </div>
@@ -4284,6 +4308,7 @@ useEffect(() => {
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Jansen"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                    style={{ fontSize: '16px', touchAction: 'manipulation' }}
                     required
                   />
                 </div>
@@ -4298,6 +4323,7 @@ useEffect(() => {
                     onChange={(e) => setStreet(e.target.value)}
                     placeholder="Straatnaam"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                    style={{ fontSize: '16px', touchAction: 'manipulation' }}
                     required
                   />
                 </div>
@@ -4309,6 +4335,7 @@ useEffect(() => {
                     onChange={(e) => setHouseNumber(e.target.value)}
                     placeholder="12"
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                    style={{ fontSize: '16px', touchAction: 'manipulation' }}
                     required
                   />
                 </div>
@@ -4322,6 +4349,7 @@ useEffect(() => {
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="1234AB"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4334,6 +4362,7 @@ useEffect(() => {
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Amsterdam"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4346,6 +4375,7 @@ useEffect(() => {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="06 12345678"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4357,6 +4387,7 @@ useEffect(() => {
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4369,6 +4400,7 @@ useEffect(() => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jan@voorbeeld.nl"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4381,6 +4413,7 @@ useEffect(() => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimaal 8 tekens"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
@@ -4393,12 +4426,13 @@ useEffect(() => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Herhaal wachtwoord"
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base bg-[#FEFEFE] border-2 border-[#E8E8E6] rounded-lg sm:rounded-xl focus:outline-none focus:border-[#7C9885] transition-colors text-[#2D3436] placeholder-[#B2BEC3]"
+                  style={{ fontSize: '16px', touchAction: 'manipulation' }}
                   required
                 />
               </div>
 
               <button
-                onClick={handleSubmit}
+                type="submit"
                 className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-[#7C9885] text-gray-900 rounded-lg sm:rounded-xl hover:bg-[#20D4BA] transition-all font-semibold mt-4 sm:mt-6"
               >
                 Account aanmaken
@@ -4406,11 +4440,11 @@ useEffect(() => {
 
               <p className="text-center text-xs sm:text-sm text-[#636E72] mt-3 sm:mt-4">
                 Heeft u al een account?{' '}
-                <button onClick={() => setCurrentPage('login')} className="text-[#7C9885] font-semibold hover:text-[#20D4BA] hover:underline">
+                <button type="button" onClick={() => setCurrentPage('login')} className="text-[#7C9885] font-semibold hover:text-[#20D4BA] hover:underline">
                   Log in
                 </button>
               </p>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -8521,6 +8555,25 @@ useEffect(() => {
     const [conversationMessages, setConversationMessages] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');
     const [sendingMessage, setSendingMessage] = useState(false);
+    const [loginLogs, setLoginLogs] = useState([]);
+    const [loginLogsLoading, setLoginLogsLoading] = useState(false);
+    const [loginLogSearch, setLoginLogSearch] = useState('');
+
+    // Function to fetch login logs
+    const fetchLoginLogs = async () => {
+      setLoginLogsLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/login-log`);
+        const data = await response.json();
+        if (data.success) {
+          setLoginLogs(data.logs || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch login logs:', error);
+      } finally {
+        setLoginLogsLoading(false);
+      }
+    };
 
     // Function to fetch customers
     const fetchCustomers = async (showRefreshIndicator = false) => {
@@ -8813,6 +8866,16 @@ useEffect(() => {
             >
               Cash Allocation
             </button>
+            <button
+              onClick={() => { setCustomerPortalTab('loginLog'); fetchLoginLogs(); }}
+              className={`px-6 py-3 font-medium transition-colors ${
+                customerPortalTab === 'loginLog'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
+              }`}
+            >
+              Logboek
+            </button>
           </div>
 
           {customerPortalTab === 'customers' && (
@@ -8867,8 +8930,6 @@ useEffect(() => {
                         <td className="px-6 py-4 text-sm">
                           {customer.account_type === 'betaald' ? (
                             <span className="px-2 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-xs font-semibold">Betaald</span>
-                          ) : customer.account_type === 'fictief' ? (
-                            <span className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded-full text-xs font-semibold">Fictief</span>
                           ) : (
                             <span className="px-2 py-1 bg-gray-700 text-[#636E72] rounded-full text-xs font-semibold">Gratis</span>
                           )}
@@ -9100,6 +9161,83 @@ useEffect(() => {
             <AdminCashAllocation user={user} onBack={() => setCustomerPortalTab('customers')} embedded />
           )}
 
+          {customerPortalTab === 'loginLog' && (
+            <>
+              <div className="mb-6">
+                <input
+                  type="text"
+                  placeholder="Zoek op email..."
+                  value={loginLogSearch}
+                  onChange={(e) => setLoginLogSearch(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg text-[#2D3436] placeholder-[#B2BEC3] focus:ring-2 focus:ring-[#7C9885] focus:border-transparent"
+                />
+              </div>
+              {loginLogsLoading ? (
+                <div className="text-center py-12 text-[#636E72]">Laden...</div>
+              ) : (
+                <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Datum/Tijd</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Email</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Status</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">Reden</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-[#636E72]">IP Adres</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {loginLogs
+                          .filter(log => !loginLogSearch || log.email?.toLowerCase().includes(loginLogSearch.toLowerCase()))
+                          .length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="px-6 py-12 text-center text-[#636E72]">
+                              Geen login logs gevonden
+                            </td>
+                          </tr>
+                        ) : (
+                          loginLogs
+                            .filter(log => !loginLogSearch || log.email?.toLowerCase().includes(loginLogSearch.toLowerCase()))
+                            .map((log) => (
+                            <tr key={log.id} className="hover:bg-[#ECEEED]/30 transition-colors">
+                              <td className="px-6 py-4 text-sm text-[#636E72]">
+                                {new Date(log.created_at).toLocaleDateString('nl-NL', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  second: '2-digit'
+                                })}
+                              </td>
+                              <td className="px-6 py-4 text-sm font-medium text-[#2D3436]">{log.email}</td>
+                              <td className="px-6 py-4 text-sm">
+                                {log.success ? (
+                                  <span className="px-2 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-xs font-semibold">Gelukt</span>
+                                ) : (
+                                  <span className="px-2 py-1 bg-red-600/20 text-[#C0736D] rounded-full text-xs font-semibold">Mislukt</span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-[#636E72]">
+                                {log.failure_reason === 'invalid_credentials' && 'Onjuiste gegevens'}
+                                {log.failure_reason === 'email_not_verified' && 'Email niet geverifieerd'}
+                                {log.failure_reason === 'role:accountmanager' && 'Admin login'}
+                                {log.failure_reason === 'role:demo' && 'Demo login'}
+                                {!log.failure_reason && log.success && 'Klant login'}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-[#636E72]">{log.ip_address || '-'}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
           {/* Conversation Modal */}
           {selectedInquiry && (
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -9183,6 +9321,40 @@ useEffect(() => {
   };
 
   const CustomerDetailPage = () => {
+    const [customerCash, setCustomerCash] = useState(null);
+    const [customerLoginLogs, setCustomerLoginLogs] = useState([]);
+    const [customerLogsLoading, setCustomerLogsLoading] = useState(false);
+
+    useEffect(() => {
+      if (!selectedCustomer) return;
+      // Fetch virtual account cash
+      const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+      fetch(`${TRADING_API_URL}/virtual-accounts/admin/cash-overview`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Customer-ID': '0',
+          'X-Customer-Email': 'admin@etfportal.nl',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      })
+        .then(r => r.json())
+        .then(data => {
+          const account = (data.accounts || []).find(a => a.owner_id === selectedCustomer.id);
+          if (account) setCustomerCash(account);
+        })
+        .catch(() => {});
+
+      // Fetch login logs for this customer
+      setCustomerLogsLoading(true);
+      fetch(`${API_URL}/login-log?email=${encodeURIComponent(selectedCustomer.email)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) setCustomerLoginLogs(data.logs || []);
+        })
+        .catch(() => {})
+        .finally(() => setCustomerLogsLoading(false));
+    }, [selectedCustomer]);
+
     if (!selectedCustomer) {
       setCurrentPage('customerDatabase');
       return null;
@@ -9282,10 +9454,6 @@ useEffect(() => {
                       <span className="px-3 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-sm font-semibold">
                         Betaald Account
                       </span>
-                    ) : selectedCustomer.account_type === 'fictief' ? (
-                      <span className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-semibold">
-                        Fictief Account
-                      </span>
                     ) : (
                       <span className="px-3 py-1 bg-gray-700 text-[#636E72] rounded-full text-sm font-semibold">
                         Gratis Account
@@ -9293,6 +9461,17 @@ useEffect(() => {
                     )}
                   </div>
                 </div>
+                {customerCash && (
+                  <div>
+                    <span className="text-sm text-[#636E72]">Saldo:</span>
+                    <div className="font-medium text-lg text-[#7C9885]">
+                      € {parseFloat(customerCash.available_cash || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-xs text-[#636E72] mt-1">
+                      Toegewezen: € {parseFloat(customerCash.assigned_cash || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2 })} | Gereserveerd: € {parseFloat(customerCash.reserved_cash || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                )}
                 {selectedCustomer.investmentDetails?.goal ? (
                   <>
                     <div>
@@ -9441,6 +9620,54 @@ useEffect(() => {
               </div>
             </div>
           )}
+
+          {/* Login Logboek */}
+          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl p-6 mb-8">
+            <h2 className="text-xl font-bold mb-4 text-[#7C9885]">Login Logboek</h2>
+            {customerLogsLoading ? (
+              <p className="text-[#636E72]">Laden...</p>
+            ) : customerLoginLogs.length === 0 ? (
+              <p className="text-[#636E72]">Geen login activiteit gevonden</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Datum/Tijd</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Details</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">IP Adres</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800">
+                    {customerLoginLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-[#ECEEED]/30 transition-colors">
+                        <td className="px-4 py-3 text-sm text-[#636E72]">
+                          {new Date(log.created_at).toLocaleDateString('nl-NL', {
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                          })}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          {log.success ? (
+                            <span className="px-2 py-1 bg-green-600/20 text-[#7C9885] rounded-full text-xs font-semibold">Gelukt</span>
+                          ) : (
+                            <span className="px-2 py-1 bg-red-600/20 text-[#C0736D] rounded-full text-xs font-semibold">Mislukt</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[#636E72]">
+                          {log.failure_reason === 'invalid_credentials' && 'Onjuiste gegevens'}
+                          {log.failure_reason === 'email_not_verified' && 'Email niet geverifieerd'}
+                          {!log.failure_reason && log.success && 'Succesvol ingelogd'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-[#636E72]">{log.ip_address || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
