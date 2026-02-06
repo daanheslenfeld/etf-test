@@ -104,7 +104,7 @@ export default function BulkBuyModal({
     }
   };
 
-  // Handle add to basket — immediately navigate to order basket
+  // Handle add to basket — then show community publish step
   const handleAddToBasket = () => {
     const success = onAddToBasket();
     if (success) {
@@ -129,11 +129,8 @@ export default function BulkBuyModal({
         }).catch(() => {}); // silent fail
       }
 
-      // Close modal and go straight to order basket
-      onClose();
-      if (onNavigateToTrading) {
-        setTimeout(() => onNavigateToTrading(), 200);
-      }
+      // Show community publish step (user can publish or skip to basket)
+      setShowCommunityStep(true);
     }
   };
 

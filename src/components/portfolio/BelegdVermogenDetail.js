@@ -1,7 +1,27 @@
-import React from 'react';
-import { BarChart3, TrendingUp, TrendingDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { BarChart3, TrendingUp, TrendingDown, Globe, Check, Loader2 } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
 import DetailPageHeader, { getETFName } from './DetailPageHeader';
+
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+
+const SYMBOL_ISIN_MAP = {
+  IWDA: 'IE00B4L5Y983',
+  VWCE: 'IE00BK5BQT80',
+  EMIM: 'IE00BKM4GZ66',
+  VUAA: 'IE00BFMXXD54',
+  SXR8: 'IE00B5BMR087',
+  CAC: 'LU1681048804',
+  IWDP: 'IE00B1FZS350',
+  SXRS: 'IE00B4PY7Y77',
+  VFEM: 'IE00B3VVMM84',
+  IMEU: 'IE00B4L5YV67',
+  EUNH: 'IE00B4WXJJ64',
+  IEAC: 'IE00B3F81R35',
+  VAGE: 'IE00BG47KH54',
+  SGLD: 'IE00B4ND3602',
+  XEON: 'LU0290358497',
+};
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -13,8 +33,57 @@ const formatPercent = (value) => {
   return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`;
 };
 
-export default function BelegdVermogenDetail({ onBack }) {
+export default function BelegdVermogenDetail({ onBack, user }) {
   const { positions, portfolioValue, unrealizedPnL, unrealizedPnLPercent } = useTrading();
+  const [showPublish, setShowPublish] = useState(false);
+  const [communityName, setCommunityName] = useState('');
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState(null);
+  const [published, setPublished] = useState(false);
+
+  const handlePublish = async () => {
+    if (!communityName.trim() || communityName.trim().length < 3) return;
+    setIsPublishing(true);
+    setPublishError(null);
+
+    try {
+      const totalValue = positions.reduce((sum, p) => sum + (parseFloat(p.market_value) || 0), 0);
+      const holdings = positions.map(p => ({
+        isin: p.isin || SYMBOL_ISIN_MAP[p.symbol] || p.symbol,
+        name: getETFName(p),
+        weight: totalValue > 0 ? Math.round((parseFloat(p.market_value) || 0) / totalValue * 100) : 0,
+        category: null,
+      }));
+
+      const params = new URLSearchParams({
+        creator_id: String(user?.id || 'anonymous'),
+        creator_name: communityName.trim(),
+      });
+
+      const response = await fetch(`${TRADING_API_URL}/portfolios/?${params}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({
+          name: `${communityName.trim()}'s Portfolio`,
+          description: null,
+          visibility: 'public',
+          holdings,
+          risk_level: 3,
+          tags: [],
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || 'Publiceren mislukt');
+      }
+      setPublished(true);
+    } catch (err) {
+      setPublishError(err.message || 'Er ging iets mis bij het publiceren');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
 
   return (
     <DetailPageHeader title="Belegd Vermogen" onBack={onBack}>
@@ -165,6 +234,79 @@ export default function BelegdVermogenDetail({ onBack }) {
           </tfoot>
         </table>
       </div>
+
+      {/* Publish to Community */}
+      {positions.length > 0 && (
+        <div className="mt-6">
+          {published ? (
+            <div className="bg-[#FEFEFE] border border-[#7C9885] rounded-2xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#7C9885]/10 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-[#7C9885]" />
+                </div>
+                <div>
+                  <div className="font-medium text-[#2D3436]">Portfolio gepubliceerd!</div>
+                  <div className="text-xs text-[#636E72]">Je portfolio is zichtbaar in de community</div>
+                </div>
+              </div>
+            </div>
+          ) : !showPublish ? (
+            <button
+              onClick={() => setShowPublish(true)}
+              className="w-full bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)] hover:border-[#7C9885] transition-colors flex items-center gap-3"
+            >
+              <div className="w-10 h-10 rounded-full bg-[#7C9885]/10 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-[#7C9885]" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-[#2D3436] text-sm">Publiceer in community</div>
+                <div className="text-xs text-[#636E72]">Deel je portfolio met andere beleggers</div>
+              </div>
+            </button>
+          ) : (
+            <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-[#7C9885]/10 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-[#7C9885]" />
+                </div>
+                <div>
+                  <div className="font-medium text-[#2D3436] text-sm">Publiceer in community</div>
+                  <div className="text-xs text-[#636E72]">Kies een naam voor je community profiel</div>
+                </div>
+              </div>
+              <input
+                type="text"
+                value={communityName}
+                onChange={e => setCommunityName(e.target.value)}
+                placeholder="Jouw community naam..."
+                className="w-full px-4 py-2.5 bg-[#F5F6F4] border border-[#E8E8E6] rounded-xl text-sm text-[#2D3436] placeholder:text-[#B2BEC3] focus:outline-none focus:ring-2 focus:ring-[#7C9885]/30 focus:border-[#7C9885] mb-3"
+              />
+              {publishError && (
+                <div className="text-xs text-[#C0736D] mb-3">{publishError}</div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setShowPublish(false); setPublishError(null); }}
+                  className="flex-1 px-4 py-2.5 text-sm text-[#636E72] bg-[#F5F6F4] rounded-xl hover:bg-[#E8E8E6] transition-colors"
+                >
+                  Annuleren
+                </button>
+                <button
+                  onClick={handlePublish}
+                  disabled={isPublishing || communityName.trim().length < 3}
+                  className="flex-1 px-4 py-2.5 text-sm text-white bg-[#7C9885] rounded-xl hover:bg-[#6B8574] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                >
+                  {isPublishing ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Publiceren...</>
+                  ) : (
+                    <><Globe className="w-4 h-4" /> Publiceren</>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {positions.length === 0 && (
         <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-10 text-center shadow-[0_2px_8px_rgba(45,52,54,0.06)]">

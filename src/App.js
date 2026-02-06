@@ -10755,7 +10755,7 @@ useEffect(() => {
           <TotaleWaardeDetail onBack={() => setCurrentPage('mainDashboard')} />
       )}
       {currentPage === 'belegdVermogenDetail' && (
-          <BelegdVermogenDetail onBack={() => setCurrentPage('mainDashboard')} />
+          <BelegdVermogenDetail user={user} onBack={() => setCurrentPage('mainDashboard')} />
       )}
       {currentPage === 'beschikbaarDetail' && (
           <BeschikbaarDetail onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />
