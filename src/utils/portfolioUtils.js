@@ -83,8 +83,16 @@ export function calculateBulkBuyOrders(portfolioKey, investmentAmount, marketDat
       continue;
     }
 
-    // Get current price
-    const price = getMarketPrice(tradingInfo.symbol, marketData);
+    // Get current price - fall back to reference price if market data unavailable
+    let price = getMarketPrice(tradingInfo.symbol, marketData);
+    let usingRefPrice = false;
+    if (!price || price <= 0) {
+      const verifiedEntry = Object.values(VERIFIED_ETFS).find(e => e.isin === holding.isin);
+      if (verifiedEntry?.refPrice) {
+        price = verifiedEntry.refPrice;
+        usingRefPrice = true;
+      }
+    }
 
     if (!price || price <= 0) {
       skippedETFs.push({
