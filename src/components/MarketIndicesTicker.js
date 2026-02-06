@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, TrendingDown, RefreshCw, Globe } from 'lucide-react';
+import { ChevronUp, ChevronDown, RefreshCw, Globe } from 'lucide-react';
 import { isDemoMode, demoApi } from '../demo';
 
 const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
@@ -144,13 +144,13 @@ export default function MarketIndicesTicker() {
                     {formatPrice(index.price, index.currency)}
                   </span>
 
-                  {/* Percentage change */}
-                  <span className={`flex items-center gap-0.5 text-xs sm:text-sm ${changeColor}`}>
+                  {/* Percentage change with arrow */}
+                  <span className={`flex items-center gap-0 text-xs sm:text-sm font-medium ${changeColor}`}>
                     {index.change !== 0 && (
                       isUp ? (
-                        <TrendingUp className="w-3 h-3" />
+                        <ChevronUp className="w-4 h-4 -mr-0.5" strokeWidth={2.5} />
                       ) : (
-                        <TrendingDown className="w-3 h-3" />
+                        <ChevronDown className="w-4 h-4 -mr-0.5" strokeWidth={2.5} />
                       )
                     )}
                     {changeText}
