@@ -115,16 +115,15 @@ export default function MarketIndicesTicker() {
 
   return (
     <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center gap-1 py-2 overflow-x-auto scrollbar-hide">
+      <div className="w-full px-4">
+        <div className="flex items-center gap-1 py-1.5 overflow-x-auto scrollbar-hide">
           {/* Market icon */}
-          <div className="flex items-center gap-2 pr-4 border-r border-[#E8E8E6] shrink-0">
-            <Globe className="w-4 h-4 text-[#B2BEC3]" />
-            <span className="text-xs text-[#B2BEC3] hidden sm:inline">Beurzen</span>
+          <div className="flex items-center gap-1.5 pr-3 border-r border-[#E8E8E6] shrink-0">
+            <Globe className="w-3.5 h-3.5 text-[#B2BEC3]" />
           </div>
 
           {/* Index items */}
-          <div className="flex items-center gap-4 sm:gap-6 px-4 overflow-x-auto">
+          <div className="flex items-center gap-3 px-3 overflow-x-auto">
             {indices.map((index) => {
               const { text: changeText, color: changeColor } = formatChange(index.change, index.change_percent);
               const isUp = index.change >= 0;
@@ -132,25 +131,25 @@ export default function MarketIndicesTicker() {
               return (
                 <div
                   key={index.symbol}
-                  className="flex items-center gap-2 shrink-0"
+                  className="flex items-center gap-1 shrink-0"
                 >
                   {/* Index name */}
-                  <span className="text-xs sm:text-sm font-medium text-[#2D3436]">
+                  <span className="text-xs font-medium text-[#2D3436]">
                     {index.symbol}
                   </span>
 
-                  {/* Price with percentage */}
-                  <span className="text-xs sm:text-sm text-[#636E72]">
+                  {/* Price */}
+                  <span className="text-xs text-[#636E72]">
                     {formatPrice(index.price, index.currency)}
                   </span>
 
                   {/* Percentage change with arrow */}
-                  <span className={`flex items-center gap-0 text-xs sm:text-sm font-medium ${changeColor}`}>
+                  <span className={`flex items-center gap-0 text-xs font-medium ${changeColor}`}>
                     {index.change !== 0 && (
                       isUp ? (
-                        <ChevronUp className="w-4 h-4 -mr-0.5" strokeWidth={2.5} />
+                        <ChevronUp className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
                       ) : (
-                        <ChevronDown className="w-4 h-4 -mr-0.5" strokeWidth={2.5} />
+                        <ChevronDown className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
                       )
                     )}
                     {changeText}
