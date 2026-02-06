@@ -179,6 +179,9 @@ class IBClient:
         self._market_data_tickers: dict[int, Any] = {}  # Track active ticker subscriptions
         self._market_data_contracts: dict[int, Contract] = {}
 
+        # Account type safety
+        self._account_type_mismatch = False  # True if trading mode doesn't match account type
+
         # Callbacks
         self._on_connect_callbacks: list[Callable] = []
         self._on_disconnect_callbacks: list[Callable] = []
@@ -245,6 +248,9 @@ class IBClient:
                 self._primary_account = accounts[0] if accounts else None
 
                 logger.info(f"Connected to IB Gateway! Account: {self._primary_account}, nextValidId: {self._next_valid_id}")
+
+                # === CRITICAL SAFETY CHECK: Verify account type matches trading mode ===
+                self._verify_account_type()
 
                 # Subscribe to positions (non-critical, don't fail connect)
                 try:
@@ -484,6 +490,49 @@ class IBClient:
     # Status Methods
     # =========================================================================
 
+    def _verify_account_type(self):
+        """
+        CRITICAL SAFETY: Verify IB account type matches configured trading mode.
+
+        Paper/demo accounts start with 'D' (e.g., DU1234567).
+        Live accounts start with 'U' (e.g., U1234567).
+        If PAPER mode but connected to a LIVE account → block all trading.
+        """
+        from config import get_settings, TradingMode
+        settings = get_settings()
+        account = self._primary_account
+
+        if not account:
+            logger.warning("No account ID available for type verification")
+            return
+
+        is_paper_account = account.upper().startswith("D")
+        is_live_account = account.upper().startswith("U")
+        mode = settings.trading_mode
+
+        if mode == TradingMode.PAPER and is_live_account:
+            self._account_type_mismatch = True
+            logger.critical("=" * 70)
+            logger.critical("ACCOUNT TYPE MISMATCH - ALL TRADING BLOCKED")
+            logger.critical(f"Trading mode is PAPER but connected to LIVE account: {account}")
+            logger.critical("Change trading_mode to 'live' or connect to a paper account")
+            logger.critical("=" * 70)
+        elif mode == TradingMode.LIVE and is_paper_account:
+            self._account_type_mismatch = True
+            logger.critical("=" * 70)
+            logger.critical("ACCOUNT TYPE MISMATCH - ALL TRADING BLOCKED")
+            logger.critical(f"Trading mode is LIVE but connected to PAPER account: {account}")
+            logger.critical("Change trading_mode to 'paper' or connect to a live account")
+            logger.critical("=" * 70)
+        else:
+            self._account_type_mismatch = False
+            account_type = "PAPER" if is_paper_account else "LIVE" if is_live_account else "UNKNOWN"
+            logger.info(f"Account type verification PASSED: {account} ({account_type}) matches mode {mode.value}")
+
+    def has_account_type_mismatch(self) -> bool:
+        """Check if there is a trading mode / account type mismatch."""
+        return self._account_type_mismatch
+
     def is_connected(self) -> bool:
         """Check if connected to IB Gateway."""
         return self._ib is not None and self._ib.isConnected()
@@ -567,6 +616,16 @@ class IBClient:
 
         if settings.log_orders:
             logger.info(f"ORDER: {order_log}")
+
+        # CRITICAL SAFETY: Block trading if account type doesn't match trading mode
+        if self._account_type_mismatch:
+            error_msg = (
+                f"TRADING BLOCKED: Trading mode is {settings.trading_mode.value} "
+                f"but connected to account {account_id} which does not match. "
+                f"Paper accounts start with 'D', live accounts start with 'U'."
+            )
+            logger.critical(f"ORDER BLOCKED (account mismatch): {order_log}")
+            return {"error": True, "message": error_msg}
 
         # Safety check: block live trading unless explicitly enabled
         if settings.trading_mode == TradingMode.LIVE and not settings.is_live_trading_enabled():
@@ -659,6 +718,53 @@ class IBClient:
 
         except Exception as e:
             error_msg = f"Error placing order: {type(e).__name__}: {e}"
+            logger.error(error_msg)
+            return {"error": True, "message": error_msg}
+
+    async def cancel_order(self, order_id: int) -> dict:
+        """
+        Cancel an order via IB Gateway.
+
+        Args:
+            order_id: The IB order ID to cancel
+
+        Returns:
+            dict with success/error status
+        """
+        if not self.is_connected():
+            return {"error": True, "message": "Not connected to IB Gateway"}
+
+        try:
+            # Find the trade with this order ID
+            trades = self._ib.trades()
+            target_trade = None
+            for trade in trades:
+                if trade.order.orderId == order_id:
+                    target_trade = trade
+                    break
+
+            if not target_trade:
+                return {"error": True, "message": f"Order {order_id} not found in active trades"}
+
+            # Check if already filled
+            if target_trade.orderStatus.status == "Filled":
+                return {"error": True, "message": f"Order {order_id} already filled, cannot cancel"}
+
+            # Cancel the order
+            self._ib.cancelOrder(target_trade.order)
+            await asyncio.sleep(0.5)
+
+            logger.info(f"Cancel request sent for order {order_id}, status: {target_trade.orderStatus.status}")
+
+            return {
+                "error": False,
+                "order_id": order_id,
+                "status": target_trade.orderStatus.status,
+                "message": f"Cancel request sent for order {order_id}"
+            }
+
+        except Exception as e:
+            error_msg = f"Error cancelling order {order_id}: {type(e).__name__}: {e}"
             logger.error(error_msg)
             return {"error": True, "message": error_msg}
 

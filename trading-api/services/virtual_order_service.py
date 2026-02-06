@@ -301,6 +301,26 @@ class VirtualOrderService:
         # ======================================================================
         # 6. PLACE REAL IB ORDER
         # ======================================================================
+        # CRITICAL SAFETY: Block if account type doesn't match trading mode
+        if ib_client.has_account_type_mismatch():
+            await self._fail_intention(intention_id, "Account type mismatch: trading blocked")
+            if side == "BUY" and reserved_amount > 0:
+                try:
+                    await cash_service.cancel_order(
+                        account_id=virtual_account_id,
+                        reserved_amount=float(reserved_amount),
+                        order_intention_id=intention_id,
+                    )
+                except Exception as cancel_err:
+                    logger.error(f"Failed to release cash after account mismatch block: {cancel_err}")
+            return VirtualOrderResult(
+                success=False,
+                virtual_account_id=virtual_account_id,
+                virtual_account_name=account_name,
+                message="TRADING BLOCKED: IB account type does not match trading mode. Contact admin.",
+                details={"error": "ACCOUNT_TYPE_MISMATCH"}
+            )
+
         if not ib_client.is_connected():
             await self._fail_intention(intention_id, "IB Gateway not connected")
             if side == "BUY" and reserved_amount > 0:

@@ -153,11 +153,21 @@ async def lifespan(app: FastAPI):
     connected = await ib_client.connect()
 
     if connected:
-        logger.info("=" * 60)
-        logger.info("SUCCESS: Connected to IB Gateway")
-        logger.info(f"Account: {ib_client.get_primary_account()}")
-        logger.info("Ready to accept trading requests")
-        logger.info("=" * 60)
+        account = ib_client.get_primary_account()
+        if ib_client.has_account_type_mismatch():
+            logger.critical("=" * 60)
+            logger.critical("TRADING BLOCKED: Account type does not match trading mode!")
+            logger.critical(f"Account: {account}")
+            logger.critical(f"Mode: {settings.trading_mode.value}")
+            logger.critical("All orders will be rejected until this is resolved.")
+            logger.critical("=" * 60)
+        else:
+            logger.info("=" * 60)
+            logger.info("SUCCESS: Connected to IB Gateway")
+            logger.info(f"Account: {account}")
+            logger.info(f"Account type verification: PASSED")
+            logger.info("Ready to accept trading requests")
+            logger.info("=" * 60)
     else:
         status = ib_client.get_status()
         logger.warning("=" * 60)
@@ -250,14 +260,17 @@ async def health_check():
     ib_client = get_ib_client()
     status = ib_client.get_status()
 
+    account_mismatch = ib_client.has_account_type_mismatch()
+
     return {
-        "status": "healthy" if status.connected else "degraded",
+        "status": "blocked" if account_mismatch else ("healthy" if status.connected else "degraded"),
         "trading_mode": settings.trading_mode.value,
         "live_trading_enabled": settings.is_live_trading_enabled() if settings.trading_mode == TradingMode.LIVE else None,
+        "account_type_mismatch": account_mismatch,
         "ib_gateway": {
             "state": status.state.value,
             "connected": status.connected,
-            "ready_for_orders": status.ready_for_orders,
+            "ready_for_orders": status.ready_for_orders and not account_mismatch,
             "account": status.account,
             "last_connected": status.last_connected.isoformat() if status.last_connected else None,
             "last_error": status.last_error,
