@@ -1189,11 +1189,19 @@ export function TradingProvider({ user, children }) {
         });
 
         // Small delay between orders
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
-      // Send transaction email before clearing basket (fire-and-forget)
-      if (user?.id && state.orderBasket.length > 0) {
+      // Count successes and failures
+      const results = state.orderBasket.map(o => {
+        const r = state.executionResults?.find(er => er.id === o.id);
+        return r?.status === 'submitted';
+      });
+      const successCount = results.filter(Boolean).length;
+      const failCount = results.length - successCount;
+
+      // Send transaction email for successful orders (fire-and-forget)
+      if (user?.id && successCount > 0) {
         const emailOrders = state.orderBasket
           .filter(o => o.side === 'BUY')
           .map(o => ({
@@ -1217,7 +1225,10 @@ export function TradingProvider({ user, children }) {
         }
       }
 
-      dispatch({ type: ACTIONS.CLEAR_BASKET });
+      // Only clear basket if at least some orders succeeded
+      if (successCount > 0) {
+        dispatch({ type: ACTIONS.CLEAR_BASKET });
+      }
 
       // Refresh data after execution (including safety limits)
       setTimeout(() => {
@@ -1226,7 +1237,10 @@ export function TradingProvider({ user, children }) {
         fetchSafetyLimits();
       }, 1500);
 
-      return { success: true };
+      if (failCount > 0 && successCount === 0) {
+        return { success: false, message: `Alle ${failCount} orders mislukt` };
+      }
+      return { success: successCount > 0, message: failCount > 0 ? `${successCount} gelukt, ${failCount} mislukt` : undefined };
     } catch (error) {
       console.error('Basket execution error:', error);
       // Mark all remaining pending orders as failed

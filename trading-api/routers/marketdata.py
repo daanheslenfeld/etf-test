@@ -75,14 +75,27 @@ class SubscribeResponse(BaseModel):
     subscriptionCount: int
 
 
+def _safe_number(value, as_int=False):
+    """Return None if value is None, NaN, or Inf; otherwise return the value."""
+    import math
+    if value is None:
+        return None
+    try:
+        if math.isnan(value) or math.isinf(value):
+            return None
+    except (TypeError, ValueError):
+        return None
+    return int(value) if as_int else value
+
+
 def _format_market_data(data: Optional[dict], subscribed: bool = True) -> Optional[MarketDataResponse]:
     """Format market data dict into response model."""
     if not data:
         return None
 
-    bid = data.get("bid")
-    ask = data.get("ask")
-    last = data.get("last")
+    bid = _safe_number(data.get("bid"))
+    ask = _safe_number(data.get("ask"))
+    last = _safe_number(data.get("last"))
 
     # Calculate spread and mid price
     spread = None
@@ -100,9 +113,9 @@ def _format_market_data(data: Optional[dict], subscribed: bool = True) -> Option
         bid=bid,
         ask=ask,
         last=last,
-        bidSize=data.get("bidSize"),
-        askSize=data.get("askSize"),
-        volume=data.get("volume"),
+        bidSize=_safe_number(data.get("bidSize"), as_int=True),
+        askSize=_safe_number(data.get("askSize"), as_int=True),
+        volume=_safe_number(data.get("volume"), as_int=True),
         spread=spread,
         midPrice=mid_price,
         timestamp=data.get("timestamp"),
