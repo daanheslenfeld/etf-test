@@ -104,13 +104,10 @@ export default function BulkBuyModal({
     }
   };
 
-  // Handle add to basket
+  // Handle add to basket — immediately navigate to order basket
   const handleAddToBasket = () => {
     const success = onAddToBasket();
     if (success) {
-      setAddedToBasket(true);
-      setShowCommunityStep(true);
-
       // Send transaction email (fire-and-forget)
       if (user?.id && calculation?.orders?.length) {
         const emailOrders = calculation.orders.map(o => ({
@@ -130,6 +127,12 @@ export default function BulkBuyModal({
             totalAmount: calculation.totalCost || 0,
           }),
         }).catch(() => {}); // silent fail
+      }
+
+      // Close modal and go straight to order basket
+      onClose();
+      if (onNavigateToTrading) {
+        setTimeout(() => onNavigateToTrading(), 200);
       }
     }
   };

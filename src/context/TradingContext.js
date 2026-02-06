@@ -449,21 +449,14 @@ export function TradingProvider({ user, children }) {
         });
         return { canTrade: false, message: errorData.detail, needsBrokerLink };
       } else {
-        // Other errors - assume no trading access for safety
-        dispatch({
-          type: ACTIONS.SET_TRADING_ACCESS,
-          payload: { canTrade: false, message: 'Trading disabled. Demo mode only.', needsBrokerLink: false }
-        });
-        return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
+        // Other errors - keep trading enabled (don't block on transient errors)
+        console.warn('Trading access check returned non-200:', res.status);
+        return { canTrade: true };
       }
     } catch (error) {
       console.error('Error checking trading access:', error);
-      // On error, default to no trading for safety
-      dispatch({
-        type: ACTIONS.SET_TRADING_ACCESS,
-        payload: { canTrade: false, message: 'Trading disabled. Demo mode only.', needsBrokerLink: false }
-      });
-      return { canTrade: false, message: 'Trading disabled. Demo mode only.' };
+      // On error, keep trading enabled (don't block on network issues)
+      return { canTrade: true };
     }
   }, [getAuthHeaders]);
 
@@ -1373,23 +1366,26 @@ export function TradingProvider({ user, children }) {
           dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
         }
 
-        // Check connection and broker link (can take up to 3s)
+        // Start virtual account + positions fetch IMMEDIATELY (don't wait for connection check)
+        fetchVirtualAccount().catch(console.error);
+
+        // Check connection and broker link in parallel (max 2s timeout)
         const connectionPromise = Promise.race([
           checkConnection(),
-          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+          new Promise(resolve => setTimeout(() => resolve(false), 2000))
         ]);
 
         const brokerLinkPromise = Promise.race([
           checkBrokerLink(),
-          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+          new Promise(resolve => setTimeout(() => resolve(false), 2000))
         ]);
 
         const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
 
-        // If connected but broker not linked, auto-link
+        // If connected but broker not linked, auto-link (non-blocking)
         if (connected && !hasLinkedAccount) {
           console.log('[TradingContext] Connected but no broker link - auto-linking...');
-          await linkBrokerAccount();
+          linkBrokerAccount().catch(console.error);
         }
 
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
@@ -1401,10 +1397,6 @@ export function TradingProvider({ user, children }) {
         fetchSafetyLimits().catch(console.error);
         subscribeToMarketData().catch(console.error);
         fetchMarketData().catch(console.error);
-
-        // Resolve virtual account — positions & orders fetch
-        // will trigger automatically via the virtualAccountId effect below
-        fetchVirtualAccount().catch(console.error);
       } catch (error) {
         console.error('Error during init:', error);
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
