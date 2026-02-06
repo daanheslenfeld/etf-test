@@ -133,8 +133,8 @@ export default function MarketIndicesTicker() {
   useEffect(() => {
     if (contentRef.current) {
       const width = contentRef.current.scrollWidth;
-      // ~50px per second for smooth readable scrolling
-      setAnimDuration(Math.max(20, width / 50));
+      // ~120px per second for a brisk ticker speed
+      setAnimDuration(Math.max(10, width / 120));
     }
   }, [indices]);
 
