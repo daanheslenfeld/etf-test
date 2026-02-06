@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronUp, ChevronDown, RefreshCw, Globe } from 'lucide-react';
 import { isDemoMode, demoApi } from '../demo';
 
@@ -33,7 +33,7 @@ const formatChange = (change, changePercent) => {
   };
 };
 
-const TickerItem = ({ index }) => {
+const TickerItem = React.memo(({ index }) => {
   const { text: changeText, color: changeColor } = formatChange(index.change, index.change_percent);
   const isUp = index.change >= 0;
 
@@ -58,7 +58,7 @@ const TickerItem = ({ index }) => {
       <span className="text-[#E0E0DE] ml-2">·</span>
     </div>
   );
-};
+});
 
 const INDICES_CACHE_KEY = 'indices_cache';
 
@@ -87,6 +87,7 @@ export default function MarketIndicesTicker() {
   const [lastUpdate, setLastUpdate] = useState(cached?.timestamp ? new Date(cached.timestamp) : null);
   const [isPaused, setIsPaused] = useState(false);
   const [animDuration, setAnimDuration] = useState(30);
+  const animDurationSet = useRef(false);
   const contentRef = useRef(null);
 
   const fetchIndices = useCallback(async () => {
@@ -129,12 +130,13 @@ export default function MarketIndicesTicker() {
     return () => clearInterval(interval);
   }, [fetchIndices]);
 
-  // Calculate animation duration based on content width
+  // Calculate animation duration ONCE based on content width (don't recalculate on data refresh)
   useEffect(() => {
-    if (contentRef.current) {
+    if (contentRef.current && !animDurationSet.current) {
       const width = contentRef.current.scrollWidth;
       // ~120px per second for a brisk ticker speed
       setAnimDuration(Math.max(10, width / 120));
+      animDurationSet.current = true;
     }
   }, [indices]);
 
@@ -186,9 +188,9 @@ export default function MarketIndicesTicker() {
         >
           <div
             ref={contentRef}
-            className="flex items-center whitespace-nowrap"
+            className="flex items-center whitespace-nowrap ticker-strip"
             style={{
-              animation: `ticker ${animDuration}s linear infinite`,
+              '--ticker-duration': `${animDuration}s`,
               animationPlayState: isPaused ? 'paused' : 'running',
             }}
           >
@@ -217,6 +219,9 @@ export default function MarketIndicesTicker() {
         @keyframes ticker {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+        .ticker-strip {
+          animation: ticker var(--ticker-duration, 30s) linear infinite;
         }
       `}</style>
     </div>
