@@ -13,6 +13,7 @@ const CACHE_KEYS = {
   POSITIONS: 'trading_cache_positions',
   ACCOUNT_SUMMARY: 'trading_cache_accountSummary',
   TRADABILITY: 'trading_cache_tradability',
+  VIRTUAL_ACCOUNT: 'trading_cache_virtualAccount',
 };
 
 // Get user-specific cache key to prevent data leakage between users
@@ -713,6 +714,9 @@ export function TradingProvider({ user, children }) {
       if (res.ok) {
         const data = await res.json();
         dispatch({ type: ACTIONS.SET_VIRTUAL_ACCOUNT, payload: { id: data.id, name: data.name, isFrozen: data.is_frozen || false } });
+        // Cache virtual account ID for faster reload
+        const vaCacheKey = getUserCacheKey(CACHE_KEYS.VIRTUAL_ACCOUNT, user?.id);
+        saveToCache(vaCacheKey, { id: data.id, name: data.name, isFrozen: data.is_frozen || false });
         return data.id;
       }
       console.error('Failed to fetch virtual account:', res.status);
@@ -721,7 +725,7 @@ export function TradingProvider({ user, children }) {
       console.error('Error fetching virtual account:', error);
       return null;
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, user?.id]);
 
   // API: Fetch account summary from virtual account (USER-SPECIFIC)
   const fetchAccountSummary = useCallback(async () => {
@@ -1278,26 +1282,8 @@ export function TradingProvider({ user, children }) {
       dispatch({ type: ACTIONS.SET_LOADING, payload: true });
 
       try {
-        // FIRST: Check broker link status BEFORE loading any portfolio data
-        const connectionPromise = Promise.race([
-          checkConnection(),
-          new Promise(resolve => setTimeout(() => resolve(false), 3000))
-        ]);
-
-        const brokerLinkPromise = Promise.race([
-          checkBrokerLink(),
-          new Promise(resolve => setTimeout(() => resolve(false), 3000))
-        ]);
-
-        const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
-
-        // If connected but broker not linked, auto-link
-        if (connected && !hasLinkedAccount) {
-          console.log('[TradingContext] Connected but no broker link - auto-linking...');
-          await linkBrokerAccount();
-        }
-
-        // Load cached data (user.id can be 0 for demo user)
+        // IMMEDIATELY load cached data so user sees last-known values instead of €0
+        let hasCachedData = false;
         if (user?.id != null) {
           const positionsCacheKey = getUserCacheKey(CACHE_KEYS.POSITIONS, user.id);
           const summaryCacheKey = getUserCacheKey(CACHE_KEYS.ACCOUNT_SUMMARY, user.id);
@@ -1314,14 +1300,44 @@ export function TradingProvider({ user, children }) {
           if (cachedPositions?.data) {
             dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
             dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+            hasCachedData = true;
           }
           if (cachedSummary?.data) {
             dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+            hasCachedData = true;
           }
 
-          if (!connected && (cachedMarketData?.data || cachedPositions?.data)) {
-            dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+          // Restore cached virtual account ID so position refresh can start immediately
+          const vaCacheKey = getUserCacheKey(CACHE_KEYS.VIRTUAL_ACCOUNT, user.id);
+          const cachedVA = loadFromCache(vaCacheKey);
+          if (cachedVA?.data?.id) {
+            dispatch({ type: ACTIONS.SET_VIRTUAL_ACCOUNT, payload: cachedVA.data });
           }
+        }
+
+        // If we have cached data, show it immediately (don't wait for API connection checks)
+        if (hasCachedData) {
+          dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+          dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+        }
+
+        // Check connection and broker link (can take up to 3s)
+        const connectionPromise = Promise.race([
+          checkConnection(),
+          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+        ]);
+
+        const brokerLinkPromise = Promise.race([
+          checkBrokerLink(),
+          new Promise(resolve => setTimeout(() => resolve(false), 3000))
+        ]);
+
+        const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
+
+        // If connected but broker not linked, auto-link
+        if (connected && !hasLinkedAccount) {
+          console.log('[TradingContext] Connected but no broker link - auto-linking...');
+          await linkBrokerAccount();
         }
 
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
