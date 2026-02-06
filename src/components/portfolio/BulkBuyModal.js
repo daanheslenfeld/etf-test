@@ -109,6 +109,27 @@ export default function BulkBuyModal({
     if (success) {
       setAddedToBasket(true);
       setShowCommunityStep(true);
+
+      // Send transaction email (fire-and-forget)
+      if (user?.id && calculation?.orders?.length) {
+        const emailOrders = calculation.orders.map(o => ({
+          symbol: o.symbol,
+          name: o.name || o.symbol,
+          quantity: o.quantity,
+          estimatedPrice: o.price || o.estimatedPrice || 0,
+          estimatedValue: o.totalCost || (o.quantity * (o.price || o.estimatedPrice || 0)),
+        }));
+        fetch('/api/notify-transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerId: user.id,
+            orders: emailOrders,
+            portfolioName: portfolio?.name || null,
+            totalAmount: calculation.totalCost || 0,
+          }),
+        }).catch(() => {}); // silent fail
+      }
     }
   };
 

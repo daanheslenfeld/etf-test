@@ -18,7 +18,7 @@ import {
   Search,
   LayoutGrid,
 } from 'lucide-react';
-import { TradingProvider, useTrading } from '../../context/TradingContext';
+import { useTrading } from '../../context/TradingContext';
 import { useBulkBuy } from '../../hooks/useBulkBuy';
 import { calculateMinimumInvestment, formatCurrency } from '../../utils/portfolioUtils';
 import {
@@ -135,15 +135,10 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
 
   const handleAddToBasket = useCallback(() => {
     const success = addToBasket();
-    if (success) {
-      setBuyPortfolioId(null);
-      // Navigate to trading dashboard to see basket
-      if (onNavigateToTrading) {
-        setTimeout(() => onNavigateToTrading(), 500);
-      }
-    }
+    // Don't close modal here — BulkBuyModal shows community step first
+    // Modal closes via handleBuyModalClose when user finishes or skips
     return success;
-  }, [addToBasket, onNavigateToTrading]);
+  }, [addToBasket]);
 
   const handleCreatePortfolio = useCallback(() => {
     setShowCreateModal(true);
@@ -383,15 +378,13 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
   );
 }
 
-// Main wrapper that provides TradingContext
+// Main component - uses TradingProvider from App.js (no duplicate provider)
 export default function ModelPortfoliosPage({ user, onBack, onNavigateToTrading }) {
   return (
-    <TradingProvider user={user}>
-      <ModelPortfoliosPageInner
-        user={user}
-        onBack={onBack}
-        onNavigateToTrading={onNavigateToTrading}
-      />
-    </TradingProvider>
+    <ModelPortfoliosPageInner
+      user={user}
+      onBack={onBack}
+      onNavigateToTrading={onNavigateToTrading}
+    />
   );
 }

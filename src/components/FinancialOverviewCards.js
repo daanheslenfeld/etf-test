@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight, Mail, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight, Mail, X, Loader } from 'lucide-react';
 import { useTrading } from '../context/TradingContext';
 
 const formatCurrency = (value) => {
@@ -41,13 +41,30 @@ export default function FinancialOverviewCards({ onNavigate }) {
     () => localStorage.getItem('pigg_funds_banner_dismissed') === 'true'
   );
 
+  // Track whether initial data load has had time to complete
+  const [dataSettled, setDataSettled] = useState(false);
+  const mountTimeRef = useRef(Date.now());
+
+  useEffect(() => {
+    // Give data 8 seconds to load before showing "no funds" banner
+    const timer = setTimeout(() => setDataSettled(true), 8000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // If data arrives, mark as settled immediately
+  useEffect(() => {
+    if (totalValue !== 0 || portfolioValue !== 0 || cashBalance !== 0) {
+      setDataSettled(true);
+    }
+  }, [totalValue, portfolioValue, cashBalance]);
+
   const dismissFundsBanner = () => {
     setFundsBannerDismissed(true);
     localStorage.setItem('pigg_funds_banner_dismissed', 'true');
   };
 
-  // Show skeleton while loading (only if broker is linked)
-  if (loading && brokerLinked) {
+  // Show skeleton while loading
+  if (loading) {
     return (
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-6">
@@ -72,8 +89,25 @@ export default function FinancialOverviewCards({ onNavigate }) {
 
   return (
     <div className="mb-10">
-      {/* Waiting for funds banner */}
-      {!hasData && !loading && !fundsBannerDismissed && (
+      {/* Loading data message — shown while data is still being fetched */}
+      {!hasData && !loading && !dataSettled && (
+        <div className="mb-6 p-5 bg-[#FEFEFE] border border-[#7C9885]/30 rounded-2xl shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
+          <div className="flex items-start gap-4">
+            <div className="p-2.5 bg-[#7C9885]/10 rounded-xl">
+              <Loader className="w-5 h-5 text-[#7C9885] animate-spin" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#2D3436] mb-1">Gegevens ophalen...</h3>
+              <p className="text-sm text-[#636E72]">
+                We laden je portfolio gegevens. Dit duurt een paar seconden.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Waiting for funds banner — only shown after data has fully loaded and balance is still 0 */}
+      {!hasData && !loading && dataSettled && !fundsBannerDismissed && (
         <div className="mb-6 p-5 bg-[#FEFEFE] border border-[#7C9885]/30 rounded-2xl shadow-[0_2px_8px_rgba(45,52,54,0.06)] relative">
           <button onClick={dismissFundsBanner} className="absolute top-3 right-3 text-[#B2BEC3] hover:text-[#636E72] transition-colors">
             <X className="w-4 h-4" />

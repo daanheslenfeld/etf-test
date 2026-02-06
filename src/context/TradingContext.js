@@ -1191,6 +1191,32 @@ export function TradingProvider({ user, children }) {
     }
 
     dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
+
+    // Send transaction email before clearing basket (fire-and-forget)
+    if (user?.id && state.orderBasket.length > 0) {
+      const emailOrders = state.orderBasket
+        .filter(o => o.side === 'BUY')
+        .map(o => ({
+          symbol: o.symbol,
+          name: o.name || o.symbol,
+          quantity: o.quantity,
+          estimatedPrice: o.estimatedPrice || 0,
+          estimatedValue: o.quantity * (o.estimatedPrice || 0),
+        }));
+      if (emailOrders.length > 0) {
+        fetch('/api/notify-transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerId: user.id,
+            orders: emailOrders,
+            portfolioName: null,
+            totalAmount: emailOrders.reduce((sum, o) => sum + o.estimatedValue, 0),
+          }),
+        }).catch(() => {}); // silent fail
+      }
+    }
+
     dispatch({ type: ACTIONS.CLEAR_BASKET });
 
     // Refresh data after execution (including safety limits)
@@ -1201,7 +1227,7 @@ export function TradingProvider({ user, children }) {
     }, 1500);
 
     return { success: true };
-  }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions, fetchSafetyLimits]);
+  }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions, fetchSafetyLimits, user?.id]);
 
   // Cancel a pending order intention
   const cancelOrder = useCallback(async (orderId) => {
