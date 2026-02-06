@@ -76,9 +76,21 @@ async def fetch_index_data(symbol: str, name: str, display: str, currency: str) 
 
             # Get current price
             current_price = meta.get("regularMarketPrice", 0)
-            previous_close = meta.get("previousClose", current_price)
+            previous_close = (
+                meta.get("previousClose")
+                or meta.get("chartPreviousClose")
+            )
 
-            # Calculate change
+            # Fallback: use first close from chart data as previous close
+            if not previous_close:
+                closes = quote.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+                if len(closes) >= 2 and closes[0] is not None:
+                    previous_close = closes[0]
+
+            if not previous_close:
+                previous_close = current_price
+
+            # Calculate change vs previous trading day close
             change = current_price - previous_close
             change_percent = (change / previous_close * 100) if previous_close else 0
 
