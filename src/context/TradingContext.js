@@ -1064,6 +1064,9 @@ export function TradingProvider({ user, children }) {
 
       const url = `${TRADING_API_URL}/virtual-accounts/${vaId}/order?confirmed=${confirmed}`;
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
       const res = await fetch(url, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -1076,8 +1079,10 @@ export function TradingProvider({ user, children }) {
           limit_price: order.limitPrice || null,
           stop_price: order.stopPrice || null,
           estimated_price: estimatedPrice,
-        })
+        }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       const data = await res.json();
 
@@ -1114,7 +1119,10 @@ export function TradingProvider({ user, children }) {
         tradingMode: (data.details?.trading_mode || 'paper').toUpperCase()
       };
     } catch (error) {
-      return { success: false, message: error.message };
+      const message = error.name === 'AbortError'
+        ? 'Timeout - server reageert niet'
+        : (error.message || 'Order mislukt');
+      return { success: false, message };
     }
   }, [getAuthHeaders, state.virtualAccountId, state.marketData]);
 
@@ -1136,97 +1144,115 @@ export function TradingProvider({ user, children }) {
     }));
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: initialResults });
 
-    // Execute orders sequentially
-    for (const order of state.orderBasket) {
-      const result = await placeOrder(order, confirmed);
+    try {
+      // Execute orders sequentially
+      for (const order of state.orderBasket) {
+        const result = await placeOrder(order, confirmed);
 
-      // Handle confirmation required
-      if (result.requiresConfirmation) {
-        dispatch({
-          type: ACTIONS.UPDATE_ORDER_STATUS,
-          payload: {
-            id: order.id,
-            updates: {
-              status: 'confirmation_required',
-              message: result.message,
-              warnings: result.warnings,
-              confirmationType: result.confirmationType
+        // Handle confirmation required
+        if (result.requiresConfirmation) {
+          dispatch({
+            type: ACTIONS.UPDATE_ORDER_STATUS,
+            payload: {
+              id: order.id,
+              updates: {
+                status: 'confirmation_required',
+                message: result.message,
+                warnings: result.warnings,
+                confirmationType: result.confirmationType
+              }
             }
-          }
-        });
-        // Stop execution if confirmation is needed
-        dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
-        return { requiresConfirmation: true, warnings: result.warnings, confirmationType: result.confirmationType };
-      }
-
-      // Handle safety blocked
-      if (result.safetyBlocked) {
-        dispatch({
-          type: ACTIONS.UPDATE_ORDER_STATUS,
-          payload: {
-            id: order.id,
-            updates: {
-              status: 'blocked',
-              message: result.message
-            }
-          }
-        });
-        continue; // Continue with other orders
-      }
-
-      dispatch({
-        type: ACTIONS.UPDATE_ORDER_STATUS,
-        payload: {
-          id: order.id,
-          updates: {
-            status: result.success ? 'submitted' : 'rejected',
-            message: result.message,
-            orderId: result.orderId
-          }
+          });
+          // Stop execution if confirmation is needed
+          dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
+          return { requiresConfirmation: true, warnings: result.warnings, confirmationType: result.confirmationType };
         }
-      });
 
-      // Small delay between orders
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
+        // Handle safety blocked
+        if (result.safetyBlocked) {
+          dispatch({
+            type: ACTIONS.UPDATE_ORDER_STATUS,
+            payload: {
+              id: order.id,
+              updates: {
+                status: 'blocked',
+                message: result.message
+              }
+            }
+          });
+          continue; // Continue with other orders
+        }
 
-    dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
+        dispatch({
+          type: ACTIONS.UPDATE_ORDER_STATUS,
+          payload: {
+            id: order.id,
+            updates: {
+              status: result.success ? 'submitted' : 'rejected',
+              message: result.message,
+              orderId: result.orderId
+            }
+          }
+        });
 
-    // Send transaction email before clearing basket (fire-and-forget)
-    if (user?.id && state.orderBasket.length > 0) {
-      const emailOrders = state.orderBasket
-        .filter(o => o.side === 'BUY')
-        .map(o => ({
-          symbol: o.symbol,
-          name: o.name || o.symbol,
-          quantity: o.quantity,
-          estimatedPrice: o.estimatedPrice || 0,
-          estimatedValue: o.quantity * (o.estimatedPrice || 0),
-        }));
-      if (emailOrders.length > 0) {
-        fetch('/api/notify-transaction', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            customerId: user.id,
-            orders: emailOrders,
-            portfolioName: null,
-            totalAmount: emailOrders.reduce((sum, o) => sum + o.estimatedValue, 0),
-          }),
-        }).catch(() => {}); // silent fail
+        // Small delay between orders
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
+
+      // Send transaction email before clearing basket (fire-and-forget)
+      if (user?.id && state.orderBasket.length > 0) {
+        const emailOrders = state.orderBasket
+          .filter(o => o.side === 'BUY')
+          .map(o => ({
+            symbol: o.symbol,
+            name: o.name || o.symbol,
+            quantity: o.quantity,
+            estimatedPrice: o.estimatedPrice || 0,
+            estimatedValue: o.quantity * (o.estimatedPrice || 0),
+          }));
+        if (emailOrders.length > 0) {
+          fetch('/api/notify-transaction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customerId: user.id,
+              orders: emailOrders,
+              portfolioName: null,
+              totalAmount: emailOrders.reduce((sum, o) => sum + o.estimatedValue, 0),
+            }),
+          }).catch(() => {}); // silent fail
+        }
+      }
+
+      dispatch({ type: ACTIONS.CLEAR_BASKET });
+
+      // Refresh data after execution (including safety limits)
+      setTimeout(() => {
+        fetchOrders();
+        fetchPositions();
+        fetchSafetyLimits();
+      }, 1500);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Basket execution error:', error);
+      // Mark all remaining pending orders as failed
+      state.orderBasket.forEach(order => {
+        dispatch({
+          type: ACTIONS.UPDATE_ORDER_STATUS,
+          payload: {
+            id: order.id,
+            updates: {
+              status: 'rejected',
+              message: error.name === 'AbortError' ? 'Timeout - server reageert niet' : (error.message || 'Uitvoering mislukt')
+            }
+          }
+        });
+      });
+      return { success: false, message: error.message };
+    } finally {
+      dispatch({ type: ACTIONS.SET_EXECUTING, payload: false });
     }
-
-    dispatch({ type: ACTIONS.CLEAR_BASKET });
-
-    // Refresh data after execution (including safety limits)
-    setTimeout(() => {
-      fetchOrders();
-      fetchPositions();
-      fetchSafetyLimits();
-    }, 1500);
-
-    return { success: true };
   }, [state.orderBasket, placeOrder, fetchOrders, fetchPositions, fetchSafetyLimits, user?.id]);
 
   // Cancel a pending order intention

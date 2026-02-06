@@ -364,6 +364,7 @@ function ModelPortfoliosPageInner({ user, onBack, onNavigateToTrading }) {
           hasMarketData={hasMarketData}
           onCalculate={prepareBulkBuy}
           onAddToBasket={handleAddToBasket}
+          onNavigateToTrading={onNavigateToTrading}
           user={user}
         />
       )}

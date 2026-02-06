@@ -42,6 +42,7 @@ export default function BulkBuyModal({
   hasMarketData,
   onCalculate,
   onAddToBasket,
+  onNavigateToTrading,
   user
 }) {
   const { marketData } = useTrading();
@@ -175,7 +176,12 @@ export default function BulkBuyModal({
       }
 
       setPublished(true);
-      setTimeout(() => onClose(), 2000);
+      setTimeout(() => {
+        onClose();
+        if (onNavigateToTrading) {
+          setTimeout(() => onNavigateToTrading(), 300);
+        }
+      }, 2000);
     } catch (err) {
       setPublishError(err.message || 'Er ging iets mis bij het publiceren');
     } finally {
@@ -183,9 +189,12 @@ export default function BulkBuyModal({
     }
   };
 
-  // Handle skip community step
+  // Handle skip community step — close and navigate to basket
   const handleSkipCommunity = () => {
     onClose();
+    if (onNavigateToTrading) {
+      setTimeout(() => onNavigateToTrading(), 300);
+    }
   };
 
   if (!isOpen) return null;
