@@ -30,11 +30,58 @@ from services.virtual_order_service import get_virtual_order_service, VirtualOrd
 from services.virtual_portfolio_service import get_virtual_portfolio_service
 from services.cash_allocation_service import get_cash_allocation_service, CashAllocationError
 from services.ib_client import get_ib_client
+import httpx
+import time
 import logging
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/virtual-accounts", tags=["Virtual Accounts"])
+
+# Yahoo Finance price cache for fallback when IB has no data
+_yahoo_price_cache: dict = {}  # symbol -> {price, timestamp}
+YAHOO_CACHE_TTL = 300  # 5 minutes
+
+# Mapping: IB symbol -> Yahoo Finance symbol (for ETFs where they differ)
+YAHOO_SYMBOL_MAP = {
+    "VUAA": "VUAA.DE",
+    "CAC": "CAC.PA",
+    "IWDA": "IWDA.AS",
+    "EMIM": "EMIM.AS",
+    "SXRS": "SXRS.DE",
+    "IWDP": "IWDP.AS",
+    "VWCE": "VWCE.DE",
+    "SXR8": "SXR8.DE",
+    "VFEM": "VFEM.AS",
+    "IMEU": "IMEU.AS",
+}
+
+
+async def _get_yahoo_price(symbol: str) -> Optional[float]:
+    """Fetch last price from Yahoo Finance as fallback."""
+    cached = _yahoo_price_cache.get(symbol)
+    if cached and (time.time() - cached["timestamp"]) < YAHOO_CACHE_TTL:
+        return cached["price"]
+
+    yahoo_sym = YAHOO_SYMBOL_MAP.get(symbol, f"{symbol}.AS")
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.get(
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_sym}",
+                params={"interval": "1d", "range": "1d"},
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+            if res.status_code == 200:
+                data = res.json()
+                result = data.get("chart", {}).get("result", [])
+                if result:
+                    price = result[0].get("meta", {}).get("regularMarketPrice")
+                    if price and price > 0:
+                        _yahoo_price_cache[symbol] = {"price": price, "timestamp": time.time()}
+                        return price
+    except Exception as e:
+        logger.debug(f"Yahoo Finance fallback failed for {symbol}: {e}")
+    return None
 
 
 # =============================================================================
@@ -538,12 +585,18 @@ async def get_account_positions(
         qty = float(h["quantity"])
         avg_cost = float(h["avg_cost_basis"])
 
-        # Find live price
+        # Find live price from IB
         last_price = None
         for cid, data in market_data.items():
             if data.get("symbol") == symbol or cid == conid:
                 last_price = data.get("last") or data.get("bid")
                 break
+
+        # Fallback to Yahoo Finance if IB has no data
+        if not last_price:
+            yahoo_price = await _get_yahoo_price(symbol)
+            if yahoo_price:
+                last_price = yahoo_price
 
         market_value = last_price * qty if last_price else None
         cost_value = avg_cost * qty
