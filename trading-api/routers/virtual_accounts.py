@@ -550,8 +550,10 @@ async def get_account_positions(
         unrealized_pnl = (market_value - cost_value) if market_value else None
         unrealized_pnl_pct = (unrealized_pnl / cost_value * 100) if unrealized_pnl and cost_value > 0 else None
 
-        if market_value:
-            total_market_value += market_value
+        # Use market value if available, otherwise fall back to cost basis
+        # so positions always count towards portfolio total
+        display_market_value = market_value if market_value else cost_value
+        total_market_value += display_market_value
         if unrealized_pnl:
             total_unrealized_pnl += unrealized_pnl
 
@@ -562,10 +564,10 @@ async def get_account_positions(
             name=h.get("name"),
             quantity=qty,
             avg_cost_basis=avg_cost,
-            last_price=last_price,
-            market_value=market_value,
-            unrealized_pnl=unrealized_pnl,
-            unrealized_pnl_pct=unrealized_pnl_pct
+            last_price=last_price if last_price else avg_cost,
+            market_value=display_market_value,
+            unrealized_pnl=unrealized_pnl if unrealized_pnl else 0,
+            unrealized_pnl_pct=unrealized_pnl_pct if unrealized_pnl_pct else 0
         ))
 
     cash = account.get("available_cash", 0)
@@ -576,8 +578,8 @@ async def get_account_positions(
         virtual_account_name=account["name"],
         positions=positions,
         count=len(positions),
-        total_market_value=total_market_value if total_market_value else None,
-        total_unrealized_pnl=total_unrealized_pnl if total_unrealized_pnl else None,
+        total_market_value=total_market_value,
+        total_unrealized_pnl=total_unrealized_pnl if total_unrealized_pnl else 0,
         cash_balance=cash,
         total_portfolio_value=total_portfolio
     )

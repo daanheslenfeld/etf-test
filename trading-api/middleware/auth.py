@@ -6,6 +6,7 @@ from services.supabase_service import get_supabase_service
 from services.ib_client import get_ib_client
 import logging
 import os
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,23 @@ LOCAL_DEV_MODE = os.environ.get("LOCAL_DEV_MODE", "").lower() == "true"
 
 # Auth bypass - set to False for production with user isolation
 AUTH_DISABLED = False
+
+# In-memory customer cache to avoid hitting Supabase on every request
+_customer_cache: Dict[int, dict] = {}  # customer_id -> {data, timestamp}
+CUSTOMER_CACHE_TTL = 60  # seconds
+
+
+def _get_cached_customer(customer_id: int) -> Optional[dict]:
+    """Get customer from cache if still valid."""
+    entry = _customer_cache.get(customer_id)
+    if entry and (time.time() - entry["timestamp"]) < CUSTOMER_CACHE_TTL:
+        return entry["data"]
+    return None
+
+
+def _set_cached_customer(customer_id: int, data: dict):
+    """Store customer in cache."""
+    _customer_cache[customer_id] = {"data": data, "timestamp": time.time()}
 
 
 def get_dev_mode_linked_accounts() -> Dict[int, dict]:
@@ -138,13 +156,24 @@ async def get_current_user(
             detail="Database not configured. Cannot verify user."
         )
 
-    customer = await db.get_customer_by_id(customer_id)
+    # Try cache first to avoid hitting Supabase on every request
+    customer = _get_cached_customer(customer_id)
+    if not customer:
+        customer = await db.get_customer_by_id(customer_id)
+        if customer:
+            _set_cached_customer(customer_id, customer)
 
     if not customer:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Customer {customer_id} not found."
-        )
+        # In dev mode, don't block on Supabase timeouts
+        if LOCAL_DEV_MODE:
+            logger.warning(f"Dev mode: customer {customer_id} lookup failed, using fallback")
+            customer = {"id": customer_id, "email": x_customer_email or "", "role": "customer", "trading_status": "approved"}
+            _set_cached_customer(customer_id, customer)
+        else:
+            raise HTTPException(
+                status_code=401,
+                detail=f"Customer {customer_id} not found."
+            )
 
     # Validate email matches (prevents ID spoofing)
     if x_customer_email and customer.get("email") != x_customer_email:
@@ -167,17 +196,14 @@ async def get_current_user(
             ib_account_id = linked.get("ib_account_id")
             logger.info(f"Dev mode: Using in-memory broker link for user {customer_id}: {ib_account_id}")
 
-    # If not found in dev mode, try database
-    if not ib_account_id:
+    # If not found in dev mode, try database (skip in dev mode - broker_links table often missing)
+    if not ib_account_id and not LOCAL_DEV_MODE:
         try:
             broker_link = await db.get_active_broker_link(customer_id)
             broker_account_id = broker_link.get("id") if broker_link else None
             ib_account_id = broker_link.get("ib_account_id") if broker_link else None
         except Exception as e:
-            if LOCAL_DEV_MODE:
-                logger.warning(f"Database broker link lookup failed (dev mode): {e}")
-            else:
-                raise
+            raise
 
     # In LOCAL_DEV_MODE, fall back to IB primary account if no broker link found
     if LOCAL_DEV_MODE and not ib_account_id:

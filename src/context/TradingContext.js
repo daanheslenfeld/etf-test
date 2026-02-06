@@ -830,12 +830,14 @@ export function TradingProvider({ user, children }) {
         saveToCache(positionsCacheKey, positions);
 
         // Build account summary from virtual positions response
+        // Use cost basis for portfolio value when market data is missing
         const costBasis = (data.positions || []).reduce((sum, p) => sum + ((p.avg_cost_basis || 0) * (p.quantity || 0)), 0);
+        const marketValue = data.total_market_value || costBasis;
         const summary = {
           cashBalance: data.cash_balance || 0,
           availableFunds: data.cash_balance || 0,
-          portfolioValue: data.total_market_value || 0,
-          totalValue: data.total_portfolio_value || 0,
+          portfolioValue: marketValue,
+          totalValue: (data.cash_balance || 0) + marketValue,
           unrealizedPnL: data.total_unrealized_pnl || 0,
           unrealizedPnLPercent: costBasis > 0
             ? ((data.total_unrealized_pnl || 0) / costBasis * 100)
@@ -844,6 +846,19 @@ export function TradingProvider({ user, children }) {
         };
         dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: summary });
         saveToCache(summaryCacheKey, summary);
+      } else {
+        // API returned error - fall back to cache, don't overwrite with empty
+        console.warn('fetchPositions: API error', res.status);
+        const cachedPositions = loadFromCache(positionsCacheKey);
+        const cachedSummary = loadFromCache(summaryCacheKey);
+        if (cachedPositions?.data) {
+          dispatch({ type: ACTIONS.SET_POSITIONS, payload: cachedPositions.data });
+          dispatch({ type: ACTIONS.SET_LAST_POSITIONS_UPDATE, payload: cachedPositions.timestamp });
+          dispatch({ type: ACTIONS.SET_DATA_STALE, payload: true });
+        }
+        if (cachedSummary?.data) {
+          dispatch({ type: ACTIONS.SET_ACCOUNT_SUMMARY, payload: cachedSummary.data });
+        }
       }
     } catch (error) {
       console.error('Error fetching positions:', error);
@@ -1058,7 +1073,7 @@ export function TradingProvider({ user, children }) {
       const url = `${TRADING_API_URL}/virtual-accounts/${vaId}/order?confirmed=${confirmed}`;
 
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
+      const timeout = setTimeout(() => controller.abort(), 45000);
 
       const res = await fetch(url, {
         method: 'POST',
@@ -1112,10 +1127,12 @@ export function TradingProvider({ user, children }) {
         tradingMode: (data.details?.trading_mode || 'paper').toUpperCase()
       };
     } catch (error) {
-      const message = error.name === 'AbortError'
-        ? 'Timeout - server reageert niet'
-        : (error.message || 'Order mislukt');
-      return { success: false, message };
+      if (error.name === 'AbortError') {
+        // Timeout does NOT mean the order failed - it may still be executing at the broker
+        // Return as pending so user doesn't think it was rejected
+        return { success: false, message: 'Order wordt verwerkt bij de broker. Check je portfolio.', timedOut: true };
+      }
+      return { success: false, message: error.message || 'Order mislukt' };
     }
   }, [getAuthHeaders, state.virtualAccountId, state.marketData]);
 
@@ -1181,7 +1198,7 @@ export function TradingProvider({ user, children }) {
           payload: {
             id: order.id,
             updates: {
-              status: result.success ? 'submitted' : 'rejected',
+              status: result.success ? 'submitted' : (result.timedOut ? 'pending' : 'rejected'),
               message: result.message,
               orderId: result.orderId
             }
@@ -1440,9 +1457,8 @@ export function TradingProvider({ user, children }) {
         await checkConnection();
       }
       fetchPositions();
-      fetchOrders();
       fetchMarketData();
-    }, 5000); // Poll every 5 seconds for market data
+    }, 15000); // Poll every 15 seconds to avoid overloading API
 
     return () => clearInterval(interval);
   }, [state.virtualAccountId, state.connected, fetchPositions, fetchOrders, fetchMarketData, checkConnection]);
