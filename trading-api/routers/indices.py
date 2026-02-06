@@ -42,7 +42,7 @@ MARKET_INDICES = [
     {"symbol": "^GSPC", "name": "S&P 500", "display": "S&P 500", "currency": "USD"},
     {"symbol": "^N225", "name": "Nikkei 225", "display": "Japan", "currency": "JPY"},
     {"symbol": "000001.SS", "name": "Shanghai Composite", "display": "China", "currency": "CNY"},
-    {"symbol": "^STOXX50E", "name": "EURO STOXX 50", "display": "EUROSTOXX 50", "currency": "EUR"},
+    {"symbol": "^STOXX50E", "name": "EURO STOXX 50", "display": "STOXX 50", "currency": "EUR"},
     {"symbol": "EURUSD=X", "name": "EUR/USD", "display": "EUR/USD", "currency": "USD"},
     {"symbol": "BTC-EUR", "name": "Bitcoin", "display": "BTC/EUR", "currency": "EUR"},
 ]

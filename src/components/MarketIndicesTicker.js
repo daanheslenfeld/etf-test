@@ -114,55 +114,58 @@ export default function MarketIndicesTicker() {
   }
 
   return (
-    <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] overflow-hidden">
-      <div className="w-full px-4">
-        <div className="flex items-center gap-1 py-1.5 overflow-x-auto scrollbar-hide">
+    <div className="bg-[#FEFEFE] border-b border-[#E8E8E6]">
+      <div className="w-full px-3 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-0 py-1.5 min-w-0">
           {/* Market icon */}
-          <div className="flex items-center gap-1.5 pr-3 border-r border-[#E8E8E6] shrink-0">
+          <div className="flex items-center pr-2 border-r border-[#E8E8E6] shrink-0">
             <Globe className="w-3.5 h-3.5 text-[#B2BEC3]" />
           </div>
 
           {/* Index items */}
-          <div className="flex items-center gap-3 px-3 overflow-x-auto">
-            {indices.map((index) => {
-              const { text: changeText, color: changeColor } = formatChange(index.change, index.change_percent);
-              const isUp = index.change >= 0;
+          {indices.map((index, i) => {
+            const { text: changeText, color: changeColor } = formatChange(index.change, index.change_percent);
+            const isUp = index.change >= 0;
 
-              return (
-                <div
-                  key={index.symbol}
-                  className="flex items-center gap-1 shrink-0"
-                >
-                  {/* Index name */}
-                  <span className="text-xs font-medium text-[#2D3436]">
-                    {index.symbol}
-                  </span>
+            return (
+              <div
+                key={index.symbol}
+                className="flex items-center gap-1 shrink-0 pl-2 pr-1"
+              >
+                {/* Index name */}
+                <span className="text-xs font-medium text-[#2D3436] whitespace-nowrap">
+                  {index.symbol}
+                </span>
 
-                  {/* Price */}
-                  <span className="text-xs text-[#636E72]">
-                    {formatPrice(index.price, index.currency)}
-                  </span>
+                {/* Price */}
+                <span className="text-xs text-[#636E72] whitespace-nowrap">
+                  {formatPrice(index.price, index.currency)}
+                </span>
 
-                  {/* Percentage change with arrow */}
-                  <span className={`flex items-center gap-0 text-xs font-medium ${changeColor}`}>
-                    {index.change !== 0 && (
-                      isUp ? (
-                        <ChevronUp className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
-                      ) : (
-                        <ChevronDown className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
-                      )
-                    )}
-                    {changeText}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                {/* Percentage change with arrow */}
+                <span className={`flex items-center gap-0 text-xs font-medium whitespace-nowrap ${changeColor}`}>
+                  {index.change !== 0 && (
+                    isUp ? (
+                      <ChevronUp className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 -mr-0.5" strokeWidth={2.5} />
+                    )
+                  )}
+                  {changeText}
+                </span>
+
+                {/* Separator */}
+                {i < indices.length - 1 && (
+                  <span className="text-[#E8E8E6] ml-1">│</span>
+                )}
+              </div>
+            );
+          })}
 
           {/* Refresh button */}
           <button
             onClick={fetchIndices}
-            className="shrink-0 ml-auto p-1 text-[#B2BEC3] hover:text-[#636E72] transition-colors"
+            className="shrink-0 ml-auto pl-2 p-1 text-[#B2BEC3] hover:text-[#636E72] transition-colors"
             title={lastUpdate ? `Laatste update: ${lastUpdate.toLocaleTimeString('nl-NL')}` : 'Verversen'}
           >
             <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
