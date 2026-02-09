@@ -412,7 +412,24 @@ class IBClient:
     def _on_connected(self):
         """Handle connection established."""
         logger.info("IB Gateway: connected event")
+        was_disconnected = self._state in (ConnectionState.DISCONNECTED, ConnectionState.RECONNECTING)
         self._state = ConnectionState.CONNECTED
+        # Only re-subscribe on REconnection (not initial connect, which is handled in main.py)
+        if was_disconnected and self._market_data_tickers:
+            asyncio.ensure_future(self._resubscribe_market_data())
+
+    async def _resubscribe_market_data(self):
+        """Re-subscribe to market data after connection is restored."""
+        await asyncio.sleep(2)  # Allow connection to stabilize
+        if self.is_connected():
+            try:
+                # Clear stale subscriptions first
+                self._market_data_tickers.clear()
+                self._market_data_contracts.clear()
+                count = await self.subscribe_all_etfs()
+                logger.info(f"Re-subscribed to {count} ETFs after reconnection")
+            except Exception as e:
+                logger.warning(f"Failed to re-subscribe market data: {e}")
 
     def _on_disconnected(self):
         """Handle connection lost."""
@@ -441,8 +458,12 @@ class IBClient:
         elif errorCode == 1100:
             logger.error(f"IB CONNECTIVITY LOST [{errorCode}]: {errorString}")
             self._state = ConnectionState.DISCONNECTED
-        elif errorCode == 1102:
+        elif errorCode in {1101, 1102}:
             logger.info(f"IB Connectivity restored [{errorCode}]")
+            if self._state != ConnectionState.CONNECTED:
+                self._state = ConnectionState.CONNECTED
+                # Re-subscribe market data after connectivity blip
+                asyncio.ensure_future(self._resubscribe_market_data())
         elif errorCode == 326:
             self._last_error = f"Client ID {self._settings.ib_client_id} already in use"
             logger.error(self._last_error)

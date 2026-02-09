@@ -91,11 +91,43 @@ async def _get_yahoo_price(symbol: str) -> Optional[float]:
 async def _compute_portfolio_value(holdings: list, market_data: dict) -> tuple:
     """Compute total market value and positions list for a set of holdings.
 
-    Returns (total_market_value, positions_list).
+    Returns (total_market_value, total_unrealized_pnl, positions_list).
     """
     positions = []
     total_market_value = 0.0
     total_unrealized_pnl = 0.0
+
+    # Build symbol→data index for O(1) lookup by symbol
+    symbol_index = {}
+    for cid, data in market_data.items():
+        sym = data.get("symbol")
+        if sym:
+            symbol_index[sym] = data
+
+    # Collect Yahoo fallback tasks for symbols missing IB data
+    yahoo_needed = []
+    for h in holdings:
+        symbol = h["symbol"]
+        conid = h["conid"]
+
+        # O(1) lookup: first by conid (int key), then by symbol
+        data = market_data.get(conid) or market_data.get(str(conid)) or symbol_index.get(symbol)
+        last_price = None
+        if data:
+            last_price = data.get("last") or data.get("bid")
+
+        if not last_price:
+            yahoo_needed.append((symbol, len(holdings) > 0))
+
+    # Batch-fetch Yahoo prices for missing symbols
+    yahoo_prices = {}
+    if yahoo_needed:
+        import asyncio as _aio
+        symbols_to_fetch = list(set(sym for sym, _ in yahoo_needed))
+        results = await _aio.gather(*[_get_yahoo_price(s) for s in symbols_to_fetch], return_exceptions=True)
+        for sym, price in zip(symbols_to_fetch, results):
+            if isinstance(price, (int, float)) and price > 0:
+                yahoo_prices[sym] = price
 
     for h in holdings:
         symbol = h["symbol"]
@@ -103,18 +135,13 @@ async def _compute_portfolio_value(holdings: list, market_data: dict) -> tuple:
         qty = float(h["quantity"])
         avg_cost = float(h["avg_cost_basis"])
 
-        # Find live price from IB
+        data = market_data.get(conid) or market_data.get(str(conid)) or symbol_index.get(symbol)
         last_price = None
-        for cid, data in market_data.items():
-            if data.get("symbol") == symbol or cid == conid:
-                last_price = data.get("last") or data.get("bid")
-                break
+        if data:
+            last_price = data.get("last") or data.get("bid")
 
-        # Fallback to Yahoo Finance
         if not last_price:
-            yahoo_price = await _get_yahoo_price(symbol)
-            if yahoo_price:
-                last_price = yahoo_price
+            last_price = yahoo_prices.get(symbol)
 
         cost_value = avg_cost * qty
         market_value = last_price * qty if last_price else cost_value
@@ -741,57 +768,26 @@ async def get_account_positions(
     portfolio_service = get_virtual_portfolio_service()
     holdings = await portfolio_service.get_holdings(user.customer_id, virtual_account_id=account_id)
 
-    # Get live prices
+    # Get live prices and compute portfolio values
     ib_client = get_ib_client()
     market_data = ib_client.get_all_market_data()
+    total_market_value, total_unrealized_pnl, computed_positions = await _compute_portfolio_value(holdings, market_data)
 
-    positions = []
-    total_market_value = 0
-    total_unrealized_pnl = 0
-
-    for h in holdings:
-        symbol = h["symbol"]
-        conid = h["conid"]
-        qty = float(h["quantity"])
-        avg_cost = float(h["avg_cost_basis"])
-
-        # Find live price from IB
-        last_price = None
-        for cid, data in market_data.items():
-            if data.get("symbol") == symbol or cid == conid:
-                last_price = data.get("last") or data.get("bid")
-                break
-
-        # Fallback to Yahoo Finance if IB has no data
-        if not last_price:
-            yahoo_price = await _get_yahoo_price(symbol)
-            if yahoo_price:
-                last_price = yahoo_price
-
-        market_value = last_price * qty if last_price else None
-        cost_value = avg_cost * qty
-        unrealized_pnl = (market_value - cost_value) if market_value else None
-        unrealized_pnl_pct = (unrealized_pnl / cost_value * 100) if unrealized_pnl and cost_value > 0 else None
-
-        # Use market value if available, otherwise fall back to cost basis
-        # so positions always count towards portfolio total
-        display_market_value = market_value if market_value else cost_value
-        total_market_value += display_market_value
-        if unrealized_pnl:
-            total_unrealized_pnl += unrealized_pnl
-
-        positions.append(VirtualPosition(
-            symbol=symbol,
-            conid=conid,
-            isin=h.get("isin"),
-            name=h.get("name"),
-            quantity=qty,
-            avg_cost_basis=avg_cost,
-            last_price=last_price if last_price else avg_cost,
-            market_value=display_market_value,
-            unrealized_pnl=unrealized_pnl if unrealized_pnl else 0,
-            unrealized_pnl_pct=unrealized_pnl_pct if unrealized_pnl_pct else 0
-        ))
+    positions = [
+        VirtualPosition(
+            symbol=p["symbol"],
+            conid=p["conid"],
+            isin=p.get("isin"),
+            name=p.get("name"),
+            quantity=p["quantity"],
+            avg_cost_basis=p["avg_cost_basis"],
+            last_price=p["last_price"],
+            market_value=p["market_value"],
+            unrealized_pnl=p["unrealized_pnl"],
+            unrealized_pnl_pct=p["unrealized_pnl_pct"],
+        )
+        for p in computed_positions
+    ]
 
     cash = float(account_row.get("available_cash", 0))
     total_portfolio = cash + total_market_value
@@ -802,7 +798,7 @@ async def get_account_positions(
         positions=positions,
         count=len(positions),
         total_market_value=total_market_value,
-        total_unrealized_pnl=total_unrealized_pnl if total_unrealized_pnl else 0,
+        total_unrealized_pnl=total_unrealized_pnl,
         cash_balance=cash,
         total_portfolio_value=total_portfolio
     )

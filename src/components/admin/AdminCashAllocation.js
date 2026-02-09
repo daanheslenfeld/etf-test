@@ -7,9 +7,11 @@ const API_URL = '/api';
 const fmt = (v) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(v || 0);
 
 function getAuthHeaders(user) {
+  // Admin portal: use customer_id=0 to get admin role in dev mode
+  const customerId = user?.role === 'accountmanager' ? '0' : String(user?.id ?? 0);
   return {
     'Content-Type': 'application/json',
-    'X-Customer-ID': String(user?.id ?? 0),
+    'X-Customer-ID': customerId,
     'X-Customer-Email': user?.email || 'admin@etfportal.nl',
     'ngrok-skip-browser-warning': 'true',
   };

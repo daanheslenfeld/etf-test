@@ -168,6 +168,14 @@ async def lifespan(app: FastAPI):
             logger.info(f"Account type verification: PASSED")
             logger.info("Ready to accept trading requests")
             logger.info("=" * 60)
+
+        # Pre-subscribe to market data so prices are available immediately
+        logger.info("Subscribing to market data on startup...")
+        try:
+            count = await ib_client.subscribe_all_etfs()
+            logger.info(f"Market data: subscribed to {count} ETFs")
+        except Exception as e:
+            logger.warning(f"Market data subscription failed (will retry on demand): {e}")
     else:
         status = ib_client.get_status()
         logger.warning("=" * 60)
