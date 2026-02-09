@@ -85,8 +85,60 @@ async def _get_yahoo_price(symbol: str) -> Optional[float]:
 
 
 # =============================================================================
-# HELPER
+# HELPERS
 # =============================================================================
+
+async def _compute_portfolio_value(holdings: list, market_data: dict) -> tuple:
+    """Compute total market value and positions list for a set of holdings.
+
+    Returns (total_market_value, positions_list).
+    """
+    positions = []
+    total_market_value = 0.0
+    total_unrealized_pnl = 0.0
+
+    for h in holdings:
+        symbol = h["symbol"]
+        conid = h["conid"]
+        qty = float(h["quantity"])
+        avg_cost = float(h["avg_cost_basis"])
+
+        # Find live price from IB
+        last_price = None
+        for cid, data in market_data.items():
+            if data.get("symbol") == symbol or cid == conid:
+                last_price = data.get("last") or data.get("bid")
+                break
+
+        # Fallback to Yahoo Finance
+        if not last_price:
+            yahoo_price = await _get_yahoo_price(symbol)
+            if yahoo_price:
+                last_price = yahoo_price
+
+        cost_value = avg_cost * qty
+        market_value = last_price * qty if last_price else cost_value
+        unrealized_pnl = market_value - cost_value
+        unrealized_pnl_pct = (unrealized_pnl / cost_value * 100) if cost_value > 0 else 0
+
+        total_market_value += market_value
+        total_unrealized_pnl += unrealized_pnl
+
+        positions.append({
+            "symbol": symbol,
+            "conid": conid,
+            "isin": h.get("isin"),
+            "name": h.get("name"),
+            "quantity": qty,
+            "avg_cost_basis": avg_cost,
+            "last_price": last_price if last_price else avg_cost,
+            "market_value": round(market_value, 2),
+            "unrealized_pnl": round(unrealized_pnl, 2),
+            "unrealized_pnl_pct": round(unrealized_pnl_pct, 2),
+        })
+
+    return round(total_market_value, 2), round(total_unrealized_pnl, 2), positions
+
 
 def _require_admin(user: UserContext) -> None:
     """Raise 403 if user is not an admin."""
@@ -241,9 +293,46 @@ async def get_cash_overview(
     service = get_virtual_account_service()
     accounts = await service.get_all_accounts()
 
+    # Batch-fetch all holdings across all accounts in a single query
+    portfolio_service = get_virtual_portfolio_service()
+    account_ids = [a["id"] for a in accounts]
+    all_holdings = {}  # account_id -> [holdings]
+    if account_ids:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                h_response = await client.get(
+                    f"{portfolio_service.base_url}/virtual_holdings",
+                    headers=portfolio_service.headers,
+                    params={
+                        "virtual_account_id": f"in.({','.join(account_ids)})",
+                        "quantity": "gt.0",
+                        "select": "*"
+                    }
+                )
+                if h_response.status_code == 200:
+                    for h in (h_response.json() or []):
+                        va_id = h.get("virtual_account_id")
+                        all_holdings.setdefault(va_id, []).append(h)
+        except Exception as e:
+            logger.error(f"Error batch-fetching holdings: {e}")
+
+    # Get market data once for portfolio value computation
+    market_data = ib_client.get_all_market_data()
+
+    # Compute per-account portfolio values
+    account_portfolio_values = {}
+    for a in accounts:
+        holdings = all_holdings.get(a["id"], [])
+        if holdings:
+            pv, _, _ = await _compute_portfolio_value(holdings, market_data)
+            account_portfolio_values[a["id"]] = pv
+        else:
+            account_portfolio_values[a["id"]] = 0.0
+
     total_assigned = sum(a.get("assigned_cash", 0) for a in accounts)
     total_reserved = sum(a.get("reserved_cash", 0) for a in accounts)
     total_available = sum(a.get("available_cash", 0) for a in accounts)
+    total_portfolio_value = sum(account_portfolio_values.values())
     unallocated = lynx_cash - total_assigned - total_reserved
 
     return {
@@ -252,6 +341,8 @@ async def get_cash_overview(
         "total_assigned": round(total_assigned, 2),
         "total_reserved": round(total_reserved, 2),
         "total_available": round(total_available, 2),
+        "total_portfolio_value": round(total_portfolio_value, 2),
+        "grand_total_value": round(total_available + total_portfolio_value, 2),
         "unallocated": round(max(0, unallocated), 2),
         "overallocated": unallocated < -0.01,
         "accounts": [
@@ -266,6 +357,8 @@ async def get_cash_overview(
                 "reserved_cash": a.get("reserved_cash", 0),
                 "available_cash": a.get("available_cash", 0),
                 "holdings_count": a.get("holdings_count", 0),
+                "portfolio_value": account_portfolio_values.get(a["id"], 0),
+                "total_value": round(a.get("available_cash", 0) + account_portfolio_values.get(a["id"], 0), 2),
             }
             for a in accounts
         ]
@@ -416,6 +509,57 @@ async def get_allocation_log(
         ],
         count=len(entries),
     )
+
+
+@router.get("/admin/account-positions/{account_id}")
+async def get_admin_account_positions(
+    account_id: str,
+    user: UserContext = Depends(get_current_user)
+) -> dict:
+    """Admin: get enriched positions for any virtual account (no ownership check)."""
+    _require_admin(user)
+
+    # Fetch account
+    account_service = get_virtual_account_service()
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{account_service.base_url}/virtual_accounts",
+                headers=account_service.headers,
+                params={"id": f"eq.{account_id}", "select": "id,name,owner_id,available_cash"}
+            )
+            response.raise_for_status()
+            rows = response.json() or []
+            if not rows:
+                raise HTTPException(status_code=404, detail="Account not found.")
+            account_row = rows[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Admin positions - failed to fetch account: {e}")
+        raise HTTPException(status_code=503, detail="Unable to fetch account.")
+
+    # Fetch holdings
+    portfolio_service = get_virtual_portfolio_service()
+    holdings = await portfolio_service.get_holdings(account_row["owner_id"], virtual_account_id=account_id)
+
+    # Compute positions with live prices
+    ib_client = get_ib_client()
+    market_data = ib_client.get_all_market_data()
+    total_market_value, total_unrealized_pnl, positions = await _compute_portfolio_value(holdings, market_data)
+
+    cash = float(account_row.get("available_cash", 0))
+
+    return {
+        "virtual_account_id": account_id,
+        "virtual_account_name": account_row["name"],
+        "positions": positions,
+        "count": len(positions),
+        "total_market_value": total_market_value,
+        "total_unrealized_pnl": total_unrealized_pnl,
+        "cash_balance": cash,
+        "total_portfolio_value": round(cash + total_market_value, 2),
+    }
 
 
 @router.get("/{account_id}", response_model=VirtualAccountResponse)

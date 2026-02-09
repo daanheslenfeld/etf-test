@@ -8706,6 +8706,18 @@ useEffect(() => {
       setResponseMessage('');
     };
 
+    // Online users state
+    const [onlineData, setOnlineData] = useState(null);
+    const [onlineLoading, setOnlineLoading] = useState(false);
+
+    const fetchOnlineUsers = async () => {
+      try {
+        const res = await fetch(`${API_URL}/admin/online-users`);
+        const data = await res.json();
+        if (data.success) setOnlineData(data);
+      } catch (e) { /* best effort */ }
+    };
+
     // Fetch customers on mount and every 10 seconds
     useEffect(() => {
       fetchCustomers();
@@ -8716,6 +8728,28 @@ useEffect(() => {
       }, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }, []);
+
+    // Heartbeat: tell the server this user is online (every 60s)
+    useEffect(() => {
+      if (!user?.id) return;
+      const sendHeartbeat = () => {
+        fetch(`${API_URL}/heartbeat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerId: user.id, email: user.email, name: user.firstName || user.name || '' }),
+        }).catch(() => {});
+      };
+      sendHeartbeat();
+      const interval = setInterval(sendHeartbeat, 60000);
+      return () => clearInterval(interval);
+    }, [user?.id]);
+
+    // Auto-refresh online users every 30s when the Online tab is active
+    useEffect(() => {
+      if (customerPortalTab !== 'online') return;
+      const interval = setInterval(fetchOnlineUsers, 30000);
+      return () => clearInterval(interval);
+    }, [customerPortalTab]);
 
     const filteredCustomers = customers.filter(customer => {
       const search = searchTerm.toLowerCase();
@@ -8874,6 +8908,16 @@ useEffect(() => {
               }`}
             >
               Logboek
+            </button>
+            <button
+              onClick={() => { setCustomerPortalTab('online'); fetchOnlineUsers(); }}
+              className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
+                customerPortalTab === 'online'
+                  ? 'text-[#7C9885] border-b-2 border-[#7C9885]'
+                  : 'text-[#636E72] hover:text-[#2D3436]'
+              }`}
+            >
+              Online {onlineData?.online_now_count > 0 ? `(${onlineData.online_now_count})` : ''}
             </button>
           </div>
 
@@ -9235,6 +9279,88 @@ useEffect(() => {
                 </div>
               )}
             </>
+          )}
+
+          {customerPortalTab === 'online' && (
+            <div className="space-y-8">
+              {/* Nu Online */}
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E8E8E6] flex items-center gap-3">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                  </span>
+                  <h3 className="text-lg font-bold text-[#2D3436]">Nu Online</h3>
+                  <span className="text-sm text-[#636E72]">({onlineData?.online_now_count || 0} gebruikers)</span>
+                </div>
+                <div className="p-6">
+                  {!onlineData ? (
+                    <div className="text-center py-8 text-[#636E72]">Laden...</div>
+                  ) : onlineData.online_now?.length === 0 ? (
+                    <div className="text-center py-8 text-[#636E72]">Niemand is momenteel online</div>
+                  ) : (
+                    <div className="grid gap-3">
+                      {onlineData.online_now.map((u) => (
+                        <div key={u.id} className="flex items-center justify-between px-4 py-3 bg-[#F5F6F4] rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <span className="relative flex h-2.5 w-2.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                            </span>
+                            <div>
+                              <span className="font-medium text-[#2D3436]">{u.name || 'Onbekend'}</span>
+                              <span className="ml-2 text-sm text-[#636E72]">{u.email}</span>
+                            </div>
+                          </div>
+                          <span className="text-xs text-[#636E72]">
+                            {u.seconds_ago < 60 ? `${u.seconds_ago}s geleden` : `${Math.floor(u.seconds_ago / 60)}m geleden`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Vandaag Online */}
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl shadow-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#E8E8E6] flex items-center gap-3">
+                  <svg className="w-5 h-5 text-[#7C9885]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="text-lg font-bold text-[#2D3436]">Vandaag Online</h3>
+                  <span className="text-sm text-[#636E72]">({onlineData?.online_today_count || 0} unieke bezoekers)</span>
+                </div>
+                <div className="p-6">
+                  {!onlineData ? (
+                    <div className="text-center py-8 text-[#636E72]">Laden...</div>
+                  ) : onlineData.online_today?.length === 0 ? (
+                    <div className="text-center py-8 text-[#636E72]">Nog geen bezoekers vandaag</div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-[#FEFEFE]/50 border-b border-[#E8E8E6]">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Email</th>
+                            <th className="px-4 py-3 text-left text-sm font-semibold text-[#636E72]">Laatste Login</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E8E8E6]">
+                          {onlineData.online_today.map((u, i) => (
+                            <tr key={i} className="hover:bg-[#ECEEED]/30 transition-colors">
+                              <td className="px-4 py-3 text-sm font-medium text-[#2D3436]">{u.email}</td>
+                              <td className="px-4 py-3 text-sm text-[#636E72]">
+                                {new Date(u.last_login_at).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Conversation Modal */}
