@@ -9,7 +9,7 @@
 
 CREATE TABLE IF NOT EXISTS virtual_accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    owner_id INTEGER NOT NULL,
+    owner_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
