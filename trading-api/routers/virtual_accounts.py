@@ -179,10 +179,18 @@ async def get_my_default_account(
             if rows:
                 account = service._build_account_dict(rows[0])
                 return VirtualAccountResponse(**account)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Fast path failed for user {user.customer_id}: {e}")
+        # Retry once with the full service method before creating a new account
+        try:
+            accounts = await service.get_accounts(user.customer_id)
+            if accounts:
+                return VirtualAccountResponse(**accounts[0])
+        except Exception as e2:
+            logger.error(f"Fallback also failed for user {user.customer_id}: {e2}")
+            raise HTTPException(status_code=503, detail="Unable to fetch account. Please try again.")
 
-    # Auto-create a default account
+    # Only auto-create if user truly has no accounts (no rows returned above)
     try:
         account = await service.create_account(
             owner_id=user.customer_id,
@@ -562,11 +570,29 @@ async def get_account_positions(
 
     Enriches holdings with current price data from IB Gateway.
     """
-    # Verify ownership
+    # Lightweight ownership check: query account row directly (no holdings sub-query)
     account_service = get_virtual_account_service()
-    account = await account_service.get_account(account_id, user.customer_id)
-    if not account:
-        raise HTTPException(status_code=404, detail="Virtual account not found.")
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{account_service.base_url}/virtual_accounts",
+                headers=account_service.headers,
+                params={
+                    "id": f"eq.{account_id}",
+                    "owner_id": f"eq.{user.customer_id}",
+                    "select": "id,name,available_cash,assigned_cash,reserved_cash"
+                }
+            )
+            response.raise_for_status()
+            rows = response.json() or []
+            if not rows:
+                raise HTTPException(status_code=404, detail="Virtual account not found.")
+            account_row = rows[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to verify account ownership: {e}")
+        raise HTTPException(status_code=503, detail="Unable to verify account.")
 
     portfolio_service = get_virtual_portfolio_service()
     holdings = await portfolio_service.get_holdings(user.customer_id, virtual_account_id=account_id)
@@ -623,12 +649,12 @@ async def get_account_positions(
             unrealized_pnl_pct=unrealized_pnl_pct if unrealized_pnl_pct else 0
         ))
 
-    cash = account.get("available_cash", 0)
+    cash = float(account_row.get("available_cash", 0))
     total_portfolio = cash + total_market_value
 
     return VirtualPositionsResponse(
         virtual_account_id=account_id,
-        virtual_account_name=account["name"],
+        virtual_account_name=account_row["name"],
         positions=positions,
         count=len(positions),
         total_market_value=total_market_value,

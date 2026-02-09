@@ -46,8 +46,8 @@ export default function FinancialOverviewCards({ onNavigate }) {
   const mountTimeRef = useRef(Date.now());
 
   useEffect(() => {
-    // Give data 8 seconds to load before showing "no funds" banner
-    const timer = setTimeout(() => setDataSettled(true), 8000);
+    // Give data 3 seconds to load before showing "no funds" banner
+    const timer = setTimeout(() => setDataSettled(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
