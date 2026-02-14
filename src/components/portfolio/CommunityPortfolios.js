@@ -35,7 +35,7 @@ import FollowButton from '../community/FollowButton';
 import CommunityPortfolioDetail from './CommunityPortfolioDetail';
 
 // API base URL
-const API_BASE = 'http://localhost:8002';
+const API_BASE = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
 // Tab configuration
 const COMMUNITY_TABS = [

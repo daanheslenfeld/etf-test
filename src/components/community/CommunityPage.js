@@ -38,7 +38,7 @@ import CopyPortfolioModal from './CopyPortfolioModal';
 import CompetitionBanner from './CompetitionBanner';
 
 // API base URL
-const API_BASE = 'http://localhost:8002';
+const API_BASE = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
 
 // Tab configuration - Premium banking colors (sage green palette)
 const TABS = [
