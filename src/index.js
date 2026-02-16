@@ -7,7 +7,7 @@ const originalFetch = window.fetch;
 window.fetch = function (url, options = {}) {
   options.headers = {
     ...options.headers,
-    'X-Customer-ID': 'U23449846',
+    'X-Customer-ID': '23449846',
     'X-Customer-Email': 'myemail@example.com',
   };
   return originalFetch.call(this, url, options);
