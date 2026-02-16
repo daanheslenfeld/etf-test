@@ -2,6 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import BasicETFTest from './App';
 
+// Patch global fetch to include required customer headers on every request
+const originalFetch = window.fetch;
+window.fetch = function (url, options = {}) {
+  options.headers = {
+    ...options.headers,
+    'X-Customer-ID': 'U23449846',
+    'X-Customer-Email': 'myemail@example.com',
+  };
+  return originalFetch.call(this, url, options);
+};
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
