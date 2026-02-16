@@ -5,10 +5,12 @@ import BasicETFTest from './App';
 // Patch global fetch to include required customer headers on every request
 const originalFetch = window.fetch;
 window.fetch = function (url, options = {}) {
+  const saved = localStorage.getItem('user');
+  const user = saved ? JSON.parse(saved) : null;
   options.headers = {
     ...options.headers,
-    'X-Customer-ID': 'U23449846',
-    'X-Customer-Email': 'myemail@example.com',
+    'X-Customer-ID': user?.id?.toString() || '0',
+    'X-Customer-Email': user?.email || '',
   };
   return originalFetch.call(this, url, options);
 };
