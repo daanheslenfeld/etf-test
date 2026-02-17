@@ -2,15 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import BasicETFTest from './App';
 
-// Patch global fetch to include required customer headers on every request
+// Patch global fetch to include required customer headers on every request.
+// Global values act as DEFAULTS — per-component headers can override them.
 const originalFetch = window.fetch;
 window.fetch = function (url, options = {}) {
   const saved = localStorage.getItem('user');
   const user = saved ? JSON.parse(saved) : null;
   options.headers = {
-    ...options.headers,
     'X-Customer-ID': user?.id?.toString() || '0',
     'X-Customer-Email': user?.email || '',
+    ...options.headers,
   };
   return originalFetch.call(this, url, options);
 };
