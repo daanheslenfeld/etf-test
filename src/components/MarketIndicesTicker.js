@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RefreshCw, Globe } from 'lucide-react';
 import { isDemoMode, demoApi } from '../demo';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 const IS_DEMO = isDemoMode();
 
 const INDICES_CACHE_KEY = 'indices_cache';

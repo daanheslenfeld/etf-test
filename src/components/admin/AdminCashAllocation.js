@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 const API_URL = '/api';
 
 const fmt = (v) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(v || 0);

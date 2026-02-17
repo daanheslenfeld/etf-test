@@ -9,7 +9,7 @@ import { useCallback, useEffect } from 'react';
 import { useCommunity as useCommunityContext } from '../context/CommunityContext';
 
 // API base URL
-const API_BASE = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const API_BASE = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 /**
  * Hook for community portfolio features

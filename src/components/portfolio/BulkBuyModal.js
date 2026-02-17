@@ -24,7 +24,7 @@ import {
 import { formatCurrency, formatPercentage, groupOrdersByCategory, calculateMinimumInvestment } from '../../utils/portfolioUtils';
 import { useTrading } from '../../context/TradingContext';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 // Investment amount presets
 const AMOUNT_PRESETS = [250, 500, 1000, 2500, 5000, 10000, 25000];

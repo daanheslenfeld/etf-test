@@ -3,7 +3,7 @@ import { BarChart3, TrendingUp, TrendingDown, Globe, Check, Loader2 } from 'luci
 import { useTrading } from '../../context/TradingContext';
 import DetailPageHeader, { getETFName } from './DetailPageHeader';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 const SYMBOL_ISIN_MAP = {
   IWDA: 'IE00B4L5Y983',

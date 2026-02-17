@@ -39,7 +39,7 @@ const isProfileFullyTradable = (allocation, tradableCategories) => {
 const API_URL = '/api';
 
 // Trading API URL - FastAPI service for LYNX/IB trading
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 // Sample ETF data
 const SAMPLE_ETFS = [
@@ -9453,7 +9453,7 @@ useEffect(() => {
     useEffect(() => {
       if (!selectedCustomer) return;
       // Fetch virtual account cash
-      const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+      const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
       fetch(`${TRADING_API_URL}/virtual-accounts/admin/cash-overview`, {
         headers: {
           'Content-Type': 'application/json',

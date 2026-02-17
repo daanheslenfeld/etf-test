@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Link2, Link2Off, CheckCircle, AlertCircle, Loader2, Info, RefreshCw } from 'lucide-react';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 // Fetch with timeout helper
 const fetchWithTimeout = (url, options = {}, timeoutMs = 8000) => {

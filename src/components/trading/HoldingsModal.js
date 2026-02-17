@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Eye, Building2, Globe, PieChart, TrendingUp, Loader2, AlertCircle } from 'lucide-react';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
 // Cache for holdings data
 const holdingsCache = {};
