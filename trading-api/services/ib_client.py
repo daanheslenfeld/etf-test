@@ -452,9 +452,22 @@ class IBClient:
     def _on_error(self, reqId: int, errorCode: int, errorString: str, contract: Contract = None):
         """Handle IB error messages."""
         info_codes = {2104, 2106, 2158, 2119}
+        # Market data errors that should be logged but NOT crash requests
+        # 354 = "Requested market data is not subscribed" (regulatory/delayed)
+        # 10167 = "Requested market data is not subscribed. Delayed market data is not available"
+        # 10168 = "Market data farm connection is broken"
+        # 10187 = "Market data farm is temporarily unavailable"
+        # 10090 = "Part of requested market data is not subscribed"
+        # 100 = "Max number of market data lines exceeded"  (ticker limit)
+        # 101 = "Max amount of market data per second exceeded"
+        # 102 = "Duplicate ticker ID"
+        market_data_error_codes = {354, 10167, 10168, 10187, 10090, 100, 101, 102}
 
         if errorCode in info_codes:
             logger.debug(f"IB Info [{errorCode}]: {errorString}")
+        elif errorCode in market_data_error_codes:
+            symbol_info = f" for {contract.symbol}" if contract else ""
+            logger.warning(f"IB Market Data Warning [{errorCode}]{symbol_info}: {errorString}")
         elif errorCode == 1100:
             logger.error(f"IB CONNECTIVITY LOST [{errorCode}]: {errorString}")
             self._state = ConnectionState.DISCONNECTED
@@ -945,7 +958,11 @@ class IBClient:
         })
 
     async def subscribe_market_data(self, conid: int) -> bool:
-        """Subscribe to streaming market data for a contract."""
+        """Subscribe to streaming market data for a contract.
+
+        Returns True on success, False on failure. Never raises exceptions -
+        market data errors (354, ticker limits, etc.) are logged as warnings.
+        """
         if not self.is_connected():
             return False
 
@@ -993,7 +1010,9 @@ class IBClient:
             return True
 
         except Exception as e:
-            logger.error(f"Error subscribing to market data for conid {conid}: {e}")
+            logger.warning(f"Non-fatal: failed to subscribe market data for {etf_info['symbol']} (conid {conid}): {e}")
+            # Clean up partial cache entry on failure
+            self._market_data_cache.pop(conid, None)
             return False
 
     async def unsubscribe_market_data(self, conid: int) -> bool:
@@ -1066,8 +1085,12 @@ class IBClient:
 
         IB limits concurrent market data subscriptions. We subscribe to
         model portfolio ETFs first, then fill remaining slots with others.
+
+        Never raises exceptions - logs warnings for individual failures
+        and returns the count of successful subscriptions.
         """
         count = 0
+        failures = 0
         subscribed_conids = set(self._market_data_tickers.keys())
 
         # Phase 1: Subscribe to model portfolio ETFs first
@@ -1075,12 +1098,18 @@ class IBClient:
             if count >= self.MAX_SUBSCRIPTIONS:
                 break
             if conid not in subscribed_conids:
-                if await self.subscribe_market_data(conid):
-                    count += 1
-                    subscribed_conids.add(conid)
+                try:
+                    if await self.subscribe_market_data(conid):
+                        count += 1
+                        subscribed_conids.add(conid)
+                    else:
+                        failures += 1
+                except Exception as e:
+                    logger.warning(f"Non-fatal: subscribe failed for conid {conid}: {e}")
+                    failures += 1
                 await asyncio.sleep(0.05)
 
-        logger.info(f"Subscribed to {count} model portfolio ETFs")
+        logger.info(f"Subscribed to {count} model portfolio ETFs ({failures} failures)")
 
         # Phase 2: Fill remaining slots with other tradable ETFs
         tradable_etfs = get_cached_tradable_etfs()
@@ -1090,12 +1119,18 @@ class IBClient:
                 break
             conid = etf["conid"]
             if conid not in subscribed_conids and conid not in priority_set:
-                if await self.subscribe_market_data(conid):
-                    count += 1
-                    subscribed_conids.add(conid)
+                try:
+                    if await self.subscribe_market_data(conid):
+                        count += 1
+                        subscribed_conids.add(conid)
+                    else:
+                        failures += 1
+                except Exception as e:
+                    logger.warning(f"Non-fatal: subscribe failed for {etf.get('symbol', conid)}: {e}")
+                    failures += 1
                 await asyncio.sleep(0.05)
 
-        logger.info(f"Total market data subscriptions: {count}")
+        logger.info(f"Total market data subscriptions: {count} ({failures} total failures)")
         return count
 
     def unsubscribe_all_market_data(self):
@@ -1122,7 +1157,10 @@ class IBClient:
         return self._market_data_cache.copy()
 
     async def get_market_data_for_symbol(self, symbol: str) -> Optional[dict]:
-        """Get market data by symbol. Subscribes if not already subscribed."""
+        """Get market data by symbol. Subscribes if not already subscribed.
+
+        Never raises exceptions - returns None if data is unavailable.
+        """
         tradable_etfs = get_cached_tradable_etfs()
         etf_info = next((e for e in tradable_etfs if e["symbol"].upper() == symbol.upper()), None)
         if not etf_info:
@@ -1131,9 +1169,12 @@ class IBClient:
         conid = etf_info["conid"]
 
         # Subscribe if not already
-        if conid not in self._market_data_tickers:
-            await self.subscribe_market_data(conid)
-            await asyncio.sleep(0.5)  # Wait for initial data
+        try:
+            if conid not in self._market_data_tickers:
+                await self.subscribe_market_data(conid)
+                await asyncio.sleep(0.5)  # Wait for initial data
+        except Exception as e:
+            logger.warning(f"Non-fatal: market data subscription failed for {symbol}: {e}")
 
         return self.get_market_data(conid)
 

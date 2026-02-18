@@ -131,7 +131,8 @@ async def get_market_data_by_symbol(
 ) -> MarketDataResponse:
     """
     Get streaming market data for a symbol.
-    Returns cached data when IB is disconnected.
+    Returns cached data when IB is disconnected or on error.
+    Never returns 500 for market data issues - falls back gracefully.
     """
     ib_client = get_ib_client()
 
@@ -147,15 +148,28 @@ async def get_market_data_by_symbol(
                         return result
         raise HTTPException(status_code=503, detail="IB Gateway not connected and no cached data")
 
-    # Get market data (will subscribe if not already)
-    data = await ib_client.get_market_data_for_symbol(symbol.upper())
+    # Get market data (will subscribe if not already) - catch IB errors
+    try:
+        data = await ib_client.get_market_data_for_symbol(symbol.upper())
+    except Exception as e:
+        logger.warning(f"IB market data error for {symbol} (non-fatal): {e}")
+        # Try cache fallback
+        cached = _load_cache()
+        if cached and cached.get("data"):
+            for conid, cdata in cached["data"].items():
+                if cdata.get("symbol", "").upper() == symbol.upper():
+                    result = _format_market_data(cdata, subscribed=False)
+                    if result:
+                        result.delayed = True
+                        return result
+        data = None
 
     if not data:
-        raise HTTPException(status_code=404, detail=f"Symbol {symbol} not found in available ETFs")
+        raise HTTPException(status_code=404, detail=f"Symbol {symbol} not found or no data available")
 
     result = _format_market_data(data, subscribed=True)
     if not result:
-        raise HTTPException(status_code=500, detail="Failed to format market data")
+        raise HTTPException(status_code=404, detail=f"No market data available for {symbol}")
 
     return result
 
@@ -166,7 +180,8 @@ async def get_all_market_data(
 ) -> AllMarketDataResponse:
     """
     Get streaming market data for all subscribed symbols.
-    Returns cached data when IB is disconnected.
+    Returns cached data when IB is disconnected or on error.
+    Never returns 500 for market data issues - falls back gracefully.
     """
     ib_client = get_ib_client()
 
@@ -185,9 +200,18 @@ async def get_all_market_data(
                 timestamp=cached.get("timestamp", datetime.utcnow().isoformat()),
                 subscriptionCount=len(results)
             )
-        raise HTTPException(status_code=503, detail="IB Gateway not connected and no cached data")
+        # Return empty response instead of 503 - dashboard should still load
+        return AllMarketDataResponse(
+            data=[],
+            timestamp=datetime.utcnow().isoformat(),
+            subscriptionCount=0
+        )
 
-    all_data = ib_client.get_all_market_data()
+    try:
+        all_data = ib_client.get_all_market_data()
+    except Exception as e:
+        logger.warning(f"IB get_all_market_data error (non-fatal): {e}")
+        all_data = {}
 
     results = []
     for conid, data in all_data.items():
@@ -195,10 +219,13 @@ async def get_all_market_data(
         if formatted:
             results.append(formatted)
 
-    # If no subscriptions, return empty list with info
+    # If no subscriptions, try to auto-subscribe (but don't crash if it fails)
     if not results:
-        # Auto-subscribe to all ETFs
-        count = await ib_client.subscribe_all_etfs()
+        try:
+            count = await ib_client.subscribe_all_etfs()
+        except Exception as e:
+            logger.warning(f"Auto-subscribe failed (non-fatal): {e}")
+            count = 0
         return AllMarketDataResponse(
             data=[],
             timestamp=datetime.utcnow().isoformat(),
@@ -223,14 +250,22 @@ async def subscribe_all_market_data(
     Subscribe to streaming market data for all MVP ETFs.
 
     IB limits concurrent market data subscriptions, so we only subscribe
-    to the predefined ETF list (currently 4 ETFs).
+    to the predefined ETF list. Never crashes on IB errors.
     """
     ib_client = get_ib_client()
 
     if not ib_client.is_connected():
-        raise HTTPException(status_code=503, detail="IB Gateway not connected")
+        return SubscribeResponse(
+            success=False,
+            message="IB Gateway not connected - market data unavailable",
+            subscriptionCount=0
+        )
 
-    count = await ib_client.subscribe_all_etfs()
+    try:
+        count = await ib_client.subscribe_all_etfs()
+    except Exception as e:
+        logger.warning(f"subscribe_all_etfs error (non-fatal): {e}")
+        count = 0
 
     return SubscribeResponse(
         success=count > 0,
@@ -244,11 +279,15 @@ async def subscribe_market_data(
     symbol: str = Path(..., description="ETF symbol to subscribe"),
     user: UserContext = Depends(require_trading_approved)
 ) -> SubscribeResponse:
-    """Subscribe to streaming market data for a specific symbol."""
+    """Subscribe to streaming market data for a specific symbol. Never crashes on IB errors."""
     ib_client = get_ib_client()
 
     if not ib_client.is_connected():
-        raise HTTPException(status_code=503, detail="IB Gateway not connected")
+        return SubscribeResponse(
+            success=False,
+            message=f"IB Gateway not connected - cannot subscribe to {symbol}",
+            subscriptionCount=0
+        )
 
     # Find ETF by symbol
     etfs = ib_client.get_mvp_etfs()
@@ -257,7 +296,11 @@ async def subscribe_market_data(
     if not etf:
         raise HTTPException(status_code=404, detail=f"Symbol {symbol} not found in available ETFs")
 
-    success = await ib_client.subscribe_market_data(etf["conid"])
+    try:
+        success = await ib_client.subscribe_market_data(etf["conid"])
+    except Exception as e:
+        logger.warning(f"Subscribe error for {symbol} (non-fatal): {e}")
+        success = False
 
     return SubscribeResponse(
         success=success,
