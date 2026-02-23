@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
 import { isDemoMode, demoApi } from '../demo';
 
-const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://localhost:8002';
+const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002'
 
 // Check demo mode once at load time
 const IS_DEMO = isDemoMode();
@@ -1413,10 +1413,9 @@ export function TradingProvider({ user, children }) {
 
         const [connected, hasLinkedAccount] = await Promise.all([connectionPromise, brokerLinkPromise]);
 
-        // If connected but broker not linked, auto-link (non-blocking)
+        // Broker linking is user-initiated only (via "Koppel LYNX Account" button)
         if (connected && !hasLinkedAccount) {
-          console.log('[TradingContext] Connected but no broker link - auto-linking...');
-          linkBrokerAccount().catch(console.error);
+          console.log('[TradingContext] Connected but no broker link - user must link manually');
         }
 
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });

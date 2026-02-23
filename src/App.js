@@ -9928,8 +9928,6 @@ useEffect(() => {
         if (response.ok) {
           const data = await response.json();
           if (data.ib_gateway?.connected) {
-            // Try to link account automatically
-            await linkBrokerAccount();
             return true;
           }
         }
