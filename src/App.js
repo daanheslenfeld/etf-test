@@ -9895,32 +9895,6 @@ useEffect(() => {
       }
     };
 
-    // Auto-link broker account
-    const linkBrokerAccount = async () => {
-      try {
-        const response = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Customer-ID': user?.id?.toString() || '0',
-            'X-Customer-Email': user?.email || '',
-            'ngrok-skip-browser-warning': 'true',
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.linked) {
-            setConnectionStatus({ connected: true, account: data.account_id });
-            return true;
-          }
-        }
-        return false;
-      } catch (error) {
-        console.error('Error linking broker:', error);
-        return false;
-      }
-    };
-
     // Check connection status
     const checkConnection = async () => {
       try {
@@ -10871,7 +10845,7 @@ useEffect(() => {
       {currentPage === 'customerDatabase' && <CustomerDatabasePage />}
       {currentPage === 'customerDetail' && <CustomerDetailPage />}
       {currentPage === 'incomeCalculator' && <IncomeCalculator onBack={() => setCurrentPage('mainDashboard')} />}
-      {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToBroker={() => setCurrentPage('brokerSettings')} />}
+      {currentPage === 'trading' && <TradingDashboard user={user} onBack={() => setCurrentPage('mainDashboard')} />}
       {currentPage === 'modelPortfolios' && <ModelPortfoliosPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'community' && <CommunityPage user={user} onBack={() => setCurrentPage('mainDashboard')} onNavigateToTrading={() => setCurrentPage('trading')} />}
       {currentPage === 'brokerSettings' && <BrokerSettings user={user} onBack={() => setCurrentPage('mainDashboard')} />}

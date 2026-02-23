@@ -22,7 +22,7 @@ const formatTimeAgo = (timestamp) => {
   return `${Math.floor(hours / 24)}d ago`;
 };
 
-function TradingDashboardContent({ onBack, onNavigateToBroker }) {
+function TradingDashboardContent({ onBack }) {
   const {
     connected,
     accountId,
@@ -42,21 +42,14 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
     fetchSafetyLimits,
     isDataStale,
     lastMarketDataUpdate,
-    brokerLinked,
-    linkBrokerAccount,
-    getAvailableAccounts,
     subscribeToMarketData,
     fetchMarketData,
     positions,
     canTrade,
     tradingAccessMessage,
-    needsBrokerLink,
   } = useTrading();
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [linkingAccount, setLinkingAccount] = useState(false);
-  const [availableAccounts, setAvailableAccounts] = useState([]);
-  const [linkError, setLinkError] = useState(null);
   const [prefillOrder, setPrefillOrder] = useState(null);
   const [activeTab, setActiveTab] = useState('etfs'); // 'etfs' or 'orders'
 
@@ -88,45 +81,6 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
     await Promise.all([fetchETFs(), fetchPositions(), fetchOrders()]);
   };
 
-  // Load available accounts when not linked
-  const loadAvailableAccounts = async () => {
-    const accounts = await getAvailableAccounts();
-    setAvailableAccounts(accounts);
-  };
-
-  // Handle linking broker account
-  const handleLinkAccount = async (accountId = null) => {
-    setLinkingAccount(true);
-    setLinkError(null);
-
-    // If no accountId provided, fetch available accounts and use the first one
-    let resolvedAccountId = accountId;
-    if (!resolvedAccountId) {
-      const accounts = await getAvailableAccounts();
-      if (accounts && accounts.length > 0) {
-        resolvedAccountId = accounts[0];
-        setAvailableAccounts(accounts);
-      } else {
-        setLinkError('No IB accounts available. Ensure IB Gateway is connected.');
-        setLinkingAccount(false);
-        return;
-      }
-    }
-
-    const result = await linkBrokerAccount(resolvedAccountId);
-
-    if (result.success) {
-      // Refresh data after linking
-      await Promise.all([fetchPositions(), fetchOrders()]);
-      await subscribeToMarketData();
-      await fetchMarketData();
-    } else {
-      setLinkError(result.message);
-    }
-
-    setLinkingAccount(false);
-  };
-
   // Loading state
   if (loading) {
     return (
@@ -136,131 +90,6 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7C9885] mx-auto mb-4"></div>
             <div className="text-[#2D3436] text-xl">Verbinden met Trading API...</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Broker not linked AND no cached data - show connection flow
-  const hasCachedData = positions && positions.length > 0;
-  if (!brokerLinked && !hasCachedData) {
-    return (
-      <div className="min-h-screen bg-[#F5F6F4]">
-        <MarketIndicesTicker />
-        <nav className="bg-[#FEFEFE] border-b border-[#E8E8E6] shadow-[0_1px_3px_rgba(45,52,54,0.04)] sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-            <div className="flex justify-between items-center">
-              <button
-                onClick={onBack}
-                className="text-[#7C9885] font-medium hover:text-[#6B8A74] flex items-center gap-2"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                Terug naar Dashboard
-              </button>
-              <h1 className="text-xl font-bold text-[#2D3436]">LYNX Account Koppelen</h1>
-              <div className="w-32"></div>
-            </div>
-          </div>
-        </nav>
-
-        <div className="max-w-2xl mx-auto px-4 py-12">
-          <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-8 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-[#7C9885]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Wifi className="w-8 h-8 text-[#7C9885]" />
-              </div>
-              <h2 className="text-2xl font-bold text-[#2D3436] mb-2">Koppel je LYNX Account</h2>
-              <p className="text-[#636E72]">
-                Koppel je LYNX broker account om direct ETF's te verhandelen via dit portaal.
-              </p>
-            </div>
-
-            {linkError && (
-              <div className="bg-[#C0736D]/10 border border-[#C0736D]/30 rounded-lg p-4 mb-6">
-                <p className="text-[#C0736D] text-sm">{linkError}</p>
-              </div>
-            )}
-
-            {!connected ? (
-              <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg p-6 mb-6">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-6 h-6 text-[#C9A962] flex-shrink-0" />
-                  <div>
-                    <h3 className="text-[#C9A962] font-medium mb-2">IB Gateway Niet Verbonden</h3>
-                    <p className="text-[#636E72] text-sm mb-4">
-                      Zorg ervoor dat IB Gateway draait en ingelogd is voordat je je account koppelt.
-                    </p>
-                    <ul className="text-[#636E72] text-sm list-disc list-inside space-y-1 mb-4">
-                      <li>Start IB Gateway op localhost:4001</li>
-                      <li>Log in met je LYNX inloggegevens</li>
-                      <li>Wacht tot de verbinding tot stand is gebracht</li>
-                    </ul>
-                    <button
-                      onClick={checkConnection}
-                      className="px-4 py-2 bg-[#C9A962] text-white rounded-lg hover:bg-[#B89952] flex items-center gap-2"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      Verbinding Controleren
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="bg-[#7C9885]/10 border border-[#7C9885]/30 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-[#7C9885]">
-                    <Wifi className="w-5 h-5" />
-                    <span>IB Gateway Verbonden</span>
-                  </div>
-                </div>
-
-                {availableAccounts.length === 0 ? (
-                  <button
-                    onClick={loadAvailableAccounts}
-                    className="w-full py-3 bg-[#7C9885] text-white font-bold rounded-lg hover:bg-[#6B8A74] transition-colors"
-                  >
-                    Beschikbare Accounts Laden
-                  </button>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-[#636E72] text-sm">Selecteer het account om te koppelen:</p>
-                    {availableAccounts.map((acct) => (
-                      <button
-                        key={acct}
-                        onClick={() => handleLinkAccount(acct)}
-                        disabled={linkingAccount}
-                        className="w-full py-4 px-6 bg-[#FEFEFE] border border-[#E8E8E6] rounded-lg hover:border-[#7C9885] hover:bg-[#F5F6F4] transition-colors text-left disabled:opacity-50"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <div className="text-[#2D3436] font-medium">{acct}</div>
-                            <div className="text-[#636E72] text-sm">
-                              {acct.startsWith('DU') || acct.startsWith('DF') ? 'Papier Handelen' : 'Live Handelen'}
-                            </div>
-                          </div>
-                          {linkingAccount ? (
-                            <div className="animate-spin h-5 w-5 border-2 border-[#7C9885] border-t-transparent rounded-full" />
-                          ) : (
-                            <span className="text-[#7C9885]">Koppelen</span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {availableAccounts.length === 0 && (
-                  <button
-                    onClick={() => handleLinkAccount()}
-                    disabled={linkingAccount}
-                    className="w-full py-3 bg-[#ECEEED] text-[#2D3436] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors disabled:opacity-50 mt-4"
-                  >
-                    {linkingAccount ? 'Verbinden...' : 'Automatisch Eerste Beschikbare Account Koppelen'}
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -343,14 +172,6 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
                 {tradingAccessMessage || 'Trading is uitgeschakeld. Alleen demo modus.'}
               </p>
             </div>
-            {needsBrokerLink && onNavigateToBroker && (
-              <button
-                onClick={onNavigateToBroker}
-                className="px-4 py-2 bg-[#C9A962] text-white font-medium rounded-lg hover:bg-[#B89952] transition-colors whitespace-nowrap"
-              >
-                LYNX Koppelen
-              </button>
-            )}
           </div>
         )}
 
@@ -475,8 +296,8 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
 }
 
 // Export content directly - TradingProvider is at app root
-export default function TradingDashboard({ user, onBack, onNavigateToBroker }) {
+export default function TradingDashboard({ user, onBack }) {
   return (
-    <TradingDashboardContent onBack={onBack} onNavigateToBroker={onNavigateToBroker} />
+    <TradingDashboardContent onBack={onBack} />
   );
 }
