@@ -564,7 +564,7 @@ export function TradingProvider({ user, children }) {
       const res = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ ib_account_id: accountId })
+        body: JSON.stringify({ account_id: accountId })
       });
 
       if (res.ok) {
