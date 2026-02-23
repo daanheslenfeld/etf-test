@@ -558,11 +558,13 @@ export function TradingProvider({ user, children }) {
         return { success: true, accountId: 'DEMO123456', message: 'Demo account connected' };
       }
 
-      const body = accountId ? { account_id: accountId } : null;
+      if (!accountId) {
+        return { success: false, message: 'No account selected. Use /broker/available to pick one.' };
+      }
       const res = await fetch(`${TRADING_API_URL}/trading/broker/link`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: body ? JSON.stringify(body) : undefined
+        body: JSON.stringify({ ib_account_id: accountId })
       });
 
       if (res.ok) {
