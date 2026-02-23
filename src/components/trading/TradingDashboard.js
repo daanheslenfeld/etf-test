@@ -99,7 +99,21 @@ function TradingDashboardContent({ onBack, onNavigateToBroker }) {
     setLinkingAccount(true);
     setLinkError(null);
 
-    const result = await linkBrokerAccount(accountId);
+    // If no accountId provided, fetch available accounts and use the first one
+    let resolvedAccountId = accountId;
+    if (!resolvedAccountId) {
+      const accounts = await getAvailableAccounts();
+      if (accounts && accounts.length > 0) {
+        resolvedAccountId = accounts[0];
+        setAvailableAccounts(accounts);
+      } else {
+        setLinkError('No IB accounts available. Ensure IB Gateway is connected.');
+        setLinkingAccount(false);
+        return;
+      }
+    }
+
+    const result = await linkBrokerAccount(resolvedAccountId);
 
     if (result.success) {
       // Refresh data after linking
