@@ -216,7 +216,7 @@ export default function CreatePortfolio({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
+      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div>
@@ -236,7 +236,7 @@ export default function CreatePortfolio({
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-6 max-h-[calc(90vh-200px)]">
+        <div className="overflow-y-auto p-6 flex-1">
           {/* Errors */}
           {errors.length > 0 && (
             <div className="mb-6 p-4 bg-red-500/10 rounded-lg border border-red-500/20">

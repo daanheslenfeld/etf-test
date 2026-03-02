@@ -3182,8 +3182,8 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                     {/* Modal for AOW/Pension Details */}
                     {showModal && modalContent && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
-                            <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full mx-4 border border-slate-700" onClick={(e) => e.stopPropagation()}>
-                                <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-6 py-4 flex justify-between items-center">
+                            <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full mx-4 border border-slate-700 max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                                <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-6 py-4 flex justify-between items-center flex-shrink-0">
                                     <h2 className="text-xl font-bold text-white">
                                         {modalContent.type === 'aow' ? 'AOW Details' : 'Pensioen Details'}
                                     </h2>
@@ -3195,7 +3195,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                     </button>
                                 </div>
 
-                                <div className="p-6 max-h-[70vh] overflow-y-auto">
+                                <div className="p-6 overflow-y-auto flex-1">
                                     {modalContent.type === 'aow' && (
                                         <div className="space-y-4">
                                             {modalContent.usePDF && modalContent.pdfData ? (
@@ -3776,8 +3776,8 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                     {/* Instructions Modal for finding pension PDF */}
                     {showPensionInstructions && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPensionInstructions(false)}>
-                            <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full mx-4 border border-slate-700" onClick={(e) => e.stopPropagation()}>
-                                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4 flex justify-between items-center">
+                            <div className="bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full mx-4 border border-slate-700 max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                                <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4 flex justify-between items-center flex-shrink-0">
                                     <h2 className="text-xl font-bold text-slate-900">
                                         Hoe vind ik mijn pensioenoverzicht?
                                     </h2>
@@ -3789,7 +3789,7 @@ function IncomePreservationCalculator({ onNavigate, onLogout, user, investmentDe
                                     </button>
                                 </div>
 
-                                <div className="p-6 max-h-[70vh] overflow-y-auto">
+                                <div className="p-6 overflow-y-auto flex-1">
                                     <div className="space-y-6">
                                         <div className="bg-slate-700 p-4 rounded-lg">
                                             <h3 className="text-teal-400 font-semibold text-lg mb-3">Stap-voor-stap instructies:</h3>

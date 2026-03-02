@@ -143,7 +143,7 @@ export default function CommunityPortfolioDetail({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
+      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-4">
@@ -182,7 +182,7 @@ export default function CommunityPortfolioDetail({
         </div>
 
         {/* Content - scrollable */}
-        <div className="overflow-y-auto p-6 max-h-[calc(90vh-200px)]">
+        <div className="overflow-y-auto p-6 flex-1">
           {/* Description */}
           {portfolio.description && (
             <div className="mb-6">

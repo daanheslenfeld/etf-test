@@ -7731,7 +7731,8 @@ useEffect(() => {
         
         {showRebalance && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
-            <div className="bg-[#FEFEFE] rounded-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-[#FEFEFE] rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="overflow-y-auto flex-1 p-8">
               <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Profiel Beheer</h2>
 
               {/* Profile Change Section */}
@@ -7839,8 +7840,8 @@ useEffect(() => {
                       ))}
                     </div>
                   </div>
-                  
-                  <div className="bg-gray-50 rounded-xl p-4 mb-6">
+
+                  <div className="bg-gray-50 rounded-xl p-4">
                     <h3 className="font-bold mb-3">Huidige verdeling:</h3>
                     <div className="space-y-2 text-sm">
                       {Object.entries(metrics.categories)
@@ -7854,42 +7855,47 @@ useEffect(() => {
                       ))}
                     </div>
                   </div>
-                  
+                </>
+              ) : (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                  <p className="text-sm text-yellow-800">
+                    Geen risicoprofiel geselecteerd. Balanceren is alleen mogelijk als je een profiel hebt gekozen tijdens het samenstellen.
+                  </p>
+                </div>
+              )}
+              </div>
+
+              {/* Footer - always visible */}
+              <div className="p-6 border-t border-gray-200 flex-shrink-0">
+                {selectedProfile ? (
                   <div className="flex gap-4">
-                    <button 
-                      onClick={() => { 
+                    <button
+                      onClick={() => {
                         const rebalanced = recalculateWeights(portfolio, selectedProfile);
                         setPortfolio(rebalanced);
-                        alert('Portfolio succesvol gebalanceerd naar ' + premadePortfolios[selectedProfile].name + ' profiel!'); 
-                        setShowRebalance(false); 
-                      }} 
+                        alert('Portfolio succesvol gebalanceerd naar ' + premadePortfolios[selectedProfile].name + ' profiel!');
+                        setShowRebalance(false);
+                      }}
                       className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-[#2D3436] rounded-xl hover:shadow-lg font-semibold transition-all"
                     >
                       Balanceren naar {premadePortfolios[selectedProfile].name}
                     </button>
-                    <button 
-                      onClick={() => setShowRebalance(false)} 
+                    <button
+                      onClick={() => setShowRebalance(false)}
                       className="flex-1 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-all"
                     >
                       Annuleren
                     </button>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-                    <p className="text-sm text-yellow-800">
-                      Geen risicoprofiel geselecteerd. Balanceren is alleen mogelijk als je een profiel hebt gekozen tijdens het samenstellen.
-                    </p>
-                  </div>
-                  <button 
-                    onClick={() => setShowRebalance(false)} 
+                ) : (
+                  <button
+                    onClick={() => setShowRebalance(false)}
                     className="w-full py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 font-medium"
                   >
                     Sluiten
                   </button>
-                </>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -8284,7 +8290,8 @@ useEffect(() => {
 
           return (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowWithdrawal(false)}>
-              <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 p-8 border border-[#E8E8E6] max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 border border-[#E8E8E6] max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="overflow-y-auto flex-1 p-8">
                 <h2 className="text-3xl font-bold mb-4 text-[#2D3436]">Geld Opnemen</h2>
                 <p className="text-[#636E72] mb-6">Voer het bedrag in dat je wilt opnemen</p>
 
@@ -8317,7 +8324,7 @@ useEffect(() => {
                 </div>
 
                 {amount > 0 && amount <= animatedPortfolioValue && (
-                  <div className="mb-6">
+                  <div>
                     <h3 className="font-bold mb-3 text-[#2D3436]">Te verkopen (kaasschaaf methode):</h3>
                     <div className="bg-[#ECEEED] rounded-lg p-4 space-y-3">
                       {salesPreview.map((etf, idx) => (
@@ -8338,76 +8345,80 @@ useEffect(() => {
                     </div>
                   </div>
                 )}
+                </div>
 
-                <button
-                  onClick={() => {
-                    if (amount > 0 && amount <= animatedPortfolioValue) {
-                      // Calculate proportional reduction of invested amount
-                      // If you withdraw from a portfolio that has grown, you withdraw both principal and gains proportionally
-                      const currentInvestedAmount = parseFloat(investmentDetails.amount);
-                      const proportionWithdrawn = amount / animatedPortfolioValue;
-                      const investedAmountReduction = currentInvestedAmount * proportionWithdrawn;
-                      const newInvestedAmount = currentInvestedAmount - investedAmountReduction;
+                {/* Footer - always visible */}
+                <div className="p-6 border-t border-[#E8E8E6] flex-shrink-0 space-y-3">
+                  <button
+                    onClick={() => {
+                      if (amount > 0 && amount <= animatedPortfolioValue) {
+                        // Calculate proportional reduction of invested amount
+                        // If you withdraw from a portfolio that has grown, you withdraw both principal and gains proportionally
+                        const currentInvestedAmount = parseFloat(investmentDetails.amount);
+                        const proportionWithdrawn = amount / animatedPortfolioValue;
+                        const investedAmountReduction = currentInvestedAmount * proportionWithdrawn;
+                        const newInvestedAmount = currentInvestedAmount - investedAmountReduction;
 
-                      // Update investment details amount
-                      const updatedInvestmentDetails = {
-                        ...investmentDetails,
-                        amount: newInvestedAmount.toString()
-                      };
-                      setInvestmentDetails(updatedInvestmentDetails);
-
-                      // Update user's investment details
-                      if (user) {
-                        const updatedUser = {
-                          ...user,
-                          investmentDetails: {
-                            ...user.investmentDetails,
-                            amount: newInvestedAmount.toString()
-                          }
+                        // Update investment details amount
+                        const updatedInvestmentDetails = {
+                          ...investmentDetails,
+                          amount: newInvestedAmount.toString()
                         };
-                        setUser(updatedUser);
+                        setInvestmentDetails(updatedInvestmentDetails);
 
-                        // Update in customers list
-                        const updatedCustomers = customers.map(c =>
-                          c.email === user.email
-                            ? {
-                                ...c,
-                                investmentDetails: {
-                                  ...c.investmentDetails,
-                                  amount: newInvestedAmount.toString()
+                        // Update user's investment details
+                        if (user) {
+                          const updatedUser = {
+                            ...user,
+                            investmentDetails: {
+                              ...user.investmentDetails,
+                              amount: newInvestedAmount.toString()
+                            }
+                          };
+                          setUser(updatedUser);
+
+                          // Update in customers list
+                          const updatedCustomers = customers.map(c =>
+                            c.email === user.email
+                              ? {
+                                  ...c,
+                                  investmentDetails: {
+                                    ...c.investmentDetails,
+                                    amount: newInvestedAmount.toString()
+                                  }
                                 }
-                              }
-                            : c
-                        );
-                        setCustomers(updatedCustomers);
+                              : c
+                          );
+                          setCustomers(updatedCustomers);
+                        }
+
+                        // Update portfolio value and simulation data
+                        setStaticPerformanceData(prev => prev.map(point => ({
+                          ...point,
+                          portfolioValue: point.portfolioValue - amount
+                        })));
+
+                        setShowWithdrawal(false);
+                        setWithdrawalAmount('');
+                        alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
                       }
+                    }}
+                    disabled={!amount || amount <= 0 || amount > animatedPortfolioValue}
+                    className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed transition-all"
+                  >
+                    Bevestig Opname
+                  </button>
 
-                      // Update portfolio value and simulation data
-                      setStaticPerformanceData(prev => prev.map(point => ({
-                        ...point,
-                        portfolioValue: point.portfolioValue - amount
-                      })));
-
+                  <button
+                    onClick={() => {
                       setShowWithdrawal(false);
                       setWithdrawalAmount('');
-                      alert(`€${amount.toFixed(2)} succesvol opgenomen!`);
-                    }
-                  }}
-                  disabled={!amount || amount <= 0 || amount > animatedPortfolioValue}
-                  className="w-full py-3 bg-[#7C9885] text-gray-900 rounded-xl hover:bg-[#20D4BA] font-bold disabled:bg-gray-700 disabled:text-[#636E72] disabled:cursor-not-allowed transition-all mb-3"
-                >
-                  Bevestig Opname
-                </button>
-
-                <button
-                  onClick={() => {
-                    setShowWithdrawal(false);
-                    setWithdrawalAmount('');
-                  }}
-                  className="w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
-                >
-                  Annuleren
-                </button>
+                    }}
+                    className="w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
+                  >
+                    Annuleren
+                  </button>
+                </div>
               </div>
             </div>
           );
