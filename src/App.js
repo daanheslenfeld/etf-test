@@ -2338,9 +2338,9 @@ useEffect(() => {
     });
     
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-[#FEFEFE] rounded-lg max-w-4xl w-full max-h-modal overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 bg-[#FEFEFE] border-b px-6 py-4 flex justify-between items-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={onClose}>
+        <div className="bg-[#FEFEFE] rounded-lg max-w-4xl w-full max-h-modal flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="flex-shrink-0 bg-[#FEFEFE] border-b px-6 py-4 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">Portfolio Aanpassen</h2>
               <p className="text-sm text-gray-600 mt-1">Wijzig de wegingen van je ETF's</p>
@@ -2348,7 +2348,7 @@ useEffect(() => {
             <button onClick={onClose} className="text-2xl text-[#636E72] hover:text-gray-700">×</button>
           </div>
           
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-6 overflow-y-auto flex-1">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
               <div className="flex justify-between items-center">
                 <div>
@@ -2429,7 +2429,8 @@ useEffect(() => {
               </div>
             )}
             
-            <div className="flex gap-4 pt-4 border-t">
+          </div>
+          <div className="flex gap-4 p-6 border-t flex-shrink-0">
               <button
                 onClick={() => setCurrentPage('portfolioBuilder')}
                 className="flex-1 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-medium"
@@ -2449,7 +2450,6 @@ useEffect(() => {
                 Annuleren
               </button>
             </div>
-          </div>
         </div>
         
         {showEditPortfolio && <EditPortfolioModal onClose={() => setShowEditPortfolio(false)} />}
@@ -5477,14 +5477,14 @@ useEffect(() => {
     const holdingsCount = etf.holdings || getHoldingsCount(etf);
     
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div className="bg-[#FEFEFE] rounded-lg max-w-2xl w-full max-h-modal-sm overflow-y-auto border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 bg-[#FEFEFE] border-b border-[#E8E8E6] px-3 py-2 flex justify-between items-center z-10 gap-2">
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={onClose}>
+        <div className="bg-[#FEFEFE] rounded-lg max-w-2xl w-full max-h-modal-sm flex flex-col overflow-hidden border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
+          <div className="flex-shrink-0 bg-[#FEFEFE] border-b border-[#E8E8E6] px-3 py-2 flex justify-between items-center gap-2">
             <h2 className="text-base font-bold truncate text-[#2D3436]">{etf.naam}</h2>
             <button onClick={onClose} className="text-4xl text-[#636E72] hover:text-[#2D3436] flex-shrink-0 leading-none -mt-2">×</button>
           </div>
 
-          <div className="p-3 space-y-3">
+          <div className="p-3 space-y-3 overflow-y-auto flex-1">
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
                 <div className="font-semibold mb-1 text-[#2D3436]">Basis Info</div>
@@ -5541,7 +5541,8 @@ useEffect(() => {
               </div>
             )}
 
-            <div className="flex gap-2 pt-1">
+          </div>
+          <div className="flex gap-2 p-3 border-t border-[#E8E8E6] flex-shrink-0">
               <button
                 onClick={() => {
                   addToPortfolio(etf);
@@ -5558,7 +5559,6 @@ useEffect(() => {
                 Sluiten
               </button>
             </div>
-          </div>
         </div>
       </div>
     );
@@ -7730,7 +7730,7 @@ useEffect(() => {
         )}
         
         {showRebalance && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRebalance(false)}>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={() => setShowRebalance(false)}>
             <div className="bg-[#FEFEFE] rounded-2xl max-w-2xl w-full max-h-modal flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <div className="overflow-y-auto flex-1 p-8">
               <h2 className="text-2xl font-bold mb-6">Portfolio Balanceren & Profiel Beheer</h2>
@@ -7902,8 +7902,9 @@ useEffect(() => {
 
         {/* Portfolio Edit Choice Modal */}
         {showEditChoice && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowEditChoice(false)}>
-            <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 p-8 border border-[#E8E8E6] max-h-modal overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={() => setShowEditChoice(false)}>
+            <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full max-h-modal flex flex-col overflow-hidden border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
+              <div className="overflow-y-auto flex-1 p-8">
               <h2 className="text-3xl font-bold mb-6 text-[#2D3436]">Portfolio Aanpassen</h2>
               <p className="text-[#636E72] mb-8">Kies hoe je je portfolio wilt aanpassen</p>
 
@@ -7987,19 +7988,22 @@ useEffect(() => {
                 </button>
               </div>
 
+              </div>
+              <div className="px-8 pb-8 flex-shrink-0">
               <button
                 onClick={() => setShowEditChoice(false)}
-                className="mt-6 w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
+                className="w-full py-3 border-2 border-[#E8E8E6] text-[#2D3436] rounded-xl hover:bg-[#ECEEED] transition-all"
               >
                 Annuleren
               </button>
+              </div>
             </div>
           </div>
         )}
 
         {/* Deposit Modal */}
         {showDeposit && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowDeposit(false)}>
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={() => setShowDeposit(false)}>
             <div className="bg-[#FEFEFE] rounded-xl max-w-md w-full mx-4 p-8 border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
               <h2 className="text-3xl font-bold mb-4 text-[#2D3436]">Geld Storten & Beleggen</h2>
               <p className="text-[#636E72] mb-6">Voer het bedrag in en kies hoe je wilt beleggen</p>
@@ -8289,7 +8293,7 @@ useEffect(() => {
           }) : [];
 
           return (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={() => setShowWithdrawal(false)}>
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 px-4 pt-4 pb-safe" onClick={() => setShowWithdrawal(false)}>
               <div className="bg-[#FEFEFE] rounded-xl max-w-2xl w-full mx-4 border border-[#E8E8E6] max-h-modal flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="overflow-y-auto flex-1 p-8">
                 <h2 className="text-3xl font-bold mb-4 text-[#2D3436]">Geld Opnemen</h2>
@@ -9376,8 +9380,8 @@ useEffect(() => {
 
           {/* Conversation Modal */}
           {selectedInquiry && (
-            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col">
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4 pt-4 pb-safe">
+              <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-2xl max-w-3xl w-full max-h-modal flex flex-col">
                 {/* Modal Header */}
                 <div className="flex justify-between items-start p-6 border-b border-[#E8E8E6]">
                   <div>
@@ -10684,7 +10688,7 @@ useEffect(() => {
 
         {/* Confirmation Modal */}
         {showConfirmModal && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4 pt-4 pb-safe">
             <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-6 max-w-md w-full">
               <h3 className="text-xl font-bold text-[#2D3436] mb-4">Confirm Action</h3>
 
