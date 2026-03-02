@@ -43,6 +43,22 @@
     <!-- ✅ Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- iOS viewport height fix: window.innerHeight is the only reliable measure of
+         actual visible height on iOS Safari across all versions and orientations -->
+    <script>
+      (function () {
+        function setRealVh() {
+          document.documentElement.style.setProperty('--real-vh', window.innerHeight + 'px');
+        }
+        setRealVh();
+        window.addEventListener('resize', setRealVh);
+        window.addEventListener('orientationchange', function () {
+          // Delay needed for iOS to finish rotating before innerHeight updates
+          setTimeout(setRealVh, 300);
+        });
+      })();
+    </script>
+
     <!-- iOS PWA Input Fix -->
     <style>
       /* iOS Safe Area Support */
@@ -57,15 +73,15 @@
         padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
       }
 
-      /* Modal max-height with vh fallback for iOS < 16 (dvh not supported there).
-         Without a vh fallback, max-height is ignored on old iOS and modals overflow the screen. */
+      /* Modal max-height using JS-measured real viewport height (--real-vh).
+         vh/dvh are unreliable on iOS Safari - this always uses window.innerHeight. */
       .max-h-modal {
-        max-height: 85vh;   /* fallback for iOS < 16 */
-        max-height: 85dvh;  /* iOS 16+: adjusts for browser chrome */
+        max-height: 82vh;                                  /* last-resort fallback */
+        max-height: calc(var(--real-vh, 100vh) * 0.82);   /* JS-measured, most reliable */
       }
       .max-h-modal-sm {
-        max-height: 65vh;   /* fallback for iOS < 16 */
-        max-height: 65dvh;  /* iOS 16+ */
+        max-height: 62vh;
+        max-height: calc(var(--real-vh, 100vh) * 0.62);
       }
 
       /* Ensure root container fills screen */
