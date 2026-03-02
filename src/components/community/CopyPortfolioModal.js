@@ -265,7 +265,7 @@ export default function CopyPortfolioModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6]">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E6]">
           <div className="flex items-center gap-3">
@@ -290,7 +290,7 @@ export default function CopyPortfolioModal({
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto p-6 max-h-[calc(90vh-200px)]">
+        <div className="overflow-y-auto p-6 flex-1">
           {/* Connection status */}
           <div className={`flex items-center gap-2 mb-4 p-3 rounded-xl ${
             connected ? 'bg-[#7C9885]/10 text-[#7C9885]' : 'bg-[#C9A962]/10 text-[#C9A962]'
@@ -480,7 +480,7 @@ export default function CopyPortfolioModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-[#E8E8E6] bg-[#FEFEFE]">
+        <div className="p-6 border-t border-[#E8E8E6] bg-[#FEFEFE] flex-shrink-0">
           {addedToBasket ? (
             <div className="flex items-center justify-center gap-2 text-[#7C9885]">
               <CheckCircle className="w-5 h-5" />

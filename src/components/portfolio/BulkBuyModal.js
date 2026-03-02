@@ -212,7 +212,7 @@ export default function BulkBuyModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6]">
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E6]">
           <div>
@@ -235,7 +235,7 @@ export default function BulkBuyModal({
         </div>
 
         {/* Content - scrollable */}
-        <div className="overflow-y-auto p-6 max-h-[calc(90vh-200px)]">
+        <div className="overflow-y-auto p-6 flex-1">
           {/* === COMMUNITY PUBLISH STEP === */}
           {showCommunityStep ? (
             <div className="space-y-6">
@@ -528,7 +528,7 @@ export default function BulkBuyModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-[#E8E8E6] bg-[#FEFEFE]">
+        <div className="p-6 border-t border-[#E8E8E6] bg-[#FEFEFE] flex-shrink-0">
           {showCommunityStep ? (
             // Community step footer
             published ? null : (

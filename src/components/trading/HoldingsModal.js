@@ -91,7 +91,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.15)]">
+      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.15)]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E8E8E6]">
           <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-180px)]">
+        <div className="p-4 overflow-y-auto flex-1">
           {loading && <HoldingsSkeleton />}
 
           {error && (
@@ -216,7 +216,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
 
         {/* Footer */}
         {holdings && (
-          <div className="p-4 border-t border-[#E8E8E6] bg-[#F5F6F4]">
+          <div className="p-4 border-t border-[#E8E8E6] bg-[#F5F6F4] flex-shrink-0">
             <div className="flex items-center justify-between text-xs text-[#636E72]">
               <span>ISIN: {holdings.isin}</span>
               <span>Last updated: {holdings.last_updated}</span>

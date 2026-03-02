@@ -70,6 +70,7 @@ export function ModalContainer({
       <div
         className={`
           relative w-full ${sizes[size] || sizes.md}
+          max-h-[90vh] flex flex-col overflow-hidden
           bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)]
           transform transition-all duration-200
           animate-modal-enter
@@ -138,7 +139,7 @@ export function ModalHeader({
   };
 
   return (
-    <div className={`p-5 border-b ${variants[variant]} ${className}`}>
+    <div className={`p-5 border-b flex-shrink-0 ${variants[variant]} ${className}`}>
       <div className="flex items-start gap-4 pr-8">
         {Icon && (
           <div
@@ -167,7 +168,7 @@ export function ModalHeader({
  */
 export function ModalBody({ children, className = '' }) {
   return (
-    <div className={`p-5 ${className}`}>
+    <div className={`p-5 overflow-y-auto flex-1 ${className}`}>
       {children}
     </div>
   );
@@ -178,7 +179,7 @@ export function ModalBody({ children, className = '' }) {
  */
 export function ModalFooter({ children, className = '' }) {
   return (
-    <div className={`p-5 border-t border-[#E8E8E6] flex items-center justify-end gap-3 ${className}`}>
+    <div className={`p-5 border-t border-[#E8E8E6] flex items-center justify-end gap-3 flex-shrink-0 ${className}`}>
       {children}
     </div>
   );

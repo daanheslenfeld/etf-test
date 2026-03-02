@@ -56,7 +56,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
 
   return (
     <div className="fixed inset-0 bg-[#2D3436]/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-lg w-full shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
+      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
         {/* Header */}
         <div className={`p-4 border-b border-[#E8E8E6] flex items-center justify-between ${isLive ? 'bg-[#6B7B8A]/10' : 'bg-[#C9A962]/10'}`}>
           <div className="flex items-center gap-3">
@@ -82,7 +82,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Market Closed Warning */}
           {!marketsOpen && (
             <div className="bg-[#C9A962]/10 border border-[#C9A962]/30 rounded-lg p-4 mb-6">
@@ -167,36 +167,37 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="flex-1 py-3 bg-[#ECEEED] text-[#636E72] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirm}
-              disabled={isSubmitting}
-              className={`flex-1 py-3 font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
-                isLive
-                  ? 'bg-[#6B7B8A] hover:bg-[#5A6A79] text-white'
-                  : 'bg-[#7C9885] hover:bg-[#6B8A74] text-white'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
-                  Executing...
-                </>
-              ) : (
-                <>
-                  {isLive ? 'Execute (LIVE)' : 'Execute Orders'}
-                </>
-              )}
-            </button>
-          </div>
+        </div>
+
+        {/* Footer - always visible */}
+        <div className="p-4 border-t border-[#E8E8E6] flex gap-3 flex-shrink-0">
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="flex-1 py-3 bg-[#ECEEED] text-[#636E72] font-medium rounded-lg hover:bg-[#E8E8E6] transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={isSubmitting}
+            className={`flex-1 py-3 font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
+              isLive
+                ? 'bg-[#6B7B8A] hover:bg-[#5A6A79] text-white'
+                : 'bg-[#7C9885] hover:bg-[#6B8A74] text-white'
+            }`}
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
+                Executing...
+              </>
+            ) : (
+              <>
+                {isLive ? 'Execute (LIVE)' : 'Execute Orders'}
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

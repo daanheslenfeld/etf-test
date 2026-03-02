@@ -226,7 +226,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-[#FEFEFE] rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl border border-[#E8E8E6]">
+      <div className="relative bg-[#FEFEFE] rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-[#E8E8E6]">
         {/* Header */}
         <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] px-4 py-3 flex justify-between items-center">
           <h3 className="text-lg font-bold text-[#2D3436]">{etf.name}</h3>
@@ -239,7 +239,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(90vh-60px)]">
+        <div className="p-4 space-y-4 overflow-y-auto flex-1">
           {/* Two-column info grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             {/* Basis Info */}
