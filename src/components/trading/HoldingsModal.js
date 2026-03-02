@@ -83,7 +83,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
   const getSectorColor = (sector) => SECTOR_COLORS[sector] || 'bg-[#B2BEC3]';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 pt-4 pb-safe">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-[#2D3436]/60 backdrop-blur-sm"

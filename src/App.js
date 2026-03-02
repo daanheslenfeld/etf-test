@@ -7624,7 +7624,7 @@ useEffect(() => {
         </div>
         
         {showHoldings && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center px-4 pt-4 pb-safe" style={{ zIndex: 9999 }}>
             <div className="bg-[#FEFEFE] rounded-lg max-w-5xl w-full max-h-[90dvh] overflow-y-auto border border-[#E8E8E6]" onClick={(e) => e.stopPropagation()}>
               <div className="sticky top-0 bg-[#FEFEFE] border-b border-[#E8E8E6] px-6 py-4 flex justify-between items-center z-10">
                 <h2 className="text-2xl font-bold text-[#2D3436]">Portfolio Holdings</h2>
