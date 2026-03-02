@@ -70,7 +70,7 @@ export function ModalContainer({
       <div
         className={`
           relative w-full ${sizes[size] || sizes.md}
-          max-h-[90vh] flex flex-col overflow-hidden
+          max-h-[90dvh] flex flex-col overflow-hidden
           bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)]
           transform transition-all duration-200
           animate-modal-enter

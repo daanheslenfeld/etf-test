@@ -111,7 +111,7 @@ export default function ModelPortfolioDetail({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6]">
+      <div className="relative w-full max-w-3xl max-h-[90dvh] flex flex-col overflow-hidden bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E6]">
           <div className="flex items-center gap-4">

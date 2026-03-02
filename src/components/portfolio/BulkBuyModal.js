@@ -212,7 +212,7 @@ export default function BulkBuyModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6] overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[90dvh] flex flex-col bg-[#FEFEFE] rounded-2xl shadow-[0_8px_32px_rgba(45,52,54,0.12)] border border-[#E8E8E6] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#E8E8E6]">
           <div>

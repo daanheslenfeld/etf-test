@@ -168,7 +168,7 @@ export default function RebalanceModal({ isOpen, onClose, positions, portfolioVa
 
   return (
     <div className="fixed inset-0 bg-[#2D3436]/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-2xl w-full shadow-[0_8px_32px_rgba(45,52,54,0.12)] max-h-[90vh] flex flex-col">
+      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-2xl w-full shadow-[0_8px_32px_rgba(45,52,54,0.12)] max-h-[90dvh] flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-[#E8E8E6] flex items-center justify-between bg-[#6B7B8A]/10">
           <div className="flex items-center gap-3">
