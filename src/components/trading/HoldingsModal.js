@@ -91,7 +91,7 @@ export default function HoldingsModal({ symbol, isOpen, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-2xl max-h-[90dvh] flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.15)]">
+      <div className="relative bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl w-full max-w-2xl max-h-modal flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.15)]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E8E8E6]">
           <div className="flex items-center gap-3">

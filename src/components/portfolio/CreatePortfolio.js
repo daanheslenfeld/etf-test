@@ -216,7 +216,7 @@ export default function CreatePortfolio({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-3xl max-h-[90dvh] flex flex-col overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
+      <div className="relative w-full max-w-3xl max-h-modal flex flex-col overflow-hidden bg-[#1A1B1F] rounded-2xl shadow-2xl border border-gray-800">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div>

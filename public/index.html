@@ -57,6 +57,17 @@
         padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
       }
 
+      /* Modal max-height with vh fallback for iOS < 16 (dvh not supported there).
+         Without a vh fallback, max-height is ignored on old iOS and modals overflow the screen. */
+      .max-h-modal {
+        max-height: 85vh;   /* fallback for iOS < 16 */
+        max-height: 85dvh;  /* iOS 16+: adjusts for browser chrome */
+      }
+      .max-h-modal-sm {
+        max-height: 65vh;   /* fallback for iOS < 16 */
+        max-height: 65dvh;  /* iOS 16+ */
+      }
+
       /* Ensure root container fills screen */
       #root {
         position: relative;

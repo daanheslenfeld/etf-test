@@ -226,7 +226,7 @@ export default function ETFDetailsModal({ symbol, isOpen, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-[#FEFEFE] rounded-xl w-full max-w-3xl max-h-[90dvh] flex flex-col overflow-hidden shadow-2xl border border-[#E8E8E6]">
+      <div className="relative bg-[#FEFEFE] rounded-xl w-full max-w-3xl max-h-modal flex flex-col overflow-hidden shadow-2xl border border-[#E8E8E6]">
         {/* Header */}
         <div className="bg-[#FEFEFE] border-b border-[#E8E8E6] px-4 py-3 flex justify-between items-center">
           <h3 className="text-lg font-bold text-[#2D3436]">{etf.name}</h3>

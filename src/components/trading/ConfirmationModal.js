@@ -56,7 +56,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, orders, 
 
   return (
     <div className="fixed inset-0 bg-[#2D3436]/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 pt-4 pb-safe">
-      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-lg w-full max-h-[90dvh] flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
+      <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl max-w-lg w-full max-h-modal flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(45,52,54,0.12)]">
         {/* Header */}
         <div className={`p-4 border-b border-[#E8E8E6] flex items-center justify-between ${isLive ? 'bg-[#6B7B8A]/10' : 'bg-[#C9A962]/10'}`}>
           <div className="flex items-center gap-3">
