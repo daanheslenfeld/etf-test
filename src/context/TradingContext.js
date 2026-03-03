@@ -1156,6 +1156,10 @@ export function TradingProvider({ user, children }) {
     }));
     dispatch({ type: ACTIONS.SET_EXECUTION_RESULTS, payload: initialResults });
 
+    // Track results locally to avoid stale closure on state.executionResults
+    let localSuccessCount = 0;
+    let localFailCount = 0;
+
     try {
       // Execute orders sequentially
       for (const order of state.orderBasket) {
@@ -1192,7 +1196,15 @@ export function TradingProvider({ user, children }) {
               }
             }
           });
+          localFailCount++;
           continue; // Continue with other orders
+        }
+
+        const orderSuccess = result.success || result.timedOut;
+        if (orderSuccess) {
+          localSuccessCount++;
+        } else {
+          localFailCount++;
         }
 
         dispatch({
@@ -1211,13 +1223,8 @@ export function TradingProvider({ user, children }) {
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
-      // Count successes and failures
-      const results = state.orderBasket.map(o => {
-        const r = state.executionResults?.find(er => er.id === o.id);
-        return r?.status === 'submitted';
-      });
-      const successCount = results.filter(Boolean).length;
-      const failCount = results.length - successCount;
+      const successCount = localSuccessCount;
+      const failCount = localFailCount;
 
       // Send transaction email for successful orders (fire-and-forget)
       if (user?.id && successCount > 0) {
