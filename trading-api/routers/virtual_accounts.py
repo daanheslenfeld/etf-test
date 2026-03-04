@@ -16,6 +16,9 @@ from models.virtual_account_schemas import (
     CashAllocationResponse,
     CashAllocationLogEntry,
     CashAllocationLogResponse,
+    AllocateCashRequest,
+    RemoveCashRequest,
+    PlatformCapitalResponse,
     VirtualOrderRequest,
     VirtualOrderResponse,
     VirtualOrderStatus,
@@ -29,6 +32,7 @@ from services.virtual_account_service import get_virtual_account_service, Virtua
 from services.virtual_order_service import get_virtual_order_service, VirtualOrderError
 from services.virtual_portfolio_service import get_virtual_portfolio_service
 from services.cash_allocation_service import get_cash_allocation_service, CashAllocationError
+from services.platform_capital_service import get_platform_capital_service
 from services.ib_client import get_ib_client
 import httpx
 import time
@@ -298,9 +302,10 @@ async def get_cash_overview(
     """
     _require_admin(user)
 
-    # Fetch real LYNX cash
+    # Fetch real LYNX cash and total equity
     ib_client = get_ib_client()
     lynx_cash = 0.0
+    broker_total_equity = 0.0
     ib_connected = False
     try:
         if ib_client.is_connected() and user.ib_account_id:
@@ -311,6 +316,12 @@ async def get_cash_overview(
                 account_values.get("TotalCashValue") or
                 account_values.get("CashBalance") or
                 0
+            )
+            broker_total_equity = float(
+                account_values.get("NetLiquidation") or
+                account_values.get("NetLiquidation-S") or
+                account_values.get("EquityWithLoanValue") or
+                lynx_cash
             )
             ib_connected = True
     except Exception as e:
@@ -360,10 +371,19 @@ async def get_cash_overview(
     total_reserved = sum(a.get("reserved_cash", 0) for a in accounts)
     total_available = sum(a.get("available_cash", 0) for a in accounts)
     total_portfolio_value = sum(account_portfolio_values.values())
-    unallocated = lynx_cash - total_assigned - total_reserved
+    # Only available_cash + reserved_cash are actual claims on broker cash.
+    # Invested money (assigned - available - reserved) is backed by real broker
+    # positions, not broker cash, so it should NOT reduce the allocation ceiling.
+    total_cash_claims = total_available + total_reserved
+    unallocated = lynx_cash - total_cash_claims
+
+    # Sync platform_capital table
+    platform_service = get_platform_capital_service()
+    await platform_service.sync_from_ib(broker_total_equity, lynx_cash, ib_connected)
 
     return {
         "lynx_cash": round(lynx_cash, 2),
+        "broker_total_equity": round(broker_total_equity, 2),
         "ib_connected": ib_connected,
         "total_assigned": round(total_assigned, 2),
         "total_reserved": round(total_reserved, 2),
@@ -390,6 +410,215 @@ async def get_cash_overview(
             for a in accounts
         ]
     }
+
+
+# =============================================================================
+# ADMIN: SIMPLIFIED CAPITAL ALLOCATION BY USER ID
+# =============================================================================
+
+async def _resolve_user_account(user_id: int) -> dict:
+    """Resolve a user_id to their active virtual account."""
+    service = get_virtual_account_service()
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{service.base_url}/virtual_accounts",
+                headers=service.headers,
+                params={
+                    "owner_id": f"eq.{user_id}",
+                    "is_active": "eq.true",
+                    "select": "id,name,assigned_cash,reserved_cash,available_cash",
+                    "limit": "1",
+                }
+            )
+            response.raise_for_status()
+            rows = response.json() or []
+            if not rows:
+                raise HTTPException(status_code=404, detail=f"No active virtual account found for user {user_id}")
+            return rows[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to resolve user account: {e}")
+        raise HTTPException(status_code=503, detail="Unable to resolve user account.")
+
+
+async def _get_ib_cash(user: UserContext) -> tuple[float, float, bool]:
+    """Fetch broker available cash and total equity from IB."""
+    ib_client = get_ib_client()
+    lynx_cash = 0.0
+    broker_equity = 0.0
+    ib_connected = False
+    try:
+        if ib_client.is_connected() and user.ib_account_id:
+            account_values = await ib_client.get_account_values(user.ib_account_id)
+            lynx_cash = float(
+                account_values.get("AvailableFunds") or
+                account_values.get("AvailableFunds-S") or
+                account_values.get("TotalCashValue") or
+                account_values.get("CashBalance") or 0
+            )
+            broker_equity = float(
+                account_values.get("NetLiquidation") or
+                account_values.get("NetLiquidation-S") or
+                account_values.get("EquityWithLoanValue") or lynx_cash
+            )
+            ib_connected = True
+    except Exception as e:
+        logger.error(f"Error fetching IB cash: {e}")
+    return lynx_cash, broker_equity, ib_connected
+
+
+@router.post("/admin/allocate-cash", response_model=CashAllocationResponse)
+async def admin_allocate_cash_by_user(
+    request: AllocateCashRequest,
+    user: UserContext = Depends(get_current_user),
+) -> CashAllocationResponse:
+    """
+    Allocate cash to a customer by user_id. Admin only.
+
+    Adds the specified amount to the customer's virtual account.
+    Respects the global ceiling: total allocated cannot exceed broker available cash.
+    """
+    _require_admin(user)
+
+    account = await _resolve_user_account(request.user_id)
+    account_id = account["id"]
+    lynx_cash, broker_equity, ib_connected = await _get_ib_cash(user)
+
+    cash_service = get_cash_allocation_service()
+    try:
+        result = await cash_service.admin_allocate(
+            account_id=account_id,
+            admin_id=user.customer_id,
+            delta=request.amount,
+            lynx_cash=lynx_cash,
+            description=f"Admin allocate {request.amount} EUR to user {request.user_id}",
+        )
+
+        # Sync platform capital
+        platform_service = get_platform_capital_service()
+        await platform_service.sync_from_ib(broker_equity, lynx_cash, ib_connected)
+
+        return CashAllocationResponse(
+            success=True,
+            assigned_cash=result.get("assigned_cash", 0),
+            reserved_cash=result.get("reserved_cash", 0),
+            available_cash=result.get("available_cash", 0),
+            message=f"Allocated {request.amount} EUR to user {request.user_id}",
+        )
+    except CashAllocationError as e:
+        return CashAllocationResponse(
+            success=False,
+            assigned_cash=float(account.get("assigned_cash", 0)),
+            reserved_cash=float(account.get("reserved_cash", 0)),
+            available_cash=float(account.get("available_cash", 0)),
+            message=e.message,
+        )
+
+
+@router.post("/admin/remove-cash", response_model=CashAllocationResponse)
+async def admin_remove_cash_by_user(
+    request: RemoveCashRequest,
+    user: UserContext = Depends(get_current_user),
+) -> CashAllocationResponse:
+    """
+    Remove cash from a customer by user_id. Admin only.
+
+    Removes the specified amount from the customer's virtual account.
+    Validates that the amount does not exceed available cash.
+    """
+    _require_admin(user)
+
+    account = await _resolve_user_account(request.user_id)
+    account_id = account["id"]
+    available = float(account.get("available_cash", 0))
+
+    if request.amount > available + 0.01:
+        return CashAllocationResponse(
+            success=False,
+            assigned_cash=float(account.get("assigned_cash", 0)),
+            reserved_cash=float(account.get("reserved_cash", 0)),
+            available_cash=available,
+            message=f"Cannot remove {request.amount} EUR. Only {available} EUR available (rest is reserved or invested).",
+        )
+
+    lynx_cash, broker_equity, ib_connected = await _get_ib_cash(user)
+
+    cash_service = get_cash_allocation_service()
+    try:
+        result = await cash_service.admin_allocate(
+            account_id=account_id,
+            admin_id=user.customer_id,
+            delta=-request.amount,
+            lynx_cash=lynx_cash,
+            description=f"Admin remove {request.amount} EUR from user {request.user_id}",
+        )
+
+        # Sync platform capital
+        platform_service = get_platform_capital_service()
+        await platform_service.sync_from_ib(broker_equity, lynx_cash, ib_connected)
+
+        return CashAllocationResponse(
+            success=True,
+            assigned_cash=result.get("assigned_cash", 0),
+            reserved_cash=result.get("reserved_cash", 0),
+            available_cash=result.get("available_cash", 0),
+            message=f"Removed {request.amount} EUR from user {request.user_id}",
+        )
+    except CashAllocationError as e:
+        return CashAllocationResponse(
+            success=False,
+            assigned_cash=float(account.get("assigned_cash", 0)),
+            reserved_cash=float(account.get("reserved_cash", 0)),
+            available_cash=float(account.get("available_cash", 0)),
+            message=e.message,
+        )
+
+
+@router.get("/admin/platform-capital", response_model=PlatformCapitalResponse)
+async def get_platform_capital(
+    user: UserContext = Depends(get_current_user),
+) -> PlatformCapitalResponse:
+    """
+    Get platform capital overview. Admin only.
+
+    Returns broker equity, available cash, assigned totals, and per-account breakdown.
+    Syncs with IB on each call for fresh data.
+    """
+    _require_admin(user)
+
+    lynx_cash, broker_equity, ib_connected = await _get_ib_cash(user)
+
+    # Sync platform capital
+    platform_service = get_platform_capital_service()
+    await platform_service.sync_from_ib(broker_equity, lynx_cash, ib_connected)
+    capital = await platform_service.get_platform_capital()
+
+    # Get per-account breakdown
+    service = get_virtual_account_service()
+    accounts = await service.get_all_accounts()
+
+    return PlatformCapitalResponse(
+        broker_total_equity=capital.get("broker_total_equity", round(broker_equity, 2)),
+        broker_available_cash=capital.get("broker_available_cash", round(lynx_cash, 2)),
+        assigned_cash_total=capital.get("assigned_cash_total", 0),
+        unassigned_cash=capital.get("unassigned_cash", 0),
+        ib_connected=ib_connected,
+        last_synced_at=capital.get("last_synced_at"),
+        accounts=[
+            {
+                "id": a["id"],
+                "owner_id": a["owner_id"],
+                "owner_name": a.get("owner_name"),
+                "name": a["name"],
+                "assigned_cash": a.get("assigned_cash", 0),
+                "available_cash": a.get("available_cash", 0),
+                "reserved_cash": a.get("reserved_cash", 0),
+            }
+            for a in accounts
+        ],
+    )
 
 
 @router.post("/{account_id}/allocate", response_model=CashAllocationResponse)
@@ -800,6 +1029,7 @@ async def get_account_positions(
         total_market_value=total_market_value,
         total_unrealized_pnl=total_unrealized_pnl,
         cash_balance=cash,
+        assigned_cash=float(account_row.get("assigned_cash", 0)),
         total_portfolio_value=total_portfolio
     )
 

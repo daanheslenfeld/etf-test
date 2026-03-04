@@ -66,6 +66,29 @@ class CashAllocationResponse(BaseModel):
     message: str
 
 
+class AllocateCashRequest(BaseModel):
+    """Admin request to allocate cash to a customer."""
+    user_id: int = Field(..., description="Customer ID to allocate cash to")
+    amount: float = Field(..., gt=0, description="Amount in EUR to allocate")
+
+
+class RemoveCashRequest(BaseModel):
+    """Admin request to remove cash from a customer."""
+    user_id: int = Field(..., description="Customer ID to remove cash from")
+    amount: float = Field(..., gt=0, description="Amount in EUR to remove")
+
+
+class PlatformCapitalResponse(BaseModel):
+    """Platform-level capital overview."""
+    broker_total_equity: float = 0
+    broker_available_cash: float = 0
+    assigned_cash_total: float = 0
+    unassigned_cash: float = 0
+    ib_connected: bool = False
+    last_synced_at: Optional[str] = None
+    accounts: List[dict] = []
+
+
 class CashAllocationLogEntry(BaseModel):
     """Single cash allocation audit log entry."""
     id: str
@@ -168,6 +191,7 @@ class VirtualPositionsResponse(BaseModel):
     total_market_value: Optional[float] = None
     total_unrealized_pnl: Optional[float] = None
     cash_balance: float = 0
+    assigned_cash: float = 0
     total_portfolio_value: Optional[float] = None
 
 

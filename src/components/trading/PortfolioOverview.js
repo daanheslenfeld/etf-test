@@ -26,6 +26,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
     portfolioValue,
     cashBalance,
     availableFunds,
+    assignedCash,
     unrealizedPnL,
     unrealizedPnLPercent,
     totalValue,
@@ -147,21 +148,28 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
       {/* Portfolio Summary - Premium Stats Cards */}
       <div className="p-5 border-b border-[#E8E8E6] bg-[#F5F6F4]">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Portfolio Value - Hero Card spanning 2 cols on mobile */}
-          <div className="col-span-2">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Total Portfolio Value - Hero Card */}
+          <div className="col-span-2 lg:col-span-1">
             <StatsCard
               variant="hero"
               label="Totale Portefeuillewaarde"
               value={formatCurrency(displayTotalValue)}
-              change={displayUnrealizedPnL}
-              changePercent={displayPnLPercent}
               icon={PiggyBank}
               trend={displayUnrealizedPnL >= 0 ? 'up' : 'down'}
             />
           </div>
 
-          {/* Positions Value */}
+          {/* Assigned Capital */}
+          <StatsCard
+            label="Toegewezen Kapitaal"
+            value={formatCurrency(assignedCash)}
+            icon={Briefcase}
+            iconColor="text-[#C9A962]"
+            iconBg="bg-[#C9A962]/10"
+          />
+
+          {/* Invested */}
           <StatsCard
             label="Belegd"
             value={formatCurrency(displayPortfolioValue)}
@@ -177,6 +185,17 @@ export default function PortfolioOverview({ onPrefillOrder }) {
             icon={Wallet}
             iconColor={displayAvailableFunds > 0 ? 'text-[#7C9885]' : 'text-[#636E72]'}
             iconBg={displayAvailableFunds > 0 ? 'bg-[#7C9885]/10' : 'bg-[#ECEEED]'}
+          />
+
+          {/* Unrealized P/L */}
+          <StatsCard
+            label="Rendement"
+            value={formatCurrency(displayUnrealizedPnL)}
+            change={displayUnrealizedPnL}
+            changePercent={displayPnLPercent}
+            icon={displayUnrealizedPnL >= 0 ? TrendingUp : TrendingDown}
+            iconColor={displayUnrealizedPnL >= 0 ? 'text-[#7C9885]' : 'text-[#C0736D]'}
+            iconBg={displayUnrealizedPnL >= 0 ? 'bg-[#7C9885]/10' : 'bg-[#C0736D]/10'}
           />
         </div>
       </div>

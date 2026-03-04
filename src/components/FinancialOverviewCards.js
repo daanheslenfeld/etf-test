@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Clock, Wifi, WifiOff, ChevronRight, Mail, X, Loader } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Briefcase, Clock, Wifi, WifiOff, ChevronRight, Mail, X, Loader } from 'lucide-react';
 import { useTrading } from '../context/TradingContext';
 
 const formatCurrency = (value) => {
@@ -28,6 +28,7 @@ export default function FinancialOverviewCards({ onNavigate }) {
     totalValue,
     portfolioValue,
     cashBalance,
+    assignedCash,
     unrealizedPnL,
     unrealizedPnLPercent,
     connected,
@@ -72,8 +73,8 @@ export default function FinancialOverviewCards({ onNavigate }) {
           <h2 className="text-xl font-semibold text-[#7C9885]">Portfolio Overzicht</h2>
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D5D5D3] to-transparent"></div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
-          {[1, 2, 3, 4].map(i => (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-5">
+          {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 animate-pulse shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
               <div className="h-4 bg-[#ECEEED] rounded-lg w-24 mb-4"></div>
               <div className="h-8 bg-[#ECEEED] rounded-lg w-32"></div>
@@ -156,7 +157,7 @@ export default function FinancialOverviewCards({ onNavigate }) {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-5">
         {/* Total Value Card */}
         <button
           onClick={() => onNavigate?.('totaleWaardeDetail')}
@@ -176,6 +177,19 @@ export default function FinancialOverviewCards({ onNavigate }) {
           </div>
         </button>
 
+        {/* Assigned Capital Card */}
+        <div className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-2xl p-5 shadow-[0_2px_8px_rgba(45,52,54,0.06)]">
+          <div className="flex items-center gap-2 text-[#636E72] text-xs font-medium mb-3">
+            <div className="p-1.5 bg-[#C9A962]/10 rounded-lg">
+              <Briefcase className="w-4 h-4 text-[#C9A962]" />
+            </div>
+            Toegewezen Kapitaal
+          </div>
+          <div className="text-xl sm:text-2xl font-bold text-[#2D3436] tabular-nums">
+            {formatCurrency(assignedCash)}
+          </div>
+        </div>
+
         {/* Portfolio Value Card */}
         <button
           onClick={() => onNavigate?.('belegdVermogenDetail')}
@@ -186,7 +200,7 @@ export default function FinancialOverviewCards({ onNavigate }) {
               <div className="p-1.5 bg-[#6B7B8A]/10 rounded-lg">
                 <BarChart3 className="w-4 h-4 text-[#6B7B8A]" />
               </div>
-              Belegd Vermogen
+              Belegd
             </div>
             <ChevronRight className="w-4 h-4 text-[#B2BEC3] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
