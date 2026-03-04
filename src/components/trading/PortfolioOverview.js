@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTrading } from '../../context/TradingContext';
-import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3, Plus, Minus, Scale, Briefcase } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, Clock, AlertTriangle, Wallet, PiggyBank, BarChart3, Plus, Minus, Scale } from 'lucide-react';
 import { useIsMobile } from '../../hooks/useMediaQuery';
 import { DataCard, DataCardHeader, DataCardTitle, DataCardRow, DataCardActions, DataCardList, DataCardEmpty } from '../common/DataCard';
 import { Button } from '../common';
@@ -26,7 +26,6 @@ export default function PortfolioOverview({ onPrefillOrder }) {
     portfolioValue,
     cashBalance,
     availableFunds,
-    assignedCash,
     unrealizedPnL,
     unrealizedPnLPercent,
     totalValue,
@@ -148,7 +147,7 @@ export default function PortfolioOverview({ onPrefillOrder }) {
 
       {/* Portfolio Summary - Premium Stats Cards */}
       <div className="p-5 border-b border-[#E8E8E6] bg-[#F5F6F4]">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Portfolio Value - Hero Card */}
           <div className="col-span-2 lg:col-span-1">
             <StatsCard
@@ -159,15 +158,6 @@ export default function PortfolioOverview({ onPrefillOrder }) {
               trend={displayUnrealizedPnL >= 0 ? 'up' : 'down'}
             />
           </div>
-
-          {/* Assigned Capital */}
-          <StatsCard
-            label="Toegewezen Kapitaal"
-            value={formatCurrency(assignedCash)}
-            icon={Briefcase}
-            iconColor="text-[#C9A962]"
-            iconBg="bg-[#C9A962]/10"
-          />
 
           {/* Invested */}
           <StatsCard
