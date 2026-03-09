@@ -9,6 +9,7 @@ import { TradingProvider } from './context/TradingContext';
 import BrokerSettings from './components/settings/BrokerSettings';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
 import FinancialOverviewCards from './components/FinancialOverviewCards';
+import InvestmentChoiceBanner from './components/dashboard/InvestmentChoiceBanner';
 import MarketIndicesTicker from './components/MarketIndicesTicker';
 import PortfolioPositionsCard from './components/PortfolioPositionsCard';
 import PremadePortfolioCard from './components/PremadePortfolioCard';
@@ -2529,6 +2530,9 @@ useEffect(() => {
             Wat wil je vandaag doen?
           </p>
         </div>
+
+        {/* Investment Choice Banner - shown when user has uninvested cash */}
+        <InvestmentChoiceBanner onNavigate={(page) => setCurrentPage(page)} />
 
         {/* Financial Overview + Positions */}
           <FinancialOverviewCards onNavigate={(page) => setCurrentPage(page)} />
