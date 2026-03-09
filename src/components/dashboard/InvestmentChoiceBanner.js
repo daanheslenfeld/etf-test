@@ -5,16 +5,16 @@ import { useTrading } from '../../context/TradingContext';
 /**
  * InvestmentChoiceBanner
  *
- * Shown when user has uninvested cash (cashBalance > 0, no positions).
+ * Shown when user has no positions yet (new/onboarding user).
  * Presents two clear paths: build your own portfolio or pick a premade one.
  */
 export default function InvestmentChoiceBanner({ onNavigate }) {
-  const { cashBalance, portfolioValue, positions, loading } = useTrading();
+  const { cashBalance, positions, loading } = useTrading();
 
-  // Only show when there's uninvested cash and no existing positions
-  const hasUninvestedCash = cashBalance > 0 && (portfolioValue === 0 || (positions || []).length === 0);
+  // Show when user has no positions (new user / nothing invested yet)
+  const hasNoPositions = (positions || []).length === 0;
 
-  if (loading || !hasUninvestedCash) return null;
+  if (loading || !hasNoPositions) return null;
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(value);
@@ -24,12 +24,14 @@ export default function InvestmentChoiceBanner({ onNavigate }) {
     <div className="mb-10">
       {/* Header */}
       <div className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#7C9885]/10 border border-[#7C9885]/20 rounded-full mb-4">
-          <div className="w-2 h-2 bg-[#7C9885] rounded-full animate-pulse" />
-          <span className="text-sm font-medium text-[#7C9885]">
-            {formatCurrency(cashBalance)} beschikbaar
-          </span>
-        </div>
+        {cashBalance > 0 && (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#7C9885]/10 border border-[#7C9885]/20 rounded-full mb-4">
+            <div className="w-2 h-2 bg-[#7C9885] rounded-full animate-pulse" />
+            <span className="text-sm font-medium text-[#7C9885]">
+              {formatCurrency(cashBalance)} beschikbaar
+            </span>
+          </div>
+        )}
         <h2 className="text-2xl sm:text-3xl font-bold text-[#2D3436] mb-2">
           Wat wil je doen met je beschikbare saldo?
         </h2>

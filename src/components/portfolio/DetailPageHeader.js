@@ -2,23 +2,62 @@ import React from 'react';
 import { ArrowLeft, Wifi, WifiOff, Clock } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
 
-// Shared ETF name lookup - single source of truth
-export const ETF_NAMES = {
-  IWDA: 'iShares Core MSCI World UCITS ETF',
-  VWCE: 'Vanguard FTSE All-World UCITS ETF',
-  EMIM: 'iShares Core MSCI EM IMI UCITS ETF',
-  VUAA: 'Vanguard S&P 500 UCITS ETF',
-  SXR8: 'iShares Core S&P 500 UCITS ETF',
-  EUNH: 'iShares Core Euro Government Bond',
-  IEAC: 'iShares Core EUR Corporate Bond',
-  VAGE: 'Vanguard Global Aggregate Bond',
-  SGLD: 'Invesco Physical Gold ETC',
-  IWDP: 'iShares Developed Markets Property Yield',
-  XEON: 'Xtrackers II EUR Overnight Rate Swap',
+// Shared ETF display info - single source of truth
+// displayName: clear description of what you invest in
+// provider: fund provider name
+export const ETF_INFO = {
+  // World / Global
+  IWDA: { displayName: 'Wereld - Ontwikkelde Landen', provider: 'iShares (MSCI World)' },
+  VWCE: { displayName: 'Wereld - Alle Landen', provider: 'Vanguard (FTSE All-World)' },
+  VWRL: { displayName: 'Wereld - Alle Landen (Dividend)', provider: 'Vanguard (FTSE All-World)' },
+  SWRD: { displayName: 'Wereld - Ontwikkelde Landen', provider: 'SPDR (MSCI World)' },
+  // US
+  VUAA: { displayName: 'Verenigde Staten - S&P 500', provider: 'Vanguard' },
+  SXR8: { displayName: 'Verenigde Staten - S&P 500', provider: 'iShares' },
+  CSPX: { displayName: 'Verenigde Staten - S&P 500', provider: 'iShares' },
+  EQQQ: { displayName: 'Verenigde Staten - Nasdaq 100', provider: 'Invesco' },
+  IUSN: { displayName: 'Verenigde Staten - Small Cap', provider: 'iShares (MSCI USA Small Cap)' },
+  // Europe
+  CEU2: { displayName: 'Europa - Aandelen', provider: 'Amundi (MSCI Europe)' },
+  MEUD: { displayName: 'Europa - Aandelen', provider: 'Amundi (STOXX Europe 600)' },
+  IEUR: { displayName: 'Europa - Aandelen', provider: 'iShares (MSCI Europe)' },
+  // Emerging markets
+  EMIM: { displayName: 'Opkomende Landen', provider: 'iShares (MSCI Emerging Markets)' },
+  VFEM: { displayName: 'Opkomende Landen', provider: 'Vanguard (FTSE Emerging Markets)' },
+  // Japan
+  LCUJ: { displayName: 'Japan - Aandelen', provider: 'Amundi (MSCI Japan)' },
+  IJPA: { displayName: 'Japan - Aandelen', provider: 'iShares (MSCI Japan)' },
+  // Bonds
+  EUNH: { displayName: 'Europese Staatsobligaties', provider: 'iShares' },
+  IEAC: { displayName: 'Europese Bedrijfsobligaties', provider: 'iShares' },
+  VAGE: { displayName: 'Wereldwijde Obligaties', provider: 'Vanguard' },
+  AGGH: { displayName: 'Wereldwijde Obligaties (Hedged)', provider: 'iShares' },
+  // Commodities
+  SGLD: { displayName: 'Goud', provider: 'Invesco (Physical Gold)' },
+  IGLN: { displayName: 'Goud', provider: 'iShares (Physical Gold)' },
+  // Real estate
+  IWDP: { displayName: 'Wereldwijd Vastgoed', provider: 'iShares' },
+  // Money market
+  XEON: { displayName: 'Geldmarkt (Euro)', provider: 'Xtrackers' },
+  // Small cap
+  ZPRV: { displayName: 'Verenigde Staten - Small Cap Value', provider: 'SPDR' },
+  ZPRX: { displayName: 'Europa - Small Cap Value', provider: 'SPDR' },
+  IUSN: { displayName: 'Verenigde Staten - Small Cap', provider: 'iShares' },
 };
 
+// Legacy lookup for backwards compatibility
+export const ETF_NAMES = Object.fromEntries(
+  Object.entries(ETF_INFO).map(([k, v]) => [k, v.displayName])
+);
+
+export const getETFDisplayName = (position) =>
+  ETF_INFO[position.symbol]?.displayName || position.name || position.symbol;
+
+export const getETFProvider = (position) =>
+  ETF_INFO[position.symbol]?.provider || '';
+
 export const getETFName = (position) =>
-  position.name || ETF_NAMES[position.symbol] || position.symbol;
+  ETF_INFO[position.symbol]?.displayName || position.name || ETF_NAMES[position.symbol] || position.symbol;
 
 const formatTimeAgo = (timestamp) => {
   if (!timestamp) return 'Nooit';

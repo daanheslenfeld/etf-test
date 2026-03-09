@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { PiggyBank, ChevronDown, ChevronUp, Banknote, TrendingUp, Landmark, Gem, Building2, Layers, CircleDollarSign } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
 import { classifyAssetClass } from '../../utils/etfClassifiers';
-import DetailPageHeader, { getETFName } from './DetailPageHeader';
+import DetailPageHeader, { getETFName, getETFProvider } from './DetailPageHeader';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -180,7 +180,7 @@ export default function TotaleWaardeDetail({ onBack }) {
                         <div className="flex-1 min-w-0 pr-3">
                           <div className="text-sm text-[#2D3436] truncate">{getETFName(pos)}</div>
                           <div className="text-xs text-[#B2BEC3]">
-                            {pos.symbol} &middot; {parseFloat(pos.quantity || 0).toFixed(0)} stuks
+                            {getETFProvider(pos) || pos.symbol} &middot; {parseFloat(pos.quantity || 0).toFixed(0)} stuks
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">

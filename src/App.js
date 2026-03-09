@@ -5,11 +5,12 @@ import Chat from './Chat';
 import { generatePortfolioReport } from './utils/pdfGenerator';
 import IncomeCalculator from './IncomeCalculator';
 import { TradingDashboard } from './components/trading';
-import { TradingProvider } from './context/TradingContext';
+import { TradingProvider, useTrading } from './context/TradingContext';
 import BrokerSettings from './components/settings/BrokerSettings';
 import LivePortfolioOverview from './components/LivePortfolioOverview';
 import FinancialOverviewCards from './components/FinancialOverviewCards';
-import InvestmentChoiceBanner from './components/dashboard/InvestmentChoiceBanner';
+import InvestmentChoicePage from './components/dashboard/InvestmentChoicePage';
+import PortfolioChoicePage from './components/dashboard/PortfolioChoicePage';
 import MarketIndicesTicker from './components/MarketIndicesTicker';
 import PortfolioPositionsCard from './components/PortfolioPositionsCard';
 import PremadePortfolioCard from './components/PremadePortfolioCard';
@@ -1527,6 +1528,7 @@ const ETFPortal = () => {
     localStorage.removeItem('investmentDetails');
     localStorage.removeItem('portfolioType');
     localStorage.removeItem('selectedProfile');
+    setSkipChoiceRedirect(false);
     setCurrentPage('landing');
   };
 
@@ -2458,8 +2460,27 @@ useEffect(() => {
     );
   };
 
+  // Track whether user explicitly chose to view the dashboard (skip redirect)
+  const [skipChoiceRedirect, setSkipChoiceRedirect] = useState(false);
+
+  // Redirect wrapper: routes user to the right choice page based on portfolio state
+  const PortfolioRedirect = () => {
+    const { positions, loading: tradingLoading } = useTrading();
+    useEffect(() => {
+      if (!tradingLoading && !skipChoiceRedirect) {
+        if ((positions || []).length === 0) {
+          setCurrentPage('investmentChoice');
+        } else {
+          setCurrentPage('portfolioChoice');
+        }
+      }
+    }, [tradingLoading, positions]);
+    return null;
+  };
+
   const MainDashboard = () => (
     <div className="min-h-screen bg-[#F5F6F4]">
+      <PortfolioRedirect />
       {/* Market Indices Ticker - Beurskoersen balk */}
       <MarketIndicesTicker />
 
@@ -2531,9 +2552,6 @@ useEffect(() => {
           </p>
         </div>
 
-        {/* Investment Choice Banner - shown when user has uninvested cash */}
-        <InvestmentChoiceBanner onNavigate={(page) => setCurrentPage(page)} />
-
         {/* Financial Overview + Positions */}
           <FinancialOverviewCards onNavigate={(page) => setCurrentPage(page)} />
           {/* Je Huidige Portfolio - Live posities van broker */}
@@ -2572,9 +2590,9 @@ useEffect(() => {
                       )
                     )}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">LYNX Trading</h3>
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Portefeuille aanpassen</h3>
                   <p className="text-xs sm:text-sm text-[#636E72]">
-                    Handel ETFs via je LYNX broker account
+                    ETF's toevoegen of verkopen
                   </p>
                   {totalInPortfolio > 0 && !isFullyTradable && (
                     <p className="text-xs text-yellow-500/70 mt-2">
@@ -2590,9 +2608,9 @@ useEffect(() => {
               className="bg-[#FEFEFE] border border-[#E8E8E6] rounded-xl p-4 sm:p-5 hover:border-[#7C9885] transition-all group text-left"
             >
               <div className="text-3xl sm:text-4xl mb-3">✨</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Model Portfolios</h3>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 text-[#2D3436] group-hover:text-[#7C9885] transition-colors">Samengestelde portefeuilles</h3>
               <p className="text-xs sm:text-sm text-[#636E72]">
-                Kies uit 20+ kant-en-klare portfolio's
+                Kies uit kant-en-klare portefeuilles
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">Risico</span>
@@ -10854,6 +10872,8 @@ useEffect(() => {
       {currentPage === 'emailVerificationPending' && <EmailVerificationPendingPage />}
       {currentPage === 'verify-email' && <EmailVerifyPage />}
       {currentPage === 'mainDashboard' && <MainDashboard />}
+      {currentPage === 'investmentChoice' && <InvestmentChoicePage user={user} onNavigate={(page) => setCurrentPage(page)} onLogout={handleLogout} />}
+      {currentPage === 'portfolioChoice' && <PortfolioChoicePage user={user} onNavigate={(page) => { if (page === 'mainDashboard') setSkipChoiceRedirect(true); setCurrentPage(page); }} onLogout={handleLogout} />}
       {currentPage === 'portfolioBuilder' && <PortfolioBuilderPage />}
       {currentPage === 'portfolioOverview' && <PortfolioOverviewPage />}
       {currentPage === 'purchase' && <PurchasePage />}

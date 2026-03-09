@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BarChart3, TrendingUp, TrendingDown, Globe, Check, Loader2 } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
-import DetailPageHeader, { getETFName } from './DetailPageHeader';
+import DetailPageHeader, { getETFName, getETFProvider } from './DetailPageHeader';
 
 const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
@@ -127,7 +127,7 @@ export default function BelegdVermogenDetail({ onBack, user }) {
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1 min-w-0 pr-2">
                   <div className="font-medium text-[#2D3436] text-sm truncate">{getETFName(pos)}</div>
-                  <div className="text-xs text-[#B2BEC3]">{pos.symbol}</div>
+                  <div className="text-xs text-[#B2BEC3]">{getETFProvider(pos) || pos.symbol}</div>
                 </div>
                 <div className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-[#7C9885]' : 'text-[#C0736D]'}`}>
                   {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
@@ -193,7 +193,7 @@ export default function BelegdVermogenDetail({ onBack, user }) {
                     <div className="font-medium text-[#2D3436] text-sm truncate max-w-[220px]" title={getETFName(pos)}>
                       {getETFName(pos)}
                     </div>
-                    <div className="text-xs text-[#B2BEC3]">{pos.symbol}</div>
+                    <div className="text-xs text-[#B2BEC3]">{getETFProvider(pos) || pos.symbol}</div>
                   </td>
                   <td className="px-5 py-4 text-right text-[#2D3436] text-sm tabular-nums">{qty.toFixed(0)}</td>
                   <td className="px-5 py-4 text-right text-[#636E72] text-sm tabular-nums">{formatCurrency(avgCost)}</td>

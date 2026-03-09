@@ -1,21 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TrendingUp, TrendingDown, RefreshCw, Clock, Wifi, WifiOff, AlertCircle, Wallet, PiggyBank, BarChart3, ChevronRight } from 'lucide-react';
 import ETFDetailsModal from './trading/ETFDetailsModal';
-
-// ETF name lookup
-const ETF_NAMES = {
-  IWDA: 'iShares Core MSCI World UCITS ETF',
-  VWCE: 'Vanguard FTSE All-World UCITS ETF',
-  EMIM: 'iShares Core MSCI EM IMI UCITS ETF',
-  VUAA: 'Vanguard S&P 500 UCITS ETF',
-  SXR8: 'iShares Core S&P 500 UCITS ETF',
-  EUNH: 'iShares Core Euro Government Bond',
-  IEAC: 'iShares Core EUR Corporate Bond',
-  VAGE: 'Vanguard Global Aggregate Bond',
-  SGLD: 'Invesco Physical Gold ETC',
-  IWDP: 'iShares Developed Markets Property Yield',
-  XEON: 'Xtrackers II EUR Overnight Rate Swap',
-};
+import { getETFDisplayName, getETFProvider } from './portfolio/DetailPageHeader';
 
 const TRADING_API_URL = process.env.REACT_APP_TRADING_API_URL || 'http://37.97.173.109:8002';
 
@@ -371,7 +357,8 @@ export default function LivePortfolioOverview({ user }) {
             const pnl = parseFloat(position.unrealized_pnl) || 0;
             const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
             const isPositive = pnl >= 0;
-            const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
+            const etfName = getETFDisplayName(position);
+            const etfProvider = getETFProvider(position);
 
             return (
               <button
@@ -382,7 +369,7 @@ export default function LivePortfolioOverview({ user }) {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex-1 min-w-0 pr-2">
                     <div className="font-medium text-[#2D3E36] text-sm truncate">{etfName}</div>
-                    <div className="text-xs text-[#95A39A]">{position.symbol} • {qty} stuks</div>
+                    <div className="text-xs text-[#95A39A]">{etfProvider || position.symbol} • {qty} stuks</div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-[#95A39A] flex-shrink-0" />
                 </div>
@@ -432,7 +419,8 @@ export default function LivePortfolioOverview({ user }) {
                 const pnlPercent = parseFloat(position.unrealized_pnl_pct) || 0;
                 const isPositive = pnl >= 0;
                 const isStale = position.price_stale;
-                const etfName = position.name || ETF_NAMES[position.symbol] || position.symbol;
+                const etfName = getETFDisplayName(position);
+                const etfProvider = getETFProvider(position);
 
                 return (
                   <tr
@@ -442,7 +430,7 @@ export default function LivePortfolioOverview({ user }) {
                   >
                     <td className="px-5 py-4">
                       <div className="font-medium text-[#2D3E36] text-sm truncate max-w-[200px]" title={etfName}>{etfName}</div>
-                      <div className="text-xs text-[#95A39A]">{position.symbol}</div>
+                      <div className="text-xs text-[#95A39A]">{etfProvider || position.symbol}</div>
                     </td>
                     <td className="px-5 py-4 text-right text-[#2D3E36] text-sm tabular-nums">
                       {qty.toFixed(0)}

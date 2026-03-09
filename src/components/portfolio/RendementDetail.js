@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, ArrowUpDown } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
-import DetailPageHeader, { getETFName } from './DetailPageHeader';
+import DetailPageHeader, { getETFName, getETFProvider } from './DetailPageHeader';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -126,7 +126,7 @@ export default function RendementDetail({ onBack }) {
                 <div className="flex-1 min-w-0 pr-3">
                   <div className="font-medium text-[#2D3436] text-sm truncate">{getETFName(pos)}</div>
                   <div className="text-xs text-[#B2BEC3]">
-                    {pos.symbol} &middot; {formatCurrency(marketValue)}
+                    {getETFProvider(pos) || pos.symbol} &middot; {formatCurrency(marketValue)}
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">

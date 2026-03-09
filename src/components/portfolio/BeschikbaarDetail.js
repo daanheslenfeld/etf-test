@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Wallet, ArrowLeft, PieChart, Plus, Search, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 import { useTrading } from '../../context/TradingContext';
-import DetailPageHeader, { getETFName } from './DetailPageHeader';
+import DetailPageHeader, { getETFName, getETFProvider } from './DetailPageHeader';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -285,7 +285,7 @@ function AddExistingView({ onBack, onDone }) {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-[#2D3436] text-sm">{getETFName(pos)}</div>
-                  <div className="text-xs text-[#B2BEC3]">{pos.symbol} &middot; {parseFloat(pos.quantity || 0).toFixed(0)} stuks</div>
+                  <div className="text-xs text-[#B2BEC3]">{getETFProvider(pos) || pos.symbol} &middot; {parseFloat(pos.quantity || 0).toFixed(0)} stuks</div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium text-[#2D3436] tabular-nums">{formatCurrency(pos.market_value)}</div>
