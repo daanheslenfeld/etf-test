@@ -22,6 +22,7 @@ import { useTrading } from '../../context/TradingContext';
 import { MobileDrawer, DrawerSection } from '../common/MobileDrawer';
 import { Button } from '../common';
 import ETFFilterPanel from './ETFFilterPanel';
+import { getETFDisplayName, getETFProvider } from '../portfolio/DetailPageHeader';
 
 // Category configuration with premium banking colors
 const CATEGORY_CONFIG = {
@@ -79,7 +80,7 @@ const CATEGORY_CONFIG = {
 export default function ETFBrowser({ onAddToOrder }) {
   const [showFilters, setShowFilters] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const [onlyWithPrices, setOnlyWithPrices] = useState(false);
+  const [onlyWithPrices, setOnlyWithPrices] = useState(true);
   const isMobile = useIsMobile();
   const { marketData } = useTrading();
 
@@ -298,13 +299,13 @@ export default function ETFBrowser({ onAddToOrder }) {
                 <button
                   onClick={() => setOnlyWithPrices(!onlyWithPrices)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    onlyWithPrices
+                    !onlyWithPrices
                       ? 'bg-[#7C9885] text-white'
                       : 'bg-[#F5F6F4] text-[#636E72] hover:bg-[#ECEEED] border border-[#E8E8E6]'
                   }`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${onlyWithPrices ? 'bg-white' : 'bg-[#7C9885]'}`} />
-                  Alleen met koersen
+                  <span className={`w-1.5 h-1.5 rounded-full ${!onlyWithPrices ? 'bg-white' : 'bg-[#7C9885]'}`} />
+                  Toon alle ETFs
                 </button>
               )}
             </div>
@@ -378,6 +379,9 @@ export default function ETFBrowser({ onAddToOrder }) {
                   )}
                 </span>
               </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider hidden sm:table-cell">
+                Beschrijving
+              </th>
               <th
                 className="px-6 py-4 text-left text-xs font-semibold text-[#636E72] uppercase tracking-wider cursor-pointer hover:text-[#2D3436] transition-colors hidden md:table-cell"
                 onClick={() => handleSort('exchange')}
@@ -432,6 +436,16 @@ export default function ETFBrowser({ onAddToOrder }) {
                       {etf.name.length > 50 ? `${etf.name.slice(0, 50)}...` : etf.name}
                     </div>
                     <div className="text-[#B2BEC3] text-xs font-mono mt-0.5">{etf.isin}</div>
+                  </td>
+                  <td className="px-6 py-4 hidden sm:table-cell">
+                    <div className="text-[#2D3436] text-sm font-medium">
+                      {getETFDisplayName({ symbol: etf.symbol, name: etf.name })}
+                    </div>
+                    {getETFProvider({ symbol: etf.symbol, name: etf.name }) && (
+                      <div className="text-[#B2BEC3] text-xs mt-0.5">
+                        {getETFProvider({ symbol: etf.symbol, name: etf.name })}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 hidden md:table-cell">
                     <span className="text-[#636E72] text-sm px-2 py-1 bg-[#F5F6F4] rounded">

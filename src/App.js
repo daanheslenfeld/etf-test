@@ -2465,16 +2465,17 @@ useEffect(() => {
 
   // Redirect wrapper: routes user to the right choice page based on portfolio state
   const PortfolioRedirect = () => {
-    const { positions, loading: tradingLoading } = useTrading();
+    const { positions, loading: tradingLoading, lastPositionsUpdate, brokerLinked } = useTrading();
     useEffect(() => {
-      if (!tradingLoading && !skipChoiceRedirect) {
-        if ((positions || []).length === 0) {
-          setCurrentPage('investmentChoice');
-        } else {
-          setCurrentPage('portfolioChoice');
-        }
+      if (tradingLoading || skipChoiceRedirect) return;
+      // If broker is linked, wait until positions have actually been fetched (cached or fresh)
+      if (brokerLinked && lastPositionsUpdate === null) return;
+      if ((positions || []).length === 0) {
+        setCurrentPage('investmentChoice');
+      } else {
+        setCurrentPage('portfolioChoice');
       }
-    }, [tradingLoading, positions]);
+    }, [tradingLoading, positions, lastPositionsUpdate, brokerLinked]);
     return null;
   };
 

@@ -16,7 +16,6 @@ export const ETF_INFO = {
   SXR8: { displayName: 'Verenigde Staten - S&P 500', provider: 'iShares' },
   CSPX: { displayName: 'Verenigde Staten - S&P 500', provider: 'iShares' },
   EQQQ: { displayName: 'Verenigde Staten - Nasdaq 100', provider: 'Invesco' },
-  IUSN: { displayName: 'Verenigde Staten - Small Cap', provider: 'iShares (MSCI USA Small Cap)' },
   // Europe
   CEU2: { displayName: 'Europa - Aandelen', provider: 'Amundi (MSCI Europe)' },
   MEUD: { displayName: 'Europa - Aandelen', provider: 'Amundi (STOXX Europe 600)' },
@@ -35,29 +34,144 @@ export const ETF_INFO = {
   // Commodities
   SGLD: { displayName: 'Goud', provider: 'Invesco (Physical Gold)' },
   IGLN: { displayName: 'Goud', provider: 'iShares (Physical Gold)' },
+  SXRS: { displayName: 'Grondstoffen - Mix', provider: 'iShares (Diversified Commodity)' },
   // Real estate
   IWDP: { displayName: 'Wereldwijd Vastgoed', provider: 'iShares' },
   // Money market
   XEON: { displayName: 'Geldmarkt (Euro)', provider: 'Xtrackers' },
+  // Factor / Smart Beta
+  IWVL: { displayName: 'Wereld - Value Factor', provider: 'iShares (MSCI World Value)' },
+  IWMO: { displayName: 'Wereld - Momentum Factor', provider: 'iShares (MSCI World Momentum)' },
+  IWQU: { displayName: 'Wereld - Quality Factor', provider: 'iShares (MSCI World Quality)' },
+  MVOL: { displayName: 'Wereld - Min. Volatiliteit', provider: 'iShares (MSCI World Min Vol)' },
   // Small cap
+  IUSN: { displayName: 'Verenigde Staten - Small Cap', provider: 'iShares (MSCI USA Small Cap)' },
   ZPRV: { displayName: 'Verenigde Staten - Small Cap Value', provider: 'SPDR' },
   ZPRX: { displayName: 'Europa - Small Cap Value', provider: 'SPDR' },
-  IUSN: { displayName: 'Verenigde Staten - Small Cap', provider: 'iShares' },
 };
+
+// Auto-parse provider and display name from full ETF name for unknown ETFs
+const PROVIDER_PATTERNS = [
+  { match: /^iShares/i, provider: 'iShares' },
+  { match: /^Vanguard/i, provider: 'Vanguard' },
+  { match: /^Amundi/i, provider: 'Amundi' },
+  { match: /^Xtrackers/i, provider: 'Xtrackers' },
+  { match: /^Invesco/i, provider: 'Invesco' },
+  { match: /^SPDR/i, provider: 'SPDR' },
+  { match: /^Lyxor/i, provider: 'Lyxor' },
+  { match: /^WisdomTree/i, provider: 'WisdomTree' },
+  { match: /^VanEck/i, provider: 'VanEck' },
+  { match: /^BNP/i, provider: 'BNP Paribas' },
+  { match: /^Franklin/i, provider: 'Franklin Templeton' },
+  { match: /^UBS/i, provider: 'UBS' },
+  { match: /^HSBC/i, provider: 'HSBC' },
+  { match: /^JPMorgan|^JPM/i, provider: 'JPMorgan' },
+  { match: /^Deka/i, provider: 'Deka' },
+];
+
+const CATEGORY_KEYWORDS = {
+  'S&P 500': 'Verenigde Staten - S&P 500',
+  'MSCI World': 'Wereld - Aandelen',
+  'MSCI Europe': 'Europa - Aandelen',
+  'MSCI Japan': 'Japan - Aandelen',
+  'MSCI Emerging': 'Opkomende Landen',
+  'MSCI EM': 'Opkomende Landen',
+  'FTSE All-World': 'Wereld - Alle Landen',
+  'FTSE Developed': 'Wereld - Ontwikkelde Landen',
+  'FTSE Emerging': 'Opkomende Landen',
+  'STOXX Europe': 'Europa - Aandelen',
+  'Euro STOXX': 'Europa - Aandelen',
+  'MSCI USA': 'Verenigde Staten - Aandelen',
+  'MSCI Pacific': 'Azië-Pacific - Aandelen',
+  'MSCI China': 'China - Aandelen',
+  'Nasdaq': 'Verenigde Staten - Nasdaq',
+  'DAX': 'Duitsland - Aandelen',
+  'AEX': 'Nederland - Aandelen',
+  'Nikkei': 'Japan - Aandelen',
+  'Government Bond': 'Staatsobligaties',
+  'Corporate Bond': 'Bedrijfsobligaties',
+  'Aggregate Bond': 'Obligaties Mix',
+  'High Yield': 'Hoogrentende Obligaties',
+  'Treasury': 'Staatsobligaties',
+  'Gold': 'Goud',
+  'Physical Gold': 'Goud',
+  'Silver': 'Zilver',
+  'Commodity': 'Grondstoffen',
+  'Commodit': 'Grondstoffen',
+  'Property': 'Vastgoed',
+  'Real Estate': 'Vastgoed',
+  'Overnight Rate': 'Geldmarkt',
+  'Money Market': 'Geldmarkt',
+  'Value Factor': 'Value Factor',
+  'Momentum Factor': 'Momentum Factor',
+  'Quality Factor': 'Quality Factor',
+  'Minimum Volatility': 'Min. Volatiliteit',
+  'Min Vol': 'Min. Volatiliteit',
+  'Small Cap': 'Small Cap',
+  'Clean Energy': 'Schone Energie',
+  'Climate': 'Klimaat',
+  'Automation': 'Automatisering & Robotica',
+  'Digital': 'Digitalisering',
+  'Healthcare': 'Gezondheidszorg',
+  'Blockchain': 'Blockchain',
+  'Cyber Security': 'Cybersecurity',
+  'Artificial Intelligence': 'Kunstmatige Intelligentie',
+  'Water': 'Water',
+  'Timber': 'Hout & Bosbouw',
+  'Agri': 'Landbouw',
+};
+
+function parseETFName(fullName) {
+  if (!fullName) return { displayName: null, provider: '' };
+
+  // Extract provider
+  let provider = '';
+  for (const p of PROVIDER_PATTERNS) {
+    if (p.match.test(fullName)) {
+      provider = p.provider;
+      break;
+    }
+  }
+
+  // Match category keywords
+  for (const [keyword, label] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (fullName.includes(keyword)) {
+      return { displayName: label, provider };
+    }
+  }
+
+  // Fallback: strip provider prefix + UCITS/ETF suffixes to get a clean name
+  let clean = fullName
+    .replace(/^(iShares|Vanguard|Amundi|Xtrackers|Invesco|SPDR|Lyxor|WisdomTree|VanEck|BNP|Franklin|UBS|HSBC|JPMorgan|JPM|Deka)\s*(II|III)?\s*/i, '')
+    .replace(/\s*UCITS\s*ETF.*/i, '')
+    .replace(/\s*ETC.*/i, '')
+    .replace(/\s*ETF.*/i, '')
+    .replace(/\s*(Index|Core|Edge|Physical|Swap)\s*/gi, ' ')
+    .replace(/\s*\(.*?\)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return { displayName: clean || fullName, provider };
+}
 
 // Legacy lookup for backwards compatibility
 export const ETF_NAMES = Object.fromEntries(
   Object.entries(ETF_INFO).map(([k, v]) => [k, v.displayName])
 );
 
-export const getETFDisplayName = (position) =>
-  ETF_INFO[position.symbol]?.displayName || position.name || position.symbol;
+export const getETFDisplayName = (position) => {
+  if (ETF_INFO[position.symbol]?.displayName) return ETF_INFO[position.symbol].displayName;
+  const parsed = parseETFName(position.name);
+  return parsed.displayName || position.name || position.symbol;
+};
 
-export const getETFProvider = (position) =>
-  ETF_INFO[position.symbol]?.provider || '';
+export const getETFProvider = (position) => {
+  if (ETF_INFO[position.symbol]?.provider) return ETF_INFO[position.symbol].provider;
+  const parsed = parseETFName(position.name);
+  return parsed.provider || '';
+};
 
-export const getETFName = (position) =>
-  ETF_INFO[position.symbol]?.displayName || position.name || ETF_NAMES[position.symbol] || position.symbol;
+export const getETFName = (position) => getETFDisplayName(position);
 
 const formatTimeAgo = (timestamp) => {
   if (!timestamp) return 'Nooit';
